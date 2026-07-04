@@ -14,6 +14,7 @@ import {
   FONT_SIZE_PRESETS, FONT_SIZE_MIN, FONT_SIZE_MAX,
   LINE_HEIGHT_PRESETS, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX,
   PARA_SPACING_PRESETS, PARA_SPACING_MIN, PARA_SPACING_MAX,
+  DEFAULT_TYPOGRAPHY_SETTINGS,
   applyFontSize, applyLineHeight, applyParagraphSpacing, applyPageWidth
 } from '../settings.js'
 
@@ -30,11 +31,14 @@ const SETTINGS_NAV = [
   { id: 'about', icon: 'github', labelKey: 'settings.about' }
 ]
 
-function SectionHead({ kicker, title }) {
+function SectionHead({ kicker, title, action }) {
   return (
     <div className="settings-section-head">
-      <span className="settings-section-kicker">{kicker}</span>
-      <h2 className="settings-block-title">{title}</h2>
+      <div className="settings-section-title">
+        <span className="settings-section-kicker">{kicker}</span>
+        {title && <h2 className="settings-block-title">{title}</h2>}
+      </div>
+      {action && <div className="settings-section-action">{action}</div>}
     </div>
   )
 }
@@ -47,7 +51,7 @@ export default function SettingsView({
 }) {
   const { t } = useI18n()
   return (
-    <div className="settings-page">
+    <div className="settings-page tab-view-surface">
       <div className="settings-shell">
         <aside className="settings-nav" aria-label={t('settings.pageTitle')}>
           <div className="settings-nav-head">
@@ -67,12 +71,24 @@ export default function SettingsView({
 
         <div className="settings-content">
           <section className="settings-block settings-block-hero" id="settings-typography">
-            <SectionHead kicker={t('settings.layoutLabel')} title={t('settings.typography')} />
+            <SectionHead
+              kicker={t('settings.layoutLabel')}
+              title={null}
+              action={
+                <button
+                  type="button"
+                  className="settings-default-btn"
+                  onClick={() => onUpdateSettings(DEFAULT_TYPOGRAPHY_SETTINGS)}
+                >
+                  {t('settings.typographyDefault')}
+                </button>
+              }
+            />
             <TypographyControls settings={settings} onUpdateSettings={onUpdateSettings} t={t} />
           </section>
 
           <section className="settings-block" id="settings-appearance">
-            <SectionHead kicker={t('settings.appearance')} title={t('settings.appearance')} />
+            <SectionHead kicker={t('settings.appearance')} title={null} />
             <div className="settings-swatches">
               {THEMES.map((th) => (
                 <button

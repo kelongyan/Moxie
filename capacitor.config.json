@@ -1,5 +1,5 @@
 {
-  "appId": "com.horsemd.app",
+  "appId": "com.moxie.app",
   "appName": "Moxie",
   "webDir": "dist-mobile",
   "ios": {

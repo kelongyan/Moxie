@@ -20,7 +20,7 @@
 - **拖拽移动**：把文件/文件夹拖到另一个文件夹（或根目录）即可移动，落点文件夹高亮提示
 - 顶部 **展开全部 / 折叠全部** 按钮一键切换（图标随状态翻转，展开会递归展开所有子目录）
 - 活动栏有**常驻的折叠 / 展开侧边栏**按钮（收起后图标翻转成"展开"样式）
-- 在资源管理器右键文件夹 **"用 HorseMD 打开"** → 作为工作区打开（启动参数支持文件夹路径）
+- 在资源管理器右键文件夹 **"用 Moxie 打开"** → 作为工作区打开（启动参数支持文件夹路径）
 - 外部增删文件会自动刷新树
 
 **实现**：`Sidebar.jsx` + 主进程 `fs:readDir` / `fs:duplicate` / `watch:start`（chokidar 监听文件夹，去抖后推 `watch:changed`）；文件夹启动参数见 `main/index.js` 的 `extractArgs()`（区分文件 vs 目录，目录走 `open-folder`）
@@ -135,13 +135,13 @@ WYSIWYG 由 Milkdown Crepe 提供。在它之上自研了**改标题层级**的�
 
 ## 11. 首次引导
 
-全新安装首次打开 → 自动弹出本地化的《欢迎使用 HorseMD》文档（介绍软件、功能、快捷键）。只出现一次。
+全新安装首次打开 → 自动弹出本地化的《欢迎使用 Moxie》文档（介绍软件、功能、快捷键）。只出现一次。
 
-**实现**：`App.jsx` 检测 `localStorage` 无 `horsemd.onboarded.v1` 且无恢复标签时，把 `onboarding.js` 的内容作为一个标签打开。
+**实现**：`App.jsx` 检测 `localStorage` 无 `moxie.onboarded.v1` 且无恢复标签时，把 `onboarding.js` 的内容作为一个标签打开。
 
 ## 12. 首页（欢迎页）+ 最近文件 + 主页按钮
 
-无打开文件时显示欢迎页：Logo + 标题（带**版本号**，如 `HorseMD v0.1.6`）+ 标语 + 三个操作按钮 + **最近文件列表** + 快捷键提示。活动栏**最上方有一个 App 图标按钮（主页）**，随时点它回到欢迎页。
+无打开文件时显示欢迎页：Logo + 标题（带**版本号**，如 `Moxie v0.1.6`）+ 标语 + 三个操作按钮 + **最近文件列表** + 快捷键提示。活动栏**最上方有一个 App 图标按钮（主页）**，随时点它回到欢迎页。
 
 **实现**（`App.jsx` 的 `Welcome` 组件 + 活动栏）：
 - 最近文件：每次打开文件时 `remember()` 记录 `{path, name, dir, openedAt}`，去重、上限 8、持久化在会话
@@ -174,7 +174,7 @@ WYSIWYG 由 Milkdown Crepe 提供。在它之上自研了**改标题层级**的�
 
 有些 Markdown 文件**几乎没有空行**（笔记/转写直接粘进来，几千行连续不空行）。Markdown 会把它们压成几个超大段落、段内有上千个换行节点，ProseMirror 近乎平方级渲染 → **主线程能卡死十几秒**（实测一个 81KB 文件冻结 10.2 秒）。
 
-为此 HorseMD **自动识别"重文档"**，默认用纯文本极速模式打开（瞬间、零卡顿），顶部给一个 **「渲染为富文本」** 按钮，需要时再按需加载（这时才会有几秒解析 + 骨架屏）。
+为此 Moxie **自动识别"重文档"**，默认用纯文本极速模式打开（瞬间、零卡顿），顶部给一个 **「渲染为富文本」** 按钮，需要时再按需加载（这时才会有几秒解析 + 骨架屏）。
 
 **实现**（`App.jsx`）：`isHeavyDoc(content)` —— 单段落**连续非空行 > 150 行**，或总长 > 400KB，即判定为重文档（结构而非单纯大小：结构良好的 120KB 文档照常富文本）。`heavy` 标记在文件载入时算一次存到标签上；`richForced`（Set）记录用户对某标签的"仍要富文本"选择。重文档默认走 `usesTextarea` 分支（和 `.txt` 同款 textarea）。
 
@@ -223,7 +223,7 @@ Windows/Linux 下不再用系统原生的标题栏覆盖层，改由渲染层自
 
 启动时查一次 GitHub 最新**正式** release（草稿/预发布被该接口排除），若有新版本则弹一个可关闭的"有新版本"提示;关掉后记住,不再骚扰。**不在应用内下载/安装**。提示里**自动展示该 release 的更新说明**(GitHub release notes),内容长则在卡片内滚动(细滚动条)。
 
-**实现**：主进程 `update:check` 用 `net.fetch` 打 `releases/latest`，比对 `app.getVersion()`，并把 `data.body`(发布说明)截断后作为 `notes` 一并返回；渲染层启动时调一次,记 `localStorage["horsemd.update.dismissed"]`（`App.jsx`）。`UpdateToast.jsx` 把 `notes`(Markdown)**用纯 React 元素**轻量渲染成标题/要点/粗体/行内代码(**不注入 HTML,无 XSS**),版本号显示为"旧版删除线 → 新版药丸"。
+**实现**：主进程 `update:check` 用 `net.fetch` 打 `releases/latest`，比对 `app.getVersion()`，并把 `data.body`(发布说明)截断后作为 `notes` 一并返回；渲染层启动时调一次,记 `localStorage["moxie.update.dismissed"]`（`App.jsx`）。`UpdateToast.jsx` 把 `notes`(Markdown)**用纯 React 元素**轻量渲染成标题/要点/粗体/行内代码(**不注入 HTML,无 XSS**),版本号显示为"旧版删除线 → 新版药丸"。
 
 ## 21. 分屏（左右双栏）
 
@@ -258,7 +258,7 @@ Windows/Linux 下不再用系统原生的标题栏覆盖层，改由渲染层自
 
 ## 24. 未保存草稿跨重启恢复
 
-新建但没保存的临时文档（未命名标签），**关掉 HorseMD 再打开还在**（标签带"已修改"红点）。
+新建但没保存的临时文档（未命名标签），**关掉 Moxie 再打开还在**（标签带"已修改"红点）。
 
 **实现**（`App.jsx`）：会话持久化里新增 `untitled: [{title, content}]`，只存**有内容且脏**的无路径标签（未动过的欢迎页/空白页不会反复回来）；启动时重建这些标签（`savedContent:''` 让它们保持"未保存"）。有路径的文件仍从磁盘重开。
 
@@ -268,7 +268,7 @@ Windows/Linux 下不再用系统原生的标题栏覆盖层，改由渲染层自
 
 **右上角图片按钮**配置一条上传命令(如 `picgo upload`)。之后**粘贴 / 拖入 / 上传**图片会:把图片写到临时文件 → 运行 `<命令> "<临时文件>"` → 取它打印到 stdout 的图片 URL 插入文档。命令留空 = 保持默认(图片为本地引用,不拦截粘贴/拖入,避免插入刷新即失效的 `blob:`)。
 
-**实现**：`ImageHostButton.jsx`(顶栏 popover,`position:fixed` 避开顶栏 `overflow:hidden`;配置后图标带强调色小点)+ `Editor.jsx` 的 `onUpload` / 粘贴 / 拖放钩子(代码块内不拦截)+ 主进程 `image:upload` IPC(临时文件 + `exec` + 解析最后一个 http(s) URL)。命令存 `localStorage["horsemd.settings.v1"]`。
+**实现**：`ImageHostButton.jsx`(顶栏 popover,`position:fixed` 避开顶栏 `overflow:hidden`;配置后图标带强调色小点)+ `Editor.jsx` 的 `onUpload` / 粘贴 / 拖放钩子(代码块内不拦截)+ 主进程 `image:upload` IPC(临时文件 + `exec` + 解析最后一个 http(s) URL)。命令存 `localStorage["moxie.settings.v1"]`。
 
 ## 26. 自定义页面宽度
 

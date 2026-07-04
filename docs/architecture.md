@@ -93,10 +93,10 @@ build/
 - **标签页**：`tabs[]`（每个 `{id, path, title, content, savedContent, mtimeMs, reloadNonce}`）、`activeId`
 - **打开文件**：`openPaths()` —— 去重（用 `tabsRef` 同步快照避免 setState 竞态）、读盘、建标签
 - **保存**：`saveTab/writeTab`，脏判断 = `content !== savedContent`
-- **会话持久化**：把 `workspace/theme/lang/recents/openPaths/...` 存进 `localStorage`（键 `minimd.session.v1`），启动时恢复
+- **会话持久化**：把 `workspace/theme/lang/recents/openPaths/...` 存进 `localStorage`（键 `moxie.session.v1`），启动时恢复
 - **主题/语言**：`theme`（主题 id）、`lang`（en/zh），分别 `applyTheme()` 与 `I18nProvider`
 - **最近文件**：`recents[]`，每次打开文件时记录，持久化，首页展示
-- **首次引导**：首启动（无 `horsemd.onboarded.v1` 标记且无恢复标签）打开欢迎文档
+- **首次引导**：首启动（无 `moxie.onboarded.v1` 标记且无恢复标签）打开欢迎文档
 - **快捷键**：菜单加速器（主进程）+ 渲染层监听（Ctrl+Tab 切标签、Ctrl+B 切侧边栏）
 
 ## 编辑器内容数据流（重要）

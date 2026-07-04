@@ -1,4 +1,4 @@
-package com.horsemd.app;
+package com.moxie.app;
 
 import com.getcapacitor.BridgeActivity;
 

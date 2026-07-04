@@ -45,7 +45,7 @@ if (
   typeof CodeMirrorBlock?.prototype?.scheduleTeardown !== 'function'
 ) {
   // eslint-disable-next-line no-console
-  console.warn('[horsemd] code-block eager-mount patch: CodeMirrorBlock API changed — #25 jump may return.')
+  console.warn('[moxie] code-block eager-mount patch: CodeMirrorBlock API changed — #25 jump may return.')
 }
 
 const proto = CodeMirrorBlock.prototype

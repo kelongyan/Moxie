@@ -1140,7 +1140,7 @@ export default function Editor({
         // `{~~old~>new~~}` reconstructs like a real paste). Stripped in prod
         // builds (import.meta.env.DEV is false after `npm run build`).
         if (import.meta.env && import.meta.env.DEV) {
-          window.__horsemd = Object.assign(window.__horsemd || {}, {
+          window.__moxie = Object.assign(window.__moxie || {}, {
             getView: () => viewRef.current,
             getMarkdown,
             applyReviewMarkup,

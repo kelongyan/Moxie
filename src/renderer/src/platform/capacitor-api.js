@@ -23,7 +23,6 @@ import { FilePicker } from '@capawesome/capacitor-file-picker'
 // use the app's external files dir there — always writable, no permission, and
 // still browsable in-app (and over USB).
 const DIR = Capacitor.getPlatform() === 'ios' ? Directory.Documents : Directory.External
-const OLD_LIB = 'HorseMD'
 const LIB = 'Moxie' // library subfolder
 const MD_RE = /\.(md|markdown|mdx)$/i
 
@@ -36,23 +35,8 @@ const stat = async (path) => {
   }
 }
 
-const migrateLegacyLib = async () => {
-  try {
-    await Filesystem.stat({ path: LIB, directory: DIR })
-    return
-  } catch {
-    /* target does not exist */
-  }
-  try {
-    await Filesystem.rename({ from: OLD_LIB, to: LIB, directory: DIR, toDirectory: DIR })
-  } catch {
-    /* no legacy folder or migration not available */
-  }
-}
-
 // Ensure the library folder exists (best effort; mkdir is idempotent enough).
 const ensureLib = async () => {
-  await migrateLegacyLib()
   try {
     await Filesystem.mkdir({ path: LIB, directory: DIR, recursive: true })
   } catch {

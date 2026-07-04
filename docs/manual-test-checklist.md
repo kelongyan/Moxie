@@ -2,7 +2,7 @@
 
 > 重构的安全网。每条 = 一个可手动复现的步骤 → 预期。重构每抽一块,跑相关
 > 条目;全部重构完后做整表回归。勾选框 `[ ]` 供手动执行时打勾。
-> 平台:macOS arm64(`/Applications/HorseMD.app`)为主,Windows/移动在分节标注。
+> 平台:macOS arm64(`/Applications/Moxie.app`)为主,Windows/移动在分节标注。
 
 ---
 

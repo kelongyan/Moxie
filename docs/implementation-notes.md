@@ -176,11 +176,11 @@ macOS 用 `titleBarStyle: 'hiddenInset'`，红绿灯（关/最小/最大）浮�
 
 ## bug 11：卸载会连带删掉用户文件
 
-**现象**：把 Markdown 笔记存在安装目录旁边，卸载 HorseMD 时会被一并清空。
+**现象**：把 Markdown 笔记存在安装目录旁边，卸载 Moxie 时会被一并清空。
 
 **根因**：NSIS 卸载默认对安装目录做整体递归删除。
 
-**修复**（`build/installer.nsh`）：卸载器只删 HorseMD 自己装进去的文件，保留用户文件；同时把安装位置固定到**专属的 per-user 目录**，避免被装进用户自己的文件夹里。属于 Windows 专有，不影响 macOS。
+**修复**（`build/installer.nsh`）：卸载器只删 Moxie 自己装进去的文件，保留用户文件；同时把安装位置固定到**专属的 per-user 目录**，避免被装进用户自己的文件夹里。属于 Windows 专有，不影响 macOS。
 
 ---
 

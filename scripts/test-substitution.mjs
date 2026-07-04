@@ -77,7 +77,7 @@ function record(name, ok, detail) {
 
 async function waitForEditor(ev) {
   for (let i = 0; i < 40; i++) {
-    const ready = await ev(() => !!window.__horsemd)
+    const ready = await ev(() => !!window.__moxie)
     if (ready) return true
     // No editor mounted (Home screen)? Click the first doc tab to mount one.
     if (i % 5 === 4) {
@@ -98,11 +98,11 @@ async function main() {
   const ev = evals(send)
 
   if (!(await waitForEditor(ev))) {
-    console.error('FAIL: window.__horsemd never appeared (no editor mounted)')
+    console.error('FAIL: window.__moxie never appeared (no editor mounted)')
     process.exit(1)
   }
 
-  const hook = (fn) => ev(() => window.__horsemd && fn(window.__horsemd))
+  const hook = (fn) => ev(() => window.__moxie && fn(window.__moxie))
   const md = () => hook((h) => h.getMarkdown())
   const html = () => hook((h) => h.getHtml())
   const hasSub = (h) => h.includes('hm-review-sub-old') && h.includes('hm-review-sub-new')

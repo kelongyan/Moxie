@@ -68,7 +68,7 @@ export function isHeavyDoc(content) {
 let idCounter = 0
 export const genId = () => `t${++idCounter}_${Date.now()}`
 
-export const LS = 'minimd.session.v1'
+export const LS = 'moxie.session.v1'
 export const loadSession = () => {
   try {
     return JSON.parse(localStorage.getItem(LS)) || {}

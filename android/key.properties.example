@@ -1,11 +1,11 @@
 # Copy this file to android/key.properties (gitignored) and fill in your values.
 # Generate the keystore once (see docs/mobile.md):
-#   keytool -genkeypair -v -keystore android/app/horsemd.keystore \
-#     -alias horsemd -keyalg RSA -keysize 2048 -validity 10000 \
+#   keytool -genkeypair -v -keystore android/app/moxie.keystore \
+#     -alias moxie -keyalg RSA -keysize 2048 -validity 10000 \
 #     -dname "CN=Moxie, O=Moxie, C=CN"
 #
 # storeFile is resolved relative to android/app/.
-storeFile=horsemd.keystore
+storeFile=moxie.keystore
 storePassword=YOUR_KEYSTORE_PASSWORD
-keyAlias=horsemd
+keyAlias=moxie
 keyPassword=YOUR_KEY_PASSWORD

@@ -23,8 +23,8 @@ import { HM_TOAST_EVENT } from '../ui.js'
 import { welcomeDoc } from '../onboarding.js'
 import { DEFAULT_LANG } from '../i18n.jsx'
 
-const ONBOARDED_KEY = 'horsemd.onboarded.v1'
-const UPDATE_DISMISS_KEY = 'horsemd.update.dismissed'
+const ONBOARDED_KEY = 'moxie.onboarded.v1'
+const UPDATE_DISMISS_KEY = 'moxie.update.dismissed'
 
 export function useAppLifecycle({
   session,

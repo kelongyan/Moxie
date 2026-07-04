@@ -49,7 +49,7 @@ export default function EditorArea({
   return (
     <div
       ref={editorAreaRef}
-      className={`editor-area${split ? ' is-split' : ''}`}
+      className={`editor-area tab-view-surface${split ? ' is-split' : ''}`}
       style={{ display: home || !activeTab || activeTab?.kind === 'settings' ? 'none' : undefined }}
     >
       {tabs.map((tab) => {

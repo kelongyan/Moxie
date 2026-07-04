@@ -28,14 +28,14 @@ npm run dist:dir    # 构建 + 打免安装目录版（dist/<platform>-unpacked/
 ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-binaries/
 ```
 
-> 打包常见报错 `app-builder ... CANNOT_EXECUTE` 通常是 `dist/win-unpacked/HorseMD.exe` 被占用（有实例在跑）—— 先关掉所有 HorseMD 实例再打。
+> 打包常见报错 `app-builder ... CANNOT_EXECUTE` 通常是 `dist/win-unpacked/Moxie.exe` 被占用（有实例在跑）—— 先关掉所有 Moxie 实例再打。
 
 ### 打包配置（package.json → build）
 
 ```jsonc
 "build": {
-  "appId": "com.horsemd.app",
-  "productName": "HorseMD",
+  "appId": "com.moxie.app",
+  "productName": "Moxie",
   "files": ["out/**/*"],
   "icon": "build/icon.ico",
   "mac": { "target": ["dmg", "zip"], "icon": "build/icon.icns", "category": "public.app-category.productivity", "fileAssociations": [/* .md/.markdown */] },
@@ -44,7 +44,7 @@ ELECTRON_BUILDER_BINARIES_MIRROR=https://npmmirror.com/mirrors/electron-builder-
 }
 ```
 
-- 安装包**未签名**：Windows 首次运行 SmartScreen 提示"未知发布者"，点"更多信息 → 仍要运行"；macOS 首次打开被 Gatekeeper 拦，右键 → 打开，或 `xattr -dr com.apple.quarantine /Applications/HorseMD.app`。需要免提示得配对应平台的签名证书（macOS 还需公证）。
+- 安装包**未签名**：Windows 首次运行 SmartScreen 提示"未知发布者"，点"更多信息 → 仍要运行"；macOS 首次打开被 Gatekeeper 拦，右键 → 打开，或 `xattr -dr com.apple.quarantine /Applications/Moxie.app`。需要免提示得配对应平台的签名证书（macOS 还需公证）。
 
 ### macOS 打包（已支持）
 
@@ -53,7 +53,7 @@ Windows 与 macOS 共用一份配置，在 macOS 上 `npm run dist` 即出 `.dmg
 - 图标 `build/icon.icns` 由 `icon.png` 生成（mac 上 `iconutil`，或跨平台 `png2icns` / `electron-icon-builder`）。
 - 跨平台已处理：快捷键同时认 `Ctrl`/`Cmd`（`metaKey`），`open-file`（Finder 打开）事件，标题栏 `hiddenInset` + 固定 `trafficLightPosition`，渲染层用 `.app.is-mac` / `.app.is-win` 区分平台样式。**改顶栏/平台相关代码时务必两个系统都别弄坏。**
 
-> dev 模式在 macOS 上用 `osascript tell application "Electron"` 驱动时，可能误启动 `node_modules` 里的通用 Electron 壳（同名冲突，显示默认页）。验证请用打好的 **HorseMD.app**（名字与 bundle id 唯一）。
+> dev 模式在 macOS 上用 `osascript tell application "Electron"` 驱动时，可能误启动 `node_modules` 里的通用 Electron 壳（同名冲突，显示默认页）。验证请用打好的 **Moxie.app**（名字与 bundle id 唯一）。
 
 ## 自动化测试：CDP 端到端验证
 
@@ -87,6 +87,6 @@ node scripts/etv.mjs
 
 ## 数据/状态约定
 
-- 会话存于 `localStorage`，键 `minimd.session.v1`：`{workspace, theme, lang, recents, sidebarOpen, sidebarMode, openPaths, activePath}`
-- 首次引导标记：`localStorage['horsemd.onboarded.v1']`
+- 会话存于 `localStorage`，键 `moxie.session.v1`：`{workspace, theme, lang, recents, sidebarOpen, sidebarMode, openPaths, activePath}`
+- 首次引导标记：`localStorage['moxie.onboarded.v1']`
 - 主题以 `body` 的 class 表达：`light|dark` 基类 + 可选 `theme-*` 覆盖类

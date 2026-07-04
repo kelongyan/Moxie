@@ -3,13 +3,13 @@
 // the image-host upload command. Kept small and self-contained so the Settings
 // modal and App can share one source of truth.
 
-export const SETTINGS_KEY = 'horsemd.settings.v1'
+export const SETTINGS_KEY = 'moxie.settings.v1'
 
 // Page-width slider bounds (px). 'full' (a preset, not a slider value) fills the
 // pane instead.
 export const PAGE_WIDTH_MIN = 600
 export const PAGE_WIDTH_MAX = 1400
-export const DEFAULT_PAGE_WIDTH = 800
+export const DEFAULT_PAGE_WIDTH = 1140
 
 // Quick presets shown as chips above the slider. 'full' = fill the editor pane.
 export const PAGE_WIDTH_PRESETS = [
@@ -36,7 +36,7 @@ export const FONT_SIZE_PRESETS = [
 // Editor body line-height (unitless). Default matches the built-in stylesheet.
 export const LINE_HEIGHT_MIN = 1.4
 export const LINE_HEIGHT_MAX = 2.4
-export const DEFAULT_LINE_HEIGHT = 1.85
+export const DEFAULT_LINE_HEIGHT = 1.6
 export const LINE_HEIGHT_PRESETS = [
   { id: 'compact', value: 1.6 },
   { id: 'standard', value: 1.85 },
@@ -47,7 +47,7 @@ export const LINE_HEIGHT_PRESETS = [
 // Space between paragraphs (em). 0 = paragraphs sit flush.
 export const PARA_SPACING_MIN = 0
 export const PARA_SPACING_MAX = 2
-export const DEFAULT_PARA_SPACING = 0.8
+export const DEFAULT_PARA_SPACING = 0.4
 export const PARA_SPACING_PRESETS = [
   { id: 'tight', value: 0.4 },
   { id: 'standard', value: 0.8 },
@@ -55,13 +55,17 @@ export const PARA_SPACING_PRESETS = [
   { id: 'loose', value: 1.6 }
 ]
 
-const round1 = (n) => Math.round(n * 10) / 10
-
-export const DEFAULT_SETTINGS = {
+export const DEFAULT_TYPOGRAPHY_SETTINGS = {
   pageWidth: DEFAULT_PAGE_WIDTH,
   fontSize: DEFAULT_FONT_SIZE,
   lineHeight: DEFAULT_LINE_HEIGHT,
-  paragraphSpacing: DEFAULT_PARA_SPACING,
+  paragraphSpacing: DEFAULT_PARA_SPACING
+}
+
+const round1 = (n) => Math.round(n * 10) / 10
+
+export const DEFAULT_SETTINGS = {
+  ...DEFAULT_TYPOGRAPHY_SETTINGS,
   // Empty = no image host: pasted/uploaded images keep the default behavior
   // (a local object URL). When set, it's run like Typora's "custom command":
   // the image file path is appended as an argument and the command prints the
