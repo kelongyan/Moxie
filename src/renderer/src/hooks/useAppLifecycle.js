@@ -15,9 +15,8 @@
 //   tabs/activePath/workspace/theme/customTheme/lang/recents/sidebarOpen/
 //   sidebarMode    — read by the persistence effect to build the snapshot
 //   openPaths      — used by the restore effect to reopen saved files
-//   isMobile       — onboarding sidebar affordance
 //   tabsRef        — live tabs mirror (restore adds scratch tabs; flush reads it)
-//   setActiveId/setTabs/setSidebarMode/setSidebarOpen/setHome/tRef — restore + onboarding
+//   setActiveId/setTabs/setSidebarMode/setHome/tRef — restore + onboarding
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { LS, genId, isHeavyDoc, isNewerVersion } from '../paths.js'
 import { HM_TOAST_EVENT } from '../ui.js'
@@ -39,12 +38,10 @@ export function useAppLifecycle({
   sidebarOpen,
   sidebarMode,
   openPaths,
-  isMobile,
   tabsRef,
   setActiveId,
   setTabs,
   setSidebarMode,
-  setSidebarOpen,
   setHome,
   tRef
 }) {
@@ -213,12 +210,10 @@ export function useAppLifecycle({
       { id, path: null, title: doc.title, content: doc.content, savedContent: doc.content, mtimeMs: null, reloadNonce: 0 }
     ])
     setActiveId(id)
-    // Land on the Outline (导航条) so the welcome doc's heading hierarchy is
-    // visible right away — the doc is written with a clear H1→H2→H3 structure
-    // to demo the outline (click-to-jump + cursor-follow).
+    // Keep the outline mode ready for the demo doc, but leave the pane closed
+    // so the first app window opens on a clean writing surface.
     setHome(false)
     setSidebarMode('outline')
-    if (!isMobile) setSidebarOpen(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

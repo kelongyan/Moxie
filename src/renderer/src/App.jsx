@@ -42,9 +42,8 @@ export default function App() {
   const isMobile = window.api.platform === 'ios' || window.api.platform === 'android'
   const [tabs, setTabs] = useState([])
   const [activeId, setActiveId] = useState(null)
-  // On phones the sidebar overlays the editor, so it starts closed to keep the
-  // writing surface front-and-center (desktop keeps its previous default).
-  const [sidebarOpen, setSidebarOpen] = useState(session.sidebarOpen ?? !isMobile)
+  // Start with the file/outline pane closed so the writing surface stays clear.
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarMode, setSidebarMode] = useState(session.sidebarMode || 'files') // 'files' or 'outline'
   const [theme, setTheme] = useState(session.theme || DEFAULT_THEME)
   // Active custom CSS theme (filename in userData/themes), or null. Overlays the
@@ -523,12 +522,10 @@ export default function App() {
     sidebarOpen,
     sidebarMode,
     openPaths,
-    isMobile,
     tabsRef,
     setActiveId,
     setTabs,
     setSidebarMode,
-    setSidebarOpen,
     setHome,
     tRef
   })

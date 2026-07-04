@@ -1,9 +1,6 @@
 import { Icon } from './icons.jsx'
 import logoUrl from '../assets/logo.png'
 
-// App version, injected at build time from package.json (see electron.vite.config).
-const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''
-
 function relTime(ts, lang, t) {
   if (!ts) return ''
   const diff = Date.now() - ts
@@ -24,17 +21,13 @@ function relTime(ts, lang, t) {
   }
 }
 
-// Welcome / empty-state screen: logo, version, quick actions, recent files.
+// Welcome / empty-state screen: logo, quick actions, recent files.
 export default function Welcome({ t, lang, recents, onNew, onOpen, onOpenFolder, onOpenRecent, onRemoveRecent }) {
   return (
     <div className="welcome">
       <div className="welcome-card">
         <img className="welcome-logo" src={logoUrl} alt="Moxie" />
-        <h1>
-          Moxie
-          {APP_VERSION && <span className="welcome-version">v{APP_VERSION}</span>}
-        </h1>
-        <p className="welcome-tagline">{t('welcome.tagline')}</p>
+        <h1>Moxie</h1>
         <div className="welcome-actions">
           <button className="btn-primary" onClick={onNew}>
             <Icon name="file-plus" size={16} /> {t('welcome.newFile')}
@@ -76,13 +69,6 @@ export default function Welcome({ t, lang, recents, onNew, onOpen, onOpenFolder,
             </div>
           </div>
         )}
-
-        <div className="welcome-hints">
-          <span><kbd>Ctrl</kbd><kbd>P</kbd> {t('hint.palette')}</span>
-          <span><kbd>Ctrl</kbd><kbd>B</kbd> {t('hint.sidebar')}</span>
-          <span><kbd>Ctrl</kbd><kbd>N</kbd> {t('hint.new')}</span>
-          <span><kbd>Ctrl</kbd><kbd>S</kbd> {t('hint.save')}</span>
-        </div>
       </div>
     </div>
   )

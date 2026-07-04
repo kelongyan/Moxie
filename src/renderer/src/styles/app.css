@@ -2868,30 +2868,14 @@ body.hm-full-width .source-editor {
 }
 .welcome-card h1 {
   font-size: 42px;
-  margin: 0 0 10px;
+  margin: 0 0 26px;
   font-weight: 700;
+  text-align: center;
   background: linear-gradient(135deg, var(--accent-strong), var(--accent));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: -0.02em;
-}
-/* Version tag next to the title — small and muted, with its own solid color
-   (the h1 uses a transparent gradient text fill, which we override here). */
-.welcome-version {
-  margin-left: 10px;
-  font-size: 15px;
-  font-weight: 600;
   letter-spacing: 0;
-  color: var(--muted);
-  -webkit-text-fill-color: var(--muted);
-  vertical-align: middle;
-}
-.welcome-card p {
-  color: var(--muted);
-  margin: 0 0 28px;
-  font-size: 15px;
-  line-height: 1.6;
 }
 .welcome-actions {
   display: flex;
@@ -3027,20 +3011,6 @@ body.hm-full-width .source-editor {
 .recent-remove:hover { background: var(--accent-soft); color: var(--accent-strong); }
 .recent-remove:active { background: var(--active); }
 
-.welcome-hints {
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 30px;
-  color: var(--faint);
-  font-size: 12px;
-}
-.welcome-hints span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
 kbd {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -4011,7 +3981,6 @@ body.dark .milkdown .ProseMirror .hm-review-card-text {
 /* Hide controls that don't apply on a phone: the page-width preset (the editor
    is always full width here) and the desktop keyboard-shortcut hints. */
 .app.is-mobile .hm-pagewidth { display: none; }
-.app.is-mobile .welcome-hints { display: none; }
 /* The floating "Text / H1" caret badge is desktop affordance; drop it on phones. */
 .app.is-mobile .hm-level-badge { display: none !important; }
 /* Vertical scroll only: editor-scroll has overflow-y:auto but no overflow-x, so

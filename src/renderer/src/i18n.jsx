@@ -88,7 +88,6 @@ export const STRINGS = {
     'side.expandPane': 'Expand sidebar',
 
     // welcome (empty state)
-    'welcome.tagline': 'A calmer place to write Markdown — many files, one window.',
     'welcome.newFile': 'New File',
     'welcome.openFile': 'Open File',
     'welcome.openFolder': 'Open Folder',
@@ -98,10 +97,6 @@ export const STRINGS = {
     'time.minutesAgo': '{n} min ago',
     'time.hoursAgo': '{n}h ago',
     'time.yesterday': 'yesterday',
-    'hint.palette': 'Palette',
-    'hint.sidebar': 'Sidebar',
-    'hint.new': 'New',
-    'hint.save': 'Save',
 
     // tabs
     'tab.new': 'New tab (Ctrl+N)',
@@ -382,7 +377,6 @@ export const STRINGS = {
     'side.collapsePane': '收起侧边栏',
     'side.expandPane': '展开侧边栏',
 
-    'welcome.tagline': '一个更安静的 Markdown 写作空间 —— 多文件，一个窗口。',
     'welcome.newFile': '新建文件',
     'welcome.openFile': '打开文件',
     'welcome.openFolder': '打开文件夹',
@@ -392,10 +386,6 @@ export const STRINGS = {
     'time.minutesAgo': '{n} 分钟前',
     'time.hoursAgo': '{n} 小时前',
     'time.yesterday': '昨天',
-    'hint.palette': '命令面板',
-    'hint.sidebar': '侧边栏',
-    'hint.new': '新建',
-    'hint.save': '保存',
 
     'tab.new': '新建标签 (Ctrl+N)',
     'tab.untitled': '未命名',
