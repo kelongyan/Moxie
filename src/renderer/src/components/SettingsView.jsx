@@ -5,7 +5,7 @@
 // StatusBar quick-controls (排版/主题/语言) stay where they are — this is their
 // full-version home, not a replacement.
 import { useI18n, LANGS } from '../i18n.jsx'
-import { THEMES } from '../themes.js'
+import { APPEARANCE_MODES, THEME_PALETTES } from '../themes.js'
 import { Icon } from './icons.jsx'
 import Toggle from './ui/Toggle.jsx'
 import AdjustGroup from './ui/AdjustGroup.jsx'
@@ -45,7 +45,9 @@ function SectionHead({ kicker, title, action }) {
 
 export default function SettingsView({
   settings, onUpdateSettings,
-  theme, setTheme, customThemes = [], customTheme, onPickCustom,
+  appearanceMode, setAppearanceMode,
+  themePalette, setThemePalette,
+  customThemes = [], customTheme, onPickCustom,
   onOpenThemesFolder, onGetMoreThemes,
   lang, setLang
 }) {
@@ -89,21 +91,36 @@ export default function SettingsView({
 
           <section className="settings-block" id="settings-appearance">
             <SectionHead kicker={t('settings.appearance')} title={null} />
-            <div className="settings-swatches">
-              {THEMES.map((th) => (
+            <div className="settings-mode-toggle" role="group" aria-label={t('settings.appearanceMode')}>
+              {APPEARANCE_MODES.map((mode) => (
                 <button
-                  key={th.id}
-                  className={`settings-swatch${!customTheme && th.id === theme ? ' active' : ''}`}
-                  style={{ background: th.swatch }}
-                  title={lang === 'zh' ? th.zh : th.en}
-                  onClick={() => setTheme(th.id)}
+                  key={mode.id}
+                  type="button"
+                  className={`settings-mode-btn${appearanceMode === mode.id ? ' active' : ''}`}
+                  onClick={() => setAppearanceMode(mode.id)}
                 >
-                  <span className="settings-swatch-name">{lang === 'zh' ? th.zh : th.en}</span>
+                  <Icon name={mode.icon} size={14} />
+                  <span>{lang === 'zh' ? mode.zh : mode.en}</span>
+                </button>
+              ))}
+            </div>
+            <div className="settings-palette-grid">
+              {THEME_PALETTES.map((palette) => (
+                <button
+                  key={palette.id}
+                  type="button"
+                  className={`settings-swatch${!customTheme && palette.id === themePalette ? ' active' : ''}`}
+                  style={{ background: palette.swatch }}
+                  title={lang === 'zh' ? palette.zh : palette.en}
+                  onClick={() => setThemePalette(palette.id)}
+                >
+                  <span className="settings-swatch-name">{lang === 'zh' ? palette.zh : palette.en}</span>
                 </button>
               ))}
               {customThemes.map((c) => (
                 <button
                   key={c.file}
+                  type="button"
                   className={`settings-swatch settings-swatch-custom${customTheme === c.file ? ' active' : ''}`}
                   style={{ background: c.swatch || 'var(--accent-soft)' }}
                   title={c.name}

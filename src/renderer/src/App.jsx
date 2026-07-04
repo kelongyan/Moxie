@@ -5,7 +5,14 @@ import StatusBar from './components/StatusBar.jsx'
 import SaveFab from './components/SaveFab.jsx'
 import CommandPalette from './components/CommandPalette.jsx'
 import { Icon } from './components/icons.jsx'
-import { THEMES, DEFAULT_THEME, applyTheme } from './themes.js'
+import {
+  THEME_PALETTES,
+  DEFAULT_APPEARANCE_MODE,
+  DEFAULT_THEME_PALETTE,
+  applyTheme,
+  appearanceToLegacyTheme,
+  legacyThemeToAppearance
+} from './themes.js'
 import { I18nProvider, translate, DEFAULT_LANG } from './i18n.jsx'
 import Welcome from './components/Welcome.jsx'
 import SettingsView from './components/SettingsView.jsx'
@@ -45,7 +52,13 @@ export default function App() {
   // Start with the file/outline pane closed so the writing surface stays clear.
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarMode, setSidebarMode] = useState(session.sidebarMode || 'files') // 'files' or 'outline'
-  const [theme, setTheme] = useState(session.theme || DEFAULT_THEME)
+  const legacyAppearance = legacyThemeToAppearance(session.theme)
+  const [appearanceMode, setAppearanceMode] = useState(
+    session.appearanceMode || legacyAppearance.appearanceMode || DEFAULT_APPEARANCE_MODE
+  )
+  const [themePalette, setThemePalette] = useState(
+    session.themePalette || legacyAppearance.themePalette || DEFAULT_THEME_PALETTE
+  )
   // Active custom CSS theme (filename in userData/themes), or null. Overlays the
   // built-in base theme. `customThemes` is the list scanned from that folder.
   const [customTheme, setCustomTheme] = useState(session.customTheme || null)
@@ -212,9 +225,25 @@ export default function App() {
   }, [splitId, focusedPane])
 
   // ----------------------------- theme / i18n -----------------------------
+  const [systemDark, setSystemDark] = useState(() =>
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
   useEffect(() => {
-    applyTheme(theme)
-  }, [theme])
+    const mq = window.matchMedia?.('(prefers-color-scheme: dark)')
+    if (!mq) return undefined
+    const onChange = (event) => setSystemDark(event.matches)
+    mq.addEventListener?.('change', onChange)
+    mq.addListener?.(onChange)
+    setSystemDark(mq.matches)
+    return () => {
+      mq.removeEventListener?.('change', onChange)
+      mq.removeListener?.(onChange)
+    }
+  }, [])
+  useEffect(() => {
+    applyTheme(appearanceMode, themePalette, systemDark)
+  }, [appearanceMode, themePalette, systemDark])
 
   // ----------------------------- settings ---------------------------------
   // Apply the editor page width live, and persist any settings change.
@@ -265,10 +294,14 @@ export default function App() {
       alive = false
     }
   }, [customTheme])
-  // Picking a built-in theme clears any custom overlay; picking a custom one
-  // keeps the built-in as the base (chrome + light/dark).
-  const pickBuiltinTheme = useCallback((id) => {
-    setTheme(id)
+  // Picking a built-in mode/palette clears any custom overlay; picking a custom
+  // one keeps the built-in mode/palette as the chrome base.
+  const pickThemePalette = useCallback((id) => {
+    setThemePalette(id)
+    setCustomTheme(null)
+  }, [])
+  const pickAppearanceMode = useCallback((id) => {
+    setAppearanceMode(id)
     setCustomTheme(null)
   }, [])
 
@@ -278,9 +311,9 @@ export default function App() {
   const tRef = useRef(t)
   tRef.current = t
   const cycleTheme = useCallback(() => {
-    setTheme((cur) => {
-      const i = THEMES.findIndex((x) => x.id === cur)
-      return THEMES[(i + 1) % THEMES.length].id
+    setThemePalette((cur) => {
+      const i = THEME_PALETTES.findIndex((x) => x.id === cur)
+      return THEME_PALETTES[(i + 1) % THEME_PALETTES.length].id
     })
     setCustomTheme(null)
   }, [])
@@ -435,6 +468,14 @@ export default function App() {
     [openPaths, openRight]
   )
 
+  const toggleSettingsTab = useCallback(() => {
+    if (!home && activeTab?.kind === 'settings') {
+      closeTab(activeTab.id)
+      return
+    }
+    openSettingsTab()
+  }, [home, activeTab, closeTab, openSettingsTab])
+
   // Outline panel (#20) — scrollspy + heading list + click-to-jump. State and
   // the reflow-free scrollspy live in hooks/useOutline.js (phase-2 US-3).
   // Returns the names the JSX already uses (Outline props + the Editor's
@@ -486,6 +527,7 @@ export default function App() {
     activeId,
     setHome,
     isMobile,
+    sidebarMode,
     setSidebarOpen,
     setSidebarMode,
     setPaletteOpen,
@@ -515,7 +557,9 @@ export default function App() {
     tabs,
     activePath,
     workspace,
-    theme,
+    theme: appearanceToLegacyTheme(appearanceMode, themePalette),
+    appearanceMode,
+    themePalette,
     customTheme,
     lang,
     recents,
@@ -574,7 +618,7 @@ export default function App() {
         onHome={() => handlers.current.home()}
         onFiles={() => handlers.current.toggleFiles()}
         onOutline={() => handlers.current.toggleOutline()}
-        onSettings={openSettingsTab}
+        onSettings={toggleSettingsTab}
         onToggleSidebar={() => setSidebarOpen((v) => !v)}
       />
 
@@ -588,8 +632,10 @@ export default function App() {
         split={split}
         imageUploadCommand={settings.imageUploadCommand}
         handlers={handlers}
-        theme={theme}
-        setTheme={pickBuiltinTheme}
+        appearanceMode={appearanceMode}
+        setAppearanceMode={pickAppearanceMode}
+        themePalette={themePalette}
+        setThemePalette={pickThemePalette}
         customTheme={customTheme}
         customThemes={customThemes}
         onPickCustom={setCustomTheme}
@@ -700,8 +746,10 @@ export default function App() {
             <SettingsView
               settings={settings}
               onUpdateSettings={updateSettings}
-              theme={theme}
-              setTheme={pickBuiltinTheme}
+              appearanceMode={appearanceMode}
+              setAppearanceMode={pickAppearanceMode}
+              themePalette={themePalette}
+              setThemePalette={pickThemePalette}
               customThemes={customThemes}
               customTheme={customTheme}
               onPickCustom={setCustomTheme}
@@ -742,8 +790,10 @@ export default function App() {
           window.api.shareFile?.(activeTab.path)
         }}
         onSettings={openSettingsTab}
-        theme={theme}
-        setTheme={pickBuiltinTheme}
+        appearanceMode={appearanceMode}
+        setAppearanceMode={pickAppearanceMode}
+        themePalette={themePalette}
+        setThemePalette={pickThemePalette}
         cycleTheme={cycleTheme}
         customThemes={customThemes}
         customTheme={customTheme}

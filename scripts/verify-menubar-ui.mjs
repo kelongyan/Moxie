@@ -9,8 +9,10 @@ const css = readFileSync('src/renderer/src/styles/app.css', 'utf8')
 const topbarCall = app.slice(app.indexOf('<Topbar'), app.indexOf('/>', app.indexOf('<Topbar')) + 2)
 for (const prop of [
   'handlers={handlers}',
-  'theme={theme}',
-  'setTheme={pickBuiltinTheme}',
+  'appearanceMode={appearanceMode}',
+  'setAppearanceMode={pickAppearanceMode}',
+  'themePalette={themePalette}',
+  'setThemePalette={pickThemePalette}',
   'customTheme={customTheme}',
   'customThemes={customThemes}',
   'onPickCustom={setCustomTheme}',

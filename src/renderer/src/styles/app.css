@@ -1,6 +1,6 @@
 /* =====================================================
-   Moxie — Warm Retreat Theme (v2)
-   Enhanced contrast, VSCode-style layout
+   Moxie — Anthropic Warm Theme
+   Warm neutrals, paper surfaces, restrained terracotta accent
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
@@ -47,47 +47,47 @@ html {
 }
 
 /* =====================================================
-   Light Theme — Enhanced Warm Contrast
+   Light Theme — Anthropic-inspired warm neutrals
    ===================================================== */
 body.light {
   /* Backgrounds */
-  --bg: #ebe7e0;
-  --bg-elevated: #faf8f5;
-  --bg-sidebar: #e3dfd7;
-  --bg-editor: #fdfbf7;
-  --bg-activity: #d6d2ca;
+  --bg: #f0eee6;
+  --bg-elevated: #fbfaf7;
+  --bg-sidebar: #e7e2d8;
+  --bg-editor: #fffdf8;
+  --bg-activity: #d8d1c3;
 
   /* Text — stronger contrast */
-  --text: #2a2620;
-  --text-strong: #0f0d0a;
-  --muted: #5a5650;
-  --faint: #8a867e;
+  --text: #2b261f;
+  --text-strong: #17130f;
+  --muted: #625a50;
+  --faint: #92887a;
 
   /* UI Elements */
-  --border: #c8c4bc;
-  --border-soft: #ddd9d2;
-  --hover: #dad6ce;
-  --active: #cfcac2;
-  --hover-elevated: #f0ede5;
+  --border: #cfc6b8;
+  --border-soft: #ded7ca;
+  --hover: #e1dacf;
+  --active: #d4cabd;
+  --hover-elevated: #f3efe7;
 
-  /* Accent — warm amber */
-  --accent: #c86b35;
-  --accent-strong: #a04f22;
-  --accent-soft: rgba(200, 107, 53, 0.15);
-  --accent-glow: rgba(200, 107, 53, 0.3);
+  /* Accent — restrained terracotta */
+  --accent: #b86f52;
+  --accent-strong: #8f4f38;
+  --accent-soft: rgba(184, 111, 82, 0.15);
+  --accent-glow: rgba(184, 111, 82, 0.28);
 
   /* Code blocks. --code-bg is the soft inline/block tint; --code-block-bg is the
      darker background for CodeMirror (syntax-highlighted) code blocks — oneDark's
      token colors are tuned for a dark surface, so the block must be dark for the
      code to read clearly. */
-  --code-bg: #f2efe8;
-  --code-border: #ddd9d2;
-  --code-block-bg: #2a2730;
+  --code-bg: #f4efe6;
+  --code-border: #ded7ca;
+  --code-block-bg: #26221f;
   --code-block-border: rgba(0, 0, 0, 0.25);
 
   /* Semantic */
-  --danger: #c93b3b;
-  --success: #4a8f4a;
+  --danger: #b94b45;
+  --success: #5f8768;
 
   /* Shadows */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -97,45 +97,45 @@ body.light {
 }
 
 /* =====================================================
-   Dark Theme — Enhanced Warm Contrast
+   Dark Theme — Anthropic-inspired warm neutrals
    ===================================================== */
 body.dark {
   /* Backgrounds */
-  --bg: #16130e;
-  --bg-elevated: #1e1a16;
-  --bg-sidebar: #191512;
-  --bg-editor: #1d1914;
-  --bg-activity: #14110c;
+  --bg: #171412;
+  --bg-elevated: #211d1a;
+  --bg-sidebar: #1b1714;
+  --bg-editor: #1f1b18;
+  --bg-activity: #120f0d;
 
   /* Text — stronger contrast */
-  --text: #d0c8bc;
-  --text-strong: #f2ebe0;
-  --muted: #8a8378;
-  --faint: #6a655c;
+  --text: #d8d0c3;
+  --text-strong: #f4eadc;
+  --muted: #9a9185;
+  --faint: #71685f;
 
   /* UI Elements */
-  --border: #3a3630;
-  --border-soft: #302c28;
-  --hover: #302c28;
-  --active: #3e3a34;
-  --hover-elevated: #2e2a24;
+  --border: #403832;
+  --border-soft: #332d28;
+  --hover: #332d28;
+  --active: #453d36;
+  --hover-elevated: #302a25;
 
-  /* Accent — warm amber (brighter) */
-  --accent: #e69055;
-  --accent-strong: #ffb080;
-  --accent-soft: rgba(230, 144, 85, 0.18);
-  --accent-glow: rgba(230, 144, 85, 0.35);
+  /* Accent — terracotta, lifted for dark mode */
+  --accent: #df9276;
+  --accent-strong: #f1b59d;
+  --accent-soft: rgba(223, 146, 118, 0.18);
+  --accent-glow: rgba(223, 146, 118, 0.35);
 
   /* Code blocks */
-  --code-bg: #24201c;
-  --code-border: #3a3630;
+  --code-bg: #27221e;
+  --code-border: #403832;
   /* CodeMirror block sits a shade deeper than the page so it reads as a block. */
-  --code-block-bg: #100e0b;
+  --code-block-bg: #11100e;
   --code-block-border: rgba(255, 255, 255, 0.06);
 
   /* Semantic */
-  --danger: #ff7070;
-  --success: #7ac47a;
+  --danger: #e27a70;
+  --success: #90b98f;
 
   /* Shadows */
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -169,6 +169,30 @@ body.theme-morandi-blue {
   --accent: #7e94a6; --accent-strong: #5d7385; --accent-soft: rgba(126, 148, 166, 0.18); --accent-glow: rgba(126, 148, 166, 0.3);
   --code-bg: #e9edf0; --code-border: #d6dade; --danger: #b3645f; --success: #6f8a87;
 }
+body.dark.theme-morandi {
+  --bg: #20231e; --bg-elevated: #282c25; --bg-sidebar: #22251f; --bg-editor: #262a23; --bg-activity: #1a1d18;
+  --text: #c7cbc1; --text-strong: #eef1e9; --muted: #8b9183; --faint: #62685d;
+  --border: #3b4137; --border-soft: #31362e; --hover: #333a31; --active: #3f473b; --hover-elevated: #2f352d;
+  --accent: #9aaa82; --accent-strong: #c3d0ad; --accent-soft: rgba(154, 170, 130, 0.18); --accent-glow: rgba(154, 170, 130, 0.32);
+  --code-bg: #2b3028; --code-border: #3b4137; --danger: #cf7a76; --success: #92ad83;
+  --code-block-bg: #151912; --code-block-border: rgba(255,255,255,0.06);
+}
+body.dark.theme-morandi-rose {
+  --bg: #27211f; --bg-elevated: #302926; --bg-sidebar: #28221f; --bg-editor: #2d2623; --bg-activity: #201a18;
+  --text: #d0c5c1; --text-strong: #f3ebe8; --muted: #958783; --faint: #6d625e;
+  --border: #493d39; --border-soft: #3a312e; --hover: #3c3330; --active: #493d39; --hover-elevated: #352c29;
+  --accent: #c39791; --accent-strong: #e4bdb8; --accent-soft: rgba(195, 151, 145, 0.18); --accent-glow: rgba(195, 151, 145, 0.32);
+  --code-bg: #332b28; --code-border: #493d39; --danger: #d77973; --success: #9aaa82;
+  --code-block-bg: #1a1413; --code-block-border: rgba(255,255,255,0.06);
+}
+body.dark.theme-morandi-blue {
+  --bg: #21242b; --bg-elevated: #282c34; --bg-sidebar: #23262d; --bg-editor: #262a31; --bg-activity: #1b1e24;
+  --text: #c3c7cd; --text-strong: #e7eaef; --muted: #878c95; --faint: #5f636b;
+  --border: #3a3f49; --border-soft: #313640; --hover: #323843; --active: #3d4450; --hover-elevated: #2e333c;
+  --accent: #92a3b8; --accent-strong: #aebfd2; --accent-soft: rgba(146, 163, 184, 0.18); --accent-glow: rgba(146, 163, 184, 0.32);
+  --code-bg: #2b2f37; --code-border: #3a3f49; --danger: #cf7a76; --success: #8aa888;
+  --code-block-bg: #16191f; --code-block-border: rgba(255,255,255,0.06);
+}
 body.theme-morandi-dark {
   --bg: #21242b; --bg-elevated: #282c34; --bg-sidebar: #23262d; --bg-editor: #262a31; --bg-activity: #1b1e24;
   --text: #c3c7cd; --text-strong: #e7eaef; --muted: #878c95; --faint: #5f636b;
@@ -189,6 +213,39 @@ body.theme-morandi-dark {
 }
 .theme-menu .block-menu-item {
   gap: 9px;
+}
+.theme-mode-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  padding: 2px 2px 8px;
+}
+.theme-mode-btn {
+  min-width: 0;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid color-mix(in srgb, var(--border-soft) 78%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elevated) 54%, transparent);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.theme-mode-btn:hover {
+  color: var(--text-strong);
+  border-color: var(--border);
+}
+.theme-mode-btn.active {
+  color: var(--text-strong);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border-soft));
+}
+.hm-sheet-mode-row {
+  padding-bottom: 4px;
 }
 /* Custom-theme swatch (no single color → a soft accent gradient marker). */
 .theme-swatch-custom {
@@ -1610,8 +1667,7 @@ button:focus-visible,
   min-height: 0;
 }
 .tree-empty,
-.outline-empty,
-.sidebar-empty p {
+.outline-empty {
   color: var(--faint);
   font-size: 13px;
   padding: 16px 14px;
@@ -1712,11 +1768,45 @@ button:focus-visible,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
   height: 100%;
   color: var(--faint);
-  padding: 32px;
+  padding: 18px 14px;
   text-align: center;
+}
+.sidebar-empty > svg {
+  opacity: 0.62;
+}
+.sidebar-empty p {
+  margin: 0;
+  padding: 0;
+  color: var(--faint);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.sidebar-empty-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.14s var(--ease-out), border-color 0.14s var(--ease-out), color 0.14s var(--ease-out), transform 0.14s var(--ease-out);
+}
+.sidebar-empty-action:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: translateY(-1px);
+}
+.sidebar-empty-action:active {
+  transform: translateY(0);
 }
 
 /* Context Menu */
@@ -3123,8 +3213,45 @@ body.hm-full-width .source-editor {
   height: 12px;
   top: -4px;
 }
-/* Appearance — theme swatch grid. */
-.settings-swatches {
+/* Appearance — mode segmented control + palette swatch grid. */
+.settings-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 10px;
+  border: 1px solid color-mix(in srgb, var(--border-soft) 82%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+}
+.settings-mode-btn {
+  height: 27px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background 0.16s var(--ease-out),
+    color 0.16s var(--ease-out),
+    box-shadow 0.16s var(--ease-out);
+}
+.settings-mode-btn:hover {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--hover-elevated) 70%, transparent);
+}
+.settings-mode-btn.active {
+  color: var(--text-strong);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-sm);
+}
+.settings-palette-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 9px;
@@ -3363,40 +3490,43 @@ body.hm-full-width .source-editor {
 }
 .welcome-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
 }
-.welcome-actions button,
-.btn-primary {
+.welcome-action {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
+  height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-elevated) 82%, var(--hover));
+  color: var(--muted);
+  font-size: 13px;
   font-weight: 600;
+  line-height: 1;
+  transition: background 0.16s var(--ease-out), border-color 0.16s var(--ease-out), color 0.16s var(--ease-out), transform 0.16s var(--ease-out);
+}
+.welcome-action:hover {
   background: var(--hover);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
   color: var(--text);
-  transition: all 0.2s var(--ease-out);
-  box-shadow: var(--shadow-sm);
-}
-.welcome-actions button:hover {
-  background: var(--active);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
-.btn-primary,
-.welcome-actions .btn-primary {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 4px 12px var(--accent-glow);
+.welcome-action.is-primary {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-elevated));
+  color: var(--accent-strong);
 }
-.btn-primary:hover {
-  background: var(--accent-strong);
-  box-shadow: 0 6px 16px var(--accent-glow);
+.welcome-action.is-primary:hover {
+  border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
+  background: color-mix(in srgb, var(--accent) 17%, var(--bg-elevated));
+  color: var(--accent-strong);
 }
-.welcome-actions button:active {
+.welcome-action:active {
   transform: translateY(0);
 }
 /* Recent files (welcome screen) */

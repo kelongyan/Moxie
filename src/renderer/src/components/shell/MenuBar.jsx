@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { THEMES } from '../../themes.js'
+import { APPEARANCE_MODES, THEME_PALETTES } from '../../themes.js'
 import { MENU_BAR, MENU_PLACEHOLDER } from './menuConfig.js'
 
 const GITHUB_REPO_URL = 'https://github.com/kelongyan/Moxie'
@@ -10,15 +10,23 @@ function isSeparator(item) {
   return item?.type === 'separator'
 }
 
-function makeThemeItems({ theme, customTheme, customThemes, lang }) {
-  const builtin = THEMES.map((th) => ({
-    id: `theme-${th.id}`,
-    label: lang === 'zh' ? th.zh : th.en,
-    command: 'setTheme',
-    args: th.id,
+function makeThemeItems({ appearanceMode, themePalette, customTheme, customThemes, lang }) {
+  const modes = APPEARANCE_MODES.map((item) => ({
+    id: `appearance-${item.id}`,
+    label: lang === 'zh' ? item.zh : item.en,
+    command: 'setAppearanceMode',
+    args: item.id,
     status: 'ready',
-    checked: !customTheme && th.id === theme,
-    swatch: th.swatch
+    checked: appearanceMode === item.id
+  }))
+  const palettes = THEME_PALETTES.map((item) => ({
+    id: `palette-${item.id}`,
+    label: lang === 'zh' ? item.zh : item.en,
+    command: 'setThemePalette',
+    args: item.id,
+    status: 'ready',
+    checked: !customTheme && item.id === themePalette,
+    swatch: item.swatch
   }))
   const custom = customThemes.length
     ? customThemes.map((item) => ({
@@ -31,13 +39,14 @@ function makeThemeItems({ theme, customTheme, customThemes, lang }) {
         swatch: 'var(--accent)'
       }))
     : [{ id: 'custom-theme-empty', label: '暂无自定义主题', status: MENU_PLACEHOLDER }]
-  return { builtin, custom }
+  return { modes, palettes, custom }
 }
 
 function expandItems(items, themeState) {
   const dynamicThemes = makeThemeItems(themeState)
   return items.flatMap((item) => {
-    if (item.dynamic === 'builtin-themes') return dynamicThemes.builtin
+    if (item.dynamic === 'appearance-modes') return dynamicThemes.modes
+    if (item.dynamic === 'theme-palettes') return dynamicThemes.palettes
     if (item.dynamic === 'custom-themes') return dynamicThemes.custom
     if (item.children) return [{ ...item, children: expandItems(item.children, themeState) }]
     return [item]
@@ -64,12 +73,15 @@ function MenuItem({ item, depth = 0, onRun }) {
       onMouseLeave={() => hasChildren && setSubOpen(false)}
     >
       <button
+        type="button"
         className={className}
+        disabled={disabled}
         role="menuitem"
         aria-disabled={disabled || undefined}
         aria-haspopup={hasChildren || undefined}
         aria-expanded={hasChildren ? subOpen : undefined}
         onClick={() => {
+          if (disabled) return
           if (hasChildren) {
             setSubOpen((v) => !v)
             return
@@ -100,8 +112,10 @@ function MenuItem({ item, depth = 0, onRun }) {
 
 export default function MenuBar({
   handlers,
-  theme,
-  setTheme,
+  appearanceMode,
+  setAppearanceMode,
+  themePalette,
+  setThemePalette,
   customTheme,
   customThemes = [],
   onPickCustom,
@@ -116,9 +130,9 @@ export default function MenuBar({
   const menu = useMemo(
     () => MENU_BAR.map((group) => ({
       ...group,
-      items: expandItems(group.items, { theme, customTheme, customThemes, lang })
+      items: expandItems(group.items, { appearanceMode, themePalette, customTheme, customThemes, lang })
     })),
-    [theme, customTheme, customThemes, lang]
+    [appearanceMode, themePalette, customTheme, customThemes, lang]
   )
 
   useEffect(() => {
@@ -163,7 +177,8 @@ export default function MenuBar({
           : '暂时无法检查更新'
         onNotice?.(message)
       }),
-      setTheme: () => setTheme?.(item.args),
+      setAppearanceMode: () => setAppearanceMode?.(item.args),
+      setThemePalette: () => setThemePalette?.(item.args),
       pickCustomTheme: () => onPickCustom?.(item.args),
       openThemesFolder: () => window.api.themesReveal?.(),
       getMoreThemes: () => window.api.openExternal(MORE_THEMES_URL),
@@ -208,6 +223,7 @@ export default function MenuBar({
             }}
           >
             <button
+              type="button"
               className={`menubar-trigger${openId === group.id ? ' active' : ''}`}
               role="menuitem"
               aria-haspopup="menu"

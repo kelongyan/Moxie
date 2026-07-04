@@ -299,7 +299,8 @@ export default function Sidebar({ workspace, activePath, onOpenFile, onOpenRight
       <div className="sidebar-empty">
         <Icon name="folder" size={26} />
         <p>{t('side.noFolder')}</p>
-        <button className="btn-primary" onClick={() => window.dispatchEvent(new Event('mm:openFolder'))}>
+        <button className="sidebar-empty-action" onClick={() => window.dispatchEvent(new Event('mm:openFolder'))}>
+          <Icon name="folder" size={13} />
           {t('side.openFolder')}
         </button>
       </div>

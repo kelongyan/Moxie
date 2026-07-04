@@ -29,14 +29,14 @@ export default function Welcome({ t, lang, recents, onNew, onOpen, onOpenFolder,
         <img className="welcome-logo" src={logoUrl} alt="Moxie" />
         <h1>Moxie</h1>
         <div className="welcome-actions">
-          <button className="btn-primary" onClick={onNew}>
-            <Icon name="file-plus" size={16} /> {t('welcome.newFile')}
+          <button className="welcome-action is-primary" onClick={onNew}>
+            <Icon name="file-plus" size={14} /> {t('welcome.newFile')}
           </button>
-          <button onClick={onOpen}>
-            <Icon name="file" size={16} /> {t('welcome.openFile')}
+          <button className="welcome-action" onClick={onOpen}>
+            <Icon name="file" size={14} /> {t('welcome.openFile')}
           </button>
-          <button onClick={onOpenFolder}>
-            <Icon name="folder" size={16} /> {t('welcome.openFolder')}
+          <button className="welcome-action" onClick={onOpenFolder}>
+            <Icon name="folder" size={14} /> {t('welcome.openFolder')}
           </button>
         </div>
 

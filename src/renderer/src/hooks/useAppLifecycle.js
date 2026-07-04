@@ -12,7 +12,7 @@
 //
 // Options:
 //   session        — the loaded session snapshot (loadSession(), stable)
-//   tabs/activePath/workspace/theme/customTheme/lang/recents/sidebarOpen/
+//   tabs/activePath/workspace/theme/appearanceMode/themePalette/customTheme/lang/recents/sidebarOpen/
 //   sidebarMode    — read by the persistence effect to build the snapshot
 //   openPaths      — used by the restore effect to reopen saved files
 //   tabsRef        — live tabs mirror (restore adds scratch tabs; flush reads it)
@@ -32,6 +32,8 @@ export function useAppLifecycle({
   activePath,
   workspace,
   theme,
+  appearanceMode,
+  themePalette,
   customTheme,
   lang,
   recents,
@@ -115,6 +117,8 @@ export function useAppLifecycle({
     const data = {
       workspace,
       theme,
+      appearanceMode,
+      themePalette,
       customTheme,
       lang,
       recents,
@@ -138,7 +142,20 @@ export function useAppLifecycle({
     // for a brief pause, then write once. The close path flushes the last edit.
     const id = setTimeout(flushSession, 400)
     return () => clearTimeout(id)
-  }, [workspace, theme, customTheme, lang, recents, sidebarOpen, sidebarMode, tabs, activePath, flushSession])
+  }, [
+    workspace,
+    theme,
+    appearanceMode,
+    themePalette,
+    customTheme,
+    lang,
+    recents,
+    sidebarOpen,
+    sidebarMode,
+    tabs,
+    activePath,
+    flushSession
+  ])
 
   // Flush the pending session snapshot immediately when the window is closing,
   // so the debounce above never drops the user's last few keystrokes.

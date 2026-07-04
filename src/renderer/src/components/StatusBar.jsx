@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from './icons.jsx'
 import { useI18n } from '../i18n.jsx'
-import { THEMES, themeById } from '../themes.js'
+import { APPEARANCE_MODES, THEME_PALETTES, appearanceModeById, paletteById } from '../themes.js'
 import { LANGS } from '../i18n.jsx'
 import { FONT_SIZE_MIN, FONT_SIZE_MAX } from '../settings.js'
 import LayoutControl from './LayoutControl.jsx'
@@ -39,7 +39,7 @@ function StatsControl({ stats }) {
   ]
   return (
     <div className="block-switch hm-stats" ref={ref}>
-      <button className="status-btn" onClick={() => setOpen((v) => !v)} title={t('status.stats')}>
+      <button type="button" className="status-btn" onClick={() => setOpen((v) => !v)} title={t('status.stats')}>
         <Icon name="stats" size={14} /> {t('status.chars', { n: n(stats.chars) })}
       </button>
       {open && (
@@ -57,8 +57,10 @@ function StatsControl({ stats }) {
 }
 
 function ThemePicker({
-  theme,
-  setTheme,
+  appearanceMode,
+  setAppearanceMode,
+  themePalette,
+  setThemePalette,
   customThemes = [],
   customTheme,
   onPickCustom,
@@ -68,7 +70,8 @@ function ThemePicker({
 }) {
   const { lang, t } = useI18n()
   const { open, setOpen, ref } = usePopover()
-  const cur = themeById(theme)
+  const mode = appearanceModeById(appearanceMode)
+  const palette = paletteById(themePalette)
   // Re-scan the themes folder each time the menu opens so freshly-dropped CSS
   // files show up without a restart.
   const toggle = () => {
@@ -76,27 +79,49 @@ function ThemePicker({
     setOpen((v) => !v)
   }
   const activeCustom = customThemes.find((c) => c.file === customTheme)
-  const triggerLabel = activeCustom ? activeCustom.name : lang === 'zh' ? cur.zh : cur.en
+  const modeLabel = lang === 'zh' ? mode.zh : mode.en
+  const paletteLabel = lang === 'zh' ? palette.zh : palette.en
+  const triggerLabel = activeCustom ? activeCustom.name : `${modeLabel} · ${paletteLabel}`
+  const pickMode = (id) => {
+    setAppearanceMode(id)
+    setOpen(false)
+  }
   return (
     <div className="block-switch" ref={ref}>
-      <button className="status-btn" onClick={toggle} title={t('tip.toggleTheme')}>
-        <span className="theme-swatch" style={{ background: activeCustom ? 'var(--accent)' : cur.swatch }} />
+      <button type="button" className="status-btn" onClick={toggle} title={t('tip.toggleTheme')}>
+        <span className="theme-swatch" style={{ background: activeCustom ? 'var(--accent)' : palette.swatch }} />
         {triggerLabel}
         <span className="block-switch-caret">▾</span>
       </button>
       {open && (
         <div className="block-switch-menu theme-menu">
-          {THEMES.map((th) => (
+          <div className="theme-menu-label">{t('theme.mode')}</div>
+          <div className="theme-mode-row">
+            {APPEARANCE_MODES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`theme-mode-btn${appearanceMode === item.id ? ' active' : ''}`}
+                onClick={() => pickMode(item.id)}
+              >
+                <Icon name={item.icon} size={13} />
+                <span>{lang === 'zh' ? item.zh : item.en}</span>
+              </button>
+            ))}
+          </div>
+          <div className="theme-menu-label">{t('theme.palette')}</div>
+          {THEME_PALETTES.map((item) => (
             <button
-              key={th.id}
-              className={`block-menu-item${!customTheme && th.id === theme ? ' active' : ''}`}
+              key={item.id}
+              type="button"
+              className={`block-menu-item${!customTheme && item.id === themePalette ? ' active' : ''}`}
               onClick={() => {
-                setTheme(th.id)
+                setThemePalette(item.id)
                 setOpen(false)
               }}
             >
-              <span className="theme-swatch" style={{ background: th.swatch }} />
-              <span className="block-menu-name">{lang === 'zh' ? th.zh : th.en}</span>
+              <span className="theme-swatch" style={{ background: item.swatch }} />
+              <span className="block-menu-name">{lang === 'zh' ? item.zh : item.en}</span>
             </button>
           ))}
 
@@ -106,6 +131,7 @@ function ThemePicker({
               {customThemes.map((c) => (
                 <button
                   key={c.file}
+                  type="button"
                   className={`block-menu-item${customTheme === c.file ? ' active' : ''}`}
                   onClick={() => {
                     onPickCustom?.(c.file)
@@ -125,6 +151,7 @@ function ThemePicker({
 
           <div className="theme-menu-sep" />
           <button
+            type="button"
             className="block-menu-item theme-menu-action"
             onClick={() => {
               onOpenThemesFolder?.()
@@ -135,6 +162,7 @@ function ThemePicker({
             <span className="block-menu-name">{t('theme.openFolder')}</span>
           </button>
           <button
+            type="button"
             className="block-menu-item theme-menu-action"
             onClick={() => {
               onGetMoreThemes?.()
@@ -155,7 +183,7 @@ function LangSwitch({ lang, setLang }) {
   const { open, setOpen, ref } = usePopover()
   return (
     <div className="block-switch" ref={ref}>
-      <button className="status-btn" onClick={() => setOpen((v) => !v)} title={t('tip.language')}>
+      <button type="button" className="status-btn" onClick={() => setOpen((v) => !v)} title={t('tip.language')}>
         <Icon name="globe" size={14} /> {lang === 'zh' ? '中文' : 'EN'}
       </button>
       {open && (
@@ -163,6 +191,7 @@ function LangSwitch({ lang, setLang }) {
           {LANGS.map((l) => (
             <button
               key={l.id}
+              type="button"
               className={`block-menu-item${l.id === lang ? ' active' : ''}`}
               onClick={() => {
                 setLang(l.id)
@@ -187,8 +216,10 @@ function MobileMore({
   onSettings,
   sourceMode,
   onToggleSource,
-  theme,
-  setTheme,
+  appearanceMode,
+  setAppearanceMode,
+  themePalette,
+  setThemePalette,
   lang,
   setLang,
   customThemes = [],
@@ -206,15 +237,20 @@ function MobileMore({
     if (!open) onRefreshThemes?.()
     setOpen((v) => !v)
   }
+  const pickMode = (id) => {
+    setAppearanceMode(id)
+    setOpen(false)
+  }
   return (
     <div className="block-switch" ref={ref}>
-      <button className="status-btn hm-more-btn" onClick={toggle} title={t('status.more')}>
+      <button type="button" className="status-btn hm-more-btn" onClick={toggle} title={t('status.more')}>
         <Icon name="more" size={16} />
         <span>{t('status.more')}</span>
       </button>
       {open && (
         <div className="block-switch-menu hm-status-sheet">
           <button
+            type="button"
             className={`block-menu-item hm-sheet-save${dirty ? ' dirty' : ''}`}
             onClick={() => {
               onSave?.()
@@ -227,6 +263,7 @@ function MobileMore({
           </button>
           <div className="theme-menu-sep" />
           <button
+            type="button"
             className="block-menu-item"
             onClick={() => {
               onToggleSource()
@@ -242,6 +279,7 @@ function MobileMore({
           <div className="theme-menu-label">{t('settings.fontSize')}</div>
           <div className="hm-sheet-fontsize">
             <button
+              type="button"
               className="hm-fontstep"
               onClick={() => stepFont(-1)}
               disabled={fontSize <= FONT_SIZE_MIN}
@@ -251,6 +289,7 @@ function MobileMore({
             </button>
             <span className="hm-fontstep-value">{fontSize}px</span>
             <button
+              type="button"
               className="hm-fontstep"
               onClick={() => stepFont(1)}
               disabled={fontSize >= FONT_SIZE_MAX}
@@ -260,23 +299,45 @@ function MobileMore({
             </button>
           </div>
 
-          <div className="theme-menu-label">{t('tip.toggleTheme')}</div>
-          <div className="hm-sheet-themes">
-            {THEMES.map((th) => (
+          <div className="theme-menu-label">{t('theme.mode')}</div>
+          <div className="theme-mode-row hm-sheet-mode-row">
+            {APPEARANCE_MODES.map((item) => (
               <button
-                key={th.id}
-                className={`hm-sheet-swatch${!customTheme && th.id === theme ? ' active' : ''}`}
-                style={{ background: th.swatch }}
-                title={lang === 'zh' ? th.zh : th.en}
-                onClick={() => setTheme(th.id)}
+                key={item.id}
+                type="button"
+                className={`theme-mode-btn${appearanceMode === item.id ? ' active' : ''}`}
+                onClick={() => pickMode(item.id)}
+              >
+                <Icon name={item.icon} size={13} />
+                <span>{lang === 'zh' ? item.zh : item.en}</span>
+              </button>
+            ))}
+          </div>
+          <div className="theme-menu-label">{t('theme.palette')}</div>
+          <div className="hm-sheet-themes">
+            {THEME_PALETTES.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`hm-sheet-swatch${!customTheme && item.id === themePalette ? ' active' : ''}`}
+                style={{ background: item.swatch }}
+                title={lang === 'zh' ? item.zh : item.en}
+                onClick={() => {
+                  setThemePalette(item.id)
+                  setOpen(false)
+                }}
               />
             ))}
             {customThemes.map((c) => (
               <button
                 key={c.file}
+                type="button"
                 className={`hm-sheet-swatch hm-sheet-swatch-custom${customTheme === c.file ? ' active' : ''}`}
                 title={c.name}
-                onClick={() => onPickCustom?.(c.file)}
+                onClick={() => {
+                  onPickCustom?.(c.file)
+                  setOpen(false)
+                }}
               />
             ))}
           </div>
@@ -286,8 +347,12 @@ function MobileMore({
             {LANGS.map((l) => (
               <button
                 key={l.id}
+                type="button"
                 className={`block-menu-item${l.id === lang ? ' active' : ''}`}
-                onClick={() => setLang(l.id)}
+                onClick={() => {
+                  setLang(l.id)
+                  setOpen(false)
+                }}
               >
                 <span className="block-menu-name">{l.label}</span>
               </button>
@@ -296,6 +361,7 @@ function MobileMore({
 
           <div className="theme-menu-sep" />
           <button
+            type="button"
             className="block-menu-item theme-menu-action"
             onClick={() => {
               onSettings?.()
@@ -306,6 +372,7 @@ function MobileMore({
             <span className="block-menu-name">{t('nav.settings')}</span>
           </button>
           <button
+            type="button"
             className="block-menu-item theme-menu-action"
             onClick={() => {
               window.api.openExternal(GITHUB_REPO_URL)
@@ -327,8 +394,10 @@ export default function StatusBar({
   onSave,
   onShare,
   onSettings,
-  theme,
-  setTheme,
+  appearanceMode,
+  setAppearanceMode,
+  themePalette,
+  setThemePalette,
   lang,
   setLang,
   sourceMode,
@@ -401,7 +470,7 @@ export default function StatusBar({
           tab && (
             <>
               {window.api.capabilities?.canShare && (
-                <button className="status-btn hm-share-btn" onClick={onShare} title={t('status.share')}>
+                <button type="button" className="status-btn hm-share-btn" onClick={onShare} title={t('status.share')}>
                   <Icon name="share" size={17} />
                   <span>{t('status.shareShort')}</span>
                 </button>
@@ -412,8 +481,10 @@ export default function StatusBar({
                 onSettings={onSettings}
                 sourceMode={sourceMode}
                 onToggleSource={onToggleSource}
-                theme={theme}
-                setTheme={setTheme}
+                appearanceMode={appearanceMode}
+                setAppearanceMode={setAppearanceMode}
+                themePalette={themePalette}
+                setThemePalette={setThemePalette}
                 lang={lang}
                 setLang={setLang}
                 customThemes={customThemes}
@@ -428,7 +499,7 @@ export default function StatusBar({
         ) : (
           <>
             {tab && <StatsControl stats={s} />}
-            <button className="status-btn" onClick={onToggleSource} title={t('tip.toggleSource')}>
+            <button type="button" className="status-btn" onClick={onToggleSource} title={t('tip.toggleSource')}>
               <Icon name="code" size={14} /> {sourceMode ? t('status.source') : t('status.rich')}
             </button>
             <LayoutControl
@@ -442,8 +513,10 @@ export default function StatusBar({
               onSetPageWidth={onSetPageWidth}
             />
             <ThemePicker
-              theme={theme}
-              setTheme={setTheme}
+              appearanceMode={appearanceMode}
+              setAppearanceMode={setAppearanceMode}
+              themePalette={themePalette}
+              setThemePalette={setThemePalette}
               customThemes={customThemes}
               customTheme={customTheme}
               onPickCustom={onPickCustom}
@@ -453,6 +526,7 @@ export default function StatusBar({
             />
             <LangSwitch lang={lang} setLang={setLang} />
             <button
+              type="button"
               className="status-btn"
               onClick={() => window.api.openExternal(GITHUB_REPO_URL)}
               title="GitHub"

@@ -157,7 +157,9 @@ export const MENU_BAR = [
     id: 'theme',
     label: '主题(T)',
     items: [
-      { id: 'builtin-themes', dynamic: 'builtin-themes' },
+      { id: 'appearance-modes', dynamic: 'appearance-modes' },
+      { type: 'separator' },
+      { id: 'theme-palettes', dynamic: 'theme-palettes' },
       { type: 'separator' },
       { id: 'custom-themes', dynamic: 'custom-themes' },
       { type: 'separator' },

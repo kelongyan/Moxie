@@ -16,8 +16,10 @@ export default function Topbar({
   split,
   imageUploadCommand,
   handlers,
-  theme,
-  setTheme,
+  appearanceMode,
+  setAppearanceMode,
+  themePalette,
+  setThemePalette,
   customTheme,
   customThemes,
   onPickCustom,
@@ -45,8 +47,10 @@ export default function Topbar({
         <div className="menubar-row">
           <MenuBar
             handlers={handlers}
-            theme={theme}
-            setTheme={setTheme}
+            appearanceMode={appearanceMode}
+            setAppearanceMode={setAppearanceMode}
+            themePalette={themePalette}
+            setThemePalette={setThemePalette}
             customTheme={customTheme}
             customThemes={customThemes}
             onPickCustom={onPickCustom}

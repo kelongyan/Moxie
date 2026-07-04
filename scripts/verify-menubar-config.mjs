@@ -19,7 +19,8 @@ const imageMenu = allItems.find((item) => item.id === 'format-image-more')
 assert(imageMenu?.children?.length >= 3, 'format image submenu should expose future image actions')
 
 const theme = MENU_BAR.find((item) => item.id === 'theme')
-assert(theme.items.some((item) => item.dynamic === 'builtin-themes'), 'theme menu should have dynamic builtin themes')
+assert(theme.items.some((item) => item.dynamic === 'appearance-modes'), 'theme menu should have dynamic appearance modes')
+assert(theme.items.some((item) => item.dynamic === 'theme-palettes'), 'theme menu should have dynamic theme palettes')
 assert(theme.items.some((item) => item.dynamic === 'custom-themes'), 'theme menu should have dynamic custom themes')
 
 console.log('menubar config ok')

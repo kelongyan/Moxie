@@ -17,6 +17,7 @@ export function createMenuHandlers({
   activeId,
   setHome,
   isMobile,
+  sidebarMode,
   setSidebarOpen,
   setSidebarMode,
   setPaletteOpen,
@@ -35,6 +36,11 @@ export function createMenuHandlers({
   replaceInputRef,
   review
 }) {
+  const togglePanel = (mode) => {
+    setSidebarMode(mode)
+    setSidebarOpen((open) => (sidebarMode === mode ? !open : true))
+  }
+
   return {
     home: () => {
       setHome(true)
@@ -65,14 +71,8 @@ export function createMenuHandlers({
     closeTab: () => activeId && closeTab(activeId),
     palette: () => setPaletteOpen((v) => !v),
     toggleSidebar: () => setSidebarOpen((v) => !v),
-    toggleOutline: () => {
-      setSidebarMode('outline')
-      setSidebarOpen(true)
-    },
-    toggleFiles: () => {
-      setSidebarMode('files')
-      setSidebarOpen(true)
-    },
+    toggleOutline: () => togglePanel('outline'),
+    toggleFiles: () => togglePanel('files'),
     toggleSource,
     toggleTheme: cycleTheme,
     setBlock: (id) => {
