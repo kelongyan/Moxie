@@ -587,6 +587,13 @@ export default function App() {
         focusedPane={focusedPane}
         split={split}
         imageUploadCommand={settings.imageUploadCommand}
+        handlers={handlers}
+        theme={theme}
+        setTheme={pickBuiltinTheme}
+        customTheme={customTheme}
+        customThemes={customThemes}
+        onPickCustom={setCustomTheme}
+        onRefreshThemes={refreshThemes}
         onActivate={(id) => {
           setHome(false)
           // Load into whichever pane is focused, so both panes are switchable.
@@ -605,6 +612,9 @@ export default function App() {
         onToggleSplit={toggleSplit}
         onImageHostChange={(cmd) => updateSettings({ imageUploadCommand: cmd })}
         onOpenPalette={() => setPaletteOpen(true)}
+        onOpenSettings={openSettingsTab}
+        onNotice={(msg) => fireToast(msg)}
+        lang={lang}
       />
 
       {isMobile && sidebarOpen && (

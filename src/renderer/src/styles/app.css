@@ -20,9 +20,11 @@ html {
 
 :root {
   /* Dimensions */
-  --topbar-h: 40px;
+  --menubar-h: 28px;
+  --tabbar-h: 38px;
+  --topbar-h: calc(var(--menubar-h) + var(--tabbar-h));
   --status-h: 26px;
-  --activity-bar-w: 48px;
+  --activity-bar-w: 56px;
 
   /* Typography */
   --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -331,20 +333,31 @@ button:focus-visible,
   height: 100%;
 }
 
-/* Activity Bar — VSCode style */
+/* Activity Bar — quiet capsule dock */
 .activity-bar {
   grid-row: 1 / -1;
   grid-column: 1;
-  background: var(--bg-activity);
-  border-right: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-activity) 92%, var(--bg-elevated)), var(--bg-activity));
+  border-right: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 0;
-  gap: 4px;
+  padding: 10px 7px;
+  gap: 8px;
   z-index: 20;
   /* Empty areas of the activity bar drag the window too (top-left corner). */
   -webkit-app-region: drag;
+}
+.activity-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.activity-section-bottom {
+  padding-bottom: 2px;
 }
 .activity-spacer {
   flex: 1;
@@ -355,70 +368,130 @@ button:focus-visible,
 .activity-item {
   -webkit-app-region: no-drag;
   width: 40px;
-  height: 40px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
   color: var(--muted);
-  transition: all 0.2s var(--ease-out);
+  box-shadow: none;
+  transition:
+    background 0.16s var(--ease-out),
+    border-color 0.16s var(--ease-out),
+    box-shadow 0.16s var(--ease-out),
+    color 0.16s var(--ease-out),
+    transform 0.16s var(--ease-out);
   position: relative;
 }
 .activity-item:hover {
-  background: var(--hover);
+  background: color-mix(in srgb, var(--hover-elevated) 46%, transparent);
+  border-color: color-mix(in srgb, var(--border-soft) 42%, transparent);
   color: var(--text);
 }
 .activity-item.active {
-  color: var(--text-strong);
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent-soft) 52%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: none;
 }
-.activity-item.active::before {
+.activity-item.active::after {
   content: '';
   position: absolute;
-  left: 0;
-  top: 6px;
+  left: 9px;
   bottom: 6px;
-  width: 3px;
+  width: 10px;
+  height: 2px;
   background: var(--accent);
-  border-radius: 0 2px 2px 0;
+  border-radius: 999px;
+  box-shadow: none;
+}
+.activity-panel-toggle {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+}
+.activity-panel-toggle.expanded {
+  background: color-mix(in srgb, var(--hover-elevated) 36%, transparent);
+  border-color: color-mix(in srgb, var(--border-soft) 38%, transparent);
+}
+.activity-panel-toggle:hover {
+  color: var(--text-strong);
 }
 /* Home button: the full-color app icon, slightly dimmed until hovered/active. */
-.activity-logo {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+.activity-home {
+  margin-bottom: 2px;
+}
+.activity-home.active {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.activity-home.active::after {
+  display: none;
+}
+.activity-home .activity-logo {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
   display: block;
   object-fit: cover;
-  opacity: 0.8;
-  transition: opacity 0.2s var(--ease-out);
+  opacity: 0.92;
+  transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .activity-home:hover .activity-logo,
-.activity-home.active .activity-logo { opacity: 1; }
+.activity-home.active .activity-logo {
+  opacity: 1;
+  transform: translateY(-1px);
+}
 
-/* Top Bar */
-.topbar {
+/* Top chrome: menu row + tab row */
+.top-chrome {
   grid-column: 2;
   grid-row: 1;
   display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 30;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 72%, transparent);
+  -webkit-app-region: drag;
+}
+.menubar-row {
+  display: flex;
+  align-items: center;
+  height: var(--menubar-h);
+  min-height: var(--menubar-h);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 88%, var(--bg-activity)), var(--bg-elevated));
+  border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 58%, transparent);
+  -webkit-app-region: drag;
+  overflow: visible;
+}
+.topbar {
+  display: flex;
   align-items: center;
   gap: 8px;
+  height: var(--tabbar-h);
+  min-height: var(--tabbar-h);
   padding: 0 10px 0 12px;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, var(--bg-editor)), var(--bg-elevated));
-  border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 70%, transparent);
   -webkit-app-region: drag;
   position: relative;
-  z-index: 10;
   min-width: 0;
   overflow: hidden;
 }
 /* Windows: the renderer draws its own caption buttons (see .win-controls),
    so the top bar no longer reserves space for a native overlay. */
-.app.is-win .topbar { padding-right: 0; }
+.app.is-win .top-chrome { padding-right: 0; }
+.app.is-win .topbar { padding-right: 10px; }
 /* macOS: give the traffic lights their own full-width title bar so they no
-   longer straddle the activity-bar / top-bar seam. The top bar spans BOTH
+   longer straddle the activity-bar / top-bar seam. The top chrome spans BOTH
    columns and the activity bar drops to start *below* it — so the lights rest on
    one continuous background instead of crossing two regions. padding-left
    reserves a clear band for the lights (matches trafficLightPosition in main). */
-.app.is-mac .topbar { grid-column: 1 / -1; padding-left: 80px; }
+.app.is-mac .top-chrome { grid-column: 1 / -1; padding-left: 80px; }
 .app.is-mac .activity-bar { grid-row: 2 / -1; }
 /* The whole top bar drags the window; only the actual interactive controls
    opt out. Crucially the tab STRIP background stays draggable — only the tab
@@ -438,6 +511,152 @@ button:focus-visible,
   align-self: stretch;
   height: 100%;
   -webkit-app-region: drag;
+}
+
+/* Typora-style desktop menu row */
+.menubar {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding-left: 8px;
+  -webkit-app-region: drag;
+}
+.menubar-items {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+  flex: 0 0 auto;
+  -webkit-app-region: no-drag;
+}
+.menubar-group {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.menubar-trigger {
+  height: 23px;
+  padding: 0 9px;
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-app-region: no-drag;
+  transition: background 0.12s var(--ease-out), color 0.12s var(--ease-out);
+}
+.menubar-trigger:hover,
+.menubar-trigger.active {
+  background: color-mix(in srgb, var(--hover) 72%, transparent);
+  color: var(--text-strong);
+}
+.menubar-drag {
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 48px;
+  -webkit-app-region: drag;
+}
+.menubar-dropdown {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  z-index: 260;
+  min-width: 238px;
+  max-width: min(340px, calc(100vw - 24px));
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  border-radius: 7px;
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  -webkit-app-region: no-drag;
+  animation: menuFadeIn 0.1s var(--ease-out);
+}
+.menubar-dropdown-sub {
+  top: -6px;
+  left: calc(100% - 2px);
+}
+.menubar-submenu-wrap {
+  position: relative;
+}
+.menubar-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0 8px 0 10px;
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+  white-space: nowrap;
+  -webkit-app-region: no-drag;
+  transition: background 0.1s var(--ease-out), color 0.1s var(--ease-out);
+}
+.menubar-menu-item:hover {
+  background: color-mix(in srgb, var(--hover) 72%, transparent);
+  color: var(--text-strong);
+}
+.menubar-menu-item.disabled {
+  color: var(--faint);
+  opacity: 0.72;
+}
+.menubar-menu-item.disabled:hover {
+  background: color-mix(in srgb, var(--hover) 42%, transparent);
+}
+.menubar-menu-item.checked {
+  color: var(--accent-strong);
+}
+.menubar-menu-label,
+.menubar-menu-meta {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+.menubar-menu-label {
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.menubar-menu-meta {
+  gap: 10px;
+  flex: 0 0 auto;
+  color: var(--faint);
+}
+.menubar-check {
+  width: 12px;
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.menubar-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  flex: 0 0 auto;
+}
+.menubar-shortcut {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+.menubar-caret {
+  color: var(--faint);
+  font-size: 14px;
+  line-height: 1;
+}
+.menubar-separator {
+  height: 1px;
+  margin: 5px 7px;
+  background: color-mix(in srgb, var(--border-soft) 82%, transparent);
 }
 
 /* ---- "New version available" toast (bottom-right) ---- */
@@ -1075,7 +1294,7 @@ button:focus-visible,
 .win-controls {
   display: flex;
   align-items: stretch;
-  height: var(--topbar-h);
+  height: var(--menubar-h);
   margin-left: 4px;
   -webkit-app-region: no-drag;
 }
@@ -4049,6 +4268,7 @@ body.dark .milkdown .ProseMirror .hm-review-card-text {
 .app.is-mobile {
   position: relative; /* anchor the slide-in drawer + scrim overlays */
   --activity-bar-w: 0; /* collapse the grid's left column so content is full width */
+  --topbar-h: 40px;
   /* Real status bar height (from StatusBar.getInfo), falling back to the CSS
      safe-area inset. env() alone is unreliable on Android (cutout only) and on
      MIUI (overlaps the clock), so the measured height wins when available. */
@@ -4059,6 +4279,13 @@ body.dark .milkdown .ProseMirror .hm-review-card-text {
     calc(var(--topbar-h) + var(--safe-top))
     1fr
     calc(var(--status-h) + env(safe-area-inset-bottom));
+}
+.app.is-mobile .top-chrome {
+  grid-column: 2;
+  grid-row: 1;
+  height: calc(var(--topbar-h) + var(--safe-top));
+  min-height: calc(var(--topbar-h) + var(--safe-top));
+  overflow: hidden;
 }
 .app.is-mobile .topbar { padding-top: var(--safe-top); }
 .app.is-mobile .statusbar { padding-bottom: env(safe-area-inset-bottom); }

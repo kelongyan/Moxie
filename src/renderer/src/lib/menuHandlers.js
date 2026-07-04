@@ -75,6 +75,11 @@ export function createMenuHandlers({
     },
     toggleSource,
     toggleTheme: cycleTheme,
+    setBlock: (id) => {
+      setHome(false)
+      const targetId = pickEditableId()
+      editorApis.current[targetId]?.setBlock?.(id)
+    },
     find: () => {
       // Leave the Home page so find acts on the visible document, not a hidden one.
       setHome(false)
