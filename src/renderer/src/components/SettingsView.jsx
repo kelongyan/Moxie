@@ -1,14 +1,12 @@
-// Settings page — a full-tab view (kind:'settings'). ONE scrolling page with all
-// sections stacked. Typography section is two-column: compact sliders left, a live
-// Moxie-intro preview right (reflects font size / line height / paragraph
-// spacing / page width as you drag). Sections: Typography · Proofreading (spell-
-// check) · Appearance (themes) · Language · Image host · About. Opened from the
-// ActivityBar gear / mobile "•••" sheet.
+// Settings page — a full-tab view (kind:'settings') with a left section
+// navigator and a focused content column. Typography uses compact controls,
+// while the rest of the settings use tight rows/cards.
 //
 // StatusBar quick-controls (排版/主题/语言) stay where they are — this is their
 // full-version home, not a replacement.
 import { useI18n, LANGS } from '../i18n.jsx'
 import { THEMES } from '../themes.js'
+import { Icon } from './icons.jsx'
 import Toggle from './ui/Toggle.jsx'
 import AdjustGroup from './ui/AdjustGroup.jsx'
 import {
@@ -23,6 +21,23 @@ const round1 = (n) => Math.round(n * 10) / 10
 const round10 = (n) => Math.round(n / 10) * 10
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''
 const GITHUB_REPO_URL = 'https://github.com/kelongyan/Moxie'
+const SETTINGS_NAV = [
+  { id: 'typography', icon: 'text-size', labelKey: 'settings.typography' },
+  { id: 'appearance', icon: 'sun', labelKey: 'settings.appearance' },
+  { id: 'proofreading', icon: 'check', labelKey: 'settings.proofreading' },
+  { id: 'language', icon: 'globe', labelKey: 'settings.language' },
+  { id: 'image-host', icon: 'image', labelKey: 'settings.imageHost' },
+  { id: 'about', icon: 'github', labelKey: 'settings.about' }
+]
+
+function SectionHead({ kicker, title }) {
+  return (
+    <div className="settings-section-head">
+      <span className="settings-section-kicker">{kicker}</span>
+      <h2 className="settings-block-title">{title}</h2>
+    </div>
+  )
+}
 
 export default function SettingsView({
   settings, onUpdateSettings,
@@ -33,102 +48,119 @@ export default function SettingsView({
   const { t } = useI18n()
   return (
     <div className="settings-page">
-      <div className="settings-sections">
-        {/* Typography — sliders left, live preview right. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.typography')}</h2>
-          <TypographyControls settings={settings} onUpdateSettings={onUpdateSettings} t={t} />
-        </section>
-
-        {/* Appearance. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.appearance')}</h2>
-          <div className="settings-swatches">
-            {THEMES.map((th) => (
-              <button
-                key={th.id}
-                className={`settings-swatch${!customTheme && th.id === theme ? ' active' : ''}`}
-                style={{ background: th.swatch }}
-                title={lang === 'zh' ? th.zh : th.en}
-                onClick={() => setTheme(th.id)}
-              >
-                <span className="settings-swatch-name">{lang === 'zh' ? th.zh : th.en}</span>
-              </button>
-            ))}
-            {customThemes.map((c) => (
-              <button
-                key={c.file}
-                className={`settings-swatch settings-swatch-custom${customTheme === c.file ? ' active' : ''}`}
-                style={{ background: c.swatch || 'var(--accent-soft)' }}
-                title={c.name}
-                onClick={() => onPickCustom && onPickCustom(c.file)}
-              >
-                <span className="settings-swatch-name">{c.name}</span>
-              </button>
+      <div className="settings-shell">
+        <aside className="settings-nav" aria-label={t('settings.pageTitle')}>
+          <div className="settings-nav-head">
+            <div className="settings-kicker">Moxie</div>
+            <h1>{t('settings.pageTitle')}</h1>
+            <p>{t('settings.pageSubtitle')}</p>
+          </div>
+          <div className="settings-nav-list">
+            {SETTINGS_NAV.map((item) => (
+              <a key={item.id} className="settings-nav-item" href={`#settings-${item.id}`}>
+                <Icon name={item.icon} size={16} />
+                <span>{t(item.labelKey)}</span>
+              </a>
             ))}
           </div>
-          <div className="settings-row settings-row-actions">
-            <button className="settings-link-btn" onClick={() => onOpenThemesFolder && onOpenThemesFolder()}>{t('settings.openThemesFolder')}</button>
-            <button className="settings-link-btn" onClick={() => onGetMoreThemes && onGetMoreThemes()}>{t('settings.getMoreThemes')}</button>
-          </div>
-        </section>
+        </aside>
 
-        {/* Proofreading. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.proofreading')}</h2>
-          <div className="settings-row">
-            <div className="settings-row-text">
-              <div className="settings-row-label">{t('settings.spellcheck')}</div>
-              <div className="settings-row-desc">{t('settings.spellcheckDesc')}</div>
+        <div className="settings-content">
+          <section className="settings-block settings-block-hero" id="settings-typography">
+            <SectionHead kicker={t('settings.layoutLabel')} title={t('settings.typography')} />
+            <TypographyControls settings={settings} onUpdateSettings={onUpdateSettings} t={t} />
+          </section>
+
+          <section className="settings-block" id="settings-appearance">
+            <SectionHead kicker={t('settings.appearance')} title={t('settings.appearance')} />
+            <div className="settings-swatches">
+              {THEMES.map((th) => (
+                <button
+                  key={th.id}
+                  className={`settings-swatch${!customTheme && th.id === theme ? ' active' : ''}`}
+                  style={{ background: th.swatch }}
+                  title={lang === 'zh' ? th.zh : th.en}
+                  onClick={() => setTheme(th.id)}
+                >
+                  <span className="settings-swatch-name">{lang === 'zh' ? th.zh : th.en}</span>
+                </button>
+              ))}
+              {customThemes.map((c) => (
+                <button
+                  key={c.file}
+                  className={`settings-swatch settings-swatch-custom${customTheme === c.file ? ' active' : ''}`}
+                  style={{ background: c.swatch || 'var(--accent-soft)' }}
+                  title={c.name}
+                  onClick={() => onPickCustom && onPickCustom(c.file)}
+                >
+                  <span className="settings-swatch-name">{c.name}</span>
+                </button>
+              ))}
             </div>
-            <Toggle
-              checked={!!settings.spellcheck}
-              onChange={(v) => onUpdateSettings({ spellcheck: v })}
-              label={t('settings.spellcheck')}
+            <div className="settings-row settings-row-actions">
+              <button className="settings-link-btn" onClick={() => onOpenThemesFolder && onOpenThemesFolder()}>{t('settings.openThemesFolder')}</button>
+              <button className="settings-link-btn" onClick={() => onGetMoreThemes && onGetMoreThemes()}>{t('settings.getMoreThemes')}</button>
+            </div>
+          </section>
+
+          <div className="settings-grid">
+            <section className="settings-block settings-block-compact" id="settings-proofreading">
+              <SectionHead kicker={t('settings.proofreading')} title={t('settings.proofreading')} />
+              <div className="settings-row">
+                <div className="settings-row-text">
+                  <div className="settings-row-label">{t('settings.spellcheck')}</div>
+                  <div className="settings-row-desc">{t('settings.spellcheckDesc')}</div>
+                </div>
+                <Toggle
+                  checked={!!settings.spellcheck}
+                  onChange={(v) => onUpdateSettings({ spellcheck: v })}
+                  label={t('settings.spellcheck')}
+                />
+              </div>
+            </section>
+
+            <section className="settings-block settings-block-compact" id="settings-language">
+              <SectionHead kicker={t('settings.language')} title={t('settings.language')} />
+              <div className="settings-langs">
+                {LANGS.map((l) => (
+                  <button key={l.id} className={`settings-lang${l.id === lang ? ' active' : ''}`} onClick={() => setLang(l.id)}>
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <section className="settings-block" id="settings-image-host">
+            <SectionHead kicker={t('settings.imageHost')} title={t('settings.imageHost')} />
+            <p className="settings-block-desc">{t('settings.imageHostDesc')}</p>
+            <input
+              className="settings-input" type="text" spellCheck={false}
+              placeholder={t('settings.imageHostPlaceholder')}
+              value={settings.imageUploadCommand || ''}
+              onChange={(e) => onUpdateSettings({ imageUploadCommand: e.target.value })}
             />
-          </div>
-        </section>
+          </section>
 
-        {/* Language. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.language')}</h2>
-          <div className="settings-langs">
-            {LANGS.map((l) => (
-              <button key={l.id} className={`settings-lang${l.id === lang ? ' active' : ''}`} onClick={() => setLang(l.id)}>
-                {l.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Image host. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.imageHost')}</h2>
-          <p className="settings-block-desc">{t('settings.imageHostDesc')}</p>
-          <input
-            className="settings-input" type="text" spellCheck={false}
-            placeholder={t('settings.imageHostPlaceholder')}
-            value={settings.imageUploadCommand || ''}
-            onChange={(e) => onUpdateSettings({ imageUploadCommand: e.target.value })}
-          />
-        </section>
-
-        {/* About. */}
-        <section className="settings-block">
-          <h2 className="settings-block-title">{t('settings.about')}</h2>
-          <div className="settings-row">
-            <div className="settings-row-label">Moxie {APP_VERSION && <span className="settings-version">{APP_VERSION}</span>}</div>
-          </div>
-          <div className="settings-row settings-row-actions">
-            <button className="settings-link-btn" onClick={() => window.api.openExternal(GITHUB_REPO_URL)}>GitHub</button>
-          </div>
-        </section>
+          <section className="settings-block settings-block-about" id="settings-about">
+            <div className="settings-about-panel">
+              <div className="settings-about-main">
+                <div className="settings-about-title">{t('settings.about')}</div>
+                <div className="settings-about-brand">
+                  <span className="settings-row-label">Moxie</span>
+                  {APP_VERSION && <span className="settings-version">{APP_VERSION}</span>}
+                </div>
+              </div>
+              <button className="settings-link-btn settings-about-link" onClick={() => window.api.openExternal(GITHUB_REPO_URL)}>GitHub</button>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   )
 }
 
-// Typography: compact sliders (left) + live Moxie-intro preview (right).
+// Typography: four compact controls.
 function TypographyControls({ settings, onUpdateSettings, t }) {
   const { fontSize, lineHeight, paragraphSpacing, pageWidth } = settings
   const fontIdx = FONT_SIZE_PRESETS.findIndex((p) => p.size === fontSize)
@@ -169,17 +201,6 @@ function TypographyControls({ settings, onUpdateSettings, t }) {
           value={isFull ? PAGE_WIDTH_MAX : pageWidth} min={PAGE_WIDTH_MIN} max={PAGE_WIDTH_MAX} round={round10}
           onSet={(w) => onUpdateSettings({ pageWidth: w })} liveApply={applyPageWidth}
         />
-      </div>
-      <div className="settings-typo-preview">
-        <div className="settings-preview markdown-body">
-          <h2>Moxie</h2>
-          <p>{t('settings.previewIntro')}</p>
-          <pre><code>{t('settings.previewCode')}</code></pre>
-          <ul>
-            <li>{t('settings.previewFeature1')}</li>
-            <li>{t('settings.previewFeature2')}</li>
-          </ul>
-        </div>
       </div>
     </div>
   )

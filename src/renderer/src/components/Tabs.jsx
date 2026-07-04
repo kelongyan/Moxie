@@ -23,9 +23,6 @@ export default function Tabs({
   const activeRef = useRef(null)
   // Right-click context menu: { x, y, tab } in viewport coords, or null.
   const [menu, setMenu] = useState(null)
-  // On touch there's no hover to reveal the close ✕, so show it always and use a
-  // clear ✕ (the unsaved state is shown in the bottom bar, not as a tab dot).
-  const isMobile = window.api.platform === 'ios' || window.api.platform === 'android'
 
   // When the active tab changes (opened a new file, switched, or restored a
   // session), the tab strip may have scrolled it out of view once the tabs
@@ -69,7 +66,7 @@ export default function Tabs({
             <div
               key={tab.id}
               ref={isLeft ? activeRef : null}
-              className={`tab${isActive ? ' active' : ''}${isActive && !focused ? ' split-peer' : ''}`}
+              className={`tab${isActive ? ' active' : ''}${isActive && !focused ? ' split-peer' : ''}${dirty ? ' dirty' : ''}`}
               onClick={() => onActivate(tab.id)}
               onContextMenu={(e) => {
                 e.preventDefault()
@@ -83,15 +80,16 @@ export default function Tabs({
               }}
               title={tab.path || tab.title}
             >
+              {dirty && <span className="tab-dirty-dot" />}
               <span className="tab-title">{tab.title}</span>
               <span
-                className={`tab-close${dirty ? ' dirty' : ''}`}
+                className="tab-close"
                 onClick={(e) => {
                   e.stopPropagation()
                   onClose(tab.id)
                 }}
               >
-                {dirty && !isMobile ? <span className="dot" /> : <Icon name="close" size={13} />}
+                <Icon name="close" size={13} />
               </span>
             </div>
           )
