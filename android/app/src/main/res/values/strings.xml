@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Moxie</string>
+    <string name="title_activity_main">Moxie</string>
+    <string name="package_name">com.horsemd.app</string>
+    <string name="custom_url_scheme">com.horsemd.app</string>
+</resources>

@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script>document.documentElement.classList.add('js')</script>
+  <title>Moxie — 一个窗口，装下所有 .md 文件</title>
+  <meta name="description" content="Moxie：免费开源的 Typora 平替。标签页 + 文件树 + 所见即所得，Windows、macOS 与 Android。" />
+  <meta name="keywords" content="Moxie,Markdown 编辑器,Typora 替代,WYSIWYG,标签页,文件树,开源" />
+  <link rel="icon" type="image/png" href="./assets/icon.png" />
+  <link rel="canonical" href="https://horsemd.yangsir.net/" />
+  <!-- 给 LLM / 爬虫的 markdown 镜像入口 -->
+  <link rel="alternate" type="text/markdown" href="https://horsemd.yangsir.net/index.md" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Moxie" />
+  <meta property="og:title" content="Moxie — One window. Every file." />
+  <meta property="og:description" content="A free Typora alternative with tabs and a file-tree workspace. Open source, for Windows, macOS and Android." />
+  <meta property="og:url" content="https://horsemd.yangsir.net/" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:locale:alternate" content="en_US" />
+  <meta property="og:image" content="https://horsemd.yangsir.net/assets/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Moxie — 一个窗口，装下所有 .md 文件。免费开源的 Typora 平替。" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Moxie — One window. Every .md file." />
+  <meta name="twitter:description" content="A free Typora alternative with tabs and a file-tree workspace. Open source, for Windows, macOS and Android." />
+  <meta name="twitter:image" content="https://horsemd.yangsir.net/assets/og.jpg" />
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Moxie",
+    "url": "https://horsemd.yangsir.net/",
+    "applicationCategory": "Productivity",
+    "operatingSystem": "Windows, macOS (Apple Silicon & Intel), Android",
+    "softwareVersion": "0.3.0",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "downloadUrl": "https://github.com/BND-1/horseMD/releases/latest",
+    "screenshot": "https://horsemd.yangsir.net/assets/hero_light.png",
+    "author": {
+      "@type": "Person",
+      "name": "Evan Yang",
+      "alternateName": ["杨庭毅", "杨sir", "yangsir"],
+      "url": "https://yangsir.net/"
+    },
+    "sameAs": ["https://github.com/BND-1/horseMD"],
+    "description": "A free Typora alternative with tabs and a file-tree workspace. 免费开源的 Typora 平替：标签页 + 文件树 + 所见即所得。"
+  }
+  </script>
+
+  <!-- Umami analytics (self-hosted: u.yangsir.net) -->
+  <script defer src="https://u.yangsir.net/script.js" data-website-id="00779ab2-02d9-4b54-baa7-69805b49b2b3"></script>
+
+  <!-- 無印风：纯系统字体栈，无外部字体 -->
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+  <!-- ───────────── 顶部导航 ───────────── -->
+  <header class="nav">
+    <a class="nav-brand" href="#top" aria-label="Moxie">
+      <img src="./assets/icon.png" alt="" width="24" height="24" />
+      <span class="brand-name">Moxie</span>
+      <span class="brand-ver" id="navVersion">v0.3.0</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features" data-i18n="nav.features">特性</a>
+      <a href="#themes" data-i18n="nav.themes">主题</a>
+      <a href="https://github.com/BND-1/horseMD" target="_blank" rel="noopener">GITHUB</a>
+    </nav>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
+  </header>
+
+  <main id="top">
+
+    <!-- ───────────── Hero ───────────── -->
+    <section class="hero">
+      <p class="kicker label reveal" data-i18n="hero.kicker">免费 · 开源 · 不要账号</p>
+      <h1 class="hero-title">
+        <span class="split-line"><span data-i18n="hero.l1">一个窗口，</span></span><br />
+        <span class="split-line"><span data-i18n="hero.l2">装下所有 .md 文件</span></span>
+      </h1>
+      <p class="hero-sub reveal" data-i18n="hero.sub">
+        一个免费的 Typora 平替，但不止于此。
+      </p>
+      <div class="dl-platforms reveal">
+        <div class="dl-item">
+          <a class="dl-card" id="dlWin" href="https://github.com/BND-1/horseMD/releases/latest" target="_blank" rel="noopener">
+            <span class="dl-os-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3l8.4 0 0 8.4 -8.4 0z"/><path d="M12.6 3l8.4 0 0 8.4 -8.4 0z"/><path d="M3 12.6l8.4 0 0 8.4 -8.4 0z"/><path d="M12.6 12.6l8.4 0 0 8.4 -8.4 0z"/></svg>
+            </span>
+            <span class="dl-os-name">Windows</span>
+            <span class="dl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></span>
+          </a>
+          <a class="dl-mirror" id="dlWinCn" href="https://github.com/BND-1/horseMD/releases/latest" target="_blank" rel="noopener" data-i18n="cta.mirror">国内加速 ↓</a>
+        </div>
+        <div class="dl-item">
+          <a class="dl-card" id="dlMac" href="https://github.com/BND-1/horseMD#%E5%AE%89%E8%A3%85" target="_blank" rel="noopener">
+            <span class="dl-os-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.9c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-3 .9-3.7 2.3-1.6 2.8-.4 6.9 1.1 9.1.7 1.1 1.6 2.3 2.8 2.3 1.1 0 1.5-.7 2.9-.7s1.7.7 2.9.7c1.2 0 2-1.1 2.7-2.2.8-1.3 1.2-2.5 1.2-2.6-.1 0-2.3-.9-2.3-3.5zM14.1 6.3c.6-.8 1-1.8.9-2.9-.9 0-2 .6-2.6 1.3-.6.7-1.1 1.7-1 2.7 1 .1 2-.5 2.7-1.1z"/></svg>
+            </span>
+            <span class="dl-os-name">macOS</span>
+            <span class="dl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+          </a>
+          <a class="dl-mirror" id="dlMacCn" href="https://github.com/BND-1/horseMD#%E5%AE%89%E8%A3%85" target="_blank" rel="noopener" data-i18n="cta.mirror">国内加速 ↓</a>
+        </div>
+        <div class="dl-item">
+          <a class="dl-card" id="dlAndroid" href="https://github.com/BND-1/horseMD/releases/latest" target="_blank" rel="noopener">
+            <span class="dl-os-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 9v8a1 1 0 0 0 1 1h1v3a1 1 0 0 0 2 0v-3h4v3a1 1 0 0 0 2 0v-3h1a1 1 0 0 0 1-1V9z"/><path d="M5 9a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z"/><path d="M19 9a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z"/><path d="M8.5 5.5l-1-1.7a.3.3 0 0 1 .5-.3l1.1 1.9a5.6 5.6 0 0 1 3.8 0l1.1-1.9a.3.3 0 0 1 .5.3l-1 1.7A5.4 5.4 0 0 1 17 9H7a5.4 5.4 0 0 1 1.5-3.5z"/><circle cx="10" cy="7.5" r=".6" fill="#f7f5f0"/><circle cx="14" cy="7.5" r=".6" fill="#f7f5f0"/></svg>
+            </span>
+            <span class="dl-os-name">Android</span>
+            <span class="dl-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></span>
+          </a>
+          <a class="dl-mirror" id="dlAndroidGitee" href="https://gitee.com/yty11167/horse-md/releases/latest" target="_blank" rel="noopener" data-i18n="cta.mirror">国内加速 ↓</a>
+        </div>
+      </div>
+      <p class="hero-note reveal" data-i18n="hero.note">
+        构建未签名 — Windows：更多信息 → 仍要运行 · macOS（Apple 芯片 / Intel 均可）：右键 → 打开 · 安卓：安装 APK 时允许"未知来源"
+      </p>
+    </section>
+
+    <!-- 商品照式截图 -->
+    <figure class="photo reveal">
+      <img src="./assets/hero_light.png" alt="Moxie：文件树工作区、标签页与所见即所得编辑" loading="eager" />
+      <figcaption data-i18n="hero.caption">HORSEMD · 文件树 / 标签页 / 所见即所得</figcaption>
+    </figure>
+
+    <p class="hero-strip reveal">
+      <span>WYSIWYG</span><span class="sep">·</span>
+      <span data-i18n="strip.tabs">标签页</span><span class="sep">·</span>
+      <span data-i18n="strip.tree">文件树</span><span class="sep">·</span>
+      <span>⌘P</span><span class="sep">·</span>
+      <span>LaTeX</span><span class="sep">·</span>
+      <span data-i18n="strip.i18n">EN / 中文</span><span class="sep">·</span>
+      <span data-i18n="strip.themes">6 套主题</span>
+    </p>
+
+    <!-- ───────────── 特性：规格表 ───────────── -->
+    <section class="section" id="features">
+      <div class="section-head reveal">
+        <h2 data-i18n="features.title">它能做什么</h2>
+      </div>
+      <div class="feature-grid">
+        <article class="card reveal">
+          <span class="card-index">01</span>
+          <h3 data-i18n="f1.title">标签页</h3>
+          <p data-i18n="f1.body">双击一个文件，是多一个标签，不是多一个窗口。</p>
+          <kbd>Ctrl/⌘ Tab</kbd>
+        </article>
+        <article class="card reveal">
+          <span class="card-index">02</span>
+          <h3 data-i18n="f2.title">文件夹工作区</h3>
+          <p data-i18n="f2.body">整个文件夹挂在侧边栏，新建、重命名、删除都不用切出去。</p>
+          <kbd>Ctrl/⌘ B</kbd>
+        </article>
+        <article class="card reveal">
+          <span class="card-index">03</span>
+          <h3 data-i18n="f3.title">所见即所得</h3>
+          <p data-i18n="f3.body">打字就渲染。表格、代码高亮、LaTeX、任务清单都认。</p>
+          <kbd>/</kbd>
+        </article>
+        <article class="card reveal">
+          <span class="card-index">04</span>
+          <h3 data-i18n="f4.title">富文本复制</h3>
+          <p data-i18n="f4.body">复制自带格式，粘进微信公众号、邮件、Notion 都不丢样式。</p>
+          <kbd>Ctrl/⌘ C</kbd>
+        </article>
+      </div>
+    </section>
+
+    <!-- ───────────── 主题 ───────────── -->
+    <section class="section" id="themes">
+      <div class="section-head reveal">
+        <h2 data-i18n="themes.title">六套主题</h2>
+      </div>
+      <div class="theme-stage reveal">
+        <div class="theme-shot">
+          <img src="./assets/hero_light.png" alt="Moxie 主题预览" id="themeImgA" class="on" loading="lazy" />
+          <img src="./assets/theme_dark.png" alt="" id="themeImgB" loading="lazy" />
+        </div>
+        <div class="theme-picker" role="tablist" aria-label="Themes">
+          <button class="swatch active" role="tab" data-img="hero_light.png" style="--sw:#faf6ef"><span data-i18n="themes.light">明亮</span></button>
+          <button class="swatch" role="tab" data-img="theme_dark.png" style="--sw:#22232b"><span data-i18n="themes.dark">暗夜</span></button>
+          <button class="swatch" role="tab" data-img="theme_morandi_mist.png" style="--sw:#aebfd2"><span data-i18n="themes.mist">雾</span></button>
+          <button class="swatch" role="tab" data-img="theme_morandi_sage.png" style="--sw:#7d8a6a"><span data-i18n="themes.sage">鼠尾草</span></button>
+          <button class="swatch" role="tab" data-img="theme_morandi_rose.png" style="--sw:#a8807b"><span data-i18n="themes.rose">玫瑰</span></button>
+          <button class="swatch" role="tab" data-img="theme_morandi_dusk.png" style="--sw:#5d7385"><span data-i18n="themes.dusk">暮色</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ───────────── 页脚 ───────────── -->
+  <footer class="footer">
+    <div class="footer-left">
+      <img src="./assets/icon.png" alt="" width="18" height="18" />
+      <span>HORSEMD · MIT LICENSE</span>
+    </div>
+    <nav class="footer-links">
+      <a href="https://github.com/BND-1/horseMD" target="_blank" rel="noopener">GITHUB</a>
+      <a href="https://github.com/BND-1/horseMD/releases" target="_blank" rel="noopener">RELEASES</a>
+      <a href="https://github.com/BND-1/horseMD/issues" target="_blank" rel="noopener">ISSUES</a>
+    </nav>
+    <span class="footer-ver" id="footVersion">v0.3.0</span>
+  </footer>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>

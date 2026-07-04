@@ -1,0 +1,38 @@
+node_modules/
+out/
+dist/
+*.log
+.DS_Store
+
+# local agent/tool state
+.claude/
+.omc/
+.playwright-mcp/
+
+# mobile (Capacitor) build output + native build artifacts
+dist-mobile/
+ios/App/Pods/
+ios/App/App/public/
+ios/App/build/
+ios/DerivedData/
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/app/src/main/assets/public/
+.capacitor/
+
+# Android release signing — NEVER commit these (lose the keystore = can't update the app)
+android/key.properties
+*.keystore
+*.jks
+
+# local test fixtures (generated)
+test-articles/
+
+# scratch/preview images and design references
+build/_*.png
+*参考*.html
+
+# device build (xcodebuild -derivedDataPath)
+ios/App/build-device/

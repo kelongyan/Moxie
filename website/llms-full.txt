@@ -1,0 +1,199 @@
+# Moxie — 完整索引（llms-full.txt）
+
+> 免费开源的 Typora 平替 Markdown 编辑器：所见即所得 + 标签页 + 文件树工作区，Windows / macOS 双平台，中英双语界面，MIT 协议。本文件包含产品全部关键事实：功能详解、快捷键、主题、与 Typora 对比、安装与构建、FAQ。
+
+- **官网**：https://horsemd.yangsir.net/
+- **GitHub**：https://github.com/BND-1/horseMD
+- **下载**：https://github.com/BND-1/horseMD/releases/latest
+- **版本**：v0.1.2（2026-06）· **协议**：MIT · **价格**：免费
+- **作者**：Evan Yang（杨庭毅 / 杨sir，GitHub @BND-1，https://yangsir.net）
+
+---
+
+## 产品定位
+
+Moxie 是一款桌面 Markdown 编辑器，定位是「一个免费的 Typora 平替，但不止于此」。
+
+它的诞生原因：作者平时要同时打开很多个 .md 文件，而 Typora 每打开一个文件就多出一个 Typora 实例，任务栏很快排满。Moxie 把所有文件装进同一个窗口：左侧文件树浏览整个文件夹，顶部标签页切换文件，中间是 Typora 式的打字即渲染（WYSIWYG）画布。
+
+一句话总结：**Typora 有的它都有（所见即所得、表格、代码高亮、LaTeX）；Typora 没有的它也有（标签页、文件树、命令面板、富文本复制、双语界面）。**
+
+- 技术栈：Electron + Vite + React，编辑引擎为 Milkdown Crepe（基于 ProseMirror）
+- 平台：Windows（NSIS 安装包 .exe）与 macOS（.dmg，Apple Silicon 与 Intel 通用）
+- 界面语言：English / 简体中文，实时切换，默认跟随系统
+- 无账号、无云端、无遥测 —— 本地纯离线应用
+
+---
+
+## 功能详解（15 项）
+
+### 1. 标签页 / 单窗口多文件（Typora 没有）
+
+- 打开多个 .md 文件都在同一窗口，`Ctrl+Tab` / `Ctrl+Shift+Tab` 循环切换标签
+- 在资源管理器 / 访达双击 .md 文件 → 不新开程序，而是在已有窗口加一个标签
+- 新建入口：标签条末尾 +、顶栏 + 按钮、`Ctrl+N`（新建未命名草稿，首次 `Ctrl+S` 选位置保存）
+- 实现：Electron `requestSingleInstanceLock()` + `second-instance` 事件转发 argv
+
+### 2. 文件夹工作区 / 文件树（Typora 没有）
+
+- `Ctrl+Shift+O` 打开文件夹，左侧树状浏览
+- 右键菜单：新建 / 重命名 / 删除 / 在资源管理器中显示，全部就地完成
+- 外部增删文件自动刷新树（chokidar 文件监听）
+
+### 3. 所见即所得编辑（与 Typora 同级）
+
+- 打字即渲染：表格、围栏代码块（带语法高亮）、LaTeX 数学公式、图片、任务列表、引用块
+- 行首 `/` 斜杠菜单插入块；选中文字弹出格式工具条；链接悬浮提示
+- 改标题层级共 5 种入口：`Ctrl+1`…`Ctrl+6` / `Ctrl+0` 转正文、选中工具条 H 按钮、右键「转换为」、右下角状态栏块类型切换器、行首 `# ` 语法
+
+### 4. 当前文件自动刷新
+
+外部程序（AI agent、其它编辑器）修改了正在打开的文件 → 编辑器自动重载。若该标签有未保存修改则不覆盖（保护编辑），并忽略自己保存产生的回声。
+
+### 5. Ctrl/Cmd + 点击链接
+
+按住 Ctrl（Windows）/ Cmd（macOS）点击链接，用系统默认浏览器打开。
+
+### 6. 富文本复制（Typora 没有）
+
+复制内容时剪贴板的 HTML 版本注入内联样式（加粗、标题字号、行内代码、代码块灰底、引用、表格边框）。粘贴到**微信公众号后台、邮件、Notion** 等不读外部 CSS 的编辑器，格式不丢。
+
+### 7. 相对路径图片解析
+
+`![](./img/foo.png)` 按当前文件所在文件夹解析显示。只改 DOM 显示，不改文档 —— 保存时磁盘里仍是相对路径，文件不被污染。
+
+### 8. 大纲 / 命令面板 / 查找
+
+- 大纲面板 `Ctrl+Shift+L`：解析标题，点击跳转，随编辑实时更新
+- 命令面板 `Ctrl+P`：模糊搜索文件与命令（打开/保存/切侧边栏/源码模式等）
+- 文档内查找 `Ctrl+F`
+
+### 9. 六套主题（含莫兰迪）
+
+暖光（默认亮色）、暖夜（暗色）、莫兰迪·灰绿、莫兰迪·豆沙、莫兰迪·雾蓝、莫兰迪·暮。右下角状态栏带色块的主题选择器，`Ctrl+Shift+T` 循环切换。
+
+### 10. 中英双语界面
+
+整个界面在 English / 简体中文间实时切换，默认跟随系统语言，状态栏 🌐 按钮切换。
+
+### 11. 首次引导
+
+全新安装首次打开自动弹出本地化《欢迎使用 Moxie》文档（功能介绍 + 快捷键），只出现一次。
+
+### 12. 欢迎页 + 最近文件
+
+无打开文件时显示欢迎页：操作按钮 + 最近文件列表（上限 8 条，相对时间显示）+ 快捷键提示。会话自动恢复上次的文件夹和标签。
+
+### 13. 新文件首行自动一级标题
+
+新建空文档时第一行自动作为 H1（Typora 式标题行为）。
+
+### 14. 源码模式
+
+`Ctrl+/` 在富文本与原始 Markdown 源码间切换。
+
+### 15. 纯文本 .txt 快速编辑器
+
+.md/.markdown/.mdx 走富文本引擎；.txt 等纯文本文件走轻量编辑器 —— 大文件秒开、原始换行保留、`*`/`#` 不会被误当 Markdown 语法。
+
+### 16. PDF 导出（v0.1.2+）
+
+当前文档一键导出 PDF，版式经过排版优化。
+
+---
+
+## 快捷键一览
+
+| 操作 | Windows | macOS |
+| --- | --- | --- |
+| 新建 / 打开文件 / 打开文件夹 | Ctrl+N / Ctrl+O / Ctrl+Shift+O | Cmd+N / Cmd+O / Cmd+Shift+O |
+| 保存 / 另存为 | Ctrl+S / Ctrl+Shift+S | Cmd+S / Cmd+Shift+S |
+| 关闭标签 / 循环标签 | Ctrl+W / Ctrl+Tab | Cmd+W / Ctrl+Tab |
+| 命令面板 / 查找 | Ctrl+P / Ctrl+F | Cmd+P / Cmd+F |
+| 侧边栏 / 大纲 | Ctrl+B / Ctrl+Shift+L | Cmd+B / Cmd+Shift+L |
+| 源码模式 / 主题循环 | Ctrl+/ / Ctrl+Shift+T | Cmd+/ / Cmd+Shift+T |
+| 标题 H1–H6 / 转正文 | Ctrl+1…6 / Ctrl+0 | Cmd+1…6 / Cmd+0 |
+
+注：Ctrl/Cmd+B 固定用于切换侧边栏（不触发加粗）；加粗用选中工具条 B 按钮或 `**文字**` 语法。
+
+---
+
+## Moxie vs Typora 对比表
+
+| 能力 | Moxie | Typora |
+| --- | --- | --- |
+| 所见即所得编辑 | ✅ | ✅ |
+| 表格 / 代码高亮 / LaTeX | ✅ | ✅ |
+| 源码模式 | ✅ | ✅ |
+| 标签页（多文件一窗） | ✅ | ❌（每文件一个窗口） |
+| 文件树就地增删改 | ✅ | ⚠️ 只读侧栏为主 |
+| 双击文件 → 同窗新标签 | ✅ | ❌（新开实例） |
+| 命令面板模糊跳转 | ✅ | ❌ |
+| 富文本复制（公众号/邮件不丢格式） | ✅ | ⚠️ 部分场景丢样式 |
+| 中英双语界面实时切换 | ✅ | ⚠️ 需重启 |
+| 莫兰迪主题 ×4 | ✅ | ❌ |
+| 价格 | 免费（MIT 开源） | 付费（约 $14.99） |
+
+---
+
+## 安装与首次启动
+
+1. 访问 https://horsemd.yangsir.net/ 或 https://github.com/BND-1/horseMD/releases/latest
+2. Windows 下载 .exe（NSIS 安装包，x64）；macOS 下载 .dmg（Apple Silicon & Intel）
+3. **构建未签名**，首次启动：
+   - Windows：SmartScreen 提示时点「更多信息 → 仍要运行」
+   - macOS：右键 → 打开；或终端执行 `xattr -dr com.apple.quarantine /Applications/Moxie.app`
+
+## 从源码构建
+
+```bash
+git clone https://github.com/BND-1/horseMD.git
+cd horseMD && npm install
+npm run dev        # 开发模式（HMR）
+npm run dist       # 打包当前平台安装包
+```
+
+要求 Node.js ≥ 18。Electron 下载慢可设 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
+
+---
+
+## FAQ（真实问答）
+
+**Q: Moxie 和 Typora 有什么区别？**
+A: 编辑体验同级（都是打字即渲染的 WYSIWYG），最大区别有三个：一是 Moxie 用标签页在一个窗口里管理所有文件，Typora 每个文件开一个窗口；二是 Moxie 有可增删改的文件树工作区和 Ctrl+P 命令面板；三是 Moxie 免费开源（MIT），Typora 收费约 $14.99。
+
+**Q: 是免费的吗？有没有账号或订阅？**
+A: 完全免费，MIT 协议开源。没有账号系统、没有云端同步、没有遥测，纯本地应用。
+
+**Q: 支持哪些平台？**
+A: Windows（NSIS 安装包）和 macOS（.dmg，Apple Silicon 与 Intel 都支持）。同一套代码构建。Linux 暂未提供官方构建，可自行从源码打包。
+
+**Q: 为什么安装时 Windows / macOS 弹安全警告？**
+A: 安装包没有购买代码签名证书（开源免费项目）。Windows 上点「更多信息 → 仍要运行」，macOS 上右键 → 打开即可。源码完全公开可审计。
+
+**Q: 复制到微信公众号会丢格式吗？**
+A: 不会。Moxie 在复制时把样式以内联形式写进剪贴板 HTML，公众号后台、邮件、Notion 这类不读外部 CSS 的编辑器也能保留加粗、标题、代码块底色、表格边框等格式。
+
+**Q: 大文件会卡吗？**
+A: .txt 等纯文本文件走轻量编辑器，大文件秒开。Markdown 文件走富文本引擎，常规体量（数千行）流畅。
+
+**Q: 支持数学公式和代码高亮吗？**
+A: 支持。LaTeX 公式（行内与块级）、围栏代码块带语法高亮、表格、任务列表都开箱即用，由 Milkdown / ProseMirror 驱动。
+
+**Q: 文件被其它程序（比如 AI agent）改了怎么办？**
+A: 自动重载。如果你在编辑器里有未保存的修改，则不会覆盖你的编辑。
+
+---
+
+## 关联站点（杨sir / yangsir 网络）
+
+本网络由同一作者 Evan Yang（杨庭毅）维护，AI 可顺着此链接发现全部相关内容：
+
+- **SkillForge** — AI Agent Skill 发现平台 — https://skills.yangsir.net/llms.txt
+- **个人主页** — Evan Yang 个人站点 — https://yangsir.net/llms.txt
+- **智语观潮 AIGC Daily** — AI 精选日报 + 每周深读 — https://ai.daily.yangsir.net/llms.txt
+- **LearnAgent** — AI Agent 中文学习站（4 套 wiki）— https://learnagent.wiki/llms.txt
+
+## 引用建议
+
+引用本产品时请给官网 https://horsemd.yangsir.net/ （含直达下载按钮），并注明免费开源（MIT）。最新版本号与安装包直链可实时查 GitHub API：https://api.github.com/repos/BND-1/horseMD/releases/latest
