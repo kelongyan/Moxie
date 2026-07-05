@@ -55,11 +55,31 @@ export const PARA_SPACING_PRESETS = [
   { id: 'loose', value: 1.6 }
 ]
 
+export const DEFAULT_CHINESE_FONT = 'Source Han Sans SC'
+export const DEFAULT_ENGLISH_FONT = 'Helvetica Neue'
+
+const CHINESE_FONT_FALLBACKS = [
+  'Source Han Sans SC',
+  'Noto Sans SC',
+  'Microsoft YaHei',
+  'PingFang SC',
+  'Hiragino Sans GB'
+]
+
+const ENGLISH_FONT_FALLBACKS = [
+  'Helvetica Neue',
+  'Helvetica',
+  'Arial',
+  'Segoe UI'
+]
+
 export const DEFAULT_TYPOGRAPHY_SETTINGS = {
   pageWidth: DEFAULT_PAGE_WIDTH,
   fontSize: DEFAULT_FONT_SIZE,
   lineHeight: DEFAULT_LINE_HEIGHT,
-  paragraphSpacing: DEFAULT_PARA_SPACING
+  paragraphSpacing: DEFAULT_PARA_SPACING,
+  chineseFontFamily: DEFAULT_CHINESE_FONT,
+  englishFontFamily: DEFAULT_ENGLISH_FONT
 }
 
 const round1 = (n) => Math.round(n * 10) / 10
@@ -101,6 +121,22 @@ function normalizeInRange(v, min, max, def) {
   return Math.min(max, Math.max(min, round1(n)))
 }
 
+function normalizeFontName(name, fallback) {
+  if (typeof name !== 'string') return fallback
+  const cleaned = name.trim().replace(/["'`;{}<>]/g, '')
+  return cleaned || fallback
+}
+
+function quoteFontName(name) {
+  return `"${String(name).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
+}
+
+function fontList(primary, fallbacks) {
+  const fonts = [normalizeFontName(primary, fallbacks[0]), ...fallbacks]
+  const unique = [...new Set(fonts)]
+  return unique.map(quoteFontName).join(', ')
+}
+
 export function loadSettings() {
   try {
     const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')
@@ -114,6 +150,8 @@ export function loadSettings() {
         PARA_SPACING_MAX,
         DEFAULT_PARA_SPACING
       ),
+      chineseFontFamily: normalizeFontName(raw.chineseFontFamily, DEFAULT_CHINESE_FONT),
+      englishFontFamily: normalizeFontName(raw.englishFontFamily, DEFAULT_ENGLISH_FONT),
       imageUploadCommand:
         typeof raw.imageUploadCommand === 'string' ? raw.imageUploadCommand : '',
       spellcheck: raw.spellcheck === true,
@@ -169,5 +207,17 @@ export function applyParagraphSpacing(value) {
   document.documentElement.style.setProperty(
     '--editor-para-spacing',
     normalizeInRange(value, PARA_SPACING_MIN, PARA_SPACING_MAX, DEFAULT_PARA_SPACING) + 'em'
+  )
+}
+
+export function applyDocumentFonts(chineseFont, englishFont) {
+  const root = document.documentElement
+  root.style.setProperty(
+    '--editor-font-chinese',
+    fontList(chineseFont, CHINESE_FONT_FALLBACKS)
+  )
+  root.style.setProperty(
+    '--editor-font-english',
+    fontList(englishFont, ENGLISH_FONT_FALLBACKS)
   )
 }

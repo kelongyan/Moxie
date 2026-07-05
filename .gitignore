@@ -8,6 +8,8 @@ dist/
 .claude/
 .omc/
 .playwright-mcp/
+RULE.md
+output/
 
 # mobile (Capacitor) build output + native build artifacts
 dist-mobile/

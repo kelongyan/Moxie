@@ -1,8 +1,8 @@
 name: Release
 
-# Build installers on every version tag (e.g. v0.1.0) and upload them to a
-# GitHub Release. electron-builder publishes to a *draft* release by default,
-# so you can review the assets and write notes before hitting "Publish".
+# Build release assets on every version tag (e.g. v1.5.0) and upload them to a
+# GitHub Release. Windows builds locally in CI; macOS/Linux/Android are produced
+# on the runners that actually support those platforms.
 on:
   push:
     tags:
@@ -13,7 +13,8 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  desktop:
+    name: Desktop (${{ matrix.platform }})
     strategy:
       fail-fast: false
       matrix:
@@ -22,6 +23,8 @@ jobs:
             platform: win
           - os: macos-latest
             platform: mac
+          - os: ubuntu-latest
+            platform: linux
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -37,10 +40,99 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Linux packaging dependencies
+        if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends fakeroot libarchive-tools rpm
+
       - name: Build bundles
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
         run: npm run build
 
       - name: Package & publish (${{ matrix.platform }})
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=2048
         run: npx electron-builder --${{ matrix.platform }} --publish always
+
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build mobile web bundle
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
+        run: npm run build:mobile
+
+      - name: Sync Capacitor Android project
+        run: npx cap sync android
+
+      - name: Build Android debug APK
+        env:
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx1536m -Dorg.gradle.daemon=false
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Build Android release APK and AAB
+        continue-on-error: true
+        env:
+          GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx1536m -Dorg.gradle.daemon=false
+        run: |
+          cd android
+          ./gradlew --no-daemon assembleRelease bundleRelease
+
+      - name: Collect Android release assets
+        shell: bash
+        run: |
+          mkdir -p release-assets
+          version="${GITHUB_REF_NAME#v}"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "release-assets/Moxie-Android-${version}-debug.apk"
+          if [ -f android/app/build/outputs/apk/release/app-release-unsigned.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release-unsigned.apk "release-assets/Moxie-Android-${version}-release-unsigned.apk"
+          fi
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk "release-assets/Moxie-Android-${version}-release.apk"
+          fi
+          if [ -f android/app/build/outputs/bundle/release/app-release.aab ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab "release-assets/Moxie-Android-${version}-release.aab"
+          fi
+          ls -la release-assets
+
+      - name: Ensure GitHub Release exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${{ github.ref_name }}" || gh release create "${{ github.ref_name }}" --title "Moxie ${{ github.ref_name }}" --notes "Automated release build for ${{ github.ref_name }}."
+
+      - name: Upload Android assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" release-assets/* --clobber

@@ -40,7 +40,7 @@ Moxie 是一款基于 Electron、React 和 Milkdown 的 Markdown 编辑器。它
 Windows 安装包文件名示例：
 
 ```text
-Moxie Setup 1.3.0.exe
+Moxie Setup 1.5.0.exe
 ```
 
 当前安装包未进行商业代码签名。Windows 可能会出现 SmartScreen 提示，选择“更多信息”后继续运行即可。你也可以从源码自行构建。

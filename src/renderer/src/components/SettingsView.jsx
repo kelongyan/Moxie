@@ -22,6 +22,8 @@ const round1 = (n) => Math.round(n * 10) / 10
 const round10 = (n) => Math.round(n / 10) * 10
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''
 const GITHUB_REPO_URL = 'https://github.com/kelongyan/Moxie'
+const CHINESE_FONT_PRESETS = ['Source Han Sans SC', 'Microsoft YaHei', 'Noto Sans SC', 'PingFang SC']
+const ENGLISH_FONT_PRESETS = ['Helvetica Neue', 'Segoe UI', 'Arial', 'Times New Roman']
 const SETTINGS_NAV = [
   { id: 'typography', icon: 'text-size', labelKey: 'settings.typography' },
   { id: 'appearance', icon: 'sun', labelKey: 'settings.appearance' },
@@ -212,7 +214,7 @@ export default function SettingsView({
 
 // Typography: four compact controls.
 function TypographyControls({ settings, onUpdateSettings, t }) {
-  const { fontSize, lineHeight, paragraphSpacing, pageWidth } = settings
+  const { fontSize, lineHeight, paragraphSpacing, pageWidth, chineseFontFamily, englishFontFamily } = settings
   const fontIdx = FONT_SIZE_PRESETS.findIndex((p) => p.size === fontSize)
   const lhIdx = LINE_HEIGHT_PRESETS.findIndex((p) => p.value === lineHeight)
   const psIdx = PARA_SPACING_PRESETS.findIndex((p) => p.value === paragraphSpacing)
@@ -222,6 +224,33 @@ function TypographyControls({ settings, onUpdateSettings, t }) {
   )
   return (
     <div className="settings-typo">
+      <div className="settings-font-panel">
+        <div className="settings-font-head">
+          <div>
+            <div className="settings-row-label">{t('settings.documentFonts')}</div>
+            <div className="settings-row-desc">{t('settings.documentFontsDesc')}</div>
+          </div>
+        </div>
+        <div className="settings-font-fields">
+          <FontField
+            label={t('settings.chineseFont')}
+            value={chineseFontFamily}
+            presets={CHINESE_FONT_PRESETS}
+            testId="settings-font-chinese"
+            onChange={(value) => onUpdateSettings({ chineseFontFamily: value })}
+          />
+          <FontField
+            label={t('settings.englishFont')}
+            value={englishFontFamily}
+            presets={ENGLISH_FONT_PRESETS}
+            testId="settings-font-english"
+            onChange={(value) => onUpdateSettings({ englishFontFamily: value })}
+          />
+        </div>
+        <div className="settings-font-preview">
+          中文排版测试 Moxie Markdown 123
+        </div>
+      </div>
       <div className="settings-typo-controls">
         <AdjustGroup
           title={t('settings.fontSize')} valueLabel={fontSize + ' px'}
@@ -253,5 +282,33 @@ function TypographyControls({ settings, onUpdateSettings, t }) {
         />
       </div>
     </div>
+  )
+}
+
+function FontField({ label, value, presets, testId, onChange }) {
+  return (
+    <label className="settings-font-field">
+      <span className="settings-font-label">{label}</span>
+      <input
+        className="settings-font-input"
+        data-testid={testId}
+        type="text"
+        spellCheck={false}
+        value={value || ''}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <span className="settings-font-presets">
+        {presets.map((font) => (
+          <button
+            key={font}
+            type="button"
+            className={font === value ? 'active' : ''}
+            onClick={() => onChange(font)}
+          >
+            {font}
+          </button>
+        ))}
+      </span>
+    </label>
   )
 }

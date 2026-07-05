@@ -1,6 +1,6 @@
 {
   "name": "moxie",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "description": "Moxie Markdown Editor",
   "author": "kelongyan",
   "license": "MIT",
@@ -25,7 +25,8 @@
     "cap:sync": "npm run build:mobile && cap sync",
     "cap:ios": "npm run build:mobile && cap sync ios && cap open ios",
     "cap:android": "npm run build:mobile && cap sync android && cap open android",
-    "dist:android": "npm run build:mobile && cap sync android && cd android && ./gradlew assembleRelease"
+    "dist:android": "npm run build:mobile && cap sync android && cd android && gradlew.bat assembleRelease",
+    "dist:android:debug": "npm run build:mobile && cap sync android && cd android && gradlew.bat assembleDebug"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.0",
@@ -104,7 +105,9 @@
     },
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "portable",
+        "zip"
       ],
       "icon": "build/icon.ico",
       "fileAssociations": [
@@ -121,6 +124,27 @@
           "description": "Moxie Markdown Document",
           "role": "Editor",
           "icon": "build/file-icon.ico"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ],
+      "icon": "icon.png",
+      "category": "Office",
+      "fileAssociations": [
+        {
+          "ext": "md",
+          "name": "Moxie Markdown Document",
+          "role": "Editor"
+        },
+        {
+          "ext": "markdown",
+          "name": "Moxie Markdown Document",
+          "role": "Editor"
         }
       ]
     },

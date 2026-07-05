@@ -26,7 +26,8 @@ import {
   applyPageWidth,
   applyFontSize,
   applyLineHeight,
-  applyParagraphSpacing
+  applyParagraphSpacing,
+  applyDocumentFonts
 } from './settings.js'
 import { applyCustomTheme } from './customThemes.js'
 import { fireToast } from './ui.js'
@@ -256,6 +257,9 @@ export default function App() {
   useEffect(() => {
     applyParagraphSpacing(settings.paragraphSpacing)
   }, [settings.paragraphSpacing])
+  useEffect(() => {
+    applyDocumentFonts(settings.chineseFontFamily, settings.englishFontFamily)
+  }, [settings.chineseFontFamily, settings.englishFontFamily])
   useEffect(() => {
     saveSettings(settings)
   }, [settings])
