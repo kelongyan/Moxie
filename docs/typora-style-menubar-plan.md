@@ -524,7 +524,7 @@ Moxie 当前已有 `new/open/openFolder/save/saveAs/exportPdf/closeTab/palette`�
   暖光                                           [可接]
   暖夜                                           [可接]
   莫兰迪·灰绿                                    [可接]
-  莫兰迪·豆沙                                    [可接]
+  德古拉紫                                      [可接]
   莫兰迪·雾蓝                                    [可接]
   莫兰迪·暮                                      [可接]
   ─────────────────
@@ -535,7 +535,7 @@ Moxie 当前已有 `new/open/openFolder/save/saveAs/exportPdf/closeTab/palette`�
   刷新主题                                      [部分]
 ```
 
-主题菜单应该从 `THEMES` 和 `customThemes` 动态生成，不要写死。当前选中的主题需要有勾选状态。
+主题菜单应该从 `APPEARANCE_MODES`、`THEME_PALETTES` 和 `customThemes` 动态生成，不要写死。当前选中的外观模式与配色需要有勾选状态。
 
 ### 8.7 帮助(H)
 

@@ -32,7 +32,9 @@ html {
   /* Writing font — matches the Moxie website (website/styles.css). */
   --font-write: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Hiragino Sans GB',
     'Source Han Sans SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
-  --font-mono: 'Space Grotesk', 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code', 'Cascadia Mono',
+    Consolas, 'Source Han Sans SC', 'Noto Sans CJK SC', 'Noto Sans SC',
+    'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', ui-monospace, monospace;
 
   /* Spacing & Radii */
   --radius-sm: 5px;
@@ -76,14 +78,38 @@ body.light {
   --accent-soft: rgba(184, 111, 82, 0.15);
   --accent-glow: rgba(184, 111, 82, 0.28);
 
-  /* Code blocks. --code-bg is the soft inline/block tint; --code-block-bg is the
-     darker background for CodeMirror (syntax-highlighted) code blocks — oneDark's
-     token colors are tuned for a dark surface, so the block must be dark for the
-     code to read clearly. */
+  /* Code blocks. --code-bg is the soft inline tint; --code-block-bg is the
+     full code panel surface and intentionally follows the active appearance
+     mode instead of staying dark in light themes. */
   --code-bg: #f4efe6;
   --code-border: #ded7ca;
-  --code-block-bg: #26221f;
-  --code-block-border: rgba(0, 0, 0, 0.25);
+  --code-block-bg: #f8f2e8;
+  --code-block-border: #e1d6c4;
+  --code-token-text: #4d463c;
+  --code-token-keyword: #7b4fc9;
+  --code-token-name: #c44f66;
+  --code-token-function: #2f6f9f;
+  --code-token-constant: #8c622c;
+  --code-token-type: #8b6d26;
+  --code-token-operator: #24777f;
+  --code-token-comment: #81776b;
+  --code-token-string: #547c3a;
+  --code-token-invalid: #b3261e;
+
+  /* Table UI */
+  --table-bg: #fffaf2;
+  --table-head-bg: #f3ebdd;
+  --table-head-text: var(--text-strong);
+  --table-grid: #e2d8c8;
+  --table-border: #d8cdbd;
+  --table-row-alt: rgba(184, 111, 82, 0.035);
+  --table-row-hover: rgba(184, 111, 82, 0.075);
+  --table-selection: rgba(184, 111, 82, 0.14);
+  --table-control-bg: #fffaf2;
+  --table-control-border: #dccfbe;
+  --table-menu-bg: #fffdf8;
+  --table-handle-line: rgba(184, 111, 82, 0.42);
+  --table-resize-handle: rgba(184, 111, 82, 0.66);
 
   /* Semantic */
   --danger: #b94b45;
@@ -132,6 +158,31 @@ body.dark {
   /* CodeMirror block sits a shade deeper than the page so it reads as a block. */
   --code-block-bg: #11100e;
   --code-block-border: rgba(255, 255, 255, 0.06);
+  --code-token-text: #d8d0c3;
+  --code-token-keyword: #e3a8ff;
+  --code-token-name: #ef858d;
+  --code-token-function: #8fc8ff;
+  --code-token-constant: #e7ba82;
+  --code-token-type: #e8cc85;
+  --code-token-operator: #82d6df;
+  --code-token-comment: #81766e;
+  --code-token-string: #a5d690;
+  --code-token-invalid: #ff7878;
+
+  /* Table UI */
+  --table-bg: #201c19;
+  --table-head-bg: #28231f;
+  --table-head-text: var(--text-strong);
+  --table-grid: #383129;
+  --table-border: #443a32;
+  --table-row-alt: rgba(223, 146, 118, 0.045);
+  --table-row-hover: rgba(223, 146, 118, 0.085);
+  --table-selection: rgba(223, 146, 118, 0.18);
+  --table-control-bg: #28231f;
+  --table-control-border: #4b4038;
+  --table-menu-bg: #25201d;
+  --table-handle-line: rgba(223, 146, 118, 0.54);
+  --table-resize-handle: rgba(223, 146, 118, 0.76);
 
   /* Semantic */
   --danger: #e27a70;
@@ -145,7 +196,7 @@ body.dark {
 }
 
 /* =====================================================
-   Morandi palettes — muted, low-saturation color schemes.
+   Built-in palettes.
    Each carries a light/dark base class; these only override the palette vars.
    ===================================================== */
 body.theme-morandi {
@@ -155,12 +206,20 @@ body.theme-morandi {
   --accent: #6f7f5d; --accent-strong: #4f6042; --accent-soft: rgba(111, 127, 93, 0.17); --accent-glow: rgba(111, 127, 93, 0.28);
   --code-bg: #eef0e7; --code-border: #d8dccf; --danger: #a85c58; --success: #607b58;
 }
-body.theme-morandi-rose {
-  --bg: #eee7e4; --bg-elevated: #f8f2f0; --bg-sidebar: #e6dedb; --bg-editor: #fbf7f5; --bg-activity: #d9cfcb;
-  --text: #3e3633; --text-strong: #241d1a; --muted: #6a5e59; --faint: #958985;
-  --border: #cec2bd; --border-soft: #e0d5d1; --hover: #e0d5d1; --active: #d3c5c0; --hover-elevated: #f0e9e6;
-  --accent: #9a746f; --accent-strong: #724d49; --accent-soft: rgba(154, 116, 111, 0.18); --accent-glow: rgba(154, 116, 111, 0.3);
-  --code-bg: #f1e9e6; --code-border: #e0d5d1; --danger: #a95450; --success: #677d5f;
+body.theme-dracula {
+  --bg: #f3eefb; --bg-elevated: #fbf8ff; --bg-sidebar: #ece5f8; --bg-editor: #fff9e8; --bg-activity: #ded6f1;
+  --text: #2f2b35; --text-strong: #17131d; --muted: #6b6570; --faint: #938aa3;
+  --border: #d8d0e9; --border-soft: #e7def2; --hover: #eee8f8; --active: #d7ccef; --hover-elevated: #fffaf1;
+  --accent: #644ac9; --accent-strong: #5638b4; --accent-soft: rgba(100, 74, 201, 0.12); --accent-glow: rgba(100, 74, 201, 0.2);
+  --code-bg: #f4eddd; --code-border: #e4dac5; --danger: #cb3a2a; --success: #14710a;
+  --code-block-bg: #f7f0e3; --code-block-border: #ded1bf;
+  --code-token-text: #4b4655; --code-token-keyword: #724fd7; --code-token-name: #c94f73; --code-token-function: #2f6fa7;
+  --code-token-constant: #98622e; --code-token-type: #84691f; --code-token-operator: #267c86; --code-token-comment: #81778b;
+  --code-token-string: #527d3d; --code-token-invalid: #b3261e;
+  --table-bg: #fffaf1; --table-head-bg: #f2eadb; --table-head-text: #201a2b; --table-grid: #e4d9c7; --table-border: #d9cdbb;
+  --table-row-alt: rgba(100, 74, 201, 0.035); --table-row-hover: rgba(100, 74, 201, 0.075); --table-selection: rgba(100, 74, 201, 0.13);
+  --table-control-bg: #fffaf1; --table-control-border: #d9cdbb; --table-menu-bg: #fffdf8; --table-handle-line: rgba(100, 74, 201, 0.42);
+  --table-resize-handle: rgba(100, 74, 201, 0.72);
 }
 body.theme-morandi-blue {
   --bg: #e7eaec; --bg-elevated: #f4f6f7; --bg-sidebar: #dfe4e7; --bg-editor: #f8fafb; --bg-activity: #d2d8dd;
@@ -177,13 +236,20 @@ body.dark.theme-morandi {
   --code-bg: #272e23; --code-border: #3b4437; --danger: #d9827b; --success: #9fbc91;
   --code-block-bg: #11150f; --code-block-border: rgba(255, 255, 255, 0.06);
 }
-body.dark.theme-morandi-rose {
-  --bg: #1d1917; --bg-elevated: #28211f; --bg-sidebar: #211c1a; --bg-editor: #28221f; --bg-activity: #161210;
-  --text: #d9cfcb; --text-strong: #f5ebe8; --muted: #a0928d; --faint: #746762;
-  --border: #443834; --border-soft: #352c29; --hover: #332a28; --active: #433733; --hover-elevated: #2f2724;
-  --accent: #d0a19a; --accent-strong: #edc2bd; --accent-soft: rgba(208, 161, 154, 0.18); --accent-glow: rgba(208, 161, 154, 0.32);
-  --code-bg: #302724; --code-border: #443834; --danger: #dd817a; --success: #a7bd8f;
-  --code-block-bg: #15100f; --code-block-border: rgba(255, 255, 255, 0.06);
+body.dark.theme-dracula {
+  --bg: #191a22; --bg-elevated: #242633; --bg-sidebar: #20212b; --bg-editor: #282a36; --bg-activity: #14151c;
+  --text: #e9e4f0; --text-strong: #fbf8ff; --muted: #b7b1c9; --faint: #8288a6;
+  --border: #3f4154; --border-soft: #303242; --hover: #303241; --active: #3b3e51; --hover-elevated: #2d2f3c;
+  --accent: #bd93f9; --accent-strong: #d6bcff; --accent-soft: rgba(189, 147, 249, 0.16); --accent-glow: rgba(189, 147, 249, 0.28);
+  --code-bg: #303241; --code-border: #3f4154; --danger: #ff6b6b; --success: #62f58a;
+  --code-block-bg: #1e1f29; --code-block-border: rgba(248, 248, 242, 0.07);
+  --code-token-text: #f0eef7; --code-token-keyword: #bd93f9; --code-token-name: #ff7aa8; --code-token-function: #8be9fd;
+  --code-token-constant: #ffb86c; --code-token-type: #ece077; --code-token-operator: #8be9fd; --code-token-comment: #8d91ad;
+  --code-token-string: #78d98a; --code-token-invalid: #ff5555;
+  --table-bg: #242633; --table-head-bg: #2c2e3b; --table-head-text: #f8f8f2; --table-grid: #3a3d50; --table-border: #464960;
+  --table-row-alt: rgba(189, 147, 249, 0.055); --table-row-hover: rgba(189, 147, 249, 0.105); --table-selection: rgba(189, 147, 249, 0.2);
+  --table-control-bg: #2c2e3b; --table-control-border: #4b4e65; --table-menu-bg: #282a36; --table-handle-line: rgba(189, 147, 249, 0.58);
+  --table-resize-handle: rgba(189, 147, 249, 0.82);
 }
 body.dark.theme-morandi-blue {
   --bg: #171b20; --bg-elevated: #20262d; --bg-sidebar: #1a2026; --bg-editor: #20262d; --bg-activity: #11161b;
@@ -376,7 +442,6 @@ button:focus-visible,
 .outline-item:active { background: var(--active); opacity: 0.85; }
 .palette-item:active { background: var(--active); transform: scale(0.98); }
 .status-btn:active { background: var(--active); }
-.recent-item:active { background: var(--active); opacity: 0.85; }
 .sidebar-head-actions button:active { background: var(--active); transform: scale(0.9); }
 .context-menu button:active { background: var(--active); opacity: 0.85; }
 .findbar button:active { background: var(--active); opacity: 0.8; }
@@ -1338,7 +1403,29 @@ button:focus-visible,
 
 /* Code-block "Copy" button: transient confirmation after a click. */
 .milkdown .copy-button {
-  transition: color 0.15s var(--ease-out), background 0.15s var(--ease-out);
+  min-height: 25px;
+  border: 1px solid color-mix(in srgb, var(--border-soft) 58%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 4px 9px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+  background: color-mix(in srgb, var(--code-block-bg) 72%, var(--bg-elevated));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 6px 14px rgba(0, 0, 0, 0.12);
+  transition:
+    color 0.15s var(--ease-out),
+    background 0.15s var(--ease-out),
+    border-color 0.15s var(--ease-out),
+    box-shadow 0.15s var(--ease-out);
+}
+.milkdown .copy-button:hover,
+.milkdown .copy-button:focus-visible {
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent-soft) 68%, var(--code-block-bg));
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 8px 18px var(--accent-glow);
 }
 .milkdown .copy-button.hm-copied {
   color: var(--success);
@@ -3529,102 +3616,6 @@ body.hm-full-width .source-editor {
 .welcome-action:active {
   transform: translateY(0);
 }
-/* Recent files (welcome screen) */
-.welcome-recents {
-  margin-top: 30px;
-  text-align: left;
-  max-width: 100%;
-  overflow: hidden;
-}
-.welcome-recents-head {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--faint);
-  padding: 0 10px 8px;
-}
-.welcome-recents-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: 280px;
-  overflow-y: auto;
-}
-.recent-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 9px 10px;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.12s var(--ease-out);
-}
-.recent-item:hover {
-  background: var(--hover);
-}
-.recent-icon {
-  color: var(--faint);
-  flex: 0 0 auto;
-}
-.recent-item:hover .recent-icon {
-  color: var(--accent);
-}
-.recent-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.recent-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.recent-path {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--faint);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.recent-time {
-  flex: 0 0 auto;
-  font-size: 12px;
-  color: var(--faint);
-  white-space: nowrap;
-}
-/* Remove-from-recent ✕ — always visible (faint), full + accented on hover. */
-.recent-remove {
-  flex: 0 0 auto;
-  width: 22px;
-  height: 22px;
-  margin-left: 6px;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.5;
-  transition: opacity 0.12s var(--ease-out), background 0.12s var(--ease-out),
-    color 0.12s var(--ease-out);
-}
-.recent-item:hover .recent-remove,
-.recent-remove:focus-visible { opacity: 1; }
-.recent-remove:hover { background: var(--accent-soft); color: var(--accent-strong); }
-.recent-remove:active { background: var(--active); }
-
 kbd {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -3821,19 +3812,21 @@ body.dark .milkdown {
 
 /* Code blocks — Typora style */
 .milkdown .ProseMirror pre {
-  background: var(--code-bg);
-  border: 1px solid var(--code-border);
+  background: var(--code-block-bg);
+  border: 1px solid var(--code-block-border);
   border-radius: var(--radius-md);
-  padding: 16px 18px;
-  margin: 1.5em 0;
+  padding: 0;
+  margin: 1.35em 0;
   overflow-x: auto;
   line-height: 1.6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 10px 24px rgba(0, 0, 0, 0.12);
 }
 .milkdown .ProseMirror pre code {
+  display: block;
   background: transparent;
   border: none;
-  padding: 0;
-  color: var(--text);
+  padding: 18px 20px;
+  color: var(--code-token-text);
   font-size: 0.92em;
   font-family: var(--font-mono);
 }
@@ -3863,29 +3856,165 @@ body.dark .milkdown {
   background: transparent;
 }
 
-/* CodeMirror (syntax-highlighted) code blocks: give them a dark surface so
-   oneDark's token colors read clearly, with padding + rounded corners matching
-   the plain <pre> blocks. Without this the block sat on the warm page
-   background and the gray oneDark text was washed out (issue: "code not
-   prominent"). */
-.milkdown .cm-editor {
+/* CodeMirror (syntax-highlighted) code blocks: one shell shared by light and
+   dark modes. The panel surface and token palette both come from CSS variables,
+   so light themes get light code blocks and dark themes keep dark ones. */
+.milkdown .milkdown-code-block {
+  position: relative;
   background: var(--code-block-bg) !important;
   border: 1px solid var(--code-block-border);
   border-radius: var(--radius-md);
-  margin: 1.5em 0;
+  padding: 0 !important;
+  margin: 1.35em 0;
+  overflow: visible;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+.milkdown .milkdown-code-block::before {
+  content: "";
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent-strong) 76%, transparent), transparent 72%);
+  opacity: 0.72;
+}
+.milkdown .milkdown-code-block .tools {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: min(260px, calc(100% - 20px));
+  padding: 0;
+  background: transparent !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s var(--ease-out);
+}
+.milkdown .milkdown-code-block:hover .tools,
+.milkdown .milkdown-code-block:focus-within .tools {
+  opacity: 1;
+  pointer-events: auto;
+}
+.milkdown .milkdown-code-block .tools .hm-code-language-input,
+.milkdown .milkdown-code-block .tools .tools-button-group button {
+  min-height: 25px;
+  border: 1px solid color-mix(in srgb, var(--border-soft) 58%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 4px 9px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+  background: color-mix(in srgb, var(--code-block-bg) 72%, var(--bg-elevated));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 6px 14px rgba(0, 0, 0, 0.12);
+  opacity: 1;
+  transition:
+    color 0.15s var(--ease-out),
+    background 0.15s var(--ease-out),
+    border-color 0.15s var(--ease-out),
+    box-shadow 0.15s var(--ease-out);
+}
+.milkdown .milkdown-code-block .tools .hm-code-language-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+}
+.milkdown .milkdown-code-block .tools .hm-code-language-input {
+  width: 86px;
+  min-height: 25px;
+  margin: 0;
+  border-radius: var(--radius-sm);
+  padding: 4px 9px;
+  outline: none;
+  text-align: center;
+  font-family: var(--font-ui);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.milkdown .milkdown-code-block .tools .hm-code-language-input:hover,
+.milkdown .milkdown-code-block .tools .hm-code-language-input:focus,
+.milkdown .milkdown-code-block .tools .tools-button-group button:hover,
+.milkdown .milkdown-code-block .tools .tools-button-group button:focus-visible {
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent-soft) 68%, var(--code-block-bg));
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 8px 18px var(--accent-glow);
+}
+.milkdown .milkdown-code-block .tools .tools-button-group button:first-child,
+.milkdown .milkdown-code-block .tools .tools-button-group button:last-child {
+  border-radius: var(--radius-sm);
+}
+.milkdown .milkdown-code-block .tools .milkdown-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1;
+}
+.milkdown .milkdown-code-block .tools .tools-button-group button svg {
+  width: 13px;
+  height: 13px;
+  color: currentColor;
+  fill: currentColor;
+  display: block;
+  overflow: visible;
+}
+.milkdown .cm-editor {
+  background: var(--code-block-bg) !important;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--code-token-text);
   font-size: 0.92em;
+  font-family: var(--font-mono);
+}
+.milkdown .cm-editor .cm-content {
+  color: var(--code-token-text);
 }
 .milkdown .cm-editor .cm-scroller {
-  padding: 14px 16px;
+  padding: 18px 20px;
   line-height: 1.6;
+  font-family: var(--font-mono);
 }
 .milkdown .cm-editor .cm-gutters {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.35);
+  border-right: 1px solid color-mix(in srgb, var(--border) 54%, transparent);
+  color: var(--faint);
 }
-/* The plain (non-CodeMirror) code block keeps its tinted look; only the
-   editable highlighted blocks go dark. */
+.milkdown .cm-editor .cm-lineNumbers .cm-gutterElement {
+  min-width: 2.5ch;
+  padding: 0 12px 0 0;
+}
+/* Keep Dracula dark explicit: future palette edits should not accidentally
+   collapse the dark-mode code block back to a light surface. */
+body.dark.theme-dracula .milkdown .ProseMirror pre {
+  background: var(--code-block-bg) !important;
+  border-color: var(--code-block-border);
+}
+body.dark.theme-dracula .milkdown .cm-editor,
+body.dark.theme-dracula .milkdown .cm-scroller,
+body.dark.theme-dracula .milkdown .cm-content {
+  background: var(--code-block-bg) !important;
+}
+body.dark.theme-dracula .milkdown .milkdown-code-block,
+body.dark.theme-dracula .milkdown .milkdown-code-block .preview {
+  background: var(--code-block-bg) !important;
+}
+body.dark.theme-dracula .milkdown .milkdown-code-block {
+  border: 1px solid var(--code-block-border);
+  border-radius: var(--radius-md);
+}
 
 /* Inline code */
 .milkdown .ProseMirror code:not(pre code) {
@@ -3961,45 +4090,174 @@ body.dark .milkdown {
   word-break: break-word;
 }
 
-/* Tables — elegant borders */
-.milkdown .ProseMirror table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1.1em 0;
-  overflow: hidden;
+/* Tables — dense editorial grid */
+.milkdown .milkdown-table-block {
+  position: relative;
+  margin: 1.25em 0;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  font-size: 0.95em;
+}
+.milkdown .milkdown-table-block .table-wrapper {
+  overflow: auto;
+  border: 1px solid var(--table-border);
+  border-radius: var(--radius-md);
+  background: var(--table-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 8px 22px rgba(0, 0, 0, 0.075);
+}
+.milkdown .ProseMirror table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+  min-width: 520px;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.94em;
+  background: var(--table-bg);
 }
 .milkdown .ProseMirror th,
 .milkdown .ProseMirror td {
-  border: none;
-  border-bottom: 1px solid var(--border-soft);
-  /* Compact rows: tight padding + line-height so a Markdown table reads densely
-     instead of wasting vertical space. */
-  padding: 6px 12px;
-  line-height: 1.5;
+  border: 0;
+  border-right: 1px solid var(--table-grid);
+  border-bottom: 1px solid var(--table-grid);
+  padding: 8px 12px;
+  line-height: 1.45;
   text-align: left;
-  /* Wrap long content (incl. unbroken CJK / URLs) instead of letting it overflow
-     and overlap neighbouring cells/rows (issue #6). */
   vertical-align: top;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
-/* Cell content is a paragraph; drop its block margins so each row stays one line
-   tall (this was the main reason rows looked so airy). */
+/* Cell content is a paragraph; drop its block margins so rows stay compact. */
 .milkdown .ProseMirror th > p,
 .milkdown .ProseMirror td > p {
   margin: 0;
   line-height: inherit;
 }
 .milkdown .ProseMirror th {
-  background: var(--code-bg);
-  font-weight: 600;
-  color: var(--text-strong);
+  background: var(--table-head-bg);
+  color: var(--table-head-text);
+  font-weight: 650;
+}
+.milkdown .ProseMirror thead th {
+  border-bottom-color: var(--table-border);
+}
+.milkdown .ProseMirror tbody tr:nth-child(even) td {
+  background: var(--table-row-alt);
+}
+.milkdown .ProseMirror tbody tr:hover td {
+  background: var(--table-row-hover);
+}
+.milkdown .ProseMirror th:last-child,
+.milkdown .ProseMirror td:last-child {
+  border-right: none;
 }
 .milkdown .ProseMirror tr:last-child td {
   border-bottom: none;
+}
+.milkdown .milkdown-table-block td code:not(pre code) {
+  display: inline;
+  padding: 1px 4px;
+  font-size: 0.85em;
+  line-height: 1.45;
+  border-radius: 4px;
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--code-bg) 82%, var(--table-bg));
+  border-color: color-mix(in srgb, var(--code-border) 78%, var(--table-border));
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.milkdown .milkdown-table-block .selectedCell::after {
+  background: var(--table-selection);
+  opacity: 1;
+}
+.milkdown .milkdown-table-block .drag-preview {
+  background: var(--table-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+  opacity: 0.72;
+}
+.milkdown .milkdown-table-block .drag-preview table {
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+}
+.milkdown .milkdown-table-block .handle {
+  color: var(--accent-strong);
+  transition:
+    opacity 0.15s var(--ease-out),
+    background 0.15s var(--ease-out),
+    border-color 0.15s var(--ease-out),
+    box-shadow 0.15s var(--ease-out);
+}
+.milkdown .milkdown-table-block svg {
+  fill: currentColor;
+}
+.milkdown .milkdown-table-block .cell-handle {
+  background: var(--table-control-bg);
+  border: 1px solid var(--table-control-border);
+  color: var(--accent-strong);
+  box-shadow: var(--shadow-sm);
+}
+.milkdown .milkdown-table-block .cell-handle:hover,
+.milkdown .milkdown-table-block .cell-handle:has(.button-group:hover) {
+  background: var(--table-menu-bg);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--table-control-border));
+  box-shadow: 0 8px 20px var(--accent-glow);
+}
+.milkdown .milkdown-table-block .cell-handle[data-role='col-drag-handle'] {
+  height: 15px;
+  min-width: 30px;
+}
+.milkdown .milkdown-table-block .cell-handle[data-role='row-drag-handle'] {
+  width: 15px;
+  min-height: 30px;
+}
+.milkdown .milkdown-table-block .cell-handle .button-group {
+  background: var(--table-menu-bg);
+  border: 1px solid var(--table-control-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  overflow: hidden;
+}
+.milkdown .milkdown-table-block .cell-handle .button-group button {
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  margin: 4px;
+  padding: 5px;
+}
+.milkdown .milkdown-table-block .cell-handle .button-group button:hover {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+}
+.milkdown .milkdown-table-block .cell-handle .button-group button:active {
+  background: var(--table-selection);
+}
+.milkdown .milkdown-table-block .line-handle {
+  background: var(--table-handle-line);
+}
+.milkdown .milkdown-table-block .line-handle .add-button {
+  background: var(--table-control-bg);
+  color: var(--accent-strong);
+  border: 1px solid var(--table-control-border);
+  box-shadow: var(--shadow-sm);
+}
+.milkdown .milkdown-table-block .line-handle .add-button:hover {
+  background: var(--table-menu-bg);
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--table-control-border));
+  box-shadow: 0 8px 20px var(--accent-glow);
+}
+.milkdown .milkdown-table-block .line-handle .add-button:active {
+  background: var(--table-selection);
+}
+.milkdown .milkdown-table-block .line-handle .add-button svg,
+.milkdown .milkdown-table-block .line-handle .add-button .milkdown-icon {
+  width: 14px;
+  height: 14px;
+  line-height: 1;
 }
 
 /* Selected-node indicator. ProseMirror's default is a hard light-blue (#8cf) 2px
@@ -4033,7 +4291,20 @@ body.dark .milkdown {
 }
 /* Theme the column-resize handle (default is a hard blue #adf bar). */
 .milkdown .ProseMirror .column-resize-handle {
-  background-color: var(--accent);
+  right: -3px;
+  width: 6px;
+  border-radius: 999px;
+  background: var(--table-resize-handle);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--table-bg) 52%, transparent),
+    0 0 12px var(--accent-glow);
+  opacity: 0.92;
+}
+.milkdown .ProseMirror .column-resize-handle:hover {
+  background: var(--accent-strong);
+  opacity: 1;
+}
+.milkdown .ProseMirror.resize-cursor {
+  cursor: col-resize;
 }
 
 /* Horizontal rule — elegant divider */
@@ -4054,13 +4325,36 @@ body.dark .milkdown {
   box-shadow: var(--shadow-sm);
 }
 
-/* Emphasis */
-.milkdown .ProseMirror strong {
-  font-weight: 600;
+/* Inline semantic marks */
+.milkdown .ProseMirror strong,
+.milkdown .ProseMirror b {
   color: var(--text-strong);
+  font-weight: 800;
 }
-.milkdown .ProseMirror em {
+.milkdown .ProseMirror em,
+.milkdown .ProseMirror i {
   font-style: italic;
+}
+.milkdown .ProseMirror del,
+.milkdown .ProseMirror s,
+.milkdown .ProseMirror strike {
+  color: color-mix(in srgb, var(--text) 74%, var(--muted));
+  -webkit-text-decoration-line: line-through;
+  text-decoration-line: line-through;
+  text-decoration-color: color-mix(in srgb, currentColor 72%, transparent);
+  text-decoration-thickness: 0.08em;
+}
+.milkdown .ProseMirror u,
+.milkdown .ProseMirror ins {
+  color: var(--text);
+  -webkit-text-decoration-line: underline;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 54%, currentColor);
+  text-decoration-thickness: 0.075em;
+  text-underline-offset: 0.18em;
+}
+.milkdown .ProseMirror ins {
+  text-decoration-style: solid;
 }
 
 /* ==highlight== (issue #14) — a soft marker, readable in light & dark. The

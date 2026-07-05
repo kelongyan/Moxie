@@ -35,9 +35,13 @@
     "@capacitor/share": "^8.0.1",
     "@capacitor/status-bar": "^8.0.2",
     "@capawesome/capacitor-file-picker": "^8.0.2",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/view": "^6.43.0",
+    "@lezer/highlight": "^1.2.3",
     "@milkdown/crepe": "^7.6.5",
     "chokidar": "^4.0.3",
     "mermaid": "^11.15.0",
+    "micromark-util-decode-string": "^2.0.1",
     "remark-frontmatter": "^5.0.0"
   },
   "devDependencies": {
@@ -88,12 +92,12 @@
       "fileAssociations": [
         {
           "ext": "md",
-          "name": "Markdown Document",
+          "name": "Moxie Markdown Document",
           "role": "Editor"
         },
         {
           "ext": "markdown",
-          "name": "Markdown Document",
+          "name": "Moxie Markdown Document",
           "role": "Editor"
         }
       ]
@@ -106,15 +110,17 @@
       "fileAssociations": [
         {
           "ext": "md",
-          "name": "Markdown Document",
+          "name": "Moxie.Markdown",
+          "description": "Moxie Markdown Document",
           "role": "Editor",
-          "icon": "build/icon.ico"
+          "icon": "build/file-icon.ico"
         },
         {
           "ext": "markdown",
-          "name": "Markdown Document",
+          "name": "Moxie.Markdown",
+          "description": "Moxie Markdown Document",
           "role": "Editor",
-          "icon": "build/icon.ico"
+          "icon": "build/file-icon.ico"
         }
       ]
     },

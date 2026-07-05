@@ -75,7 +75,11 @@ export const DEFAULT_SETTINGS = {
   // (cleaner for Chinese-first writing). Editor.jsx applies it as the `spellcheck`
   // attribute on the Crepe `.ProseMirror` contenteditable; other surfaces (the
   // source textarea, inputs) always opt out via spellCheck={false}.
-  spellcheck: false
+  spellcheck: false,
+  // Restore open document tabs from the previous app shutdown on direct startup.
+  // Default OFF: launching Moxie opens Home; launching a Markdown file opens that
+  // file as the clean first tab.
+  restoreTabsOnStartup: false
 }
 
 function normalizeWidth(w) {
@@ -112,7 +116,8 @@ export function loadSettings() {
       ),
       imageUploadCommand:
         typeof raw.imageUploadCommand === 'string' ? raw.imageUploadCommand : '',
-      spellcheck: raw.spellcheck === true
+      spellcheck: raw.spellcheck === true,
+      restoreTabsOnStartup: raw.restoreTabsOnStartup === true
     }
   } catch {
     return { ...DEFAULT_SETTINGS }

@@ -93,12 +93,6 @@ export const STRINGS = {
     'welcome.newFile': 'New File',
     'welcome.openFile': 'Open File',
     'welcome.openFolder': 'Open Folder',
-    'welcome.recent': 'Recent files',
-    'welcome.removeRecent': 'Remove from recent',
-    'time.justNow': 'just now',
-    'time.minutesAgo': '{n} min ago',
-    'time.hoursAgo': '{n}h ago',
-    'time.yesterday': 'yesterday',
 
     // tabs
     'tab.new': 'New tab (Ctrl+N)',
@@ -175,6 +169,10 @@ export const STRINGS = {
     'settings.typography': 'Typography',
     'settings.appearance': 'Appearance',
     'settings.appearanceMode': 'Appearance mode',
+    'settings.startup': 'Startup',
+    'settings.startupRestore': 'Startup Restore',
+    'settings.startupRestoreDesc':
+      'Restore the tabs from your last shutdown when opening Moxie directly. Files opened from Explorer still take focus first.',
     'settings.language': 'Language',
     'settings.openThemesFolder': 'Open themes folder',
     'settings.getMoreThemes': 'Get more themes',
@@ -382,12 +380,6 @@ export const STRINGS = {
     'welcome.newFile': '新建文件',
     'welcome.openFile': '打开文件',
     'welcome.openFolder': '打开文件夹',
-    'welcome.recent': '最近文件',
-    'welcome.removeRecent': '从最近列表移除',
-    'time.justNow': '刚刚',
-    'time.minutesAgo': '{n} 分钟前',
-    'time.hoursAgo': '{n} 小时前',
-    'time.yesterday': '昨天',
 
     'tab.new': '新建标签 (Ctrl+N)',
     'tab.untitled': '未命名',
@@ -458,6 +450,10 @@ export const STRINGS = {
     'settings.typography': '排版',
     'settings.appearance': '外观',
     'settings.appearanceMode': '外观模式',
+    'settings.startup': '启动',
+    'settings.startupRestore': '启动恢复',
+    'settings.startupRestoreDesc':
+      '直接打开 Moxie 时恢复上次关闭前的标签页；从资源管理器打开的 Markdown 文件会优先显示。',
     'settings.language': '语言',
     'settings.openThemesFolder': '打开主题目录',
     'settings.getMoreThemes': '获取更多主题',

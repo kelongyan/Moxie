@@ -1,6 +1,6 @@
-// App lifecycle: session restore + debounced persistence + close-time flush,
-// plus the startup update check, the global toast listener, and first-run
-// onboarding. Extracted verbatim in behavior from App.jsx (phase-2, US-4).
+// App lifecycle: debounced session persistence + close-time flush, plus the
+// startup update check, global toast listener, and first-run marker.
+// Extracted verbatim in behavior from App.jsx (phase-2, US-4).
 //
 // `flushSession` is returned because the window-close guard (still in App)
 // calls it synchronously before quitting, so a keystroke inside the per-tab
@@ -11,27 +11,24 @@
 // callbacks passed to StatusBar); this hook is pure lifecycle.
 //
 // Options:
-//   session        — the loaded session snapshot (loadSession(), stable)
-//   tabs/activePath/workspace/theme/appearanceMode/themePalette/customTheme/lang/recents/sidebarOpen/
+//   session/settings/tabs/activePath/workspace/appearanceMode/themePalette/customTheme/lang/recents/sidebarOpen/
 //   sidebarMode    — read by the persistence effect to build the snapshot
-//   openPaths      — used by the restore effect to reopen saved files
-//   tabsRef        — live tabs mirror (restore adds scratch tabs; flush reads it)
-//   setActiveId/setTabs/setSidebarMode/setHome/tRef — restore + onboarding
+//   openPaths      — startup restore + OS file launch path opening
+//   tabsRef        — live tabs mirror (flush reads it)
+//   setHome/setActiveId/setWorkspace/setSidebarMode/setSidebarOpen — startup view
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LS, genId, isHeavyDoc, isNewerVersion } from '../paths.js'
+import { baseName, genId, isHeavyDoc, LS, isNewerVersion } from '../paths.js'
 import { HM_TOAST_EVENT } from '../ui.js'
-import { welcomeDoc } from '../onboarding.js'
-import { DEFAULT_LANG } from '../i18n.jsx'
 
 const ONBOARDED_KEY = 'moxie.onboarded.v1'
 const UPDATE_DISMISS_KEY = 'moxie.update.dismissed'
 
 export function useAppLifecycle({
   session,
+  settings,
   tabs,
   activePath,
   workspace,
-  theme,
   appearanceMode,
   themePalette,
   customTheme,
@@ -41,11 +38,12 @@ export function useAppLifecycle({
   sidebarMode,
   openPaths,
   tabsRef,
+  setHome,
   setActiveId,
   setTabs,
+  setWorkspace,
   setSidebarMode,
-  setHome,
-  tRef
+  setSidebarOpen
 }) {
   const [update, setUpdate] = useState(null)
   // Transient bottom-center toast (e.g. "Copied"), fired via a `hm:toast` event.
@@ -61,53 +59,81 @@ export function useAppLifecycle({
       // Patch unsaved-scratch content from the live mirror so a close-time write
       // captures edits still inside a tab's debounce window. (commitAllLive, run
       // before this on the close path, already synced tabsRef.current.)
-      const untitled = tabsRef.current
-        .filter((t) => t.kind !== 'settings' && !t.path && t.content !== t.savedContent && (t.content || '').trim())
-        .map((t) => ({ title: t.title, content: t.content }))
+      const untitled = settings.restoreTabsOnStartup
+        ? tabsRef.current
+            .filter((t) => t.kind !== 'settings' && !t.path && t.content !== t.savedContent && (t.content || '').trim())
+            .map((t) => ({ title: t.title, content: t.content }))
+        : []
       localStorage.setItem(LS, JSON.stringify({ ...sessionRef.current, untitled }))
     } catch {
       /* quota / serialization failure — skip this snapshot */
     }
-  }, [tabsRef])
+  }, [tabsRef, settings.restoreTabsOnStartup])
 
-  // Restore session tabs on first mount
+  // Startup coordinator. Direct launches land on Home by default. With Startup
+  // Restore enabled, saved document tabs come back; any file passed by the OS is
+  // opened last so it wins the active tab.
   useEffect(() => {
-    const paths = (session.openPaths || []).filter(Boolean)
-    const untitled = (session.untitled || []).filter((u) => u && (u.content || '').trim())
-    // Recreate unsaved scratch tabs (no path) from the last session.
-    const addUntitled = () => {
-      if (!untitled.length) return null
-      const created = untitled.map((u) => ({
-        id: genId(),
-        path: null,
-        title: u.title || tRef.current('tab.untitled'),
-        content: u.content,
-        // No prior save, so the baseline is empty → the tab shows as unsaved.
-        savedContent: '',
-        mtimeMs: null,
-        reloadNonce: 0,
-        heavy: isHeavyDoc(u.content)
-      }))
-      tabsRef.current = [...tabsRef.current, ...created]
-      setTabs((prev) => [...prev, ...created])
-      return created
-    }
-    // Restore silently: skip files that were deleted/moved since last session
-    // without popping an error for each one.
-    if (paths.length) {
-      openPaths(paths, true).then(() => {
-        addUntitled()
-        if (session.activePath) {
-          setTabs((prev) => {
-            const t = prev.find((x) => x.path === session.activePath)
-            if (t) setActiveId(t.id)
-            return prev
-          })
+    let cancelled = false
+    ;(async () => {
+      const initial = window.api.initialOpenRequest
+        ? await window.api.initialOpenRequest()
+        : { files: [], folder: null }
+      if (cancelled) return
+
+      const startupFiles = Array.isArray(initial?.files) ? initial.files.filter(Boolean) : []
+      const startupFolder = initial?.folder || null
+
+      if (startupFolder) {
+        setWorkspace({ rootPath: startupFolder, rootName: baseName(startupFolder) })
+        setSidebarMode('files')
+        setSidebarOpen(true)
+      }
+
+      if (settings.restoreTabsOnStartup) {
+        const restorePaths = (session.openPaths || []).filter(Boolean)
+        if (restorePaths.length) await openPaths(restorePaths, true)
+        if (cancelled) return
+
+        const untitled = (session.untitled || []).filter((u) => u && (u.content || '').trim())
+        if (untitled.length) {
+          const created = untitled.map((u) => ({
+            id: genId(),
+            kind: 'doc',
+            path: null,
+            title: u.title || 'Untitled',
+            content: u.content,
+            savedContent: '',
+            mtimeMs: null,
+            reloadNonce: 0,
+            heavy: isHeavyDoc(u.content)
+          }))
+          tabsRef.current = [...tabsRef.current, ...created]
+          setTabs((prev) => [...prev, ...created])
+          if (!restorePaths.length && !startupFiles.length) setActiveId(created[0].id)
+          setHome(false)
         }
-      })
-    } else {
-      const created = addUntitled()
-      if (created && created.length) setActiveId(created[0].id)
+
+        if (session.activePath && !startupFiles.length) {
+          const norm = session.activePath.replace(/\\/g, '/')
+          const restored = tabsRef.current.find((t) => (t.path || '').replace(/\\/g, '/') === norm)
+          if (restored) {
+            setActiveId(restored.id)
+            setHome(false)
+          }
+        }
+      } else {
+        setHome(true)
+      }
+
+      if (startupFiles.length) {
+        await openPaths(startupFiles, true)
+      } else if (!settings.restoreTabsOnStartup || !tabsRef.current.length) {
+        setHome(true)
+      }
+    })()
+    return () => {
+      cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -116,7 +142,6 @@ export function useAppLifecycle({
   useEffect(() => {
     const data = {
       workspace,
-      theme,
       appearanceMode,
       themePalette,
       customTheme,
@@ -124,15 +149,17 @@ export function useAppLifecycle({
       recents,
       sidebarOpen,
       sidebarMode,
-      openPaths: tabs.map((t) => t.path).filter(Boolean),
+      openPaths: settings.restoreTabsOnStartup ? tabs.map((t) => t.path).filter(Boolean) : [],
       // Persist unsaved scratch/new tabs (no path, with edited content) so they
       // survive a restart — closing the app no longer silently loses them. Only
       // dirty tabs are stored, so the untouched welcome doc / empty new tabs
       // don't keep coming back. Saved files are reopened from disk instead.
-      untitled: tabs
-        .filter((t) => t.kind !== 'settings' && !t.path && t.content !== t.savedContent && (t.content || '').trim())
-        .map((t) => ({ title: t.title, content: t.content })),
-      activePath
+      untitled: settings.restoreTabsOnStartup
+        ? tabs
+            .filter((t) => t.kind !== 'settings' && !t.path && t.content !== t.savedContent && (t.content || '').trim())
+            .map((t) => ({ title: t.title, content: t.content }))
+        : [],
+      activePath: settings.restoreTabsOnStartup ? activePath : null
     }
     sessionRef.current = data
     // Debounce the write: this effect runs on every keystroke (tabs/content
@@ -144,7 +171,6 @@ export function useAppLifecycle({
     return () => clearTimeout(id)
   }, [
     workspace,
-    theme,
     appearanceMode,
     themePalette,
     customTheme,
@@ -154,6 +180,7 @@ export function useAppLifecycle({
     sidebarMode,
     tabs,
     activePath,
+    settings.restoreTabsOnStartup,
     flushSession
   ])
 
@@ -213,24 +240,11 @@ export function useAppLifecycle({
     })
   }, [])
 
-  // ------------------------- first-run onboarding ------------------
+  // ------------------------- startup marker ------------------
   useEffect(() => {
     if (localStorage.getItem(ONBOARDED_KEY)) return
     localStorage.setItem(ONBOARDED_KEY, '1')
-    // Only greet on a genuinely fresh start (no restored session — neither saved
-    // files nor unsaved scratch tabs).
-    if ((session.openPaths || []).filter(Boolean).length || (session.untitled || []).length) return
-    const doc = welcomeDoc(session.lang || DEFAULT_LANG)
-    const id = genId()
-    setTabs((prev) => [
-      ...prev,
-      { id, path: null, title: doc.title, content: doc.content, savedContent: doc.content, mtimeMs: null, reloadNonce: 0 }
-    ])
-    setActiveId(id)
-    // Keep the outline mode ready for the demo doc, but leave the pane closed
-    // so the first app window opens on a clean writing surface.
-    setHome(false)
-    setSidebarMode('outline')
+    setHome(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

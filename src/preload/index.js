@@ -66,6 +66,7 @@ const api = {
 
   // update check (notify-only)
   checkUpdate: () => ipcRenderer.invoke('update:check'),
+  initialOpenRequest: () => ipcRenderer.invoke('app:initialOpenRequest'),
 
   // app close: main asks before closing so the renderer can warn about unsaved
   // changes, then calls confirmAppClose() to proceed or cancelAppClose() to abort.

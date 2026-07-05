@@ -186,6 +186,7 @@ export function useFileOps({
         liveContentRef.current.delete(id)
         const idx = prev.findIndex((x) => x.id === id)
         const next = prev.filter((x) => x.id !== id)
+        tabsRef.current = next
         setActiveId((cur) => {
           if (cur !== id) return cur
           if (next.length === 0) return null
@@ -256,6 +257,7 @@ export function useFileOps({
       setTabs((prev) => {
         const idx = prev.findIndex((x) => x.id === id)
         const next = prev.filter((x) => x.id !== id)
+        tabsRef.current = next
         setActiveId((cur) => (cur !== id ? cur : next.length ? next[Math.min(idx, next.length - 1)].id : null))
         return next
       })
@@ -282,7 +284,9 @@ export function useFileOps({
       }
       setActiveId(keepId)
       setSplitId(null)
-      return prev.filter((t) => t.id === keepId)
+      const next = prev.filter((t) => t.id === keepId)
+      tabsRef.current = next
+      return next
     })
   }, [commitAllLive, setTabs, setActiveId, setSplitId, liveTimersRef, liveContentRef, tRef])
 
@@ -338,11 +342,17 @@ export function useFileOps({
   const saveTab = useCallback(
     async (id, forceDialog = false) => {
       commitAllLive() // flush any textarea edits in the debounce window before reading
-      const tab = tabsRef.current.find((t) => t.id === id)
+      let tab = tabsRef.current.find((t) => t.id === id)
       if (!tab) return
       // Settings tabs aren't documents — ⌘S / the save button must never try to
       // write one to disk (it has no path and no real content).
       if (tab.kind === 'settings') return
+      const richMarkdown = editorApis.current[id]?.getMarkdown?.()
+      if (typeof richMarkdown === 'string' && richMarkdown !== tab.content) {
+        tab = { ...tab, content: richMarkdown }
+        tabsRef.current = tabsRef.current.map((t) => (t.id === id ? tab : t))
+        setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, content: richMarkdown } : t)))
+      }
       let target = tab.path
       if (!target || forceDialog) {
         // Mobile has no native save dialog: ask for a filename, then write into
@@ -357,7 +367,7 @@ export function useFileOps({
       }
       await writeTab(tab, target)
     },
-    [commitAllLive, writeTab, isMobile, tabsRef, setSaveNameState]
+    [commitAllLive, writeTab, isMobile, tabsRef, setTabs, editorApis, setSaveNameState]
   )
 
   // Commit a mobile "save as": let the platform layer place the named file in

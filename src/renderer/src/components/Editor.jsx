@@ -14,8 +14,12 @@ import {
 import { imageBlockConfig } from '@milkdown/kit/component/image-block'
 import { inlineImageConfig } from '@milkdown/kit/component/image-inline'
 import { codeBlockConfig } from '@milkdown/kit/component/code-block'
+import { TableNodeView } from '@milkdown/kit/component/table-block'
 import './editor-codeblock-eager.js' // side effect: root-fix #25 — eager, non-tearing code-block node view
 import { inlineCodeSchema } from '@milkdown/kit/preset/commonmark'
+import { columnResizingPlugin, tableSchema } from '@milkdown/kit/preset/gfm'
+import { updateColumnsOnResize } from '@milkdown/kit/prose/tables'
+import { $view } from '@milkdown/kit/utils'
 import { LanguageDescription, LanguageSupport, StreamLanguage } from '@codemirror/language'
 import { TextSelection, Plugin } from '@milkdown/prose/state'
 import '@milkdown/crepe/theme/common/style.css'
@@ -35,6 +39,7 @@ import { tableBreakKeymap, tableCellBreakHandler, brToBreakRemarkPlugin } from '
 import { attachMdPasteHandler } from './editor-md-paste.js'
 import { normalizeDisplayMath, createMathBlockPromotionPlugin } from './editor-math.js'
 import { splitMarkdown, CHUNK_THRESHOLD, CHUNK_SIZE, appendChunks } from './editor-chunked-parse.js'
+import { remarkCjkInlineMarks } from './editor-cjk-inline-marks.js'
 import { createToolbarScanner } from './editor-toolbar.js'
 import { createBlockControls } from './editor-block-controls.js'
 import remarkFrontmatter from 'remark-frontmatter'
@@ -47,6 +52,7 @@ import {
 } from './editor-review.js'
 import { normalizeReviewMarkupMarkdown } from '../reviewMarkup.js'
 import { strikeInputWouldCorruptCriticMarkup } from '../strikeGuard.js'
+import { moxieCodeMirrorTheme } from '../codemirror-theme.js'
 
 // Reconstruct `{~~old~>new~~}` substitution markers that GFM strikethrough
 // consumed during parse. remark turns `{~~old~>new~~}` into three mdast nodes:
@@ -241,6 +247,73 @@ const mermaidLanguage = LanguageDescription.of({
   async load() {
     return new LanguageSupport(StreamLanguage.define(() => ({ token: () => null })))
   }
+})
+
+const TABLE_RESIZE_EDGE_PX = 8
+const TABLE_DEFAULT_CELL_MIN_WIDTH = 100
+
+function isTableColumnResizeGesture(event, view) {
+  const isMouseLike =
+    (typeof MouseEvent !== 'undefined' && event instanceof MouseEvent) ||
+    (typeof PointerEvent !== 'undefined' && event instanceof PointerEvent)
+  if (!isMouseLike) return false
+
+  const target = event.target
+  if (!(target instanceof HTMLElement)) return false
+  if (target.closest('.column-resize-handle')) return true
+  if (view?.dom?.classList?.contains('resize-cursor')) return true
+
+  const cell = target.closest('th, td')
+  if (!cell) return false
+  const rect = cell.getBoundingClientRect()
+  return (
+    Math.abs(event.clientX - rect.right) <= TABLE_RESIZE_EDGE_PX ||
+    Math.abs(event.clientX - rect.left) <= TABLE_RESIZE_EDGE_PX
+  )
+}
+
+class MoxieTableNodeView extends TableNodeView {
+  constructor(...args) {
+    super(...args)
+    this.syncColumnWidths()
+  }
+
+  syncColumnWidths(node = this.node) {
+    const table = this.dom?.querySelector('table.children')
+    if (!table) return
+
+    let colgroup = Array.from(table.children).find((child) => child.tagName === 'COLGROUP')
+    if (!colgroup) {
+      colgroup = document.createElement('colgroup')
+      table.insertBefore(colgroup, this.contentDOM?.parentNode === table ? this.contentDOM : table.firstChild)
+    }
+    updateColumnsOnResize(node, colgroup, table, TABLE_DEFAULT_CELL_MIN_WIDTH)
+  }
+
+  update(node) {
+    const updated = super.update(node)
+    this.syncColumnWidths(node)
+    return updated
+  }
+
+  stopEvent(event) {
+    if (
+      (event.type === 'mousedown' || event.type === 'pointerdown') &&
+      isTableColumnResizeGesture(event, this.view)
+    ) {
+      return false
+    }
+    return super.stopEvent(event)
+  }
+
+  ignoreMutation(mutation) {
+    if (mutation.target instanceof Element && mutation.target.closest('colgroup')) return true
+    return super.ignoreMutation(mutation)
+  }
+}
+
+const moxieTableBlockView = $view(tableSchema.node, (ctx) => {
+  return (node, view, getPos) => new MoxieTableNodeView(ctx, node, view, getPos)
 })
 
 // Localize the image-block / inline-image UI text (caption placeholder, upload
@@ -473,6 +546,7 @@ export default function Editor({
         // is added via a delegated handler below + CSS, since Crepe gives no
         // built-in "Copied!" state.)
         [CrepeFeature.CodeMirror]: {
+          theme: moxieCodeMirrorTheme,
           copyText: t('code.copy'),
           // previewToggleText is consumed by the feature to BUILD the toggle
           // button, so it must live in the feature config (not codeBlockConfig)
@@ -592,6 +666,11 @@ export default function Editor({
         { plugin: remarkFrontmatter, options: undefined },
         { plugin: remarkFrontmatterAnywhere, options: undefined },
         { plugin: brToBreakRemarkPlugin, options: undefined },
+        // CommonMark rejects `**中文。**下一句` because the closing marker is
+        // followed by a word character. Chinese writing commonly omits the
+        // space, so recover those source-readable inline marks before Milkdown
+        // turns the mdast into ProseMirror nodes.
+        { plugin: remarkCjkInlineMarks, options: undefined },
         // Merge fragmented inline HTML (<span>x</span>) into whole fragments so
         // the html node view can render them (issue #14).
         { plugin: remarkMergeInlineHtml, options: undefined },
@@ -620,6 +699,12 @@ export default function Editor({
     // YAML front matter (`---` block at the top) — a block node rendered as a
     // structured key/value card (see editor-frontmatter.js).
     crepe.editor.use(frontmatterSchema)
+    // GFM's table preset includes row/column editing, but not column resizing.
+    // Add the official wrapper so users can drag table boundaries to set widths.
+    crepe.editor.use(columnResizingPlugin)
+    // Crepe's table node view provides the toolbar/drag handles but omits the
+    // colgroup expected by prosemirror-tables' column resizing plugin.
+    crepe.editor.use(moxieTableBlockView)
     crepeRef.current = crepe
 
     // Block controls (setBlock / reportActiveBlock / refreshLevel / scheduleLevel)

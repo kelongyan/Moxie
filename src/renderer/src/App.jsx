@@ -9,9 +9,7 @@ import {
   THEME_PALETTES,
   DEFAULT_APPEARANCE_MODE,
   DEFAULT_THEME_PALETTE,
-  applyTheme,
-  appearanceToLegacyTheme,
-  legacyThemeToAppearance
+  applyTheme
 } from './themes.js'
 import { I18nProvider, translate, DEFAULT_LANG } from './i18n.jsx'
 import Welcome from './components/Welcome.jsx'
@@ -52,12 +50,11 @@ export default function App() {
   // Start with the file/outline pane closed so the writing surface stays clear.
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [sidebarMode, setSidebarMode] = useState(session.sidebarMode || 'files') // 'files' or 'outline'
-  const legacyAppearance = legacyThemeToAppearance(session.theme)
   const [appearanceMode, setAppearanceMode] = useState(
-    session.appearanceMode || legacyAppearance.appearanceMode || DEFAULT_APPEARANCE_MODE
+    session.appearanceMode || DEFAULT_APPEARANCE_MODE
   )
   const [themePalette, setThemePalette] = useState(
-    session.themePalette || legacyAppearance.themePalette || DEFAULT_THEME_PALETTE
+    session.themePalette || DEFAULT_THEME_PALETTE
   )
   // Active custom CSS theme (filename in userData/themes), or null. Overlays the
   // built-in base theme. `customThemes` is the list scanned from that folder.
@@ -73,7 +70,7 @@ export default function App() {
   // "Home" shows the welcome/landing page while keeping open tabs mounted (so
   // returning to a document doesn't re-create its editor). Cleared whenever a
   // tab is activated or a file is opened.
-  const [home, setHome] = useState(false)
+  const [home, setHome] = useState(true)
   // Split view: id of the tab shown in the right pane (null = no split). The left
   // pane always shows the active tab; the right pane shows this one. A second,
   // independent editor — both panes are fully editable. Driven by the tab
@@ -547,17 +544,17 @@ export default function App() {
     review
   })
 
-  // App lifecycle (session restore/persist/flush + update check + toast +
-  // first-run onboarding) lives in hooks/useAppLifecycle.js (phase-2 US-4).
+  // App lifecycle (session persist/flush + update check + toast + startup
+  // home marker) lives in hooks/useAppLifecycle.js (phase-2 US-4).
   // flushSession is also used by the window-close guard; update/toast/
   // dismissUpdate/setToast feed the JSX. These are read only inside effect/event
   // closures, so defining them here is safe (resolved at commit/call time).
   const { update, dismissUpdate, toast, setToast, flushSession } = useAppLifecycle({
     session,
+    settings,
     tabs,
     activePath,
     workspace,
-    theme: appearanceToLegacyTheme(appearanceMode, themePalette),
     appearanceMode,
     themePalette,
     customTheme,
@@ -567,11 +564,12 @@ export default function App() {
     sidebarMode,
     openPaths,
     tabsRef,
+    setHome,
     setActiveId,
     setTabs,
+    setWorkspace,
     setSidebarMode,
-    setHome,
-    tRef
+    setSidebarOpen
   })
 
   // Global menu IPC + keyboard shortcuts (US-6) — flushSession comes from
@@ -765,15 +763,9 @@ export default function App() {
           {(home || !activeTab) && (
             <Welcome
               t={t}
-              lang={lang}
-              recents={recents}
               onNew={newTab}
               onOpen={() => handlers.current.open()}
               onOpenFolder={openFolder}
-              onOpenRecent={(p) => openPaths([p])}
-              onRemoveRecent={(p) =>
-                setRecents((prev) => prev.filter((r) => r.path !== p))
-              }
             />
           )}
         </main>

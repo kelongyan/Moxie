@@ -87,6 +87,6 @@ node scripts/etv.mjs
 
 ## 数据/状态约定
 
-- 会话存于 `localStorage`，键 `moxie.session.v1`：`{workspace, theme, lang, recents, sidebarOpen, sidebarMode, openPaths, activePath}`
+- 会话存于 `localStorage`，键 `moxie.session.v1`：`{workspace, appearanceMode, themePalette, customTheme, lang, recents, sidebarOpen, sidebarMode, openPaths, activePath}`
 - 首次引导标记：`localStorage['moxie.onboarded.v1']`
-- 主题以 `body` 的 class 表达：`light|dark` 基类 + 可选 `theme-*` 覆盖类
+- 主题以 `body` 的 class 表达：`light|dark` 基类 + 可选 `theme-*` 覆盖类；不再写旧的单字段 `theme`

@@ -115,14 +115,14 @@ WYSIWYG 由 Milkdown Crepe 提供。在它之上自研了**改标题层级**的�
 - **渲染**：4 种标记在富文本里都**实时渲染**（新增/删除/替换/高亮各用一套 `hm-review-*` 装饰，替换还带 `->` 箭头小部件），磁盘与源码模式里仍是原始 `{++…++}` 等字面文本
 - **替换标记的删除线碰撞修复**：`{~~旧~>新~~}` 的波浪号会撞上 GFM 删除线输入规则，曾导致富文本里打字就吞掉标记/删行（Mac 上尤甚）。两层修复——守卫插件 `createStrikeGuardPlugin`（prepend 到 `prosePluginsCtx` 最前，`handleTextInput` 抢在输入规则前按字面插入）+ `appendTransaction` 兜底用 `oldState` 还原 compositionend 路径（macOS 输入法）的破坏。详见 [implementation-notes.md](./implementation-notes.md) 的"bug 22"
 
-## 9. 主题（含莫兰迪）
+## 9. 主题（亮/暗模式 + 配色）
 
-6 套配色：暖光、暖夜、莫兰迪·灰绿 / 豆沙 / 雾蓝 / 暮。右下角状态栏带色块的主题选择器；`Ctrl+Shift+T` 循环切换。
+外观拆为浅色 / 深色 / 跟随系统三种模式，加上人文暖灰、莫兰迪·灰绿、德古拉紫、莫兰迪·雾蓝四套配色；深色模式下德古拉紫使用 Dracula Classic 色系，浅色模式使用 Alucard 风格的浅紫色系。右下角状态栏带色块的主题选择器；`Ctrl+Shift+T` 循环切换配色。
 
 **实现**：
-- `themes.js` 注册表，每套主题 = 一个 `base`（light/dark，驱动 Crepe 明暗规则）+ 可选 `theme-*` 类（覆盖调色板变量）
-- `applyTheme(id)` 设置 `body.className = base [+ ' theme-*']`
-- 调色板变量在 `styles/app.css`（`body.light` / `body.dark` / `body.theme-morandi*`）
+- `themes.js` 注册外观模式与调色板，`base`（light/dark，驱动 Crepe 明暗规则）和 `theme-*` 类分离。
+- `applyTheme(appearanceMode, themePalette, systemDark)` 设置 `body.className = base [+ ' theme-*']`。
+- 调色板变量在 `styles/app.css`（`body.light` / `body.dark` / `body.theme-*`）。
 
 ## 10. 多语言（中 / 英）
 
@@ -188,7 +188,7 @@ WYSIWYG 由 Milkdown Crepe 提供。在它之上自研了**改标题层级**的�
 - 渲染前 `sanitizeHtml()` 去掉 `<script>/<style>` 和 `on*` 事件属性、`javascript:` 链接（在 `<template>` 里解析,表格片段能正确解析）
 - 节点是 atom（不可编辑内部），`ignoreMutation` 让 ProseMirror 不去 reconcile 渲染出的 HTML
 - 注册入口：`crepe.editor.config` 里 `ctx.update(nodeViewCtx, (v) => [...v, ['html', …]])`（在 `crepe.create()` 之前）—— **必须走 `nodeViewCtx`**（`$view` 的同款通道），不能用 `editorViewOptionsCtx.nodeViews`，否则会覆盖图片/代码块/表格等组件的节点视图。详见 [implementation-notes.md](./implementation-notes.md) 的"致命 bug 12"
-- 样式 `.hm-html-block`（`styles/app.css`），表格边框/表头用主题变量,跟随明暗与莫兰迪配色
+- 样式 `.hm-html-block`（`styles/app.css`），表格边框/表头用主题变量,跟随明暗模式与内置配色
 
 ## 17. 导出为 PDF
 

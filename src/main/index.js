@@ -72,6 +72,8 @@ const PDF_CSS = `
 `
 
 let mainWindow = null
+let pendingOpenFiles = []
+let pendingOpenFolder = null
 // When true, the window is allowed to close without re-prompting (the renderer
 // has confirmed there are no unsaved changes, or the user chose to discard).
 let allowClose = false
@@ -154,7 +156,14 @@ function sendToRenderer(channel, payload) {
   }
 }
 
+function queueInitialOpenRequest({ files = [], folders = [] }) {
+  if (folders.length) pendingOpenFolder = folders[0]
+  if (files.length) pendingOpenFiles = [...pendingOpenFiles, ...files]
+}
+
 function createWindow() {
+  queueInitialOpenRequest(extractArgs(process.argv))
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 820,
@@ -186,9 +195,6 @@ function createWindow() {
 
   mainWindow.once('ready-to-show', () => {
     focusMainWindow()
-    const { files, folders } = extractArgs(process.argv)
-    if (folders.length) sendToRenderer('open-folder', folders[0])
-    if (files.length) sendToRenderer('open-paths', files)
   })
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -241,7 +247,7 @@ app.on('open-file', (event, path) => {
     focusMainWindow()
     sendToRenderer('open-paths', [path])
   } else {
-    app.whenReady().then(() => sendToRenderer('open-paths', [path]))
+    queueInitialOpenRequest({ files: [path] })
   }
 })
 
@@ -265,6 +271,16 @@ app.on('window-all-closed', () => {
 })
 
 // ----------------------------- IPC: file system -----------------------------
+
+ipcMain.handle('app:initialOpenRequest', async () => {
+  const request = {
+    files: pendingOpenFiles,
+    folder: pendingOpenFolder
+  }
+  pendingOpenFiles = []
+  pendingOpenFolder = null
+  return request
+})
 
 ipcMain.handle('dialog:openFiles', async () => {
   const res = await dialog.showOpenDialog(mainWindow, {

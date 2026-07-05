@@ -11,8 +11,9 @@ add('themes.js exports DEFAULT_APPEARANCE_MODE', themes.includes('export const D
 add('themes.js exports DEFAULT_THEME_PALETTE', themes.includes('export const DEFAULT_THEME_PALETTE'))
 add('themes.js exports resolveAppearanceMode', themes.includes('export function resolveAppearanceMode'))
 add('themes.js exports resolveThemeClasses', themes.includes('export function resolveThemeClasses'))
-add('themes.js keeps legacyThemeToAppearance', themes.includes('export function legacyThemeToAppearance'))
-add('themes.js keeps appearanceToLegacyTheme', themes.includes('export function appearanceToLegacyTheme'))
+add('themes.js removes legacy theme map', !themes.includes('LEGACY_THEME_MAP'))
+add('themes.js removes legacy THEMES registry', !themes.includes('export const THEMES'))
+add('themes.js removes legacy theme migration', !themes.includes('legacyThemeToAppearance') && !themes.includes('appearanceToLegacyTheme'))
 
 const app = await read('src/renderer/src/App.jsx')
 add('App.jsx stores appearanceMode state', app.includes('const [appearanceMode, setAppearanceMode]'))
@@ -54,7 +55,7 @@ add('menuConfig has palette section', menuConfig.includes("dynamic: 'theme-palet
 const css = await read('src/renderer/src/styles/app.css')
 add('CSS has settings mode toggle styles', css.includes('.settings-mode-toggle'))
 add('CSS has settings palette grid styles', css.includes('.settings-palette-grid'))
-add('CSS has dark palette variants', css.includes('body.dark.theme-morandi'))
+add('CSS has Dracula dark palette variant', css.includes('body.dark.theme-dracula'))
 
 const failed = checks.filter((check) => !check.pass)
 for (const check of checks) {

@@ -25,6 +25,7 @@ const GITHUB_REPO_URL = 'https://github.com/kelongyan/Moxie'
 const SETTINGS_NAV = [
   { id: 'typography', icon: 'text-size', labelKey: 'settings.typography' },
   { id: 'appearance', icon: 'sun', labelKey: 'settings.appearance' },
+  { id: 'startup', icon: 'sparkle', labelKey: 'settings.startup' },
   { id: 'proofreading', icon: 'check', labelKey: 'settings.proofreading' },
   { id: 'language', icon: 'globe', labelKey: 'settings.language' },
   { id: 'image-host', icon: 'image', labelKey: 'settings.imageHost' },
@@ -134,6 +135,21 @@ export default function SettingsView({
             <div className="settings-row settings-row-actions">
               <button className="settings-link-btn" onClick={() => onOpenThemesFolder && onOpenThemesFolder()}>{t('settings.openThemesFolder')}</button>
               <button className="settings-link-btn" onClick={() => onGetMoreThemes && onGetMoreThemes()}>{t('settings.getMoreThemes')}</button>
+            </div>
+          </section>
+
+          <section className="settings-block" id="settings-startup">
+            <SectionHead kicker={t('settings.startup')} title={null} />
+            <div className="settings-row">
+              <div className="settings-row-text">
+                <div className="settings-row-label">{t('settings.startupRestore')}</div>
+                <div className="settings-row-desc">{t('settings.startupRestoreDesc')}</div>
+              </div>
+              <Toggle
+                checked={!!settings.restoreTabsOnStartup}
+                onChange={(v) => onUpdateSettings({ restoreTabsOnStartup: v })}
+                label={t('settings.startupRestore')}
+              />
             </div>
           </section>
 

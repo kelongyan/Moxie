@@ -24,7 +24,7 @@ Moxie 是一款桌面 Markdown 编辑器（Electron + Milkdown/ProseMirror）。
 - 平台：Windows（NSIS .exe）/ macOS（.dmg，Apple Silicon & Intel）
 - 技术栈：Electron + Vite + React + Milkdown Crepe（ProseMirror）
 - Typora 有的：所见即所得、表格、代码高亮、LaTeX 公式、任务列表、斜杠菜单、源码模式
-- Typora 没有的：标签页（多文件一窗）、文件夹工作区文件树、命令面板（Ctrl+P 模糊跳转）、富文本复制（粘进微信公众号/邮件/Notion 不丢格式）、中英双语界面、6 套主题（含 4 套莫兰迪）、PDF 导出
+- Typora 没有的：标签页（多文件一窗）、文件夹工作区文件树、命令面板（Ctrl+P 模糊跳转）、富文本复制（粘进微信公众号/邮件/Notion 不丢格式）、中英双语界面、亮/暗模式 + 4 套配色（含德古拉紫）、PDF 导出
 - 构建未签名：Windows SmartScreen 选「更多信息 → 仍要运行」；macOS 右键 → 打开
 
 ## 关联站点（杨sir / yangsir 网络）
