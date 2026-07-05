@@ -5,7 +5,7 @@
 // StatusBar quick-controls (排版/主题/语言) stay where they are — this is their
 // full-version home, not a replacement.
 import { useI18n, LANGS } from '../i18n.jsx'
-import { APPEARANCE_MODES, THEME_PALETTES } from '../themes.js'
+import { APPEARANCE_MODES, THEME_PALETTES, paletteSwatchForMode } from '../themes.js'
 import { Icon } from './icons.jsx'
 import Toggle from './ui/Toggle.jsx'
 import AdjustGroup from './ui/AdjustGroup.jsx'
@@ -46,6 +46,7 @@ function SectionHead({ kicker, title, action }) {
 export default function SettingsView({
   settings, onUpdateSettings,
   appearanceMode, setAppearanceMode,
+  systemDark = false,
   themePalette, setThemePalette,
   customThemes = [], customTheme, onPickCustom,
   onOpenThemesFolder, onGetMoreThemes,
@@ -110,7 +111,7 @@ export default function SettingsView({
                   key={palette.id}
                   type="button"
                   className={`settings-swatch${!customTheme && palette.id === themePalette ? ' active' : ''}`}
-                  style={{ background: palette.swatch }}
+                  style={{ background: paletteSwatchForMode(palette, appearanceMode, systemDark) }}
                   title={lang === 'zh' ? palette.zh : palette.en}
                   onClick={() => setThemePalette(palette.id)}
                 >

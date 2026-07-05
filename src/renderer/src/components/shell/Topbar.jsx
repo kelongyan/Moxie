@@ -18,6 +18,7 @@ export default function Topbar({
   handlers,
   appearanceMode,
   setAppearanceMode,
+  systemDark = false,
   themePalette,
   setThemePalette,
   customTheme,
@@ -49,6 +50,7 @@ export default function Topbar({
             handlers={handlers}
             appearanceMode={appearanceMode}
             setAppearanceMode={setAppearanceMode}
+            systemDark={systemDark}
             themePalette={themePalette}
             setThemePalette={setThemePalette}
             customTheme={customTheme}

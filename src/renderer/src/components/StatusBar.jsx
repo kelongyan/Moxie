@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from './icons.jsx'
 import { useI18n } from '../i18n.jsx'
-import { APPEARANCE_MODES, THEME_PALETTES, appearanceModeById, paletteById } from '../themes.js'
+import {
+  APPEARANCE_MODES,
+  THEME_PALETTES,
+  appearanceModeById,
+  paletteById,
+  paletteSwatchForMode
+} from '../themes.js'
 import { LANGS } from '../i18n.jsx'
 import { FONT_SIZE_MIN, FONT_SIZE_MAX } from '../settings.js'
 import LayoutControl from './LayoutControl.jsx'
@@ -59,6 +65,7 @@ function StatsControl({ stats }) {
 function ThemePicker({
   appearanceMode,
   setAppearanceMode,
+  systemDark = false,
   themePalette,
   setThemePalette,
   customThemes = [],
@@ -82,6 +89,7 @@ function ThemePicker({
   const modeLabel = lang === 'zh' ? mode.zh : mode.en
   const paletteLabel = lang === 'zh' ? palette.zh : palette.en
   const triggerLabel = activeCustom ? activeCustom.name : `${modeLabel} · ${paletteLabel}`
+  const activeSwatch = paletteSwatchForMode(palette, appearanceMode, systemDark)
   const pickMode = (id) => {
     setAppearanceMode(id)
     setOpen(false)
@@ -89,7 +97,7 @@ function ThemePicker({
   return (
     <div className="block-switch" ref={ref}>
       <button type="button" className="status-btn" onClick={toggle} title={t('tip.toggleTheme')}>
-        <span className="theme-swatch" style={{ background: activeCustom ? 'var(--accent)' : palette.swatch }} />
+        <span className="theme-swatch" style={{ background: activeCustom ? 'var(--accent)' : activeSwatch }} />
         {triggerLabel}
         <span className="block-switch-caret">▾</span>
       </button>
@@ -120,7 +128,7 @@ function ThemePicker({
                 setOpen(false)
               }}
             >
-              <span className="theme-swatch" style={{ background: item.swatch }} />
+              <span className="theme-swatch" style={{ background: paletteSwatchForMode(item, appearanceMode, systemDark) }} />
               <span className="block-menu-name">{lang === 'zh' ? item.zh : item.en}</span>
             </button>
           ))}
@@ -218,6 +226,7 @@ function MobileMore({
   onToggleSource,
   appearanceMode,
   setAppearanceMode,
+  systemDark = false,
   themePalette,
   setThemePalette,
   lang,
@@ -320,7 +329,7 @@ function MobileMore({
                 key={item.id}
                 type="button"
                 className={`hm-sheet-swatch${!customTheme && item.id === themePalette ? ' active' : ''}`}
-                style={{ background: item.swatch }}
+                style={{ background: paletteSwatchForMode(item, appearanceMode, systemDark) }}
                 title={lang === 'zh' ? item.zh : item.en}
                 onClick={() => {
                   setThemePalette(item.id)
@@ -396,6 +405,7 @@ export default function StatusBar({
   onSettings,
   appearanceMode,
   setAppearanceMode,
+  systemDark = false,
   themePalette,
   setThemePalette,
   lang,
@@ -483,6 +493,7 @@ export default function StatusBar({
                 onToggleSource={onToggleSource}
                 appearanceMode={appearanceMode}
                 setAppearanceMode={setAppearanceMode}
+                systemDark={systemDark}
                 themePalette={themePalette}
                 setThemePalette={setThemePalette}
                 lang={lang}
@@ -515,6 +526,7 @@ export default function StatusBar({
             <ThemePicker
               appearanceMode={appearanceMode}
               setAppearanceMode={setAppearanceMode}
+              systemDark={systemDark}
               themePalette={themePalette}
               setThemePalette={setThemePalette}
               customThemes={customThemes}

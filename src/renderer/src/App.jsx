@@ -634,6 +634,7 @@ export default function App() {
         handlers={handlers}
         appearanceMode={appearanceMode}
         setAppearanceMode={pickAppearanceMode}
+        systemDark={systemDark}
         themePalette={themePalette}
         setThemePalette={pickThemePalette}
         customTheme={customTheme}
@@ -748,6 +749,7 @@ export default function App() {
               onUpdateSettings={updateSettings}
               appearanceMode={appearanceMode}
               setAppearanceMode={pickAppearanceMode}
+              systemDark={systemDark}
               themePalette={themePalette}
               setThemePalette={pickThemePalette}
               customThemes={customThemes}
@@ -792,6 +794,7 @@ export default function App() {
         onSettings={openSettingsTab}
         appearanceMode={appearanceMode}
         setAppearanceMode={pickAppearanceMode}
+        systemDark={systemDark}
         themePalette={themePalette}
         setThemePalette={pickThemePalette}
         cycleTheme={cycleTheme}

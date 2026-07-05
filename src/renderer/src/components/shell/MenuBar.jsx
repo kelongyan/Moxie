@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { APPEARANCE_MODES, THEME_PALETTES } from '../../themes.js'
+import { APPEARANCE_MODES, THEME_PALETTES, paletteSwatchForMode } from '../../themes.js'
 import { MENU_BAR, MENU_PLACEHOLDER } from './menuConfig.js'
 
 const GITHUB_REPO_URL = 'https://github.com/kelongyan/Moxie'
@@ -10,7 +10,7 @@ function isSeparator(item) {
   return item?.type === 'separator'
 }
 
-function makeThemeItems({ appearanceMode, themePalette, customTheme, customThemes, lang }) {
+function makeThemeItems({ appearanceMode, systemDark, themePalette, customTheme, customThemes, lang }) {
   const modes = APPEARANCE_MODES.map((item) => ({
     id: `appearance-${item.id}`,
     label: lang === 'zh' ? item.zh : item.en,
@@ -26,7 +26,7 @@ function makeThemeItems({ appearanceMode, themePalette, customTheme, customTheme
     args: item.id,
     status: 'ready',
     checked: !customTheme && item.id === themePalette,
-    swatch: item.swatch
+    swatch: paletteSwatchForMode(item, appearanceMode, systemDark)
   }))
   const custom = customThemes.length
     ? customThemes.map((item) => ({
@@ -65,6 +65,10 @@ function MenuItem({ item, depth = 0, onRun }) {
     disabled ? 'disabled' : '',
     item.checked ? 'checked' : ''
   ].filter(Boolean).join(' ')
+  const runItem = () => {
+    if (disabled) return
+    onRun(item)
+  }
 
   return (
     <div
@@ -80,13 +84,18 @@ function MenuItem({ item, depth = 0, onRun }) {
         aria-disabled={disabled || undefined}
         aria-haspopup={hasChildren || undefined}
         aria-expanded={hasChildren ? subOpen : undefined}
-        onClick={() => {
+        onMouseDown={hasChildren ? undefined : (event) => {
+          if (disabled) return
+          event.preventDefault()
+          runItem()
+        }}
+        onClick={(event) => {
           if (disabled) return
           if (hasChildren) {
             setSubOpen((v) => !v)
             return
           }
-          onRun(item)
+          if (event.detail === 0) runItem()
         }}
       >
         <span className="menubar-menu-label">
@@ -114,6 +123,7 @@ export default function MenuBar({
   handlers,
   appearanceMode,
   setAppearanceMode,
+  systemDark = false,
   themePalette,
   setThemePalette,
   customTheme,
@@ -130,9 +140,9 @@ export default function MenuBar({
   const menu = useMemo(
     () => MENU_BAR.map((group) => ({
       ...group,
-      items: expandItems(group.items, { appearanceMode, themePalette, customTheme, customThemes, lang })
+      items: expandItems(group.items, { appearanceMode, systemDark, themePalette, customTheme, customThemes, lang })
     })),
-    [appearanceMode, themePalette, customTheme, customThemes, lang]
+    [appearanceMode, systemDark, themePalette, customTheme, customThemes, lang]
   )
 
   useEffect(() => {

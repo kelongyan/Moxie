@@ -149,57 +149,57 @@ body.dark {
    Each carries a light/dark base class; these only override the palette vars.
    ===================================================== */
 body.theme-morandi {
-  --bg: #e7e8e2; --bg-elevated: #f3f4ef; --bg-sidebar: #dfe1d9; --bg-editor: #f6f7f2; --bg-activity: #d4d6cc;
-  --text: #3a3d35; --text-strong: #23261f; --muted: #6c6f63; --faint: #97998d;
-  --border: #c5c8bc; --border-soft: #d9dbd0; --hover: #d7dace; --active: #cbcec1; --hover-elevated: #ecede6;
-  --accent: #7d8a6a; --accent-strong: #5f6b4e; --accent-soft: rgba(125, 138, 106, 0.16); --accent-glow: rgba(125, 138, 106, 0.3);
-  --code-bg: #eceee6; --code-border: #d9dbd0; --danger: #b3645f; --success: #6f8a66;
+  --bg: #ecece6; --bg-elevated: #f6f6f0; --bg-sidebar: #e1e3da; --bg-editor: #fbfbf6; --bg-activity: #d4d8cc;
+  --text: #34382f; --text-strong: #1f241c; --muted: #646b5f; --faint: #8c9488;
+  --border: #c7ccbf; --border-soft: #dde0d5; --hover: #d9ddd2; --active: #cbd2c3; --hover-elevated: #eef0e8;
+  --accent: #6f7f5d; --accent-strong: #4f6042; --accent-soft: rgba(111, 127, 93, 0.17); --accent-glow: rgba(111, 127, 93, 0.28);
+  --code-bg: #eef0e7; --code-border: #d8dccf; --danger: #a85c58; --success: #607b58;
 }
 body.theme-morandi-rose {
-  --bg: #ece5e2; --bg-elevated: #f6f1ef; --bg-sidebar: #e5ddd9; --bg-editor: #f8f4f2; --bg-activity: #dacfca;
-  --text: #423a37; --text-strong: #271f1c; --muted: #70645f; --faint: #9c918b;
-  --border: #ccc1bc; --border-soft: #ddd4cf; --hover: #ded3ce; --active: #d1c5bf; --hover-elevated: #efe8e5;
-  --accent: #a8807b; --accent-strong: #855e59; --accent-soft: rgba(168, 128, 123, 0.18); --accent-glow: rgba(168, 128, 123, 0.32);
-  --code-bg: #efe8e5; --code-border: #ddd4cf; --danger: #b85c57; --success: #7d8a6a;
+  --bg: #eee7e4; --bg-elevated: #f8f2f0; --bg-sidebar: #e6dedb; --bg-editor: #fbf7f5; --bg-activity: #d9cfcb;
+  --text: #3e3633; --text-strong: #241d1a; --muted: #6a5e59; --faint: #958985;
+  --border: #cec2bd; --border-soft: #e0d5d1; --hover: #e0d5d1; --active: #d3c5c0; --hover-elevated: #f0e9e6;
+  --accent: #9a746f; --accent-strong: #724d49; --accent-soft: rgba(154, 116, 111, 0.18); --accent-glow: rgba(154, 116, 111, 0.3);
+  --code-bg: #f1e9e6; --code-border: #e0d5d1; --danger: #a95450; --success: #677d5f;
 }
 body.theme-morandi-blue {
-  --bg: #e4e7ea; --bg-elevated: #f1f3f5; --bg-sidebar: #dce0e4; --bg-editor: #f5f7f8; --bg-activity: #d0d5da;
-  --text: #383d42; --text-strong: #1f242a; --muted: #656d74; --faint: #939ba2;
-  --border: #c2c8ce; --border-soft: #d6dade; --hover: #d4d9de; --active: #c7cdd3; --hover-elevated: #eaedf0;
-  --accent: #7e94a6; --accent-strong: #5d7385; --accent-soft: rgba(126, 148, 166, 0.18); --accent-glow: rgba(126, 148, 166, 0.3);
-  --code-bg: #e9edf0; --code-border: #d6dade; --danger: #b3645f; --success: #6f8a87;
+  --bg: #e7eaec; --bg-elevated: #f4f6f7; --bg-sidebar: #dfe4e7; --bg-editor: #f8fafb; --bg-activity: #d2d8dd;
+  --text: #343b40; --text-strong: #1e252b; --muted: #626c73; --faint: #8e99a1;
+  --border: #c4ccd2; --border-soft: #dae0e4; --hover: #d9e0e4; --active: #cad4da; --hover-elevated: #edf1f3;
+  --accent: #6f899a; --accent-strong: #516b7b; --accent-soft: rgba(111, 137, 154, 0.18); --accent-glow: rgba(111, 137, 154, 0.3);
+  --code-bg: #edf1f3; --code-border: #dae0e4; --danger: #a85c58; --success: #607f7a;
 }
 body.dark.theme-morandi {
-  --bg: #20231e; --bg-elevated: #282c25; --bg-sidebar: #22251f; --bg-editor: #262a23; --bg-activity: #1a1d18;
-  --text: #c7cbc1; --text-strong: #eef1e9; --muted: #8b9183; --faint: #62685d;
-  --border: #3b4137; --border-soft: #31362e; --hover: #333a31; --active: #3f473b; --hover-elevated: #2f352d;
-  --accent: #9aaa82; --accent-strong: #c3d0ad; --accent-soft: rgba(154, 170, 130, 0.18); --accent-glow: rgba(154, 170, 130, 0.32);
-  --code-bg: #2b3028; --code-border: #3b4137; --danger: #cf7a76; --success: #92ad83;
-  --code-block-bg: #151912; --code-block-border: rgba(255,255,255,0.06);
+  --bg: #171a16; --bg-elevated: #20241e; --bg-sidebar: #1b1f19; --bg-editor: #1f241d; --bg-activity: #12150f;
+  --text: #d4d9cd; --text-strong: #f1f5eb; --muted: #9aa391; --faint: #6d7668;
+  --border: #3b4437; --border-soft: #30372d; --hover: #2d352a; --active: #394334; --hover-elevated: #293128;
+  --accent: #a5b88d; --accent-strong: #cad7b6; --accent-soft: rgba(165, 184, 141, 0.18); --accent-glow: rgba(165, 184, 141, 0.32);
+  --code-bg: #272e23; --code-border: #3b4437; --danger: #d9827b; --success: #9fbc91;
+  --code-block-bg: #11150f; --code-block-border: rgba(255, 255, 255, 0.06);
 }
 body.dark.theme-morandi-rose {
-  --bg: #27211f; --bg-elevated: #302926; --bg-sidebar: #28221f; --bg-editor: #2d2623; --bg-activity: #201a18;
-  --text: #d0c5c1; --text-strong: #f3ebe8; --muted: #958783; --faint: #6d625e;
-  --border: #493d39; --border-soft: #3a312e; --hover: #3c3330; --active: #493d39; --hover-elevated: #352c29;
-  --accent: #c39791; --accent-strong: #e4bdb8; --accent-soft: rgba(195, 151, 145, 0.18); --accent-glow: rgba(195, 151, 145, 0.32);
-  --code-bg: #332b28; --code-border: #493d39; --danger: #d77973; --success: #9aaa82;
-  --code-block-bg: #1a1413; --code-block-border: rgba(255,255,255,0.06);
+  --bg: #1d1917; --bg-elevated: #28211f; --bg-sidebar: #211c1a; --bg-editor: #28221f; --bg-activity: #161210;
+  --text: #d9cfcb; --text-strong: #f5ebe8; --muted: #a0928d; --faint: #746762;
+  --border: #443834; --border-soft: #352c29; --hover: #332a28; --active: #433733; --hover-elevated: #2f2724;
+  --accent: #d0a19a; --accent-strong: #edc2bd; --accent-soft: rgba(208, 161, 154, 0.18); --accent-glow: rgba(208, 161, 154, 0.32);
+  --code-bg: #302724; --code-border: #443834; --danger: #dd817a; --success: #a7bd8f;
+  --code-block-bg: #15100f; --code-block-border: rgba(255, 255, 255, 0.06);
 }
 body.dark.theme-morandi-blue {
-  --bg: #21242b; --bg-elevated: #282c34; --bg-sidebar: #23262d; --bg-editor: #262a31; --bg-activity: #1b1e24;
-  --text: #c3c7cd; --text-strong: #e7eaef; --muted: #878c95; --faint: #5f636b;
-  --border: #3a3f49; --border-soft: #313640; --hover: #323843; --active: #3d4450; --hover-elevated: #2e333c;
-  --accent: #92a3b8; --accent-strong: #aebfd2; --accent-soft: rgba(146, 163, 184, 0.18); --accent-glow: rgba(146, 163, 184, 0.32);
-  --code-bg: #2b2f37; --code-border: #3a3f49; --danger: #cf7a76; --success: #8aa888;
-  --code-block-bg: #16191f; --code-block-border: rgba(255,255,255,0.06);
+  --bg: #171b20; --bg-elevated: #20262d; --bg-sidebar: #1a2026; --bg-editor: #20262d; --bg-activity: #11161b;
+  --text: #ccd4db; --text-strong: #edf3f7; --muted: #909aa4; --faint: #68727c;
+  --border: #384451; --border-soft: #2d3742; --hover: #2d3742; --active: #394655; --hover-elevated: #29333e;
+  --accent: #9ab1c6; --accent-strong: #c2d4e4; --accent-soft: rgba(154, 177, 198, 0.18); --accent-glow: rgba(154, 177, 198, 0.32);
+  --code-bg: #28313a; --code-border: #384451; --danger: #d9827b; --success: #91b197;
+  --code-block-bg: #11161b; --code-block-border: rgba(255, 255, 255, 0.06);
 }
 body.theme-morandi-dark {
-  --bg: #21242b; --bg-elevated: #282c34; --bg-sidebar: #23262d; --bg-editor: #262a31; --bg-activity: #1b1e24;
-  --text: #c3c7cd; --text-strong: #e7eaef; --muted: #878c95; --faint: #5f636b;
-  --border: #3a3f49; --border-soft: #313640; --hover: #323843; --active: #3d4450; --hover-elevated: #2e333c;
-  --accent: #92a3b8; --accent-strong: #aebfd2; --accent-soft: rgba(146, 163, 184, 0.18); --accent-glow: rgba(146, 163, 184, 0.32);
-  --code-bg: #2b2f37; --code-border: #3a3f49; --danger: #cf7a76; --success: #8aa888;
-  --code-block-bg: #16191f; --code-block-border: rgba(255,255,255,0.06);
+  --bg: #171b20; --bg-elevated: #20262d; --bg-sidebar: #1a2026; --bg-editor: #20262d; --bg-activity: #11161b;
+  --text: #ccd4db; --text-strong: #edf3f7; --muted: #909aa4; --faint: #68727c;
+  --border: #384451; --border-soft: #2d3742; --hover: #2d3742; --active: #394655; --hover-elevated: #29333e;
+  --accent: #9ab1c6; --accent-strong: #c2d4e4; --accent-soft: rgba(154, 177, 198, 0.18); --accent-glow: rgba(154, 177, 198, 0.32);
+  --code-bg: #28313a; --code-border: #384451; --danger: #d9827b; --success: #91b197;
+  --code-block-bg: #11161b; --code-block-border: rgba(255, 255, 255, 0.06);
 }
 
 /* Theme/language switcher bits */

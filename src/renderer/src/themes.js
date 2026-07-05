@@ -10,9 +10,9 @@ export const APPEARANCE_MODES = [
 
 export const THEME_PALETTES = [
   { id: 'warm', cls: '', en: 'Anthropic Warm', zh: '人文暖灰', swatch: '#b86f52', darkSwatch: '#df9276' },
-  { id: 'morandi', cls: 'theme-morandi', en: 'Morandi Sage', zh: '莫兰迪·灰绿', swatch: '#7d8a6a' },
-  { id: 'morandi-rose', cls: 'theme-morandi-rose', en: 'Morandi Rose', zh: '莫兰迪·豆沙', swatch: '#a8807b' },
-  { id: 'morandi-blue', cls: 'theme-morandi-blue', en: 'Morandi Mist', zh: '莫兰迪·雾蓝', swatch: '#7e94a6' }
+  { id: 'morandi', cls: 'theme-morandi', en: 'Morandi Sage', zh: '莫兰迪·灰绿', swatch: '#6f7f5d', darkSwatch: '#a5b88d' },
+  { id: 'morandi-rose', cls: 'theme-morandi-rose', en: 'Morandi Rose', zh: '莫兰迪·豆沙', swatch: '#9a746f', darkSwatch: '#d0a19a' },
+  { id: 'morandi-blue', cls: 'theme-morandi-blue', en: 'Morandi Mist', zh: '莫兰迪·雾蓝', swatch: '#6f899a', darkSwatch: '#9ab1c6' }
 ]
 
 export const DEFAULT_APPEARANCE_MODE = 'light'
@@ -31,10 +31,10 @@ const LEGACY_THEME_MAP = {
 export const THEMES = [
   { id: 'light', base: 'light', cls: '', dark: false, en: 'Anthropic Light', zh: '人文浅色', swatch: '#b86f52' },
   { id: 'dark', base: 'dark', cls: '', dark: true, en: 'Anthropic Dark', zh: '人文深色', swatch: '#df9276' },
-  { id: 'morandi', base: 'light', cls: 'theme-morandi', dark: false, en: 'Morandi Sage', zh: '莫兰迪·灰绿', swatch: '#7d8a6a' },
-  { id: 'morandi-rose', base: 'light', cls: 'theme-morandi-rose', dark: false, en: 'Morandi Rose', zh: '莫兰迪·豆沙', swatch: '#a8807b' },
-  { id: 'morandi-blue', base: 'light', cls: 'theme-morandi-blue', dark: false, en: 'Morandi Mist', zh: '莫兰迪·雾蓝', swatch: '#7e94a6' },
-  { id: 'morandi-dark', base: 'dark', cls: 'theme-morandi-dark', dark: true, en: 'Morandi Dusk', zh: '莫兰迪·暮', swatch: '#92a3b8' }
+  { id: 'morandi', base: 'light', cls: 'theme-morandi', dark: false, en: 'Morandi Sage', zh: '莫兰迪·灰绿', swatch: '#6f7f5d' },
+  { id: 'morandi-rose', base: 'light', cls: 'theme-morandi-rose', dark: false, en: 'Morandi Rose', zh: '莫兰迪·豆沙', swatch: '#9a746f' },
+  { id: 'morandi-blue', base: 'light', cls: 'theme-morandi-blue', dark: false, en: 'Morandi Mist', zh: '莫兰迪·雾蓝', swatch: '#6f899a' },
+  { id: 'morandi-dark', base: 'dark', cls: 'theme-morandi-dark', dark: true, en: 'Morandi Dusk', zh: '莫兰迪·暮', swatch: '#9ab1c6' }
 ]
 
 export const appearanceModeById = (id) =>
@@ -63,6 +63,13 @@ export function appearanceToLegacyTheme(appearanceMode, themePalette) {
 export function resolveAppearanceMode(mode, systemDark = false) {
   if (mode === 'system') return systemDark ? 'dark' : 'light'
   return mode === 'dark' ? 'dark' : 'light'
+}
+
+export function paletteSwatchForMode(paletteOrId, appearanceMode = DEFAULT_APPEARANCE_MODE, systemDark = false) {
+  const palette = typeof paletteOrId === 'string' ? paletteById(paletteOrId) : paletteOrId || THEME_PALETTES[0]
+  return resolveAppearanceMode(appearanceMode, systemDark) === 'dark'
+    ? palette.darkSwatch || palette.swatch
+    : palette.swatch
 }
 
 export function resolveThemeClasses(appearanceMode, themePalette, systemDark = false) {
