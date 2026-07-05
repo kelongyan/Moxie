@@ -267,9 +267,7 @@ const setupStatusBar = () => {
       })
   }
   const apply = () => {
-    const dark =
-      document.body.classList.contains('dark') ||
-      document.body.classList.contains('theme-morandi-dark')
+    const dark = document.body.classList.contains('dark')
     StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {})
     applyInset()
   }

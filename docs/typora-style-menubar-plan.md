@@ -523,7 +523,7 @@ Moxie 当前已有 `new/open/openFolder/save/saveAs/exportPdf/closeTab/palette`�
 主题(T)
   暖光                                           [可接]
   暖夜                                           [可接]
-  莫兰迪·灰绿                                    [可接]
+  卡布奇诺                                      [可接]
   德古拉紫                                      [可接]
   莫兰迪·雾蓝                                    [可接]
   莫兰迪·暮                                      [可接]

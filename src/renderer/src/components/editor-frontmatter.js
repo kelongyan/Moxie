@@ -46,36 +46,114 @@ function buildCard(value) {
   const card = document.createElement('div')
   card.className = 'hm-frontmatter'
 
-  const head = document.createElement('div')
-  head.className = 'hm-frontmatter-head'
-  head.textContent = 'YAML'
-  card.appendChild(head)
-
   const lines = (value || '').split('\n')
   // "simple" = every non-blank line is a flat `key: value` (no indentation,
   // list markers, quotes-only, etc.).
   const simple = lines.every(
     (l) => l.trim() === '' || /^[A-Za-z0-9_.-]+:\s?.*$/.test(l)
   )
+  const entries = simple ? parseFlatEntries(lines) : []
+  const topLevelKeys = simple ? entries.map(([key]) => key) : parseTopLevelKeys(lines)
+  const bodyId = `hm-frontmatter-${Math.random().toString(36).slice(2)}`
+
+  card.classList.add('is-collapsed')
+  if (!simple) card.classList.add('is-complex')
+
+  const summary = document.createElement('div')
+  summary.className = 'hm-frontmatter-summary'
+  summary.setAttribute('role', 'button')
+  summary.setAttribute('tabindex', '0')
+  summary.setAttribute('aria-expanded', 'false')
+  summary.setAttribute('aria-controls', bodyId)
+
+  const titleGroup = document.createElement('div')
+  titleGroup.className = 'hm-frontmatter-title-group'
+
+  const title = document.createElement('span')
+  title.className = 'hm-frontmatter-title'
+  title.textContent = '文档元信息'
+  titleGroup.appendChild(title)
+
+  const chip = document.createElement('span')
+  chip.className = 'hm-frontmatter-chip'
+  chip.textContent = 'YAML'
+  titleGroup.appendChild(chip)
+
+  const count = document.createElement('span')
+  count.className = 'hm-frontmatter-count'
+  count.textContent = simple ? `${entries.length} 项` : '复杂'
+  titleGroup.appendChild(count)
+
+  summary.appendChild(titleGroup)
+
+  const preview = document.createElement('span')
+  preview.className = 'hm-frontmatter-preview'
+  preview.textContent = topLevelKeys.length ? topLevelKeys.join(' · ') : 'empty'
+  summary.appendChild(preview)
+
+  const toggle = document.createElement('span')
+  toggle.className = 'hm-frontmatter-toggle'
+  toggle.textContent = '展开'
+  summary.appendChild(toggle)
+  card.appendChild(summary)
+
+  const body = document.createElement('div')
+  body.id = bodyId
+  body.className = 'hm-frontmatter-body'
+  body.hidden = true
+
   if (simple) {
-    const grid = document.createElement('dl')
+    const grid = document.createElement('div')
     grid.className = 'hm-frontmatter-grid'
-    for (const line of lines) {
-      const m = line.match(/^([A-Za-z0-9_.-]+):\s?(.*)$/)
-      if (!m) continue
-      const dt = document.createElement('dt')
-      dt.textContent = m[1]
-      const dd = document.createElement('dd')
-      dd.textContent = m[2]
-      grid.appendChild(dt)
-      grid.appendChild(dd)
+    for (const [key, value] of entries) {
+      const field = document.createElement('div')
+      field.className = 'hm-frontmatter-field'
+      const keyNode = document.createElement('div')
+      keyNode.className = 'hm-frontmatter-key'
+      keyNode.textContent = key
+      const valueNode = document.createElement('div')
+      valueNode.className = 'hm-frontmatter-value'
+      valueNode.textContent = value
+      field.appendChild(keyNode)
+      field.appendChild(valueNode)
+      grid.appendChild(field)
     }
-    if (grid.children.length) card.appendChild(grid)
-    else card.appendChild(rawBlock(value))
+    if (grid.children.length) body.appendChild(grid)
+    else body.appendChild(rawBlock(value))
   } else {
-    card.appendChild(rawBlock(value))
+    body.appendChild(rawBlock(value))
   }
+  card.appendChild(body)
+
+  const setExpanded = (expanded) => {
+    card.classList.toggle('is-collapsed', !expanded)
+    body.hidden = !expanded
+    summary.setAttribute('aria-expanded', expanded ? 'true' : 'false')
+    toggle.textContent = expanded ? '收起' : '展开'
+  }
+
+  summary.addEventListener('click', () => setExpanded(body.hidden))
+  summary.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    setExpanded(body.hidden)
+  })
+
   return card
+}
+
+function parseFlatEntries(lines) {
+  return lines
+    .map((line) => line.match(/^([A-Za-z0-9_.-]+):\s?(.*)$/))
+    .filter(Boolean)
+    .map((match) => [match[1], match[2]])
+}
+
+function parseTopLevelKeys(lines) {
+  return lines
+    .map((line) => line.match(/^([A-Za-z0-9_.-]+):(?:\s?.*)?$/))
+    .filter(Boolean)
+    .map((match) => match[1])
 }
 
 const rawBlock = (value) => {

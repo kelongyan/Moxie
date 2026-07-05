@@ -9,7 +9,7 @@ export const APPEARANCE_MODES = [
 
 export const THEME_PALETTES = [
   { id: 'warm', cls: '', en: 'Anthropic Warm', zh: '人文暖灰', swatch: '#b86f52', darkSwatch: '#df9276' },
-  { id: 'morandi', cls: 'theme-morandi', en: 'Morandi Sage', zh: '莫兰迪·灰绿', swatch: '#6f7f5d', darkSwatch: '#a5b88d' },
+  { id: 'catppuccin', cls: 'theme-catppuccin', en: 'Catppuccin', zh: '卡布奇诺', swatch: '#8839ef', darkSwatch: '#cba6f7' },
   { id: 'dracula', cls: 'theme-dracula', en: 'Dracula', zh: '德古拉紫', swatch: '#644ac9', darkSwatch: '#bd93f9' },
   { id: 'morandi-blue', cls: 'theme-morandi-blue', en: 'Morandi Mist', zh: '莫兰迪·雾蓝', swatch: '#6f899a', darkSwatch: '#9ab1c6' }
 ]
