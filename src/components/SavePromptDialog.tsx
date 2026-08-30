@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { TriangleAlert } from "lucide-react";
 import { answerSavePrompt, useSavePrompt } from "../state/savePrompt";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 
@@ -24,12 +25,18 @@ export function SavePromptDialog() {
         className="modal-panel"
         role="dialog"
         aria-modal="true"
-        aria-label="未保存确认"
+        aria-label="未保存的更改"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <p className="modal-message">
-          “{docName}”尚未保存。要在关闭前保存吗?
-        </p>
+        <div className="modal-head">
+          <span className="modal-icon warn">
+            <TriangleAlert size={18} />
+          </span>
+          <div className="modal-head-text">
+            <div className="modal-title">未保存的更改</div>
+            <p className="modal-message">“{docName}”尚未保存。要在关闭前保存吗?</p>
+          </div>
+        </div>
         <div className="modal-buttons">
           <button className="modal-button" onClick={() => answerSavePrompt("cancel")}>
             取消

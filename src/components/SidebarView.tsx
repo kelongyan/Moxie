@@ -1,4 +1,4 @@
-import { ChevronRight, Folder, FolderOpen, Settings, Trash2, TriangleAlert } from "lucide-react";
+import { ChevronRight, Folder, FolderOpen, History, Settings, Star, Trash2, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { baseName, inferLanguage } from "../models/language";
@@ -248,7 +248,10 @@ export function SidebarView() {
         />
         {favoritesSection &&
           (sidebar.favorites.length === 0 ? (
-            <div className="section-empty small">可从文件右键菜单添加收藏</div>
+            <div className="section-empty small">
+              <Star size={13} />
+              可从文件右键菜单添加收藏
+            </div>
           ) : (
             sidebar.favorites.map((path) => (
               <FileRow key={`fav-${path}`} path={path} onMenu={openMenu} />
@@ -317,6 +320,7 @@ export function SidebarView() {
         {recentSection &&
           (sidebar.recent.length === 0 ? (
             <div className="section-empty">
+              <History size={13} />
               暂无最近文件
               <button
                 className="section-empty-button"

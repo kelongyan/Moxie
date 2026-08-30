@@ -286,6 +286,12 @@ export async function closeTabAction(docId: string): Promise<void> {
     }
   }
   useDocuments.getState().close(docId);
+  // 渲染进程在销毁最后一个编辑器视图时会崩溃（v1.0.0 既有问题，与 UI 改动无关）。
+  // 关闭最后一个标签后同步重建空白标签，使 React 永远看不到空文档中间态；
+  // 兜底模式与 windows.ts 的"移入新窗口"路径一致。
+  if (useDocuments.getState().documents.length === 0) {
+    useDocuments.getState().createUntitled();
+  }
 }
 
 export async function closeOtherTabsAction(keepId: string): Promise<void> {

@@ -93,7 +93,6 @@ export function SettingsWindow() {
     <div className="settings-window">
       <div className="settings-scroll">
         <h1 className="settings-heading">通用设置</h1>
-        <div className="settings-divider" />
 
         <SettingRow title="缩进方式" description="Tab 键插入的缩进字符">
           <select
@@ -149,6 +148,17 @@ export function SettingsWindow() {
               type="checkbox"
               checked={prefs.wordWrap}
               onChange={(e) => set({ wordWrap: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow title="显示行号" description="在编辑区左侧显示行号列">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.lineNumbers}
+              onChange={(e) => set({ lineNumbers: e.target.checked })}
             />
             <span className="switch-track" />
           </label>

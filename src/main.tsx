@@ -8,7 +8,6 @@ import { hydrateSettings, initSettingsSync } from "./state/preferences";
 import { initRecoveryPersistence, restoreOnStartup } from "./state/recovery";
 import { initTheme } from "./state/theme";
 import { initSpawnedWindow, initWindowTransfer } from "./state/windows";
-import { useDocuments } from "./state/documents";
 import "./styles/fonts.css";
 import "./styles/tokens.css";
 import "./styles/primitives.css";
@@ -43,23 +42,14 @@ if (view === "find") {
   void (async () => {
     await hydrateSettings();
     initWindowTransfer();
-    let restored = false;
-    if (spawned) {
-      try {
-        restored = await initSpawnedWindow();
-      } catch {
-        restored = false;
-      }
-    } else {
-      try {
+    try {
+      if (spawned) {
+        await initSpawnedWindow();
+      } else {
         await restoreOnStartup();
-        restored = useDocuments.getState().documents.length > 0;
-      } catch {
-        restored = false;
       }
-    }
-    if (!restored) {
-      useDocuments.getState().createUntitled();
+    } catch {
+      // 恢复失败时进入编辑区空状态（docs/UI精修方案.md §4.10），不自动新建标签
     }
     initRecoveryPersistence();
     void initSettingsSync();

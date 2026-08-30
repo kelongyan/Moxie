@@ -75,6 +75,9 @@
   color: var(--lac-text);
   font-family: inherit;
   font-size: var(--fs-body);
+  height: var(--control-h);
+  min-width: 80px;
+  padding: 0 14px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background var(--anim-hover), filter var(--anim-hover);
@@ -97,18 +100,23 @@
 .find-button.prominent {
   background: var(--lac-accent);
   border-color: transparent;
-  color: #ffffff;
+  color: var(--lac-accent-contrast);
 }
 
 .modal-button.prominent:hover:not(:disabled),
 .find-button.prominent:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: var(--lac-accent-hover);
+}
+
+.modal-button.prominent:active:not(:disabled),
+.find-button.prominent:active:not(:disabled) {
+  background: var(--lac-accent-active);
 }
 
 .modal-button.danger {
   background: var(--lac-danger);
   border-color: transparent;
-  color: #ffffff;
+  color: var(--lac-danger-contrast);
 }
 
 .modal-button.danger:hover:not(:disabled) {
@@ -133,6 +141,43 @@
 .codec-text:focus-visible {
   outline: 2px solid var(--lac-accent);
   outline-offset: -1px;
+}
+
+/* 复选框：全局视觉接管，与 switch 同一控件语言。
+   设置页 .switch 内的隐藏 input 依赖后续 app.css 的 .switch input 覆盖尺寸，不受影响 */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  border: 1.5px solid var(--lac-border-strong);
+  border-radius: 4px;
+  background: var(--lac-bg);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--anim-hover), border-color var(--anim-hover);
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--lac-text-tertiary);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--lac-accent);
+  border-color: var(--lac-accent);
+}
+
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--lac-accent-contrast);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 /* 浮层表面：tooltip / 右键菜单 / 弹层 / 模态面板 */

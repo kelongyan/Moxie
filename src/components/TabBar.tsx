@@ -121,7 +121,7 @@ export function TabBar() {
 
   const count = documents.length;
   const tabWidth = Math.min(208, Math.max(128, (barWidth - 64) / Math.max(1, count)));
-  const tabFont = "16px 'Segoe UI', sans-serif";
+  const tabFont = "14px 'Segoe UI', 'Noto Sans SC', sans-serif";
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDragIndex(index);
@@ -162,7 +162,7 @@ export function TabBar() {
     const selected = doc.id === activeId;
     const hovered = hoverIndex === index;
     const Icon = languageIconOf(doc.language);
-    const nameWidth = Math.max(40, tabWidth - 14 - 20 - 18);
+    const nameWidth = Math.max(40, tabWidth - 14 - 12 - 20 - 18);
     const showSeparator =
       index > 0 &&
       !selected &&
@@ -214,7 +214,7 @@ export function TabBar() {
                   void closeTabAction(doc.id);
                 }}
               >
-                <X size={9} strokeWidth={3} />
+                  <X size={11} strokeWidth={2} />
               </button>
             )}
           </span>

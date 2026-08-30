@@ -88,6 +88,7 @@ describe("renderMarkdown", () => {
   it("uses compact app-like article layout", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("max-width: min(72ch, 100%)");
-    expect(html).toContain("padding: 18px 22px 48px");
+    expect(html).toContain("padding: 20px 26px 56px");
+    expect(html).toContain("padding-bottom: 0.3em");
   });
 });

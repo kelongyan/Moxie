@@ -1,4 +1,4 @@
-import { Check, Gauge } from "lucide-react";
+import { Check, Gauge, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { LANGUAGE_LABELS } from "../models/language";
 import { ENCODING_LABELS, StoredEncodingId } from "../models/encoding";
@@ -46,14 +46,14 @@ function useWordCount(doc: EditorDocument | null): string {
         const handle = countWords(text);
         handleRef.current = handle;
         void handle.promise.then((n) => {
-          if (n !== null) setDisplay(`字数:${n}`);
+          if (n !== null) setDisplay(`字数 ${n}`);
         });
       } else {
         setDisplay("统计中…");
         const handle = countWords(text);
         handleRef.current = handle;
         void handle.promise.then((n) => {
-          if (n !== null) setDisplay(`字数:${n}`);
+          if (n !== null) setDisplay(`字数 ${n}`);
         });
       }
     };
@@ -139,14 +139,20 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
     <footer className="status-bar">
       {activeDoc &&
         (activeDoc.ioState === "saving" ? (
-          <span className="save-state saving">↻ 保存中…</span>
+          <span className="save-state saving">
+            <Loader2 size={12} className="save-spin" />
+            保存中…
+          </span>
         ) : activeDoc.isDirty ? (
           <span className="save-state dirty">
             <span className="dot" />
             未保存
           </span>
         ) : (
-          <span className="save-state saved">✓ 已保存</span>
+          <span className="save-state saved">
+            <Check size={12} />
+            已保存
+          </span>
         ))}
       {activeDoc && activeDoc.perfTier !== "standard" && (
         <LargeFileMenu doc={activeDoc} />
@@ -165,7 +171,7 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
           <span className="status-item">{LANGUAGE_LABELS[activeDoc.language]}</span>
           {wordCount && <span className="status-item">{wordCount}</span>}
           <span className="status-item">
-            行 {activeDoc.cursorLine},列 {activeDoc.cursorColumn}
+            行 {activeDoc.cursorLine} · 列 {activeDoc.cursorColumn}
           </span>
         </>
       )}

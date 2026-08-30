@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Info, TriangleAlert } from "lucide-react";
 import { answerConfirm, answerPrompt, usePrompts } from "../state/prompts";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 
@@ -42,7 +43,14 @@ export function PromptDialogs() {
           aria-label={prompt.title}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          <p className="modal-message">{prompt.title}</p>
+          <div className="modal-head">
+            <span className="modal-icon info">
+              <Info size={18} />
+            </span>
+            <div className="modal-head-text">
+              <div className="modal-title">{prompt.title}</div>
+            </div>
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -80,7 +88,15 @@ export function PromptDialogs() {
         aria-label={confirm!.title ?? "确认"}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <p className="modal-message">{confirm!.message}</p>
+        <div className="modal-head">
+          <span className={"modal-icon " + (confirm!.danger ? "danger" : "info")}>
+            {confirm!.danger ? <TriangleAlert size={18} /> : <Info size={18} />}
+          </span>
+          <div className="modal-head-text">
+            <div className="modal-title">{confirm!.title ?? "确认"}</div>
+            <p className="modal-message">{confirm!.message}</p>
+          </div>
+        </div>
         <div className="modal-buttons">
           <button className="modal-button" onClick={() => answerConfirm(false)}>
             取消

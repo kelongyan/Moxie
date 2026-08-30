@@ -9,6 +9,7 @@
   --lac-bg: #ffffff;
   --lac-bg-sidebar: #f9f9fb;
   --lac-bg-elevated: #ffffff;
+  --lac-bg-inset: #f6f7f9;
   --lac-overlay: rgba(20, 22, 28, 0.42);
 
   /* 文本三级 */
@@ -28,6 +29,11 @@
   --lac-button-bg-hover: rgba(23, 24, 28, 0.08);
 
   --lac-accent: #4a52a3;
+  --lac-accent-hover: #565eb5;
+  --lac-accent-active: #3f4691;
+  --lac-accent-soft: rgba(74, 82, 163, 0.1);
+  --lac-accent-softer: rgba(74, 82, 163, 0.055);
+  --lac-accent-contrast: #ffffff;
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
   /* 编辑器状态色（完整三态分离在 R4） */
@@ -55,6 +61,10 @@
   --lac-success: #177a3d;
   --lac-warning: #96590a;
   --lac-danger: #c0392c;
+  --lac-danger-contrast: #ffffff;
+  --lac-success-soft: rgba(23, 122, 61, 0.1);
+  --lac-warning-soft: rgba(150, 89, 10, 0.12);
+  --lac-danger-soft: rgba(192, 57, 44, 0.1);
 
   /* 阴影：边框 + 微投影双轨 */
   --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(16, 18, 24, 0.05);
@@ -71,6 +81,7 @@
   --lac-bg: #1d1e22;
   --lac-bg-sidebar: #1a1b1f;
   --lac-bg-elevated: #25262b;
+  --lac-bg-inset: #17181c;
   --lac-overlay: rgba(0, 0, 0, 0.6);
 
   --lac-text: #e9eaee;
@@ -87,6 +98,11 @@
   --lac-button-bg-hover: rgba(255, 255, 255, 0.1);
 
   --lac-accent: #96a0f5;
+  --lac-accent-hover: #a8b1f7;
+  --lac-accent-active: #8790ee;
+  --lac-accent-soft: rgba(150, 160, 245, 0.16);
+  --lac-accent-softer: rgba(150, 160, 245, 0.09);
+  --lac-accent-contrast: #14151d;
 
   --lac-current-line: rgba(255, 255, 255, 0.05);
   --lac-delimiter-match: rgba(150, 160, 245, 0.24);
@@ -111,6 +127,10 @@
   --lac-success: #5cd68a;
   --lac-warning: #e3b341;
   --lac-danger: #ff7b72;
+  --lac-danger-contrast: #14151d;
+  --lac-success-soft: rgba(92, 214, 138, 0.1);
+  --lac-warning-soft: rgba(227, 179, 65, 0.12);
+  --lac-danger-soft: rgba(255, 123, 114, 0.12);
 
   --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(0, 0, 0, 0.3);
   --sh-2: 0 0 0 1px var(--lac-border),
@@ -132,6 +152,9 @@
   --lac-group-row-height: 28px;
   --lac-editor-min-width: 300px;
   --lac-preview-min-width: 280px;
+
+  /* 控件统一高度：按钮 / 输入框 / 下拉 */
+  --control-h: 30px;
 
   /* 间距刻度（4 的倍数体系） */
   --sp-1: 4px;
@@ -159,7 +182,6 @@
   --fs-12: 12px;
   --fs-13: 13px;
   --fs-14: 14px;
-  --fs-16: 16px;
   --fs-20: 20px;
   --fs-editor: 18.5px; /* 编辑器默认字号（pt 换算），R4 重排 */
   --fs-window-title: var(--fs-13);
@@ -178,7 +200,6 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --anim-hover: var(--dur-1) var(--ease-out);
   --anim-structural: var(--dur-3) var(--ease-out);
-  --tooltip-delay-ms: 600ms;
 
   /* 层序 */
   --z-sidebar: 20;

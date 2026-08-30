@@ -113,12 +113,12 @@ export function buildEditorState(options: EditorOptions): EditorState {
         lineHeight: `calc(1.2em + ${lineSpacingPx}px)`,
       },
       ".cm-content": {
-        caretColor: "var(--lac-text)",
-        padding: "10px 0 24px",
+        caretColor: "var(--lac-accent)",
+        padding: "12px 0 28px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {
-        borderLeftColor: "var(--lac-text)",
+        borderLeftColor: "var(--lac-accent)",
         borderLeftWidth: "2px",
       },
       "& .cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
@@ -127,7 +127,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
       ".cm-activeLine": { backgroundColor: "var(--lac-current-line)" },
       ".cm-gutters": {
         backgroundColor: "var(--lac-bg)",
-        color: "var(--lac-text-secondary)",
+        color: "var(--lac-text-tertiary)",
         border: "none",
         borderRight: "1px solid var(--lac-border)",
       },
@@ -140,11 +140,11 @@ export function buildEditorState(options: EditorOptions): EditorState {
       },
       ".cm-activeLineGutter": {
         backgroundColor: "transparent",
-        color: "var(--lac-text)",
+        color: "var(--lac-text-secondary)",
       },
       ".cm-matchingBracket": {
-        backgroundColor: "var(--lac-delimiter-match)",
-        outline: "1px solid var(--lac-accent)",
+        backgroundColor: "var(--lac-accent-soft)",
+        outline: "none",
       },
       ".cm-foldGutter .cm-gutterElement": {
         padding: "0 4px",
@@ -153,6 +153,8 @@ export function buildEditorState(options: EditorOptions): EditorState {
       ".cm-foldPlaceholder": {
         fontFamily: "var(--font-mono)",
         border: "1px solid var(--lac-border)",
+        color: "var(--lac-text-secondary)",
+        borderRadius: "var(--radius-xs)",
       },
     },
     { dark: document.documentElement.dataset.theme === "dark" }

@@ -192,7 +192,7 @@ export function FindReplaceWindow() {
           disabled={disabled || !state.query}
           onClick={() => send("prev")}
         >
-          <ChevronUp size={13} />
+          <ChevronUp size={14} />
           上一个
         </button>
         <button
@@ -200,7 +200,7 @@ export function FindReplaceWindow() {
           disabled={disabled || !state.query}
           onClick={() => send("next")}
         >
-          <ChevronDown size={13} />
+          <ChevronDown size={14} />
           下一个
         </button>
         {state.mode === "replace" && (

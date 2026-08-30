@@ -62,7 +62,7 @@ export function renderMarkdown(
     color: ${tokens.fg};
     font-family: ${tokens.fontUi};
     font-size: 15px;
-    line-height: 1.7;
+    line-height: 1.75;
   }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
@@ -72,12 +72,14 @@ export function renderMarkdown(
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(72ch, 100%); margin: 0; padding: 18px 22px 48px; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; margin: 1.15em 0 0.45em; }
-  h1 { font-size: 1.5em; }
-  h2 { font-size: 1.3em; }
-  h3 { font-size: 1.15em; }
-  h4, h5, h6 { font-size: 1em; }
+  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
+  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
+       border-bottom: 1px solid ${tokens.border}; }
+  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
+       border-bottom: 1px solid ${tokens.border}; }
+  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
+  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
   p { margin: 0.55em 0; }
   a { color: ${tokens.accent}; text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -100,33 +102,36 @@ export function renderMarkdown(
     border-color: ${tokens.accent};
   }
   blockquote {
-    margin: 0.7em 0; padding: 0.1em 0.9em;
+    margin: 0.8em 0; padding: 0.35em 0.9em;
     border-left: 3px solid ${tokens.borderStrong};
+    background: color-mix(in srgb, ${tokens.fg} 3%, ${tokens.bg});
+    border-radius: 0 6px 6px 0;
     color: ${tokens.secondary};
   }
   code {
     font-family: ${tokens.fontMono};
-    font-size: 0.88em;
+    font-size: 0.875em;
     background: ${codeBg};
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
+    padding: 0.18em 0.4em;
+    border-radius: 5px;
+    border: 1px solid ${tokens.border};
   }
   pre {
     background: ${codeBg};
     border: 1px solid ${tokens.border};
-    padding: 12px 14px;
-    border-radius: 8px;
+    padding: 14px 16px;
+    border-radius: 10px;
     overflow-x: auto;
   }
-  pre code { background: transparent; padding: 0; font-size: 0.88em; line-height: 1.6; }
+  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
   table { border-collapse: collapse; margin: 0.8em 0; font-variant-numeric: tabular-nums; }
   th, td {
     border: none;
     border-bottom: 1px solid ${tokens.border};
-    padding: 5px 16px 5px 0;
+    padding: 6px 16px 6px 0;
     text-align: left;
   }
-  th { font-weight: 600; border-bottom-color: ${tokens.borderStrong}; }
+  th { font-weight: 600; background: ${codeBg}; border-bottom-color: ${tokens.borderStrong}; }
   hr { border: none; border-top: 1px solid ${tokens.border}; margin: 1.4em 0; }
   img { max-width: 100%; }
 </style>

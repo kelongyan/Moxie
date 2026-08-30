@@ -13,8 +13,10 @@ import {
 } from "lucide-react";
 import { redoFor, undoFor } from "../editor/registry";
 import { EditorDocument, useDocuments } from "../state/documents";
-import { LANGUAGE_LABELS } from "../models/language";
+import { EditorLanguage, LANGUAGE_LABELS } from "../models/language";
+import { ContextMenu, MenuItem } from "./ContextMenu";
 import { Tooltip } from "./Tooltip";
+import brandMark from "../../src-tauri/icons/32x32.png";
 
 interface TitleToolbarProps {
   activeDoc: EditorDocument | null;
@@ -84,6 +86,29 @@ export function TitleToolbar({
   onTogglePreview,
 }: TitleToolbarProps) {
   const hasDocument = activeDoc !== null;
+  const [langMenu, setLangMenu] = useState<{ x: number; y: number } | null>(
+    null
+  );
+
+  const languageMenuItems: MenuItem[] =
+    activeDoc && langMenu
+      ? (
+          Object.entries(LANGUAGE_LABELS) as [
+            EditorLanguage,
+            string
+          ][]
+        ).map(([language, label]) => ({
+          label,
+          checked: activeDoc.language === language,
+          onClick: () => {
+            if (activeDoc.language !== language) {
+              useDocuments
+                .getState()
+                .patchDocument(activeDoc.id, { language });
+            }
+          },
+        }))
+      : [];
 
   return (
     <header className="title-toolbar" data-tauri-drag-region>
@@ -99,6 +124,13 @@ export function TitleToolbar({
         </button>
       </Tooltip>
 
+      <img
+        className="title-brand"
+        src={brandMark}
+        alt=""
+        draggable={false}
+        data-tauri-drag-region
+      />
       <span className="window-title" data-tauri-drag-region>
         {activeDoc
           ? `${activeDoc.isDirty ? "● " : ""}${activeDoc.name} — Moxie`
@@ -130,7 +162,15 @@ export function TitleToolbar({
       <span className="title-divider" />
 
       <Tooltip label="语言模式">
-        <button className="tool-button language-button" disabled={!hasDocument}>
+        <button
+          className="tool-button language-button"
+          disabled={!hasDocument}
+          onClick={(e) => {
+            if (!activeDoc) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            setLangMenu({ x: rect.left, y: rect.bottom + 4 });
+          }}
+        >
           {activeDoc ? LANGUAGE_LABELS[activeDoc.language] : "纯文本"}
           <ChevronDown className="chevron" />
         </button>
@@ -153,6 +193,15 @@ export function TitleToolbar({
       </Tooltip>
 
       <WindowControls />
+
+      {langMenu && (
+        <ContextMenu
+          x={langMenu.x}
+          y={langMenu.y}
+          items={languageMenuItems}
+          onClose={() => setLangMenu(null)}
+        />
+      )}
     </header>
   );
 }

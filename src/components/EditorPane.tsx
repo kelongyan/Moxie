@@ -16,6 +16,7 @@ import { EditorLanguage } from "../models/language";
 import { EditorDocument, useDocuments } from "../state/documents";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
+import { EditorEmptyState } from "./EditorEmptyState";
 import { MarkdownPreview } from "./MarkdownPreview";
 
 const INACTIVE_LIMIT = 3;
@@ -103,8 +104,6 @@ export function EditorPane() {
   }, [activeId]);
 
   useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
     const alive = new Set(documents.map((d) => d.id));
 
     for (const id of allViewIds()) {
@@ -117,6 +116,10 @@ export function EditorPane() {
         view?.destroy();
       }
     }
+
+    // 无文档时渲染空状态、不挂载 cm-host，视图回收已在上方完成
+    const container = containerRef.current;
+    if (!container) return;
 
     const prefsChanged = lastVersionRef.current !== prefsVersion;
     lastVersionRef.current = prefsVersion;
@@ -203,8 +206,14 @@ export function EditorPane() {
 
   return (
     <div className="editor-pane">
-      <div className="cm-host" ref={containerRef} />
-      {showPreview && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
+      {documents.length === 0 ? (
+        <EditorEmptyState />
+      ) : (
+        <>
+          <div className="cm-host" ref={containerRef} />
+          {showPreview && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
+        </>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Info, TriangleAlert } from "lucide-react";
 import { ENCODING_CHOICES, EncodingChoiceId } from "../models/encoding";
 import { answerEncoding, answerConflict, answerLossy, useFileDialogs } from "../state/fileDialogs";
 import { useFocusTrap } from "../hooks/useFocusTrap";
@@ -32,9 +33,17 @@ export function EncodingDialog() {
         aria-label="选择编码"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <p className="modal-message">
-          无法将“{fileName}”解码为 UTF-8。请选择要使用的编码:
-        </p>
+        <div className="modal-head">
+          <span className="modal-icon info">
+            <Info size={18} />
+          </span>
+          <div className="modal-head-text">
+            <div className="modal-title">选择编码</div>
+            <p className="modal-message">
+              无法将“{fileName}”解码为 UTF-8。请选择要使用的编码:
+            </p>
+          </div>
+        </div>
         <div className="modal-choices">
           {ENCODING_CHOICES.map((choice, index) => (
             <button
@@ -73,9 +82,17 @@ export function ConflictDialog() {
         aria-label="外部修改冲突"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <p className="modal-message">
-          “{fileName}”在磁盘上已被其他程序修改。如何处理?
-        </p>
+        <div className="modal-head">
+          <span className="modal-icon warn">
+            <TriangleAlert size={18} />
+          </span>
+          <div className="modal-head-text">
+            <div className="modal-title">外部修改冲突</div>
+            <p className="modal-message">
+              “{fileName}”在磁盘上已被其他程序修改。如何处理?
+            </p>
+          </div>
+        </div>
         <div className="modal-choices">
           <button
             className="modal-choice-button"
@@ -117,9 +134,17 @@ export function LossyDialog() {
         aria-label="编码无法表示的字符"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <p className="modal-message">
-          “{fileName}”包含当前编码无法表示的字符。要改用 UTF-8 保存吗?
-        </p>
+        <div className="modal-head">
+          <span className="modal-icon info">
+            <Info size={18} />
+          </span>
+          <div className="modal-head-text">
+            <div className="modal-title">编码无法表示的字符</div>
+            <p className="modal-message">
+              “{fileName}”包含当前编码无法表示的字符。要改用 UTF-8 保存吗?
+            </p>
+          </div>
+        </div>
         <div className="modal-buttons">
           <button className="modal-button" onClick={() => answerLossy("cancel")}>
             取消
