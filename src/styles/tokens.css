@@ -1,0 +1,200 @@
+/* 设计令牌：层级靠明度、分隔靠 1px 实色、尺度对齐 Windows px */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* 表面：chrome / 内容 / 侧栏 / 浮层 / 遮罩 */
+  --lac-bg-chrome: #f4f4f6;
+  --lac-bg: #ffffff;
+  --lac-bg-sidebar: #f9f9fb;
+  --lac-bg-elevated: #ffffff;
+  --lac-overlay: rgba(20, 22, 28, 0.42);
+
+  /* 文本三级 */
+  --lac-text: #17181c;
+  --lac-text-secondary: #5f636e;
+  --lac-text-tertiary: #8b8f9a;
+
+  /* 分隔（1px 实色） */
+  --lac-border: #e7e8eb;
+  --lac-border-strong: #d4d6db;
+
+  /* 交互明度三态 */
+  --lac-hover: rgba(23, 24, 28, 0.045);
+  --lac-pressed: rgba(23, 24, 28, 0.09);
+  --lac-selected: rgba(23, 24, 28, 0.12);
+  --lac-button-bg: rgba(23, 24, 28, 0.035);
+  --lac-button-bg-hover: rgba(23, 24, 28, 0.08);
+
+  --lac-accent: #4a52a3;
+  --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
+
+  /* 编辑器状态色（完整三态分离在 R4） */
+  --lac-current-line: rgba(23, 24, 28, 0.04);
+  --lac-delimiter-match: rgba(74, 82, 163, 0.14);
+  --lac-selection: rgba(74, 82, 163, 0.22);
+  --lac-find-match: rgba(255, 166, 87, 0.28);
+
+  --lac-tab-selected-bg: #ffffff;
+  --lac-preview-shadow: rgba(16, 18, 24, 0.1);
+
+  --syn-keyword: #6d5bd0;
+  --syn-string: #1a7f37;
+  --syn-number: #b25e09;
+  --syn-comment: #6e7781;
+  --syn-function: #0550ae;
+  --syn-type: #953800;
+  --syn-property: #0550ae;
+  --syn-heading: #4a52a3;
+  --syn-meta: #6d5bd0;
+  --syn-punct: #6b7078;
+  --syn-link: #0969da;
+
+  /* 语义色（≥4.5:1，小号文字可读） */
+  --lac-success: #177a3d;
+  --lac-warning: #96590a;
+  --lac-danger: #c0392c;
+
+  /* 阴影：边框 + 微投影双轨 */
+  --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(16, 18, 24, 0.05);
+  --sh-2: 0 0 0 1px var(--lac-border),
+    0 1px 2px rgba(16, 18, 24, 0.06), 0 8px 24px rgba(16, 18, 24, 0.1);
+  --sh-3: 0 0 0 1px var(--lac-border-strong),
+    0 24px 64px rgba(16, 18, 24, 0.2);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --lac-bg-chrome: #17181b;
+  --lac-bg: #1d1e22;
+  --lac-bg-sidebar: #1a1b1f;
+  --lac-bg-elevated: #25262b;
+  --lac-overlay: rgba(0, 0, 0, 0.6);
+
+  --lac-text: #e9eaee;
+  --lac-text-secondary: #a4a8b2;
+  --lac-text-tertiary: #83878f;
+
+  --lac-border: #2e3037;
+  --lac-border-strong: #3d3f47;
+
+  --lac-hover: rgba(255, 255, 255, 0.06);
+  --lac-pressed: rgba(255, 255, 255, 0.11);
+  --lac-selected: rgba(255, 255, 255, 0.15);
+  --lac-button-bg: rgba(255, 255, 255, 0.05);
+  --lac-button-bg-hover: rgba(255, 255, 255, 0.1);
+
+  --lac-accent: #96a0f5;
+
+  --lac-current-line: rgba(255, 255, 255, 0.05);
+  --lac-delimiter-match: rgba(150, 160, 245, 0.24);
+  --lac-selection: rgba(150, 160, 245, 0.28);
+  --lac-find-match: rgba(255, 166, 87, 0.22);
+
+  --lac-tab-selected-bg: #25262b;
+  --lac-preview-shadow: rgba(0, 0, 0, 0.3);
+
+  --syn-keyword: #a5b4fc;
+  --syn-string: #8fd6a0;
+  --syn-number: #ffa657;
+  --syn-comment: #7d838d;
+  --syn-function: #79c0ff;
+  --syn-type: #ffa657;
+  --syn-property: #79c0ff;
+  --syn-heading: #a5b4fc;
+  --syn-meta: #a5b4fc;
+  --syn-punct: #9aa0ab;
+  --syn-link: #58a6ff;
+
+  --lac-success: #5cd68a;
+  --lac-warning: #e3b341;
+  --lac-danger: #ff7b72;
+
+  --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --sh-2: 0 0 0 1px var(--lac-border),
+    0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --sh-3: 0 0 0 1px var(--lac-border-strong),
+    0 24px 64px rgba(0, 0, 0, 0.55);
+}
+
+:root {
+  /* 结构尺寸（R3 框架改造前保持现值） */
+  --lac-window-min-w: 900px;
+  --lac-window-min-h: 560px;
+  --lac-titlebar-height: 40px;
+  --lac-tabbar-height: 36px;
+  --lac-statusbar-height: 26px;
+  --lac-sidebar-width: 240px;
+  --lac-sidebar-row-height: 36px;
+  --lac-section-header-height: 25px;
+  --lac-group-row-height: 28px;
+  --lac-editor-min-width: 300px;
+  --lac-preview-min-width: 280px;
+
+  /* 间距刻度（4 的倍数体系） */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+
+  /* 圆角 */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  /* 字体：UI 用 Segoe 系；等宽弃用雅黑冒充，CJK 走 Sarasa/Noto */
+  --font-ui: "Segoe UI", "Segoe UI Variable Text", "Source Han Sans SC",
+    "Noto Sans SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Sarasa Mono SC",
+    "Noto Sans Mono CJK SC", "Microsoft YaHei UI", monospace;
+
+  /* 字号：Windows 尺度，基准 14px（数字阶为底，语义名引用之） */
+  --fs-11: 11px;
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-editor: 18.5px; /* 编辑器默认字号（pt 换算），R4 重排 */
+  --fs-window-title: var(--fs-13);
+  --fs-dialog-title: var(--fs-14);
+  --fs-settings-title: var(--fs-20);
+  --fs-body: var(--fs-14);
+  --fs-caption: var(--fs-12);
+  --fs-small: var(--fs-12);
+  --fs-badge: var(--fs-11);
+
+  /* 动效 */
+  --dur-1: 80ms;
+  --dur-2: 140ms;
+  --dur-3: 220ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --anim-hover: var(--dur-1) var(--ease-out);
+  --anim-structural: var(--dur-3) var(--ease-out);
+  --tooltip-delay-ms: 600ms;
+
+  /* 层序 */
+  --z-sidebar: 20;
+  --z-menu: 100;
+  --z-popover: 200;
+  --z-modal: 1000;
+  --z-drop: 1100;
+  --z-tooltip: 1500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+    --anim-structural: 0ms;
+    --anim-hover: 0ms;
+  }
+}

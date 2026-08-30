@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moxie</title>
+    <script>
+      // 样式加载前同步恢复主题，避免深色模式白闪；键与 src/state/theme.ts 约定一致
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem("moxie.theme");
+        } catch (e) {}
+        var dark =
+          stored === "dark" ||
+          ((!stored) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        document.documentElement.style.backgroundColor = dark
+          ? "#1d1e22"
+          : "#ffffff";
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

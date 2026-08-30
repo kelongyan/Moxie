@@ -1,0 +1,146 @@
+/* 公共原语：spacer / 图标按钮 / 操作按钮 / 输入域 / 浮层的单一来源。
+   app.css 仅保留各组件的尺寸与布局差异，交互三态统一在此定义。 */
+
+/* 弹性撑开（修复：此前仅在 title-toolbar / status-bar 作用域内定义，
+   侧栏与弹窗中的 .spacer 实际失效） */
+.spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 透明图标按钮：标题工具 / 垃圾桶 / 步进器 / 关闭 / 重置 */
+.tool-button,
+.section-trash,
+.stepper-button,
+.tab-close,
+.reset-button,
+.theme-cycle-button,
+.bigfile-trigger,
+.section-empty-button {
+  border: none;
+  background: transparent;
+  color: var(--lac-text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--anim-hover), color var(--anim-hover),
+    transform var(--dur-1) var(--ease-out);
+}
+
+.tool-button:hover:not(:disabled),
+.section-trash:hover:not(:disabled),
+.stepper-button:hover:not(:disabled),
+.tab-close:hover:not(:disabled),
+.reset-button:hover:not(:disabled),
+.theme-cycle-button:hover:not(:disabled),
+.bigfile-trigger:hover:not(:disabled),
+.section-empty-button:hover:not(:disabled) {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+.tool-button:active:not(:disabled),
+.section-trash:active:not(:disabled),
+.stepper-button:active:not(:disabled),
+.tab-close:active:not(:disabled),
+.reset-button:active:not(:disabled),
+.theme-cycle-button:active:not(:disabled),
+.bigfile-trigger:active:not(:disabled),
+.section-empty-button:active:not(:disabled) {
+  background: var(--lac-pressed);
+  transform: scale(0.98);
+}
+
+.tool-button:disabled,
+.section-trash:disabled,
+.stepper-button:disabled,
+.tab-close:disabled,
+.reset-button:disabled,
+.theme-cycle-button:disabled,
+.bigfile-trigger:disabled,
+.section-empty-button:disabled {
+  color: var(--lac-text-tertiary);
+  cursor: default;
+}
+
+/* 操作按钮：弹窗 / 查找 / 编解码共用一套 */
+.modal-button,
+.modal-choice-button,
+.find-button {
+  border: 1px solid var(--lac-border);
+  background: var(--lac-button-bg);
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--anim-hover), filter var(--anim-hover);
+}
+
+.modal-button:hover:not(:disabled),
+.modal-choice-button:hover:not(:disabled),
+.find-button:hover:not(:disabled) {
+  background: var(--lac-button-bg-hover);
+}
+
+.modal-button:disabled,
+.modal-choice-button:disabled,
+.find-button:disabled {
+  color: var(--lac-text-tertiary);
+  cursor: default;
+}
+
+.modal-button.prominent,
+.find-button.prominent {
+  background: var(--lac-accent);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.modal-button.prominent:hover:not(:disabled),
+.find-button.prominent:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.modal-button.danger {
+  background: var(--lac-danger);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.modal-button.danger:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* 输入域：查找 / 提示框 / 下拉 / 编码文本域 */
+.find-grid input,
+.prompt-input,
+.settings-select,
+.codec-text {
+  border: 1px solid var(--lac-border);
+  background: var(--lac-bg);
+  color: var(--lac-text);
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+}
+
+.find-grid input:focus-visible,
+.prompt-input:focus-visible,
+.settings-select:focus-visible,
+.codec-text:focus-visible {
+  outline: 2px solid var(--lac-accent);
+  outline-offset: -1px;
+}
+
+/* 浮层表面：tooltip / 右键菜单 / 弹层 / 模态面板 */
+.lac-tooltip,
+.context-menu,
+.bigfile-popover,
+.modal-panel {
+  background: var(--lac-bg-elevated);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+}

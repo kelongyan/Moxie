@@ -1,0 +1,16 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 前端
+node_modules/
+dist/
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/schemas/
+
+# 文档仅本地保留，只提交 README
+/*.md
+!README.md
