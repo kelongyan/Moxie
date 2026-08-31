@@ -1,5 +1,6 @@
 mod codec;
 pub mod encodings;
+mod external;
 pub mod file_io;
 mod file_meta;
 pub mod json_format;
@@ -122,6 +123,13 @@ fn get_file_revision(path: PathBuf) -> Result<RevisionResult, String> {
 }
 
 #[command]
+fn read_file_base64(path: PathBuf) -> Result<String, String> {
+    use base64::Engine;
+    let bytes = file_io::read_bytes(&path).map_err(|e| e.to_string())?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
+}
+
+#[command]
 fn json_format(text: String, mode: String) -> Result<String, String> {
     let parsed_mode = match mode.as_str() {
         "minify" => json_format::JsonMode::Minify,
@@ -194,6 +202,19 @@ fn rename_file(from: PathBuf, to: PathBuf) -> Result<(), String> {
 #[command]
 fn explorer_select(path: PathBuf) -> Result<(), String> {
     sidebar::reveal_in_explorer(&path)
+}
+
+#[command]
+fn open_external(url: String) -> Result<(), String> {
+    external::open_url(&url)
+}
+
+#[command]
+fn allow_asset_directory(app: tauri::AppHandle, path: PathBuf) -> Result<(), String> {
+    use tauri::Manager;
+    app.asset_protocol_scope()
+        .allow_directory(&path, true)
+        .map_err(|e| e.to_string())
 }
 
 #[derive(serde::Serialize)]
@@ -275,6 +296,7 @@ pub fn run() {
             write_text_file,
             get_file_identity,
             get_file_revision,
+            read_file_base64,
             json_format,
             codec_op,
             recent_list,
@@ -288,6 +310,8 @@ pub fn run() {
             sidebar_save,
             rename_file,
             explorer_select,
+            open_external,
+            allow_asset_directory,
             recovery_read_marker,
             recovery_write_marker,
             recovery_load,

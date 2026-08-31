@@ -19,6 +19,9 @@ interface PreferencesState {
   tabWidth: 2 | 4 | 8;
   exitBehavior: ExitBehavior;
   sidebarPinned: boolean;
+  markdownBreaks: boolean;
+  markdownTypographer: boolean;
+  markdownAllowHtml: boolean;
   prefsVersion: number;
   set: (partial: Partial<Omit<PreferencesState, "set" | "prefsVersion">>) => void;
   hydrate: (disk: Record<string, unknown>) => void;
@@ -47,6 +50,9 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     appTheme: useThemeStore.getState().mode,
     workspaceExitBehavior: state.exitBehavior,
     sidebarPinned: state.sidebarPinned,
+    markdownBreaks: state.markdownBreaks,
+    markdownTypographer: state.markdownTypographer,
+    markdownAllowHtml: state.markdownAllowHtml,
   };
 }
 
@@ -77,6 +83,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
   tabWidth: 4,
   exitBehavior: "preserveWorkspace",
   sidebarPinned: true,
+  markdownBreaks: false,
+  markdownTypographer: false,
+  markdownAllowHtml: false,
   prefsVersion: 0,
 
   set: (partial) => {
@@ -110,6 +119,13 @@ export const usePreferences = create<PreferencesState>((set) => ({
       patch.exitBehavior = disk.workspaceExitBehavior;
     }
     if (typeof disk.sidebarPinned === "boolean") patch.sidebarPinned = disk.sidebarPinned;
+    if (typeof disk.markdownBreaks === "boolean") patch.markdownBreaks = disk.markdownBreaks;
+    if (typeof disk.markdownTypographer === "boolean") {
+      patch.markdownTypographer = disk.markdownTypographer;
+    }
+    if (typeof disk.markdownAllowHtml === "boolean") {
+      patch.markdownAllowHtml = disk.markdownAllowHtml;
+    }
     if (typeof disk.appTheme === "string") {
       const mode = disk.appTheme as ThemeMode;
       if (mode === "system" || mode === "light" || mode === "dark") {

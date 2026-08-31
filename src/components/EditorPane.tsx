@@ -198,11 +198,13 @@ export function EditorPane() {
   };
 
   const activeDoc = documents.find((d) => d.id === activeId);
+  const wantsPreview =
+    !!activeDoc && activeDoc.language === "markdown" && activeDoc.previewVisible;
   const previewAllowed =
     !!activeDoc &&
     featureEnabled("preview", activeDoc.perfTier, activeDoc.featureOverrides);
-  const showPreview =
-    previewAllowed && activeDoc.language === "markdown" && activeDoc.previewVisible;
+  const showPreview = wantsPreview && previewAllowed;
+  const previewBlocked = wantsPreview && !previewAllowed;
 
   return (
     <div className="editor-pane">
@@ -212,6 +214,17 @@ export function EditorPane() {
         <>
           <div className="cm-host" ref={containerRef} />
           {showPreview && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
+          {previewBlocked && (
+            <>
+              <div className="preview-splitter preview-splitter-static" aria-hidden="true" />
+              <div className="preview-pane preview-pane-notice" style={{ flexBasis: "42%" }}>
+                <p className="preview-notice-text">
+                  该文档较大，为保证编辑流畅，预览已自动停用。
+                  如需强制开启，可在状态栏“大文件模式”中勾选预览。
+                </p>
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

@@ -203,6 +203,48 @@ export function SettingsWindow() {
           />
         </SettingRow>
 
+        <SettingRow
+          title="Markdown 单换行"
+          description="单个换行渲染为换行;关闭时遵循 GFM,仅在空行处分段"
+        >
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.markdownBreaks}
+              onChange={(e) => set({ markdownBreaks: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow
+          title="Markdown 排版美化"
+          description="自动替换直引号、破折号等排版符号"
+        >
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.markdownTypographer}
+              onChange={(e) => set({ markdownTypographer: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow
+          title="Markdown 原始 HTML"
+          description="渲染文档中的 HTML 片段（经本地净化，默认关闭）"
+        >
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.markdownAllowHtml}
+              onChange={(e) => set({ markdownAllowHtml: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
         <div className="settings-divider" />
         <div className="settings-footer">
           <span>Moxie</span>

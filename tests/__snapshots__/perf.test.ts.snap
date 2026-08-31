@@ -1,0 +1,319 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`preview snapshot > dark theme 1`] = `
+"<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>doc.md</title>
+<link rel="stylesheet" href="">
+<style>
+  html { color-scheme: dark;  }
+  html, body { margin: 0; padding: 0; background: #1a1b1f; }
+  body {
+    color: #e9eaee;
+    font-family: sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #d4d6db;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
+  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
+       border-bottom: 1px solid #e7e8eb; }
+  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
+       border-bottom: 1px solid #e7e8eb; }
+  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
+  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
+  p { margin: 0.55em 0; }
+  a { color: #4a52a3; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
+  li { margin: 0.15em 0; }
+  li.task-list-item { list-style: none; margin-left: -1.4em; }
+  li.task-list-item input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0 0.5em 0 0;
+    border: 1px solid #d4d6db;
+    border-radius: 4px;
+    background: #ffffff;
+    vertical-align: -2px;
+  }
+  li.task-list-item input:checked {
+    background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
+    border-color: #4a52a3;
+  }
+  blockquote {
+    margin: 0.8em 0; padding: 0.35em 0.9em;
+    border-left: 3px solid #d4d6db;
+    background: color-mix(in srgb, #e9eaee 3%, #1a1b1f);
+    border-radius: 0 6px 6px 0;
+    color: #5f636e;
+  }
+  code {
+    font-family: monospace;
+    font-size: 0.875em;
+    background: color-mix(in srgb, #e9eaee 6%, #1a1b1f);
+    padding: 0.18em 0.4em;
+    border-radius: 5px;
+    border: 1px solid #e7e8eb;
+  }
+  pre {
+    background: color-mix(in srgb, #e9eaee 6%, #1a1b1f);
+    border: 1px solid #e7e8eb;
+    padding: 14px 16px;
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
+  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td {
+    border: none;
+    border-bottom: 1px solid #e7e8eb;
+    padding: 6px 16px 6px 0;
+    text-align: left;
+  }
+  th { font-weight: 600; background: color-mix(in srgb, #e9eaee 6%, #1a1b1f); border-bottom-color: #d4d6db; }
+  hr { border: none; border-top: 1px solid #e7e8eb; margin: 1.4em 0; }
+  img { max-width: 100%; }
+  .img-broken {
+    display: inline-block;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px dashed #d4d6db;
+    border-radius: 6px;
+    color: #5f636e;
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
+  .tok-keyword { color: var(--syn-keyword); }
+  .tok-string, .tok-string2 { color: var(--syn-string); }
+  .tok-number, .tok-atom, .tok-literal { color: var(--syn-number); }
+  .tok-comment { color: var(--syn-comment); font-style: italic; }
+  .tok-typeName, .tok-namespace, .tok-className, .tok-macroName { color: var(--syn-type); }
+  .tok-propertyName { color: var(--syn-property); }
+  .tok-meta { color: var(--syn-meta); }
+  .tok-operator, .tok-punctuation, .tok-bracket, .tok-separator { color: var(--syn-punct); }
+  .tok-link, .tok-url { color: var(--syn-link); }
+  .tok-heading { color: var(--syn-heading); font-weight: 600; }
+  /* 脚注 */
+  .footnote-ref { line-height: 0; }
+  .footnote-ref a, .footnote-backref { color: #4a52a3; text-decoration: none; }
+  .footnotes-sep { margin: 2em 0 0.6em; }
+  .footnotes { font-size: 0.85em; color: #5f636e; }
+  .footnotes-list { padding-left: 1.4em; }
+  .footnote-item { margin: 0.25em 0; }
+  .footnote-item p { margin: 0.2em 0; }
+  /* 定义列表 */
+  dl { margin: 0.7em 0; }
+  dt { font-weight: 600; margin: 0.5em 0 0.1em; }
+  dd { margin: 0.1em 0 0.35em 1.5em; color: #e9eaee; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
+  /* 数学公式 */
+  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block .katex-display { margin: 0.2em 0; }
+  .katex { font-size: 1.05em; }
+  .math-error {
+    color: #5f636e;
+    background: color-mix(in srgb, #e9eaee 6%, #1a1b1f);
+    border: 1px dashed #d4d6db;
+    border-radius: 4px;
+    padding: 0 0.35em;
+    font-family: monospace;
+    font-size: 0.88em;
+  }
+</style>
+</head>
+<body>
+<article><h1 data-line="0" id="title">Title</h1>
+<p data-line="2">para <strong>bold</strong> <code>code</code></p>
+<ul class="contains-task-list" data-line="4">
+<li class="task-list-item enabled" data-line="4"><input class="task-list-item-checkbox"type="checkbox"> todo</li>
+</ul>
+<div class="table-wrap"><table data-line="6">
+<thead data-line="6">
+<tr data-line="6">
+<th>a</th>
+</tr>
+</thead>
+<tbody data-line="8">
+<tr data-line="8">
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div></article>
+</body>
+</html>"
+`;
+
+exports[`preview snapshot > light theme 1`] = `
+"<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>doc.md</title>
+<link rel="stylesheet" href="">
+<style>
+  html { color-scheme: light;  }
+  html, body { margin: 0; padding: 0; background: #f9f9fb; }
+  body {
+    color: #17181c;
+    font-family: sans-serif;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #d4d6db;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
+  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
+  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
+       border-bottom: 1px solid #e7e8eb; }
+  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
+       border-bottom: 1px solid #e7e8eb; }
+  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
+  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
+  p { margin: 0.55em 0; }
+  a { color: #4a52a3; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
+  li { margin: 0.15em 0; }
+  li.task-list-item { list-style: none; margin-left: -1.4em; }
+  li.task-list-item input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0 0.5em 0 0;
+    border: 1px solid #d4d6db;
+    border-radius: 4px;
+    background: #ffffff;
+    vertical-align: -2px;
+  }
+  li.task-list-item input:checked {
+    background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
+    border-color: #4a52a3;
+  }
+  blockquote {
+    margin: 0.8em 0; padding: 0.35em 0.9em;
+    border-left: 3px solid #d4d6db;
+    background: color-mix(in srgb, #17181c 3%, #f9f9fb);
+    border-radius: 0 6px 6px 0;
+    color: #5f636e;
+  }
+  code {
+    font-family: monospace;
+    font-size: 0.875em;
+    background: color-mix(in srgb, #17181c 6%, #f9f9fb);
+    padding: 0.18em 0.4em;
+    border-radius: 5px;
+    border: 1px solid #e7e8eb;
+  }
+  pre {
+    background: color-mix(in srgb, #17181c 6%, #f9f9fb);
+    border: 1px solid #e7e8eb;
+    padding: 14px 16px;
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
+  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td {
+    border: none;
+    border-bottom: 1px solid #e7e8eb;
+    padding: 6px 16px 6px 0;
+    text-align: left;
+  }
+  th { font-weight: 600; background: color-mix(in srgb, #17181c 6%, #f9f9fb); border-bottom-color: #d4d6db; }
+  hr { border: none; border-top: 1px solid #e7e8eb; margin: 1.4em 0; }
+  img { max-width: 100%; }
+  .img-broken {
+    display: inline-block;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px dashed #d4d6db;
+    border-radius: 6px;
+    color: #5f636e;
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
+  .tok-keyword { color: var(--syn-keyword); }
+  .tok-string, .tok-string2 { color: var(--syn-string); }
+  .tok-number, .tok-atom, .tok-literal { color: var(--syn-number); }
+  .tok-comment { color: var(--syn-comment); font-style: italic; }
+  .tok-typeName, .tok-namespace, .tok-className, .tok-macroName { color: var(--syn-type); }
+  .tok-propertyName { color: var(--syn-property); }
+  .tok-meta { color: var(--syn-meta); }
+  .tok-operator, .tok-punctuation, .tok-bracket, .tok-separator { color: var(--syn-punct); }
+  .tok-link, .tok-url { color: var(--syn-link); }
+  .tok-heading { color: var(--syn-heading); font-weight: 600; }
+  /* 脚注 */
+  .footnote-ref { line-height: 0; }
+  .footnote-ref a, .footnote-backref { color: #4a52a3; text-decoration: none; }
+  .footnotes-sep { margin: 2em 0 0.6em; }
+  .footnotes { font-size: 0.85em; color: #5f636e; }
+  .footnotes-list { padding-left: 1.4em; }
+  .footnote-item { margin: 0.25em 0; }
+  .footnote-item p { margin: 0.2em 0; }
+  /* 定义列表 */
+  dl { margin: 0.7em 0; }
+  dt { font-weight: 600; margin: 0.5em 0 0.1em; }
+  dd { margin: 0.1em 0 0.35em 1.5em; color: #17181c; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
+  /* 数学公式 */
+  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block .katex-display { margin: 0.2em 0; }
+  .katex { font-size: 1.05em; }
+  .math-error {
+    color: #5f636e;
+    background: color-mix(in srgb, #17181c 6%, #f9f9fb);
+    border: 1px dashed #d4d6db;
+    border-radius: 4px;
+    padding: 0 0.35em;
+    font-family: monospace;
+    font-size: 0.88em;
+  }
+</style>
+</head>
+<body>
+<article><h1 data-line="0" id="title">Title</h1>
+<p data-line="2">para <strong>bold</strong> <code>code</code></p>
+<ul class="contains-task-list" data-line="4">
+<li class="task-list-item enabled" data-line="4"><input class="task-list-item-checkbox"type="checkbox"> todo</li>
+</ul>
+<div class="table-wrap"><table data-line="6">
+<thead data-line="6">
+<tr data-line="6">
+<th>a</th>
+</tr>
+</thead>
+<tbody data-line="8">
+<tr data-line="8">
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div></article>
+</body>
+</html>"
+`;

@@ -1,12 +1,26 @@
-import MarkdownIt from "markdown-it";
-import taskLists from "markdown-it-task-lists";
+import DOMPurify from "dompurify";
+import katexCssUrl from "katex/dist/katex.min.css?url";
+import {
+  renderWithPlugins,
+  type RenderEnv,
+  type CoreRenderOptions,
+} from "./markdownCore";
 
-const md = new MarkdownIt({ html: false, linkify: true, breaks: false });
-md.use(taskLists);
+export type { RenderEnv } from "./markdownCore";
+export {
+  splitFrontmatter,
+  stripFrontmatter,
+  taskToggleInLine,
+  resolveLocalImageSrc,
+  directoryOf,
+  localImagePlaceholder,
+  resolveImagePlaceholders,
+  renderWithPlugins,
+  IMAGE_PLACEHOLDER_SCHEME,
+} from "./markdownCore";
 
-function escapeAttribute(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-}
+/** 预览依赖的外部样式表（KaTeX 等），注入 iframe 外壳 */
+export const previewStyleUrls: string[] = [katexCssUrl];
 
 export interface PreviewTokens {
   scheme: "light" | "dark";
@@ -19,12 +33,35 @@ export interface PreviewTokens {
   accent: string;
   fontUi: string;
   fontMono: string;
+  /** 语法高亮 CSS 变量（--syn-*）声明，供预览代码块使用；缺省时不着色 */
+  synVars?: string;
 }
+
+/** 净化 HTML：保留 KaTeX 需要的 style 属性与 data-line，剥离脚本/事件处理器 */
+export function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ADD_ATTR: ["style", "data-line", "target"],
+  });
+}
+
+const SYN_TOKEN_NAMES = [
+  "keyword",
+  "string",
+  "number",
+  "comment",
+  "type",
+  "property",
+  "heading",
+  "link",
+  "meta",
+  "punct",
+] as const;
 
 /** 从主文档读取当前主题令牌，预览 iframe 与应用保持单一色源 */
 export function collectPreviewTokens(): PreviewTokens {
   const style = getComputedStyle(document.documentElement);
   const v = (name: string) => style.getPropertyValue(name).trim();
+  const synVars = SYN_TOKEN_NAMES.map((name) => `--syn-${name}:${v(`--syn-${name}`)};`).join(" ");
   return {
     scheme: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
     bg: v("--lac-bg-sidebar"),
@@ -36,18 +73,36 @@ export function collectPreviewTokens(): PreviewTokens {
     accent: v("--lac-accent"),
     fontUi: v("--font-ui"),
     fontMono: v("--font-mono"),
+    synVars,
   };
 }
 
 const CHECK_SVG =
   "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>\")";
 
-export function renderMarkdown(
-  text: string,
-  tokens: PreviewTokens,
-  title: string
-): string {
-  const body = md.render(text);
+function escapeAttribute(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/** 主线程渲染正文：纯渲染核心 + （可选）DOMPurify 净化 */
+export function renderBody(text: string, env?: RenderEnv): string {
+  const opts: CoreRenderOptions = {
+    baseDir: env?.baseDir ?? null,
+    assetUrl: env?.assetUrl,
+    breaks: env?.breaks === true,
+    typographer: env?.typographer === true,
+    allowHtml: env?.allowHtml === true,
+  };
+  const { html } = renderWithPlugins(text, opts);
+  return opts.allowHtml ? sanitizeHtml(html) : html;
+}
+
+/** 预览文档外壳：样式与空正文。正文经 renderBody 原地替换，避免整份 srcDoc 重建 */
+export function renderShell(tokens: PreviewTokens, title: string): string {
   const codeBg = `color-mix(in srgb, ${tokens.fg} 6%, ${tokens.bg})`;
 
   return `<!DOCTYPE html>
@@ -55,8 +110,11 @@ export function renderMarkdown(
 <head>
 <meta charset="utf-8">
 <title>${escapeAttribute(title)}</title>
+${previewStyleUrls
+  .map((url) => `<link rel="stylesheet" href="${escapeAttribute(url)}">`)
+  .join("\n")}
 <style>
-  html { color-scheme: ${tokens.scheme}; }
+  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""} }
   html, body { margin: 0; padding: 0; background: ${tokens.bg}; }
   body {
     color: ${tokens.fg};
@@ -124,7 +182,8 @@ export function renderMarkdown(
     overflow-x: auto;
   }
   pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
-  table { border-collapse: collapse; margin: 0.8em 0; font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
   th, td {
     border: none;
     border-bottom: 1px solid ${tokens.border};
@@ -134,10 +193,68 @@ export function renderMarkdown(
   th { font-weight: 600; background: ${codeBg}; border-bottom-color: ${tokens.borderStrong}; }
   hr { border: none; border-top: 1px solid ${tokens.border}; margin: 1.4em 0; }
   img { max-width: 100%; }
+  .img-broken {
+    display: inline-block;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px dashed ${tokens.borderStrong};
+    border-radius: 6px;
+    color: ${tokens.secondary};
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+  /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
+  .tok-keyword { color: var(--syn-keyword); }
+  .tok-string, .tok-string2 { color: var(--syn-string); }
+  .tok-number, .tok-atom, .tok-literal { color: var(--syn-number); }
+  .tok-comment { color: var(--syn-comment); font-style: italic; }
+  .tok-typeName, .tok-namespace, .tok-className, .tok-macroName { color: var(--syn-type); }
+  .tok-propertyName { color: var(--syn-property); }
+  .tok-meta { color: var(--syn-meta); }
+  .tok-operator, .tok-punctuation, .tok-bracket, .tok-separator { color: var(--syn-punct); }
+  .tok-link, .tok-url { color: var(--syn-link); }
+  .tok-heading { color: var(--syn-heading); font-weight: 600; }
+  /* 脚注 */
+  .footnote-ref { line-height: 0; }
+  .footnote-ref a, .footnote-backref { color: ${tokens.accent}; text-decoration: none; }
+  .footnotes-sep { margin: 2em 0 0.6em; }
+  .footnotes { font-size: 0.85em; color: ${tokens.secondary}; }
+  .footnotes-list { padding-left: 1.4em; }
+  .footnote-item { margin: 0.25em 0; }
+  .footnote-item p { margin: 0.2em 0; }
+  /* 定义列表 */
+  dl { margin: 0.7em 0; }
+  dt { font-weight: 600; margin: 0.5em 0 0.1em; }
+  dd { margin: 0.1em 0 0.35em 1.5em; color: ${tokens.fg}; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
+  /* 数学公式 */
+  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block .katex-display { margin: 0.2em 0; }
+  .katex { font-size: 1.05em; }
+  .math-error {
+    color: ${tokens.secondary};
+    background: ${codeBg};
+    border: 1px dashed ${tokens.borderStrong};
+    border-radius: 4px;
+    padding: 0 0.35em;
+    font-family: ${tokens.fontMono};
+    font-size: 0.88em;
+  }
 </style>
 </head>
 <body>
-<article>${body}</article>
+<article></article>
 </body>
 </html>`;
+}
+
+/** 整份预览文档（外壳 + 正文），用于测试与后续导出 */
+export function renderMarkdown(
+  text: string,
+  tokens: PreviewTokens,
+  title: string,
+  env?: RenderEnv
+): string {
+  const shell = renderShell(tokens, title);
+  return shell.replace("<article></article>", `<article>${renderBody(text, env)}</article>`);
 }
