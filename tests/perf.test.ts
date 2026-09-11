@@ -4,18 +4,18 @@ import { renderMarkdown, type PreviewTokens } from "../src/preview/markdown";
 
 const LIGHT: PreviewTokens = {
   scheme: "light",
-  bg: "#f9f9fb",
+  bg: "#ffffff",
   surface: "#ffffff",
-  fg: "#17181c",
-  secondary: "#5f636e",
-  border: "#e7e8eb",
-  borderStrong: "#d4d6db",
+  fg: "#1a1b1f",
+  secondary: "#5c6068",
+  border: "#e4e5e8",
+  borderStrong: "#d2d4d9",
   accent: "#4a52a3",
   fontUi: "sans-serif",
   fontMono: "monospace",
 };
 
-const DARK: PreviewTokens = { ...LIGHT, scheme: "dark", bg: "#1a1b1f", fg: "#e9eaee" };
+const DARK: PreviewTokens = { ...LIGHT, scheme: "dark", bg: "#1c1c1f", fg: "#e9eaee" };
 
 function makeDoc(paragraphs: number): string {
   const parts: string[] = [];

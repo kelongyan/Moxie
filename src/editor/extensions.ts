@@ -110,11 +110,20 @@ export function buildEditorState(options: EditorOptions): EditorState {
       },
       ".cm-scroller": {
         fontFamily: "var(--font-mono)",
-        lineHeight: `calc(1.2em + ${lineSpacingPx}px)`,
+        // 基准 1.42em + 行距偏好 ≈ 默认字号下 1.75 的行高，与预览正文一致
+        lineHeight: `calc(1.42em + ${lineSpacingPx}px)`,
+        // markdown 源码：整块（行号 + 正文）居中并限制列宽，与预览同量级；
+        // 56px 是行号槽的预留宽度
+        ...(isMarkdown
+          ? {
+              paddingInline:
+                "max(0px, calc((100% - var(--measure) - 56px) / 2))",
+            }
+          : {}),
       },
       ".cm-content": {
         caretColor: "var(--lac-accent)",
-        padding: "12px 0 28px",
+        padding: "16px 0 32px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {
@@ -134,7 +143,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
       ".cm-lineNumbers .cm-gutterElement": {
         fontFamily: "var(--font-mono)",
         fontSize: "0.85em",
-        minWidth: "44px",
+        minWidth: "40px",
         padding: "0 8px",
         fontVariantNumeric: "tabular-nums",
       },

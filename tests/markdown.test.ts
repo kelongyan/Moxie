@@ -14,12 +14,12 @@ import { highlightToHtml, languageKeyOf } from "../src/preview/highlight";
 
 const LIGHT: PreviewTokens = {
   scheme: "light",
-  bg: "#f9f9fb",
+  bg: "#ffffff",
   surface: "#ffffff",
-  fg: "#17181c",
-  secondary: "#5f636e",
-  border: "#e7e8eb",
-  borderStrong: "#d4d6db",
+  fg: "#1a1b1f",
+  secondary: "#5c6068",
+  border: "#e4e5e8",
+  borderStrong: "#d2d4d9",
   accent: "#4a52a3",
   fontUi: "sans-serif",
   fontMono: "monospace",
@@ -27,8 +27,8 @@ const LIGHT: PreviewTokens = {
 
 const DARK: PreviewTokens = {
   scheme: "dark",
-  bg: "#1a1b1f",
-  surface: "#1d1e22",
+  bg: "#1c1c1f",
+  surface: "#1c1c1f",
   fg: "#e9eaee",
   secondary: "#a4a8b2",
   border: "#2e3037",
@@ -90,26 +90,27 @@ describe("renderMarkdown", () => {
   it("injects the given theme tokens", () => {
     const dark = renderMarkdown("x", DARK, "t.md");
     const light = renderMarkdown("x", LIGHT, "t.md");
-    expect(dark).toContain("#1a1b1f");
+    expect(dark).toContain("#1c1c1f");
     expect(dark).toContain("color-scheme: dark");
-    expect(light).toContain("#f9f9fb");
+    expect(light).toContain("#5c6068");
     expect(light).toContain("color-scheme: light");
   });
 
   it("uses compact app-like article layout", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("max-width: min(72ch, 100%)");
-    expect(html).toContain("padding: 40px 32px 56px");
+    expect(html).toContain("max-width: min(74ch, 100%)");
+    expect(html).toContain("padding: 48px 32px 56px");
     expect(html).toContain("padding-bottom: 0.3em");
   });
 
-  it("uses publication-grade typography (h1 2em, line-height 1.8)", () => {
-    // Typora 风味的视觉契约：H1 接近 2em、行高 1.8、字距 -0.025em
+  it("uses 16px/1.75 content typography with a flatter heading scale", () => {
+    // 内容轨道契约：正文 16px、行高 1.75、H1 1.75em、H2 1.35em（与源码模式同号）
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("font-size: 2em;");
-    expect(html).toContain("font-size: 1.5em;");
-    expect(html).toContain("letter-spacing: -0.025em;");
-    expect(html).toContain("line-height: 1.8;");
+    expect(html).toContain("font-size: 16px;");
+    expect(html).toContain("line-height: 1.75;");
+    expect(html).toContain("font-size: 1.75em;");
+    expect(html).toContain("font-size: 1.35em;");
+    expect(html).toContain("font-weight: 650;");
   });
 
   it("uses hairline separators instead of hard borders for h1/h2", () => {
@@ -125,12 +126,17 @@ describe("renderMarkdown", () => {
     expect(html).toContain("margin: 1.8em auto;");
   });
 
-  it("renders blockquote with tinted accent left bar", () => {
+  it("renders blockquote with a neutral hairline left bar", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    // 引用块左条用 accent 着色，比纯灰条更"出版物感"
-    expect(html).toMatch(
-      /border-left: 2\.5px solid color-mix\(in srgb, [^;]+ 60%,/
-    );
+    // 引用块左条改用中性 border-strong（不再混入 accent 色）
+    expect(html).toMatch(/border-left: 3px solid #d2d4d9/);
+  });
+
+  it("renders code blocks without borders at the mono scale", () => {
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    // 代码块/行内代码只用底色区分，等宽字号降半档到 0.84em
+    expect(html).toContain("font-size: 0.84em;");
+    expect(html).not.toMatch(/pre \{[^}]*border: 1px solid/);
   });
 
   it("wraps tables in a horizontally scrollable container", () => {

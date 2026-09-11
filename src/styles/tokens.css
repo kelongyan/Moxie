@@ -37,9 +37,9 @@
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
   /* 编辑器状态色 */
-  --lac-current-line: rgba(23, 24, 28, 0.04);
+  --lac-current-line: rgba(23, 24, 28, 0.035);
   --lac-delimiter-match: rgba(74, 82, 163, 0.14);
-  --lac-selection: rgba(74, 82, 163, 0.22);
+  --lac-selection: rgba(74, 82, 163, 0.18);
   --lac-find-match: rgba(255, 166, 87, 0.28);
 
   --lac-tab-selected-bg: #ffffff;
@@ -103,9 +103,9 @@
   --lac-accent-softer: rgba(150, 160, 245, 0.09);
   --lac-accent-contrast: #14151d;
 
-  --lac-current-line: rgba(255, 255, 255, 0.05);
+  --lac-current-line: rgba(255, 255, 255, 0.045);
   --lac-delimiter-match: rgba(150, 160, 245, 0.24);
-  --lac-selection: rgba(150, 160, 245, 0.28);
+  --lac-selection: rgba(150, 160, 245, 0.24);
   --lac-find-match: rgba(255, 166, 87, 0.22);
 
   --lac-tab-selected-bg: #242428;
@@ -196,7 +196,7 @@
   --fs-13: var(--fs-ui);
   --fs-14: var(--fs-ui);
   --fs-20: 20px;
-  --fs-editor: 18.5px; /* 由设置页字号 pt 换算覆盖，此值仅兜底 */
+  --fs-editor: 16px; /* 与 --fs-content 同号，由设置页字号 pt 换算覆盖，此值仅兜底 */
   --fs-window-title: var(--fs-ui);
   --fs-dialog-title: var(--fs-title);
   --fs-settings-title: var(--fs-20);

@@ -64,7 +64,8 @@ export function collectPreviewTokens(): PreviewTokens {
   const synVars = SYN_TOKEN_NAMES.map((name) => `--syn-${name}:${v(`--syn-${name}`)};`).join(" ");
   return {
     scheme: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
-    bg: v("--lac-bg-sidebar"),
+    // 预览页底色 = 编辑器内容面：渲染/源码切换时底色不跳
+    bg: v("--lac-bg"),
     surface: v("--lac-bg"),
     fg: v("--lac-text"),
     secondary: v("--lac-text-secondary"),
@@ -122,8 +123,8 @@ ${previewStyleUrls
   body {
     color: ${tokens.fg};
     font-family: ${tokens.fontUi};
-    font-size: 15px;
-    line-height: 1.8;
+    font-size: 16px;
+    line-height: 1.75;
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -139,7 +140,7 @@ ${previewStyleUrls
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(72ch, 100%); margin: 0 auto; padding: 40px 32px 56px; }
+  article { max-width: min(74ch, 100%); margin: 0 auto; padding: 48px 32px 56px; }
   /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
   h1, h2, h3, h4, h5, h6 {
     font-weight: 650;
@@ -147,25 +148,23 @@ ${previewStyleUrls
     letter-spacing: -0.01em;
   }
   h1 {
-    font-size: 2em;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    margin: 0.4em 0 0.6em;
+    font-size: 1.75em;
+    letter-spacing: -0.022em;
+    margin: 0.45em 0 0.6em;
     padding-bottom: 0.3em;
     border-bottom: 1px solid ${hairline};
   }
   h2 {
-    font-size: 1.5em;
-    font-weight: 700;
+    font-size: 1.35em;
     margin: 1.6em 0 0.5em;
     padding-bottom: 0.2em;
     border-bottom: 1px solid ${hairlineSoft};
   }
-  h3 { font-size: 1.25em; margin: 1.3em 0 0.45em; }
-  h4 { font-size: 1.08em; margin: 1.2em 0 0.4em; }
+  h3 { font-size: 1.2em; margin: 1.3em 0 0.45em; }
+  h4 { font-size: 1.06em; margin: 1.2em 0 0.4em; }
   h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: ${tokens.secondary}; }
-  /* 段落：行高 1.8，段距加大；中文段落首字符不缩进 */
-  p { margin: 0.7em 0; }
+  /* 段落：行高 1.75，段距加大；中文段落首字符不缩进 */
+  p { margin: 0.8em 0; }
   /* 行内强调：bold/italic 用字重 600 + 微小字距 */
   strong { font-weight: 650; }
   em { font-style: italic; }
@@ -202,31 +201,29 @@ ${previewStyleUrls
     background: ${tokens.accent} ${CHECK_SVG} center/10px no-repeat;
     border-color: ${tokens.accent};
   }
-  /* 引用：左条改为更细、但更深；背景几乎透明；外距加大；首字不再收缩 */
+  /* 引用：左条改为中性细线，背景几乎透明；外距加大；首字不再收缩 */
   blockquote {
     margin: 1em 0;
     padding: 0.5em 1.1em;
-    border-left: 2.5px solid color-mix(in srgb, ${tokens.accent} 60%, ${tokens.fg});
+    border-left: 3px solid ${tokens.borderStrong};
     background: color-mix(in srgb, ${tokens.fg} 3%, ${tokens.bg});
     border-radius: 0 6px 6px 0;
     color: ${tokens.secondary};
   }
   blockquote > :first-child { margin-top: 0; }
   blockquote > :last-child { margin-bottom: 0; }
-  /* 行内 code：背景更柔和，圆角更小，字重略加 */
+  /* 行内 code：只用底色区分，去掉描边（等宽视觉偏大，降半档到 ~13.5px） */
   code {
     font-family: ${tokens.fontMono};
-    font-size: 0.875em;
+    font-size: 0.84em;
     font-weight: 500;
     background: ${codeBg};
     padding: 0.2em 0.45em;
     border-radius: 4px;
-    border: 1px solid color-mix(in srgb, ${tokens.border} 70%, transparent);
   }
-  /* 代码块：圆角更紧凑，行高 1.7；外距上下加大 */
+  /* 代码块：纯底色不描边，圆角 8px；外距上下加大 */
   pre {
     background: ${codeBg};
-    border: 1px solid ${hairline};
     padding: 14px 16px;
     border-radius: 8px;
     overflow-x: auto;
@@ -236,8 +233,7 @@ ${previewStyleUrls
   pre code {
     background: transparent;
     padding: 0;
-    border: none;
-    font-size: 0.875em;
+    font-size: 0.84em;
     font-weight: 400;
     line-height: 1.7;
   }
@@ -256,8 +252,8 @@ ${previewStyleUrls
   }
   th {
     font-weight: 600;
-    background: color-mix(in srgb, ${tokens.fg} 4%, ${tokens.bg});
-    border-bottom-color: color-mix(in srgb, ${tokens.fg} 14%, ${tokens.bg});
+    background: color-mix(in srgb, ${tokens.fg} 3%, ${tokens.bg});
+    border-bottom-color: color-mix(in srgb, ${tokens.fg} 16%, ${tokens.bg});
   }
   tbody tr:last-child td { border-bottom: none; }
   /* hr：渐变线段，比实线柔和 */

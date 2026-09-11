@@ -158,8 +158,11 @@ export function EditorPane() {
         view.dispatch({ selection: { anchor } });
       }
       view.dom.dataset.docId = doc.id;
-      view.dom.classList.toggle("cm-doc-hidden", doc.id !== activeId);
     }
+
+    // 可见性同步按 DOM 遍历而不是按 registry：即使视图与 DOM 短暂失同步
+    // （视图被重建、注册表先于 DOM 更新），也能保证只有一个编辑器可见
+    syncVisibility(activeId);
 
     evictInactive(activeId);
 
@@ -178,7 +181,30 @@ export function EditorPane() {
       // 渲染模式下 cm-host 被整体隐藏，focus() 会失败且无意义；只在源码模式抢焦点
       if (!inRenderMode) activeView.focus();
     }
+
+    // 兜底：快速切换或视图重建后可能残留旧的可见态，下一帧按 store 最新 activeId
+    // 再同步一次，保证「同一时刻只有一个编辑器可见」这条不变量
+    const frame = window.requestAnimationFrame(() => {
+      syncVisibility(useDocuments.getState().activeId);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, [documents, activeId, prefsVersion]);
+
+  /**
+   * 按 DOM 同步可见性：只显示 dataset.docId === activeIdNow 的那个编辑器。
+   * 用 data 属性而不是 class —— CodeMirror 在 focus/blur 时会走
+   * EditorView.updateAttrs() 整体重写 .cm-editor 的 class（含 cm-focused 与主题类），
+   * 挂在同一个 class 列表上的隐藏类会被冲掉（切标签时焦点转移即触发）。
+   */
+  const syncVisibility = (activeIdNow: string | null) => {
+    const container = containerRef.current;
+    if (!container) return;
+    for (const el of Array.from(container.children)) {
+      if (!(el instanceof HTMLElement) || !el.classList.contains("cm-editor")) continue;
+      if (el.dataset.docId === activeIdNow) el.removeAttribute("data-doc-hidden");
+      else el.setAttribute("data-doc-hidden", "true");
+    }
+  };
 
   const evictInactive = (activeIdNow: string | null) => {
     const order = accessOrderRef.current;

@@ -77,7 +77,8 @@ export const usePreferences = create<PreferencesState>((set) => ({
   wordWrap: true,
   lineNumbers: true,
   statusBarVisible: true,
-  fontSizePt: 13.5,
+  /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
+  fontSizePt: 12,
   lineSpacingPt: 4,
   indentStyle: "spaces",
   tabWidth: 4,

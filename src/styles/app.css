@@ -1494,10 +1494,12 @@ body {
   height: 100%;
 }
 
-/* CodeMirror 基础主题给 .cm-editor 加了 display: flex !important，
-   行内 display 隐藏不掉非当前标签的视图，必须用同权重的规则，
-   否则多标签时所有视图会纵向堆叠、当前文档被顶到可视区之外 */
-.cm-host .cm-editor.cm-doc-hidden {
+/* 非当前标签的编辑器用 data 属性隐藏，而不是 class：
+   CodeMirror 的 EditorView.updateAttrs() 会在 focus/blur 时整体重写 .cm-editor 的
+   class（cm-focused + 主题类），挂在同一 class 列表上的标记会被冲掉。
+   必须带 !important —— CodeMirror 基础主题对 .cm-editor 声明了 display: flex !important，
+   权重不足会导致所有视图纵向堆叠、当前文档被顶出可视区 */
+.cm-host .cm-editor[data-doc-hidden] {
   display: none !important;
 }
 
@@ -1522,8 +1524,8 @@ body {
   background: transparent;
 }
 
-/* Typora 风格：左下角浮动"渲染 / 源码"模式切换按钮。
-   整体像一个不起眼的小药丸，hover 才明显，定位在 editor-pane 内。 */
+/* 浮动"渲染 / 源码"切换：低对比浮标——默认只有文字，悬停才浮出底色；
+   位于左下角留白内，不与正文抢注意力 */
 .view-mode-toggle {
   position: absolute;
   left: 14px;
@@ -1532,34 +1534,27 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 28px;
-  padding: 0 12px 0 10px;
-  border: 1px solid var(--lac-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--lac-bg-elevated) 88%, transparent);
-  color: var(--lac-text-secondary);
+  height: var(--ctl-md);
+  padding: 0 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--lac-text-tertiary);
   font-family: inherit;
-  font-size: var(--fs-12);
+  font-size: var(--fs-caption);
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 1px 2px rgba(16, 18, 24, 0.06),
-    0 6px 16px rgba(16, 18, 24, 0.08);
-  transition: background var(--anim-hover), color var(--anim-hover),
-    border-color var(--anim-hover), transform var(--anim-hover);
+  transition: background var(--anim-hover), color var(--anim-hover);
 }
 
 .view-mode-toggle:hover:not(:disabled) {
-  background: var(--lac-bg-elevated);
-  color: var(--lac-text);
-  border-color: var(--lac-border-strong);
-  transform: translateY(-1px);
+  background: var(--lac-hover);
+  color: var(--lac-text-secondary);
 }
 
 .view-mode-toggle:active:not(:disabled) {
-  transform: translateY(0);
+  background: var(--lac-pressed);
 }
 
 .view-mode-toggle:disabled {
@@ -1571,17 +1566,9 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-  color: var(--lac-accent);
+  color: inherit;
   /* 等宽数字让 "</>" 和 "◉" 不会跳 */
   font-variant-numeric: tabular-nums;
-}
-
-.view-mode-toggle.mode-render .view-mode-toggle-icon {
-  color: var(--lac-accent);
-}
-
-.view-mode-toggle.mode-source .view-mode-toggle-icon {
-  color: var(--lac-text-secondary);
 }
 
 .preview-pane {
