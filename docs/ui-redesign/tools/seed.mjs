@@ -14,7 +14,7 @@ fs.writeFileSync(
   path.join(dataDir, "preferences.json"),
   JSON.stringify(
     {
-      recent_file_paths: mode === "full" ? recent : [],
+      recent_file_paths: mode === "empty" ? [] : recent,
       preferences: {
         appTheme: theme,
         isStatusBarVisible: true,
@@ -31,8 +31,9 @@ fs.writeFileSync(
 fs.writeFileSync(
   path.join(dataDir, "SidebarLibrary.json"),
   JSON.stringify(
-    mode === "full"
-      ? {
+    mode === "empty"
+      ? {}
+      : {
           favorites: [
             "F:/Moxie/samples/typora-style-preview.md",
             "F:/Moxie/README.md",
@@ -46,15 +47,14 @@ fs.writeFileSync(
             },
           ],
           sections: { favorites: true, groups: true, recent: true },
-        }
-      : {},
+        },
     null,
     2
   )
 );
 
 if (mode !== "full") {
-  console.log("seeded empty:", dataDir, theme);
+  console.log("seeded", mode + ":", dataDir, theme);
   process.exit(0);
 }
 

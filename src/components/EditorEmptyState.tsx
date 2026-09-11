@@ -1,37 +1,66 @@
-import { Feather } from "lucide-react";
-import { newTabAction, openFileAction } from "../state/actions";
+import { baseName } from "../models/language";
+import { newTabAction, openFileAction, openPathAction } from "../state/actions";
+import { dirName, useSidebar } from "../state/sidebar";
+import brandMark from "../../src-tauri/icons/128x128.png";
+
+/** 欢迎页最多展示的最近文件条数 */
+const RECENT_LIMIT = 5;
 
 export function EditorEmptyState() {
+  const recent = useSidebar((s) => s.recent);
+  const missing = useSidebar((s) => s.missing);
+
+  const items = recent
+    .filter((path) => !missing[path])
+    .slice(0, RECENT_LIMIT);
+
   return (
     <div className="editor-empty">
-      <div className="editor-empty-mark">
-        <Feather size={28} />
-      </div>
-      <h2 className="editor-empty-title">开始书写</h2>
-      <p className="editor-empty-desc">打开本地文件，或新建一个空白标签页</p>
+      <img
+        className="editor-empty-brand"
+        src={brandMark}
+        alt=""
+        draggable={false}
+      />
+      <h2 className="editor-empty-title">Moxie</h2>
+      <p className="editor-empty-desc">安静、快速、本地优先的书写工具</p>
+
       <div className="editor-empty-actions">
-        <button
-          className="modal-button prominent"
-          onClick={() => void openFileAction()}
-        >
+        <button className="modal-button prominent" onClick={newTabAction}>
+          新建文件
+        </button>
+        <button className="modal-button" onClick={() => void openFileAction()}>
           打开文件
         </button>
-        <button className="modal-button" onClick={newTabAction}>
-          新建标签页
-        </button>
       </div>
+
+      {items.length > 0 && (
+        <div className="editor-empty-recent">
+          <div className="editor-empty-recent-title">最近</div>
+          {items.map((path) => (
+            <button
+              key={path}
+              className="editor-empty-recent-item"
+              title={path}
+              onClick={() => void openPathAction(path)}
+            >
+              <span className="recent-name">{baseName(path)}</span>
+              <span className="recent-dir">{dirName(path)}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="editor-empty-hints">
-        <span>
-          <kbd>Ctrl</kbd> <kbd>O</kbd> 打开
-        </span>
-        <span className="hint-dot" />
         <span>
           <kbd>Ctrl</kbd> <kbd>N</kbd> 新建
         </span>
         <span className="hint-dot" />
         <span>
-          <kbd>Ctrl</kbd> <kbd>W</kbd> 关闭标签
+          <kbd>Ctrl</kbd> <kbd>O</kbd> 打开
         </span>
+        <span className="hint-dot" />
+        <span>拖入文件即可打开</span>
       </div>
     </div>
   );

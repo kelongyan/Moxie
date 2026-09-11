@@ -144,6 +144,13 @@ async function main() {
     return;
   }
 
+  if (scenario === "welcome") {
+    await sleep(1000);
+    await shot(s, "19-welcome-light");
+    s.close();
+    return;
+  }
+
   if (scenario === "full") {
     await sleep(1200);
     await shot(s, "02-main-render-light");

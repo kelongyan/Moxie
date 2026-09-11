@@ -95,45 +95,105 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 0;
+  padding: var(--sp-6);
   animation: lac-fade-in var(--dur-3) var(--ease-out);
 }
 
-.editor-empty-mark {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: var(--lac-accent-softer);
-  color: var(--lac-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.editor-empty-brand {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  user-select: none;
 }
 
 .editor-empty-title {
   font-size: var(--fs-20);
   font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--lac-text);
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .editor-empty-desc {
-  font-size: var(--fs-caption);
+  font-size: var(--fs-ui);
   color: var(--lac-text-secondary);
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .editor-empty-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 24px;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.editor-empty-actions .modal-button {
+  height: var(--ctl-lg);
+  min-width: 96px;
+}
+
+/* 最近文件：无记录时整块不渲染，避免布局塌陷 */
+.editor-empty-recent {
+  width: min(360px, 100%);
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.editor-empty-recent-title {
+  padding: 0 8px 6px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--lac-text-tertiary);
+}
+
+.editor-empty-recent-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 34px;
+  padding: 0 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--anim-hover);
+}
+
+.editor-empty-recent-item:hover {
+  background: var(--lac-hover);
+}
+
+.editor-empty-recent-item .recent-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-empty-recent-item .recent-dir {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: var(--fs-caption);
+  color: var(--lac-text-tertiary);
 }
 
 .editor-empty-hints {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 28px;
-  font-size: var(--fs-badge);
+  margin-top: 34px;
+  font-size: var(--fs-caption);
   color: var(--lac-text-tertiary);
 }
 
@@ -1065,7 +1125,7 @@ body {
 
 .section-title {
   font-size: var(--fs-caption);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--lac-text-tertiary);
   letter-spacing: 0.02em;
 }
