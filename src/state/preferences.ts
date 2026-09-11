@@ -75,7 +75,8 @@ function scheduleSave() {
 
 export const usePreferences = create<PreferencesState>((set) => ({
   wordWrap: true,
-  lineNumbers: true,
+  // 所见即所得对标 Typora：默认不显示行号（设置里可开）
+  lineNumbers: false,
   statusBarVisible: true,
   /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
   fontSizePt: 12,

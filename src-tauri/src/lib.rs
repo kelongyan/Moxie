@@ -3,7 +3,6 @@ pub mod encodings;
 mod external;
 pub mod file_io;
 mod file_meta;
-pub mod json_format;
 mod recent;
 mod recovery;
 mod sidebar;
@@ -144,15 +143,6 @@ fn read_file_base64(path: PathBuf) -> Result<String, String> {
     use base64::Engine;
     let bytes = file_io::read_bytes(&path).map_err(|e| e.to_string())?;
     Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
-}
-
-#[command]
-fn json_format(text: String, mode: String) -> Result<String, String> {
-    let parsed_mode = match mode.as_str() {
-        "minify" => json_format::JsonMode::Minify,
-        _ => json_format::JsonMode::Pretty,
-    };
-    json_format::format_json(&text, parsed_mode)
 }
 
 #[command]
@@ -314,7 +304,6 @@ pub fn run() {
             get_file_identity,
             get_file_revision,
             read_file_base64,
-            json_format,
             codec_op,
             recent_list,
             recent_add,

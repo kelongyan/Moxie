@@ -5,6 +5,7 @@ import {
   type RenderEnv,
   type CoreRenderOptions,
 } from "./markdownCore";
+import { CONTENT_LINE_HEIGHT, MD_MARGIN } from "./typography";
 
 export type { RenderEnv } from "./markdownCore";
 export {
@@ -153,7 +154,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     color: ${tokens.fg};
     font-family: ${tokens.fontUi};
     font-size: 16px;
-    line-height: 1.7;
+    line-height: ${CONTENT_LINE_HEIGHT};
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -176,7 +177,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     line-height: 1.3;
-    margin: 24px 0 12px;
+    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h1 {
     font-size: 2em;
@@ -196,7 +197,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   h6 { font-size: 0.9em; color: ${tokens.secondary}; }
 
   /* 段落：单侧 margin，14px 段距（TizuMark 节奏） */
-  p { margin: 0 0 14px; }
+  p { margin: 0 0 ${MD_MARGIN.paragraph.bottom}px; }
 
   /* 行内强调 */
   strong, b { font-weight: 700; }
@@ -248,7 +249,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   }
 
   /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
-  ul, ol { padding-left: 24px; margin: 0 0 14px; }
+  ul, ol { padding-left: 24px; margin: 0 0 ${MD_MARGIN.list.bottom}px; }
   li { margin: 0 0 4px; }
   li > p { margin: 0 0 4px; }
   ul ul, ol ol, ul ol, ol ul { margin-top: 4px; margin-bottom: 4px; }
@@ -311,7 +312,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     background: ${codeBg};
     border: 1px solid ${tokens.border};
     border-radius: 6px;
-    margin: 16px 0;
+    margin: ${MD_MARGIN.pre.top}px 0;
   }
   pre code {
     background: transparent;
@@ -371,7 +372,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
 
   /* 引用：accent 左条 + soft 底；首元素为 strong 时左条转 warning（TizuMark） */
   blockquote {
-    margin: 0 0 16px;
+    margin: 0 0 ${MD_MARGIN.blockquote.bottom}px;
     padding: 12px 20px;
     border-left: 4px solid ${tokens.accent};
     background: color-mix(in srgb, ${tokens.accent} 7%, transparent);
@@ -386,7 +387,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     border: none;
     height: 1px;
     background: linear-gradient(90deg, transparent, ${tokens.border}, transparent);
-    margin: 32px 0;
+    margin: ${MD_MARGIN.hr.top}px 0;
   }
 
   img { max-width: 100%; height: auto; border-radius: 4px; }

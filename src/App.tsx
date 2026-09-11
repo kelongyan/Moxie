@@ -26,7 +26,7 @@ export default function App() {
   const activeDoc = documents.find((d) => d.id === activeId) ?? null;
   const dragActive = useFileDrop();
   const sidebarPinned = usePreferences((s) => s.sidebarPinned);
-  const [previewVisible, setPreviewVisible] = useState(false);
+  const [sidebarPeek, setSidebarPeek] = useState(false);
   const showTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
 
@@ -79,7 +79,7 @@ export default function App() {
 
   const sidebarMode = sidebarPinned
     ? "pinned"
-    : previewVisible
+    : sidebarPeek
       ? "preview"
       : "hidden";
 
@@ -87,7 +87,7 @@ export default function App() {
     clearTimers();
     if (!sidebarPinned) {
       showTimer.current = window.setTimeout(() => {
-        setPreviewVisible(true);
+        setSidebarPeek(true);
       }, PREVIEW_SHOW_MS);
     }
   };
@@ -96,22 +96,15 @@ export default function App() {
     clearTimers();
     if (sidebarMode === "preview") {
       hideTimer.current = window.setTimeout(() => {
-        setPreviewVisible(false);
+        setSidebarPeek(false);
       }, PREVIEW_HIDE_MS);
     }
   };
 
   const onSidebarToggle = () => {
     clearTimers();
-    setPreviewVisible(false);
+    setSidebarPeek(false);
     usePreferences.getState().set({ sidebarPinned: !sidebarPinned });
-  };
-
-  const onTogglePreview = () => {
-    if (!activeDoc || activeDoc.language !== "markdown") return;
-    useDocuments
-      .getState()
-      .patchDocument(activeDoc.id, { previewVisible: !activeDoc.previewVisible });
   };
 
   return (
@@ -122,7 +115,6 @@ export default function App() {
         onSidebarToggle={onSidebarToggle}
         onSidebarHoverStart={onSidebarHoverStart}
         onSidebarHoverEnd={onSidebarHoverEnd}
-        onTogglePreview={onTogglePreview}
       >
         <TabBar />
       </TitleToolbar>

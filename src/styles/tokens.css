@@ -207,9 +207,11 @@
 
   /* 字号 · 内容轨道（16px 基准，阶段 3 起接管编辑器与预览） */
   --fs-content: 16px;
-  --fs-content-line: 1.75;
+  --fs-content-line: 1.7;
   --fs-mono: 13.5px;
   --measure: min(74ch, 100%);
+  /* 书写面（所见即所得）正文区限宽：居中显示，两端留白（上限 960px，窄窗口收缩到 94%） */
+  --measure-writing: min(960px, 94%);
 
   /* 旧名兼容（逐阶段迁移完成后删除） */
   --fs-11: var(--fs-meta);

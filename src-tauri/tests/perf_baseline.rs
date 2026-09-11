@@ -3,33 +3,14 @@
 
 use laceditor_windows_lib::encodings;
 use laceditor_windows_lib::file_io;
-use laceditor_windows_lib::json_format;
 use std::time::Instant;
 
 const MB: usize = 1024 * 1024;
 
 fn gen_text(target_bytes: usize) -> String {
-    let line = "const item = { id: 12345, name: \"LacEditor baseline line\", value: 3.14159 };\n";
+    let line = "- 列表项 **加粗** `code`，包含中文与符号 { id: 12345 } 的长行基线数据；\n";
     let n = target_bytes / line.len() + 1;
     line.repeat(n)
-}
-
-fn gen_json(target_bytes: usize) -> String {
-    let mut s = String::with_capacity(target_bytes + 1024);
-    s.push_str("{\"items\":[");
-    let item = r#"{"id":12345,"name":"LacEditor","value":3.14159,"tags":["a","b","c"]}"#;
-    let mut size = s.len();
-    let mut first = true;
-    while size < target_bytes {
-        if !first {
-            s.push(',');
-        }
-        s.push_str(item);
-        size += item.len() + 1;
-        first = false;
-    }
-    s.push_str("]}");
-    s
 }
 
 fn bench<F: FnOnce()>(name: &str, f: F) {
@@ -46,7 +27,7 @@ fn perf_baseline() {
 
     for mb in [1usize, 10, 20, 50] {
         let text = gen_text(mb * MB);
-        let path = dir.join(format!("baseline-{}mb.txt", mb));
+        let path = dir.join(format!("baseline-{}mb.md", mb));
 
         bench(&format!("write-{}mb", mb), || {
             file_io::write_text_atomic(&path, &text).unwrap();
@@ -54,19 +35,6 @@ fn perf_baseline() {
         bench(&format!("read+decode-{}mb", mb), || {
             let loaded = file_io::read_text_utf8(&path).unwrap();
             assert_eq!(loaded.len(), text.len());
-        });
-    }
-
-    // JSON 格式化基线(美化),1/10MB
-    for mb in [1usize, 10] {
-        let json = gen_json(mb * MB);
-        bench(&format!("json-format-{}mb", mb), || {
-            let out = json_format::format_json(&json, json_format::JsonMode::Pretty).unwrap();
-            assert!(out.len() > json.len());
-        });
-        bench(&format!("json-minify-{}mb", mb), || {
-            let out = json_format::format_json(&json, json_format::JsonMode::Minify).unwrap();
-            assert!(out.len() <= json.len());
         });
     }
 

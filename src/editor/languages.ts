@@ -1,15 +1,7 @@
-import { cpp } from "@codemirror/lang-cpp";
-import { css } from "@codemirror/lang-css";
-import { html } from "@codemirror/lang-html";
-import { javascript } from "@codemirror/lang-javascript";
-import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
-import { python } from "@codemirror/lang-python";
-import { sql } from "@codemirror/lang-sql";
-import { yaml } from "@codemirror/lang-yaml";
-import { foldService } from "@codemirror/language";
-import { EditorState, Extension } from "@codemirror/state";
-import { EditorLanguage } from "../models/language";
+import { foldService, LanguageDescription } from "@codemirror/language";
+import { GFM } from "@lezer/markdown";
+import { Extension } from "@codemirror/state";
 
 const HEADING_RE = /^(#{1,6})\s+/;
 
@@ -39,106 +31,84 @@ export function markdownHeadingFoldRange(
   return { from: lineEnd, to: last };
 }
 
-const SCAN_LIMIT = 200_000;
-
-export function jsonContainerFoldRange(
-  text: string,
-  lineStart: number,
-  lineEnd: number
-): { from: number; to: number } | null {
-  const lineText = text.slice(lineStart, lineEnd);
-  let openIndex = -1;
-  let inString = false;
-  let escaped = false;
-  for (let i = 0; i < lineText.length; i++) {
-    const c = lineText[i];
-    if (inString) {
-      if (escaped) escaped = false;
-      else if (c === "\\") escaped = true;
-      else if (c === '"') inString = false;
-      continue;
-    }
-    if (c === '"') {
-      inString = true;
-      continue;
-    }
-    if (c === "{" || c === "[") {
-      openIndex = i;
-      break;
-    }
-  }
-  if (openIndex < 0) return null;
-
-  const openPos = lineStart + openIndex;
-  const openChar = text[openPos];
-  const closeChar = openChar === "{" ? "}" : "]";
-  let depth = 0;
-  inString = false;
-  escaped = false;
-  let closePos = -1;
-  const end = Math.min(text.length, openPos + SCAN_LIMIT);
-  for (let p = openPos; p < end; p++) {
-    const c = text[p];
-    if (inString) {
-      if (escaped) escaped = false;
-      else if (c === "\\") escaped = true;
-      else if (c === '"') inString = false;
-      continue;
-    }
-    if (c === '"') {
-      inString = true;
-      continue;
-    }
-    if (c === openChar) depth++;
-    else if (c === closeChar) {
-      depth--;
-      if (depth === 0) {
-        closePos = p;
-        break;
-      }
-    }
-  }
-  if (closePos < 0) return null;
-  const closeLineStart = text.lastIndexOf("\n", closePos - 1) + 1;
-  if (closeLineStart <= lineStart) return null;
-  return { from: openPos + 1, to: closePos };
-}
-
 const markdownHeadingFold = foldService.of((state, lineStart, lineEnd) => {
   return markdownHeadingFoldRange(state.doc.toString(), lineStart, lineEnd);
 });
 
-const jsonContainerFold = foldService.of((state: EditorState, lineStart: number, lineEnd: number) => {
-  return jsonContainerFoldRange(state.doc.toString(), lineStart, lineEnd);
-});
+/**
+ * 围栏代码的嵌入式高亮（别名集合与 preview/highlight.ts 对齐）。
+ * load 走动态 import，CodeMirror 只在视口里出现对应语言的围栏时才加载。
+ */
+const CODE_LANGUAGES: LanguageDescription[] = [
+  LanguageDescription.of({
+    name: "javascript",
+    alias: ["js", "jsx", "mjs", "cjs", "node"],
+    async load() {
+      return (await import("@codemirror/lang-javascript")).javascript({ jsx: true });
+    },
+  }),
+  LanguageDescription.of({
+    name: "typescript",
+    alias: ["ts", "tsx"],
+    async load() {
+      return (await import("@codemirror/lang-javascript")).javascript({
+        jsx: true,
+        typescript: true,
+      });
+    },
+  }),
+  LanguageDescription.of({
+    name: "json",
+    alias: ["json5"],
+    async load() {
+      return (await import("@codemirror/lang-json")).json();
+    },
+  }),
+  LanguageDescription.of({
+    name: "css",
+    alias: ["scss", "less"],
+    async load() {
+      return (await import("@codemirror/lang-css")).css();
+    },
+  }),
+  LanguageDescription.of({
+    name: "html",
+    alias: ["htm", "xml", "svg", "vue"],
+    async load() {
+      return (await import("@codemirror/lang-html")).html();
+    },
+  }),
+  LanguageDescription.of({
+    name: "python",
+    alias: ["py", "python3"],
+    async load() {
+      return (await import("@codemirror/lang-python")).python();
+    },
+  }),
+  LanguageDescription.of({
+    name: "sql",
+    alias: ["mysql", "pgsql", "sqlite", "plsql"],
+    async load() {
+      return (await import("@codemirror/lang-sql")).sql();
+    },
+  }),
+  LanguageDescription.of({
+    name: "yaml",
+    alias: ["yml"],
+    async load() {
+      return (await import("@codemirror/lang-yaml")).yaml();
+    },
+  }),
+  LanguageDescription.of({
+    name: "cpp",
+    alias: ["c", "c++", "cc", "cxx", "h", "hpp", "hxx"],
+    async load() {
+      return (await import("@codemirror/lang-cpp")).cpp();
+    },
+  }),
+];
 
-export function languageExtensions(lang: EditorLanguage): Extension[] {
-  switch (lang) {
-    case "javascript":
-      return [javascript()];
-    case "typescript":
-      return [javascript({ typescript: true, jsx: true })];
-    case "json":
-      return [json(), jsonContainerFold];
-    case "html":
-      return [html()];
-    case "css":
-      return [css()];
-    case "python":
-      return [python()];
-    case "yaml":
-      return [yaml()];
-    case "sql":
-      return [sql()];
-    case "markdown":
-      return [markdown(), markdownHeadingFold];
-    case "ccpp":
-      return [cpp()];
-    default:
-      return [];
-  }
-}
-
-export function hasSyntax(lang: EditorLanguage): boolean {
-  return languageExtensions(lang).length > 0;
+/** Markdown 语法高亮（含 GFM：表格/任务清单/删除线）+ 围栏代码嵌入高亮 + 按标题层级折叠 */
+export function markdownExtensions(): Extension[] {
+  return [markdown({ codeLanguages: CODE_LANGUAGES, extensions: [GFM] }), markdownHeadingFold];
 }

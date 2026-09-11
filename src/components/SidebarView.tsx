@@ -1,6 +1,7 @@
 import {
   ChevronRight,
   FileQuestion,
+  FileText,
   Folder,
   FolderOpen,
   History,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { baseName, inferLanguage } from "../models/language";
+import { baseName } from "../models/markdown";
 import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { promptConfirm, promptInput } from "../state/prompts";
@@ -22,7 +23,6 @@ import {
 } from "../state/sidebar";
 import { openSettingsWindow } from "../state/settingsWindow";
 import { Tooltip } from "./Tooltip";
-import { languageIconOf } from "./TabBar";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 
 interface MenuState {
@@ -46,7 +46,7 @@ function FileRow(props: {
   const name = baseName(path);
   const missing = sidebar.missing[path] === true;
   const isOpen = documents.some((d) => d.path === path);
-  const Icon = languageIconOf(inferLanguage(path));
+  const Icon = FileText;
 
   /** 缺失文件的重新定位：输入新路径 → 校验 → 全链路替换 → 打开 */
   const relocate = async () => {

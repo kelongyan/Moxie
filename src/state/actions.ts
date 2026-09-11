@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { baseName, SUPPORTED_EXTENSIONS } from "../models/language";
+import { baseName, isMarkdownPath, MARKDOWN_EXTENSIONS } from "../models/markdown";
 import { LineEnding } from "../models/encoding";
 import { activeDocument, useDocuments } from "../state/documents";
 import { resolveProfile } from "../state/performance";
@@ -24,7 +24,7 @@ export interface RevisionResult {
   size: number;
 }
 
-const SUPPORTED_WITH_TXT = [...SUPPORTED_EXTENSIONS, "txt"];
+const MARKDOWN_FILTER = [{ name: "Markdown 文件", extensions: MARKDOWN_EXTENSIONS }];
 
 export function newTabAction() {
   useDocuments.getState().createUntitled();
@@ -66,6 +66,13 @@ async function readDocumentContent(path: string): Promise<ReadResult | null> {
 }
 
 export async function openPathAction(path: string): Promise<boolean> {
+  if (!isMarkdownPath(path)) {
+    useDocuments.getState().setStatus({
+      text: "Moxie 仅支持 Markdown 文件(.md / .markdown)",
+      kind: "error",
+    });
+    return false;
+  }
   const store = useDocuments.getState();
   const revision = await getRevision(path);
   if (revision) {
@@ -104,11 +111,8 @@ export async function openPathAction(path: string): Promise<boolean> {
 export async function openFileAction() {
   const picked = await open({
     multiple: false,
-    title: "打开文件",
-    filters: [
-      { name: "支持的文本文件", extensions: SUPPORTED_WITH_TXT },
-      { name: "所有文件", extensions: ["*"] },
-    ],
+    title: "打开 Markdown 文件",
+    filters: MARKDOWN_FILTER,
   });
   if (!picked || Array.isArray(picked)) return;
   await openPathAction(picked);
@@ -219,7 +223,8 @@ export async function saveDocumentAction(docId: string): Promise<boolean> {
   if (!target) {
     const picked = await save({
       title: "保存文件",
-      defaultPath: current.name === "未命名" ? "未命名.txt" : current.name,
+      defaultPath: current.name === "未命名" ? "未命名.md" : current.name,
+      filters: MARKDOWN_FILTER,
     });
     if (!picked) return false;
     target = picked;
@@ -241,7 +246,11 @@ export async function saveDocumentAction(docId: string): Promise<boolean> {
         return true;
       }
       if (choice === "save-as") {
-        const picked = await save({ title: "另存为", defaultPath: target });
+        const picked = await save({
+          title: "另存为",
+          defaultPath: target,
+          filters: MARKDOWN_FILTER,
+        });
         if (!picked) return false;
         target = picked;
       }
@@ -263,7 +272,8 @@ export async function saveAsAction(): Promise<boolean> {
   flushDocument(doc.id);
   const picked = await save({
     title: "另存为",
-    defaultPath: doc.path ?? (doc.name === "未命名" ? "未命名.txt" : doc.name),
+    defaultPath: doc.path ?? (doc.name === "未命名" ? "未命名.md" : doc.name),
+    filters: MARKDOWN_FILTER,
   });
   if (!picked) return false;
   return writeToFile(doc.id, picked);
@@ -311,33 +321,5 @@ export async function closeTabsToRightAction(anchorId: string): Promise<void> {
   if (index < 0) return;
   for (const doc of docs.slice(index + 1)) {
     await closeTabAction(doc.id);
-  }
-}
-
-export async function jsonFormatActive(mode: "pretty" | "minify"): Promise<void> {
-  const doc = activeDocument();
-  if (!doc) return;
-  if (doc.language !== "json") {
-    useDocuments
-      .getState()
-      .setStatus({ text: "仅对 JSON 文件可用", kind: "error" });
-    return;
-  }
-  flushDocument(doc.id);
-  const view = viewFor(doc.id);
-  if (!view) return;
-  const text = view.state.doc.toString();
-  try {
-    const result = await invoke<string>("json_format", { text, mode });
-    view.dispatch({
-      changes: { from: 0, to: view.state.doc.length, insert: result },
-      userEvent: "input",
-    });
-    view.focus();
-    useDocuments.getState().setStatus(null);
-  } catch (error) {
-    useDocuments
-      .getState()
-      .setStatus({ text: String(error), kind: "error" });
   }
 }

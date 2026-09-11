@@ -1,9 +1,8 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
-  ChevronDown,
   Copy,
-  Eye,
+  Download,
   Minus,
   PanelLeft,
   Redo2,
@@ -11,10 +10,12 @@ import {
   Undo2,
   X,
 } from "lucide-react";
-import { redoFor, undoFor } from "../editor/registry";
+import { redoFor, undoFor, viewFor } from "../editor/registry";
 import { EditorDocument, useDocuments } from "../state/documents";
-import { EditorLanguage, LANGUAGE_LABELS } from "../models/language";
-import { ContextMenu, MenuItem } from "./ContextMenu";
+import { usePreferences } from "../state/preferences";
+import { directoryOf } from "../preview/markdownCore";
+import { collectPreviewTokens } from "../preview/markdown";
+import { exportPreviewHtml } from "../preview/exportHtml";
 import { Tooltip } from "./Tooltip";
 
 interface TitleToolbarProps {
@@ -23,7 +24,6 @@ interface TitleToolbarProps {
   onSidebarToggle: () => void;
   onSidebarHoverStart: () => void;
   onSidebarHoverEnd: () => void;
-  onTogglePreview: () => void;
   /** 标签栏并入同一行：作为中段的弹性内容渲染 */
   children?: ReactNode;
 }
@@ -84,33 +84,38 @@ export function TitleToolbar({
   onSidebarToggle,
   onSidebarHoverStart,
   onSidebarHoverEnd,
-  onTogglePreview,
   children,
 }: TitleToolbarProps) {
   const hasDocument = activeDoc !== null;
-  const [langMenu, setLangMenu] = useState<{ x: number; y: number } | null>(
-    null
-  );
+  const exportingRef = useRef(false);
 
-  const languageMenuItems: MenuItem[] =
-    activeDoc && langMenu
-      ? (
-          Object.entries(LANGUAGE_LABELS) as [
-            EditorLanguage,
-            string
-          ][]
-        ).map(([language, label]) => ({
-          label,
-          checked: activeDoc.language === language,
-          onClick: () => {
-            if (activeDoc.language !== language) {
-              useDocuments
-                .getState()
-                .patchDocument(activeDoc.id, { language });
-            }
-          },
-        }))
-      : [];
+  const handleExport = async () => {
+    if (!activeDoc || exportingRef.current) return;
+    const view = viewFor(activeDoc.id);
+    if (!view) return;
+    exportingRef.current = true;
+    try {
+      const prefs = usePreferences.getState();
+      const saved = await exportPreviewHtml({
+        tokens: collectPreviewTokens(),
+        title: activeDoc.name,
+        text: view.state.doc.toString(),
+        baseDir: activeDoc.path ? directoryOf(activeDoc.path) : null,
+        breaks: prefs.markdownBreaks,
+        typographer: prefs.markdownTypographer,
+        allowHtml: prefs.markdownAllowHtml,
+      });
+      useDocuments
+        .getState()
+        .setStatus(saved ? { text: "已导出为 HTML", kind: "info" } : null);
+    } catch (error) {
+      useDocuments
+        .getState()
+        .setStatus({ text: `导出失败:${String(error)}`, kind: "error" });
+    } finally {
+      exportingRef.current = false;
+    }
+  };
 
   return (
     <header className="title-toolbar" data-tauri-drag-region>
@@ -152,54 +157,18 @@ export function TitleToolbar({
 
       <span className="title-divider" />
 
-      <Tooltip label="语言模式">
+      <Tooltip label="导出为 HTML">
         <button
-          className="tool-button language-button"
+          className="tool-button"
+          aria-label="导出为 HTML"
           disabled={!hasDocument}
-          onClick={(e) => {
-            if (!activeDoc) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            setLangMenu({ x: rect.left, y: rect.bottom + 4 });
-          }}
+          onClick={() => void handleExport()}
         >
-          {activeDoc ? LANGUAGE_LABELS[activeDoc.language] : "纯文本"}
-          <ChevronDown className="chevron" />
-        </button>
-      </Tooltip>
-
-      <Tooltip
-        label={
-          activeDoc?.previewVisible
-            ? "切到源码模式（Ctrl+Shift+P）"
-            : "切到渲染模式（Ctrl+Shift+P）"
-        }
-        shortcut="Ctrl+Shift+P"
-      >
-        <button
-          className={
-            "tool-button" +
-            (activeDoc?.language === "markdown" && activeDoc?.previewVisible
-              ? " active"
-              : "")
-          }
-          aria-label="切换 Markdown 视图模式"
-          disabled={!hasDocument || activeDoc?.language !== "markdown"}
-          onClick={onTogglePreview}
-        >
-          <Eye />
+          <Download />
         </button>
       </Tooltip>
 
       <WindowControls />
-
-      {langMenu && (
-        <ContextMenu
-          x={langMenu.x}
-          y={langMenu.y}
-          items={languageMenuItems}
-          onClose={() => setLangMenu(null)}
-        />
-      )}
     </header>
   );
 }

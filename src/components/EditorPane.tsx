@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
+import { convertFileSrc, invoke, isTauri } from "@tauri-apps/api/core";
 import { EditorView } from "@codemirror/view";
 import { buildEditorState } from "../editor/extensions";
 import {
@@ -12,12 +13,11 @@ import {
   unregisterView,
   viewFor,
 } from "../editor/registry";
-import { EditorLanguage } from "../models/language";
 import { EditorDocument, useDocuments } from "../state/documents";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
+import { directoryOf, resolveLocalImageSrc } from "../preview/markdownCore";
 import { EditorEmptyState } from "./EditorEmptyState";
-import { MarkdownPreview } from "./MarkdownPreview";
 
 const INACTIVE_LIMIT = 3;
 const TOTAL_BUDGET = 64 * 1024 * 1024;
@@ -28,7 +28,7 @@ function viewCost(textLength: number): number {
 }
 
 interface EffectiveFeatures {
-  language: EditorLanguage;
+  livePreview: boolean;
   wordWrap: boolean;
   highlight: boolean;
   fold: boolean;
@@ -39,24 +39,47 @@ function effectiveFeatures(doc: EditorDocument): EffectiveFeatures {
   const tier = doc.perfTier;
   const ov = doc.featureOverrides;
   return {
-    language: doc.language,
+    livePreview: featureEnabled("preview", tier, ov),
     wordWrap: prefs.wordWrap && featureEnabled("wordWrap", tier, ov),
     highlight: featureEnabled("highlight", tier, ov),
     fold: featureEnabled("fold", tier, ov),
   };
 }
 
-function featureSignature(f: EffectiveFeatures): string {
-  return [f.language, f.wordWrap, f.highlight, f.fold].join("|");
+function featureSignature(f: EffectiveFeatures, doc: EditorDocument): string {
+  // path 参与 signature：另存到新路径后图片相对路径的解析基准变了，需要重建视图
+  return [f.livePreview, f.wordWrap, f.highlight, f.fold, doc.path ?? ""].join("|");
+}
+
+/** 已放行 asset 协议的目录（重复 invoke 无害，但省一次 IPC） */
+const allowedAssetDirs = new Set<string>();
+
+function ensureAssetScope(dir: string | null): void {
+  if (!dir || allowedAssetDirs.has(dir)) return;
+  allowedAssetDirs.add(dir);
+  void invoke("allow_asset_directory", { path: dir }).catch(() => {
+    allowedAssetDirs.delete(dir);
+  });
+}
+
+/** 图片 src → 可显示 URL：本地路径走 asset 协议，外链原样，其余保持原文 */
+function imageSrcResolverFor(baseDir: string | null) {
+  return (raw: string): string | null => {
+    if (/^(https?:|data:)/i.test(raw)) return raw;
+    const local = resolveLocalImageSrc(baseDir, raw);
+    if (!local) return null;
+    return isTauri() ? convertFileSrc(local) : local;
+  };
 }
 
 function createViewFor(doc: EditorDocument, text: string): EditorView {
   const prefs = usePreferences.getState();
   const features = effectiveFeatures(doc);
+  const baseDir = doc.path ? directoryOf(doc.path) : null;
+  if (features.livePreview) ensureAssetScope(baseDir);
   const state = buildEditorState({
     docId: doc.id,
     initialText: text,
-    language: features.language,
     wordWrap: features.wordWrap,
     showLineNumbers: prefs.lineNumbers,
     fontSizePt: prefs.fontSizePt,
@@ -64,6 +87,8 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     indentUnitText: indentUnitOf(prefs.indentStyle, prefs.tabWidth),
     enableHighlight: features.highlight,
     enableFold: features.fold,
+    enableLivePreview: features.livePreview,
+    imageSrcResolver: features.livePreview ? imageSrcResolverFor(baseDir) : null,
     onUpdate: ({ state: nextState }) => {
       reportDirtyState(doc.id, nextState.doc.length, () =>
         nextState.doc.toString()
@@ -134,7 +159,7 @@ export function EditorPane() {
     }
 
     for (const doc of documents) {
-      const sig = featureSignature(effectiveFeatures(doc));
+      const sig = featureSignature(effectiveFeatures(doc), doc);
       let view = viewFor(doc.id);
       const sigChanged = signatureRef.current.get(doc.id) !== sig;
       if (view && sigChanged) {
@@ -166,20 +191,11 @@ export function EditorPane() {
 
     evictInactive(activeId);
 
-    // 当前文档若是 markdown + 预览被允许 → 渲染模式，cm-host 整体隐藏
-    const cur = activeId ? documents.find((d) => d.id === activeId) : null;
-    const inRenderMode =
-      !!cur &&
-      cur.language === "markdown" &&
-      cur.previewVisible &&
-      featureEnabled("preview", cur.perfTier, cur.featureOverrides);
-
     const activeView = activeId ? viewFor(activeId) : undefined;
     if (activeView) {
       // 视图在隐藏期间量到的是 0 尺寸，重新显示后必须再测一次
       activeView.requestMeasure();
-      // 渲染模式下 cm-host 被整体隐藏，focus() 会失败且无意义；只在源码模式抢焦点
-      if (!inRenderMode) activeView.focus();
+      activeView.focus();
     }
 
     // 兜底：快速切换或视图重建后可能残留旧的可见态，下一帧按 store 最新 activeId
@@ -236,85 +252,14 @@ export function EditorPane() {
     }
   };
 
-  const activeDoc = documents.find((d) => d.id === activeId);
-  const isMarkdown = !!activeDoc && activeDoc.language === "markdown";
-  const wantsRenderMode = isMarkdown && !!activeDoc?.previewVisible;
-  const previewAllowed =
-    !!activeDoc &&
-    featureEnabled("preview", activeDoc.perfTier, activeDoc.featureOverrides);
-  const renderMode = wantsRenderMode && previewAllowed;
-  const previewBlocked = wantsRenderMode && !previewAllowed;
-
   return (
     <div className="editor-pane">
       {documents.length === 0 ? (
         <EditorEmptyState />
       ) : (
-        <>
-          {/* cm-host 始终挂载（保持 view 存活以便切回源码模式继续编辑），
-              渲染模式下用 .cm-host-hidden 整体隐藏，避免和 MarkdownPreview 重叠 */}
-          <div
-            className={
-              "cm-host" + (renderMode ? " cm-host-hidden" : "")
-            }
-            ref={containerRef}
-          />
-          {renderMode && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
-          {isMarkdown && activeDoc && (
-            <ViewModeToggle
-              docId={activeDoc.id}
-              renderMode={renderMode}
-              blocked={previewBlocked}
-            />
-          )}
-        </>
+        /* 所见即所得：唯一的编辑面，渲染与编辑在同一 CodeMirror 实例内完成 */
+        <div className="cm-host" ref={containerRef} />
       )}
     </div>
-  );
-}
-
-/**
- * Typora 风格：左下角浮动按钮，切换"渲染 / 源码"两种视图模式。
- * - 渲染模式：显示"源码"按钮 → 点击切到源码编辑
- * - 源码模式：显示"渲染"按钮 → 点击切到渲染视图
- * - 大文件被自动降级时：按钮 disabled 并提示
- */
-function ViewModeToggle({
-  docId,
-  renderMode,
-  blocked,
-}: {
-  docId: string;
-  renderMode: boolean;
-  blocked: boolean;
-}) {
-  const onToggle = () => {
-    const doc = useDocuments.getState().documents.find((d) => d.id === docId);
-    if (!doc) return;
-    useDocuments
-      .getState()
-      .patchDocument(docId, { previewVisible: !doc.previewVisible });
-  };
-  const label = renderMode ? "源码" : "渲染";
-  const title = blocked
-    ? "该文档较大，预览已自动停用；如需强制开启可在状态栏“大文件模式”中勾选"
-    : renderMode
-      ? "切到源码模式（Ctrl+Shift+P）"
-      : "切到渲染模式（Ctrl+Shift+P）";
-  return (
-    <button
-      className={
-        "view-mode-toggle" + (renderMode ? " mode-render" : " mode-source")
-      }
-      onClick={onToggle}
-      disabled={blocked}
-      title={title}
-      aria-label={title}
-    >
-      <span className="view-mode-toggle-icon" aria-hidden="true">
-        {renderMode ? "</>" : "◉"}
-      </span>
-      <span className="view-mode-toggle-label">{label}</span>
-    </button>
   );
 }

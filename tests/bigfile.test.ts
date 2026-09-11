@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildEditorState } from "../src/editor/extensions";
 
-const LINE = 'const item = { id: 12345, name: "LacEditor fixture line" };\n';
+const LINE = '- 列表项 { id: 12345, name: "fixture" } **加粗** `code`\n';
 
 describe("big file editor state assembly", () => {
   it("builds state for a 20MB document within budget", () => {
@@ -10,7 +10,6 @@ describe("big file editor state assembly", () => {
     const state = buildEditorState({
       docId: "big",
       initialText: text,
-      language: "javascript",
       wordWrap: false,
       showLineNumbers: true,
       fontSizePt: 14,
@@ -18,6 +17,8 @@ describe("big file editor state assembly", () => {
       indentUnitText: "    ",
       enableHighlight: true,
       enableFold: false,
+      enableLivePreview: false,
+      imageSrcResolver: null,
       onUpdate: () => {},
       onCursor: () => {},
     });
@@ -32,7 +33,6 @@ describe("big file editor state assembly", () => {
     const state = buildEditorState({
       docId: "extreme",
       initialText: text,
-      language: "javascript",
       wordWrap: false,
       showLineNumbers: true,
       fontSizePt: 14,
@@ -40,6 +40,8 @@ describe("big file editor state assembly", () => {
       indentUnitText: "    ",
       enableHighlight: false,
       enableFold: false,
+      enableLivePreview: false,
+      imageSrcResolver: null,
       onUpdate: () => {},
       onCursor: () => {},
     });

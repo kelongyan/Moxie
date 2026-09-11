@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { EditorLanguage, baseName, inferLanguage } from "../models/language";
+import { baseName } from "../models/markdown";
 import type { FeatureOverrides, PerfTier } from "./performance";
 
 export interface FileRevisionSnapshot {
@@ -14,7 +14,6 @@ export interface EditorDocument {
   id: string;
   name: string;
   path: string | null;
-  language: EditorLanguage;
   text: string;
   savedText: string;
   isDirty: boolean;
@@ -26,7 +25,6 @@ export interface EditorDocument {
   fileIdentity: string | null;
   fileRevision: FileRevisionSnapshot | null;
   ioState: DocumentIoState;
-  previewVisible: boolean;
   perfTier: PerfTier;
   perfBytes: number;
   featureOverrides: FeatureOverrides;
@@ -64,7 +62,6 @@ function makeDocument(partial: Partial<EditorDocument>): EditorDocument {
     id: `doc-${nextId++}`,
     name: "未命名",
     path: null,
-    language: "plaintext",
     text: "",
     savedText: "",
     isDirty: false,
@@ -76,8 +73,6 @@ function makeDocument(partial: Partial<EditorDocument>): EditorDocument {
     fileIdentity: null,
     fileRevision: null,
     ioState: "idle",
-    // Markdown 默认进入"渲染模式"（Typora 风），true=渲染，false=源码
-    previewVisible: true,
     perfTier: "standard",
     perfBytes: 0,
     featureOverrides: {},
@@ -122,7 +117,6 @@ export const useDocuments = create<DocumentsState>((set, get) => ({
     const doc = makeDocument({
       name: baseName(path),
       path,
-      language: inferLanguage(path),
       text,
       savedText: text,
     });
@@ -205,7 +199,6 @@ export const useDocuments = create<DocumentsState>((set, get) => ({
       documents: updateDoc(s.documents, id, {
         path,
         name: baseName(path),
-        language: inferLanguage(path),
       }),
     })),
 

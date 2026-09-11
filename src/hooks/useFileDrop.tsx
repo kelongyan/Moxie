@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { pathExtension } from "../models/language";
-import { SUPPORTED_EXTENSIONS } from "../models/language";
 import { openPathAction } from "../state/actions";
 
 export function useFileDrop(): boolean {
@@ -20,12 +18,13 @@ export function useFileDrop(): boolean {
           setDragActive(false);
         } else if (payload.type === "drop") {
           setDragActive(false);
-          const paths = (payload.paths ?? []).filter((p) =>
-            SUPPORTED_EXTENSIONS.includes(pathExtension(p))
-          );
-          for (const path of paths) {
-            void openPathAction(path);
-          }
+          // 顺序走统一入口：非 Markdown 文件由 openPathAction 校验并提示，
+          // 避免并发打开成功后把拒绝提示清掉
+          void (async () => {
+            for (const path of payload.paths ?? []) {
+              await openPathAction(path);
+            }
+          })();
         }
       })
       .then((fn) => {

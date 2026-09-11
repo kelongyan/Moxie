@@ -15,26 +15,24 @@ import {
   undo,
 } from "@codemirror/commands";
 import {
-  bracketMatching,
   codeFolding,
   foldGutter,
   foldKeymap,
   indentUnit,
 } from "@codemirror/language";
 import { highlightExtension } from "./highlightTheme";
-import { languageExtensions } from "./languages";
+import { markdownExtensions } from "./languages";
+import { livePreview, ImageSrcResolver } from "./livePreview";
 import {
   markdownEnterHandler,
   renumberOrderedList,
 } from "./listContinuation";
 import { searchHighlightField } from "./searchHighlight";
-import { EditorLanguage } from "../models/language";
 import { PT_TO_PX } from "../state/preferences";
 
 export interface EditorOptions {
   docId: string;
   initialText: string;
-  language: EditorLanguage;
   wordWrap: boolean;
   showLineNumbers: boolean;
   fontSizePt: number;
@@ -42,6 +40,10 @@ export interface EditorOptions {
   indentUnitText: string;
   enableHighlight: boolean;
   enableFold: boolean;
+  /** 所见即所得：隐藏光标外的语法标记（大文件降级时关闭） */
+  enableLivePreview: boolean;
+  /** 图片 src → 可显示 URL（本地路径 → asset 协议），null 表示保持原文 */
+  imageSrcResolver: ImageSrcResolver | null;
   onUpdate: (update: { docChanged: boolean; state: EditorState }) => void;
   onCursor: (line: number, column: number) => void;
 }
@@ -96,9 +98,11 @@ function makeShiftTabHandler(tabWidth: number) {
 
 export function buildEditorState(options: EditorOptions): EditorState {
   const fontSizePx = options.fontSizePt * PT_TO_PX;
-  const lineSpacingPx = options.lineSpacingPt * PT_TO_PX;
+  // 行距偏好以默认 4pt（= TizuMark 1.7 行高）为零点，仅把偏离量叠加到基准 1.7em
+  const lineSpacingPx = (options.lineSpacingPt - 4) * PT_TO_PX;
   const tabWidth = options.indentUnitText === "\t" ? 4 : options.indentUnitText.length;
-  const isMarkdown = options.language === "markdown";
+  // 书写面 vs 源码视图（大文件降级即时渲染时回到源码形态）
+  const editable = options.enableLivePreview;
 
   const theme = EditorView.theme(
     {
@@ -109,21 +113,18 @@ export function buildEditorState(options: EditorOptions): EditorState {
         color: "var(--lac-text)",
       },
       ".cm-scroller": {
-        fontFamily: "var(--font-mono)",
-        // 基准 1.42em + 行距偏好 ≈ 默认字号下 1.75 的行高，与预览正文一致
-        lineHeight: `calc(1.42em + ${lineSpacingPx}px)`,
-        // markdown 源码：整块（行号 + 正文）居中并限制列宽，与预览同量级；
-        // 56px 是行号槽的预留宽度
-        ...(isMarkdown
-          ? {
-              paddingInline:
-                "max(0px, calc((100% - var(--measure) - 56px) / 2))",
-            }
-          : {}),
+        fontFamily: editable ? "var(--font-ui)" : "var(--font-mono)",
+        // 基准 1.7em（TizuMark 正文行高）+ 行距偏离量；默认 lineSpacingPt=4 → 恰好 1.7
+        lineHeight: `calc(1.7em + ${lineSpacingPx}px)`,
+        // 书写面：正文区限宽居中（--measure-writing），两端留白；16/24 内边距由 .cm-content padding 提供
+        // 源码视图：整块（行号 + 正文）居中并限制列宽；56px 是行号槽的预留宽度
+        paddingInline: editable
+          ? "max(0px, calc((100% - var(--measure-writing)) / 2))"
+          : "max(0px, calc((100% - var(--measure) - 56px) / 2))",
       },
       ".cm-content": {
         caretColor: "var(--lac-accent)",
-        padding: "16px 0 32px",
+        padding: editable ? "16px 24px 32px" : "16px 0 32px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {
@@ -133,7 +134,9 @@ export function buildEditorState(options: EditorOptions): EditorState {
       "& .cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
         backgroundColor: "var(--lac-selection)",
       },
-      ".cm-activeLine": { backgroundColor: "var(--lac-current-line)" },
+      ".cm-activeLine": {
+        backgroundColor: editable ? "transparent" : "var(--lac-current-line)",
+      },
       ".cm-gutters": {
         backgroundColor: "var(--lac-bg)",
         color: "var(--lac-text-tertiary)",
@@ -169,12 +172,10 @@ export function buildEditorState(options: EditorOptions): EditorState {
     { dark: document.documentElement.dataset.theme === "dark" }
   );
 
-  const enterBindings = isMarkdown
-    ? [
-        { key: "Enter", run: markdownEnterHandler },
-        { key: "Enter", run: makeEnterHandler(options.indentUnitText) },
-      ]
-    : [{ key: "Enter", run: makeEnterHandler(options.indentUnitText) }];
+  const enterBindings = [
+    { key: "Enter", run: markdownEnterHandler },
+    { key: "Enter", run: makeEnterHandler(options.indentUnitText) },
+  ];
 
   const customKeys = keymap.of([
     ...enterBindings,
@@ -188,8 +189,6 @@ export function buildEditorState(options: EditorOptions): EditorState {
     theme,
     history(),
     drawSelection(),
-    highlightActiveLine(),
-    highlightActiveLineGutter(),
     searchHighlightField,
     indentUnit.of(options.indentUnitText),
     Prec.highest(customKeys),
@@ -206,61 +205,68 @@ export function buildEditorState(options: EditorOptions): EditorState {
       }
     }),
   ];
+  // 当前行高亮是源码编辑器的痕迹，书写面（Typora/TizuMark）没有
+  if (!editable) {
+    extensions.push(highlightActiveLine(), highlightActiveLineGutter());
+  }
 
   if (options.enableHighlight) {
     extensions.push(highlightExtension());
-    extensions.push(bracketMatching());
-    extensions.push(...languageExtensions(options.language));
+    extensions.push(...markdownExtensions());
+  }
+  if (options.enableLivePreview && options.imageSrcResolver) {
+    extensions.push(livePreview(options.imageSrcResolver));
   }
   if (options.enableFold) {
     extensions.push(codeFolding());
-    extensions.push(
-      foldGutter({
-        markerDOM: (open) => {
-          const el = document.createElement("span");
-          el.className = "fold-marker";
-          el.innerHTML = open
-            ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
-            : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
-          return el;
-        },
-      })
-    );
+    // 折叠箭头槽只在源码视图出现；书写面靠键盘快捷键折叠
+    if (!editable) {
+      extensions.push(
+        foldGutter({
+          markerDOM: (open) => {
+            const el = document.createElement("span");
+            el.className = "fold-marker";
+            el.innerHTML = open
+              ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
+              : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>';
+            return el;
+          },
+        })
+      );
+    }
   }
 
-  if (isMarkdown) {
-    extensions.push(
-      EditorView.updateListener.of((update) => {
-        if (!update.docChanged || !update.view) return;
-        let crossed = false;
-        let touchesNumber = false;
-        update.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
-          const insertedText = inserted.toString();
-          if (insertedText.includes("\n")) crossed = true;
-          if (fromA !== toA) {
-            const removed = update.startState.sliceDoc(fromA, toA);
-            if (removed.includes("\n")) crossed = true;
-          }
-          if (!crossed) return;
-          const beforeText = update.startState.sliceDoc(0, fromA);
-          const lineNumber = beforeText.split("\n").length;
-          if (lineNumber > update.startState.doc.lines) return;
-          const lineObj = update.startState.doc.line(lineNumber);
-          const m = /^(\s*)(\d+)[.)]/.exec(lineObj.text);
-          if (m) {
-            const numStart = lineObj.from + m[1].length;
-            const numEnd = numStart + m[2].length;
-            if (fromA < numEnd && toA > numStart) touchesNumber = true;
-          }
-        });
-        if (crossed && !touchesNumber) {
-          renumberOrderedList(update.view);
+  extensions.push(
+    EditorView.updateListener.of((update) => {
+      if (!update.docChanged || !update.view) return;
+      let crossed = false;
+      let touchesNumber = false;
+      update.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+        const insertedText = inserted.toString();
+        if (insertedText.includes("\n")) crossed = true;
+        if (fromA !== toA) {
+          const removed = update.startState.sliceDoc(fromA, toA);
+          if (removed.includes("\n")) crossed = true;
         }
-      })
-    );
-  }
+        if (!crossed) return;
+        const beforeText = update.startState.sliceDoc(0, fromA);
+        const lineNumber = beforeText.split("\n").length;
+        if (lineNumber > update.startState.doc.lines) return;
+        const lineObj = update.startState.doc.line(lineNumber);
+        const m = /^(\s*)(\d+)[.)]/.exec(lineObj.text);
+        if (m) {
+          const numStart = lineObj.from + m[1].length;
+          const numEnd = numStart + m[2].length;
+          if (fromA < numEnd && toA > numStart) touchesNumber = true;
+        }
+      });
+      if (crossed && !touchesNumber) {
+        renumberOrderedList(update.view);
+      }
+    })
+  );
 
-  if (options.showLineNumbers) {
+  if (options.showLineNumbers && !editable) {
     extensions.push(lineNumbers());
   }
   if (options.wordWrap) {

@@ -286,26 +286,6 @@ body {
   height: 16px;
 }
 
-.language-button {
-  width: auto;
-  min-width: 0;
-  gap: 6px;
-  padding: 0 8px;
-  font-family: inherit;
-  font-size: var(--fs-ui);
-  color: var(--lac-text);
-}
-
-.language-button:disabled {
-  color: var(--lac-text-tertiary);
-}
-
-.language-button .chevron {
-  width: 13px;
-  height: 13px;
-  color: var(--lac-text-secondary);
-}
-
 .title-divider {
   width: 1px;
   height: 18px;
@@ -1637,193 +1617,176 @@ body {
   display: none !important;
 }
 
-/* Typora 风格：渲染模式下整体隐藏 cm-host（view 仍存活以便切回源码继续编辑） */
-.cm-host.cm-host-hidden {
-  display: none !important;
+/* —— 所见即所得书写面 ——
+   语法隐藏/替换由 src/editor/livePreview.ts 的装饰负责；排版规格 1:1 对齐 TizuMark 渲染
+   （字号在 highlightTheme，行级结构在这里）。块级垂直间距不走 margin——会破坏 CodeMirror
+   的行高测量：livePreview 把折叠间距写成行内 --md-space-before，由 .md-block /
+   .md-quote-first / .md-code-fence-open 读取；分隔空行由 .md-blank 压缩。 */
+
+/* 通用块首行：承载与上一块之间的折叠间距 */
+.cm-host .cm-line.md-block {
+  padding-top: var(--md-space-before, 0px);
 }
 
-/* Typora 风格：渲染模式占满整个 editor-pane（替代旧分屏 42% 宽度） */
-.preview-pane.preview-pane-render {
-  flex: 1 1 100%;
-  min-width: 0;
-  border-left: none;
+/* 分隔用空行压缩（与 src/preview/typography.ts 的 BLANK_LINE_HEIGHT 保持一致） */
+.cm-host .cm-line.md-blank {
+  line-height: 8px;
 }
 
-/* 渲染模式下的极简 toolbar：去掉标题与下边框，只留右侧操作按钮 */
-.preview-pane-render .preview-toolbar {
-  flex: 0 0 auto;
-  justify-content: flex-end;
-  padding: 6px 10px 0;
-  border-bottom: none;
-  background: transparent;
+.cm-host .cm-line.md-h1 {
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--lac-text);
+  line-height: 1.3;
+}
+.cm-host .cm-line.md-h2 {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--lac-border);
+  line-height: 1.3;
+}
+.cm-host .cm-line.md-h3,
+.cm-host .cm-line.md-h4,
+.cm-host .cm-line.md-h5,
+.cm-host .cm-line.md-h6 {
+  line-height: 1.3;
 }
 
-/* 浮动"渲染 / 源码"切换：低对比浮标——默认只有文字，悬停才浮出底色；
-   位于左下角留白内，不与正文抢注意力 */
-.view-mode-toggle {
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: var(--ctl-md);
-  padding: 0 10px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--lac-text-tertiary);
-  font-family: inherit;
-  font-size: var(--fs-caption);
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-  transition: background var(--anim-hover), color var(--anim-hover);
-}
-
-.view-mode-toggle:hover:not(:disabled) {
-  background: var(--lac-hover);
+.cm-host .cm-line.md-quote {
   color: var(--lac-text-secondary);
+  border-left: 4px solid var(--lac-accent);
+  background: var(--lac-accent-softer);
+  padding-left: 20px;
+  padding-right: 20px;
+}
+/* 引用首/末行补内部 12px（对齐 TizuMark blockquote padding:12px 20px）；外部间距读 var */
+.cm-host .cm-line.md-quote-first {
+  padding-top: calc(var(--md-space-before, 0px) + 12px);
+}
+.cm-host .cm-line.md-quote-last {
+  padding-bottom: 12px;
 }
 
-.view-mode-toggle:active:not(:disabled) {
-  background: var(--lac-pressed);
+.cm-host .cm-line.md-code-block {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  line-height: 1.8;
+  background: var(--lac-bg-inset);
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-.view-mode-toggle:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.view-mode-toggle-icon {
+/* fence 行充当代码块卡片的头部/尾部；光标进入代码块时类被移除，还原完整高度 */
+.cm-host .cm-line.md-code-fence {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  color: inherit;
-  /* 等宽数字让 "</>" 和 "◉" 不会跳 */
-  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  background: var(--lac-bg-inset);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.cm-host .cm-line.md-code-fence-open {
+  padding-top: calc(var(--md-space-before, 0px) + 16px);
+  border-radius: 6px 6px 0 0;
+}
+.cm-host .cm-line.md-code-fence-close {
+  padding-bottom: 16px;
+  border-radius: 0 0 6px 6px;
 }
 
-.preview-pane {
-  flex: 0 0 42%;
-  min-width: var(--lac-preview-min-width);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+/* 列表项间距：项间 4px（列表末项除外，末项下方交给列表块间距） */
+.cm-host .cm-line.md-li-end {
+  padding-bottom: 4px;
 }
 
-.preview-toolbar {
-  flex: 0 0 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2);
-  padding: 0 var(--sp-1) 0 var(--sp-3);
-  border-bottom: 1px solid var(--lac-border);
-  background: var(--lac-bg-chrome);
-}
-
-.preview-toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-1);
-  flex: 0 0 auto;
-}
-
-.preview-slow-hint {
-  margin-left: var(--sp-2);
-  padding: 0 var(--sp-1);
+.md-lang-tag {
+  display: inline-block;
+  padding: 0 6px;
   border-radius: var(--radius-xs);
-  background: var(--lac-hover);
   color: var(--lac-text-tertiary);
-  font-size: var(--fs-12);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
 }
 
-.preview-outline {
-  position: relative;
-  flex: 0 0 auto;
-}
-
-.preview-outline-trigger {
+.md-image {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--ctl-sm);
-  height: var(--ctl-sm);
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--lac-text-secondary);
-  cursor: pointer;
-  transition: background var(--anim-hover), color var(--anim-hover);
+  max-width: 100%;
+  vertical-align: baseline;
 }
 
-.preview-outline-trigger:hover:not(:disabled) {
-  background: var(--lac-hover);
-  color: var(--lac-text);
-}
-
-.preview-outline-trigger:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.preview-outline-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  z-index: var(--z-popover);
-  min-width: 180px;
-  max-width: 280px;
-  max-height: 320px;
-  overflow-y: auto;
-  padding: var(--sp-1);
-  border-radius: var(--radius-md);
-  background: var(--lac-bg-elevated);
-  box-shadow: var(--sh-2);
-}
-
-.preview-outline-item {
-  display: block;
-  width: 100%;
-  padding: 3px var(--sp-2);
-  border: none;
-  border-radius: var(--radius-xs);
-  background: transparent;
-  color: var(--lac-text);
-  font-size: var(--fs-12);
-  line-height: 1.5;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-  transition: background var(--anim-hover);
-}
-
-.preview-outline-item:hover {
-  background: var(--lac-hover);
-}
-
-.preview-outline-item.active {
-  color: var(--lac-accent);
-}
-
-.preview-outline-item.lvl-2 { padding-left: calc(var(--sp-2) + 10px); }
-.preview-outline-item.lvl-3 { padding-left: calc(var(--sp-2) + 20px); }
-.preview-outline-item.lvl-4 { padding-left: calc(var(--sp-2) + 30px); }
-.preview-outline-item.lvl-5 { padding-left: calc(var(--sp-2) + 40px); }
-.preview-outline-item.lvl-6 { padding-left: calc(var(--sp-2) + 50px); }
-
-.preview-iframe {
-  flex: 1;
-  width: 100%;
+.md-image img {
+  max-width: 100%;
   height: auto;
-  min-height: 0;
-  border: none;
+  max-height: 480px;
+  border-radius: 4px;
+}
+
+.md-image.broken {
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--lac-warning-soft);
+  color: var(--lac-warning);
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+/* TizuMark hr：透明渐入渐出的发丝线；上下 32px 留白由相邻块折叠间距提供 */
+.md-hr {
   display: block;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lac-border-strong), transparent);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 1px;
+}
+
+/* hr 行行高归零，使发丝线的上下间距完全由 --md-space-before / 下一块决定 */
+.cm-host .cm-line.md-hr-line {
+  line-height: 0;
+  /* 消除 CodeMirror 用于光标定位的 cm-widgetBuffer（height:1em）对行高的撑高 */
+  font-size: 0;
+}
+.cm-host .cm-line.md-hr-line .cm-widgetBuffer {
+  height: 0;
+}
+
+.md-task {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1.5px solid var(--lac-border-strong);
+  border-radius: 3px;
+  background: transparent;
+  vertical-align: -2px;
+  cursor: pointer;
+  transition: background var(--anim-hover), border-color var(--anim-hover);
+}
+
+.md-task:hover {
+  border-color: var(--lac-accent);
+}
+
+.md-task.checked {
+  border-color: var(--lac-accent);
+  background: var(--lac-accent);
+}
+
+.md-task.checked::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 8px;
+  margin: 0 auto;
+  border: solid var(--lac-bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(0, -1px);
+}
+
+.md-task:focus-visible {
+  outline: 2px solid var(--lac-accent);
+  outline-offset: 1px;
 }
 
 /* 折叠 */

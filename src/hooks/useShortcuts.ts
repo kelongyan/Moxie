@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import {
   closeTabAction,
-  jsonFormatActive,
   newTabAction,
   openFileAction,
   saveActiveAction,
@@ -24,12 +23,6 @@ export function useShortcuts() {
         if (key === "f") {
           e.preventDefault();
           void openFindWindow("replace");
-        } else if (key === "l" && !e.shiftKey) {
-          e.preventDefault();
-          void jsonFormatActive("pretty");
-        } else if (key === "l" && e.shiftKey) {
-          e.preventDefault();
-          void jsonFormatActive("minify");
         } else if (key === "d") {
           e.preventDefault();
           void openCodecWindow("smart-decode");
@@ -64,13 +57,6 @@ export function useShortcuts() {
         e.preventDefault();
         const prefs = usePreferences.getState();
         prefs.set({ sidebarPinned: !prefs.sidebarPinned });
-      } else if (e.shiftKey && key === "p") {
-        e.preventDefault();
-        const docs = useDocuments.getState();
-        const doc = docs.documents.find((d) => d.id === docs.activeId);
-        if (doc && doc.language === "markdown") {
-          docs.patchDocument(doc.id, { previewVisible: !doc.previewVisible });
-        }
       } else if (!e.shiftKey && e.key === ",") {
         e.preventDefault();
         void openSettingsWindow();

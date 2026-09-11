@@ -1,15 +1,10 @@
 import {
-  Database,
-  FileCode2,
-  FileJson2,
-  FileTerminal,
   FileText,
   LucideIcon,
   Plus,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { EditorLanguage } from "../models/language";
 import {
   closeOtherTabsAction,
   closeTabAction,
@@ -20,25 +15,8 @@ import { EditorDocument, useDocuments } from "../state/documents";
 import { moveDocToNewWindow, moveDocToWindow, otherEditorWindows } from "../state/windows";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 
-const LANGUAGE_ICONS: Record<EditorLanguage, LucideIcon> = {
-  plaintext: FileText,
-  markdown: FileText,
-  json: FileJson2,
-  html: FileCode2,
-  javascript: FileCode2,
-  typescript: FileCode2,
-  css: FileCode2,
-  python: FileCode2,
-  swift: FileCode2,
-  shell: FileTerminal,
-  yaml: FileCode2,
-  ccpp: FileCode2,
-  sql: Database,
-};
-
-export function languageIconOf(language: EditorLanguage) {
-  return LANGUAGE_ICONS[language];
-}
+/** 所有文档均为 Markdown，统一使用文件图标 */
+const FILE_ICON: LucideIcon = FileText;
 
 let measureContext: CanvasRenderingContext2D | null = null;
 
@@ -161,7 +139,7 @@ export function TabBar() {
   const renderTab = (doc: EditorDocument, index: number) => {
     const selected = doc.id === activeId;
     const hovered = hoverIndex === index;
-    const Icon = languageIconOf(doc.language);
+    const Icon = FILE_ICON;
     const nameWidth = Math.max(40, tabWidth - 14 - 12 - 20 - 18);
     const showSeparator =
       index > 0 &&

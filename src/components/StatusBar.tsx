@@ -1,6 +1,5 @@
 import { Check, Gauge, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { LANGUAGE_LABELS } from "../models/language";
 import { ENCODING_LABELS, StoredEncodingId } from "../models/encoding";
 import { subscribeTextChange, viewFor } from "../editor/registry";
 import { EditorDocument, useDocuments } from "../state/documents";
@@ -76,9 +75,9 @@ function useWordCount(doc: EditorDocument | null): string {
   return display;
 }
 
-const OVERRIDE_ITEMS: { key: FeatureKey; label: string; markdownOnly?: boolean }[] = [
+const OVERRIDE_ITEMS: { key: FeatureKey; label: string }[] = [
   { key: "wordWrap", label: "自动换行" },
-  { key: "preview", label: "Markdown 渲染", markdownOnly: true },
+  { key: "preview", label: "即时渲染" },
   { key: "highlight", label: "语法高亮" },
   { key: "fold", label: "代码折叠" },
   { key: "wordCount", label: "实时字数统计" },
@@ -116,9 +115,7 @@ function LargeFileMenu({ doc }: { doc: EditorDocument }) {
       </button>
       {open && (
         <div className="bigfile-popover">
-          {OVERRIDE_ITEMS.filter(
-            (item) => !item.markdownOnly || doc.language === "markdown"
-          ).map((item) => {
+          {OVERRIDE_ITEMS.map((item) => {
             const on = featureEnabled(item.key, doc.perfTier, doc.featureOverrides);
             return (
               <button key={item.key} onClick={() => toggle(item.key)}>
@@ -193,7 +190,6 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
             行 {activeDoc.cursorLine} · 列 {activeDoc.cursorColumn}
           </span>
           <span className="status-item">{encodingLabel(activeDoc.encoding)}</span>
-          <span className="status-item">{LANGUAGE_LABELS[activeDoc.language]}</span>
           {wordCount && <span className="status-item">{wordCount}</span>}
         </>
       )}

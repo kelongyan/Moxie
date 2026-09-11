@@ -1,4 +1,4 @@
-import { baseName } from "../models/language";
+import { baseName } from "../models/markdown";
 import { newTabAction, openFileAction, openPathAction } from "../state/actions";
 import { dirName, useSidebar } from "../state/sidebar";
 import brandMark from "../../src-tauri/icons/128x128.png";
@@ -60,7 +60,7 @@ export function EditorEmptyState() {
           <kbd>Ctrl</kbd> <kbd>O</kbd> 打开
         </span>
         <span className="hint-dot" />
-        <span>拖入文件即可打开</span>
+        <span>拖入 Markdown 文件即可打开</span>
       </div>
     </div>
   );

@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  jsonContainerFoldRange,
-  jsonContainerFoldRange as jsonFold,
-  markdownHeadingFoldRange,
-} from "../src/editor/languages";
+import { markdownHeadingFoldRange } from "../src/editor/languages";
 
 describe("markdownHeadingFoldRange", () => {
   const text = "# A\nbody\nbody2\n## B\nb\n# C\n";
@@ -24,37 +20,5 @@ describe("markdownHeadingFoldRange", () => {
 
   it("returns null for non-heading lines", () => {
     expect(markdownHeadingFoldRange(text, 4, 8)).toBeNull();
-  });
-});
-
-describe("jsonContainerFoldRange", () => {
-  it("folds the root object across lines", () => {
-    const text = '{\n  "a": [1, 2],\n  "b": {"x": 1}\n}';
-    const range = jsonContainerFoldRange(text, 0, 1);
-    expect(range).toEqual({ from: 1, to: text.length - 1 });
-  });
-
-  it("does not fold single-line containers", () => {
-    const text = '{\n  "a": [1, 2],\n  "b": {"x": 1}\n}';
-    const lineStart = text.indexOf('{"x"');
-    const lineEnd = text.indexOf("\n", lineStart);
-    expect(jsonContainerFoldRange(text, lineStart, lineEnd)).toBeNull();
-  });
-
-  it("ignores brackets inside strings", () => {
-    const text = '{"s": "{ not real }", "t": 1,\n"u": 2}';
-    const range = jsonContainerFoldRange(text, 0, text.indexOf("\n"));
-    expect(range).toEqual({ from: 1, to: text.length - 1 });
-  });
-
-  it("returns null when no container opens on the line", () => {
-    const text = '{\n  "a": 1\n}';
-    expect(jsonContainerFoldRange(text, 2, 10)).toBeNull();
-  });
-
-  it("folds root array", () => {
-    const text = '[\n  1,\n  2\n]';
-    const range = jsonFold(text, 0, 1);
-    expect(range).toEqual({ from: 1, to: text.length - 1 });
   });
 });
