@@ -8,13 +8,13 @@ exports[`preview snapshot > dark theme 1`] = `
 <title>doc.md</title>
 <link rel="stylesheet" href="">
 <style>
-  html { color-scheme: dark;  }
+  html { color-scheme: dark;   }
   html, body { margin: 0; padding: 0; background: #1c1c1f; }
   body {
     color: #e9eaee;
     font-family: sans-serif;
     font-size: 16px;
-    line-height: 1.75;
+    line-height: 1.7;
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -30,141 +30,174 @@ exports[`preview snapshot > dark theme 1`] = `
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(74ch, 100%); margin: 0 auto; padding: 48px 32px 56px; }
-  /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
+  /* 全宽（TizuMark 复刻）：正文区不再限宽，--measure 仅保留给源码模式 */
+  article { max-width: 100%; margin: 0 auto; padding: 24px 24px 40px; }
+
+  /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 650;
+    font-weight: 700;
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    margin: 24px 0 12px;
   }
   h1 {
-    font-size: 1.75em;
-    letter-spacing: -0.022em;
-    margin: 0.45em 0 0.6em;
-    padding-bottom: 0.3em;
-    border-bottom: 1px solid color-mix(in srgb, #e9eaee 9%, #1c1c1f);
+    font-size: 2em;
+    color: #e9eaee;
+    border-bottom: 2px solid #e9eaee;
+    padding-bottom: 10px;
   }
   h2 {
-    font-size: 1.35em;
-    margin: 1.6em 0 0.5em;
-    padding-bottom: 0.2em;
-    border-bottom: 1px solid color-mix(in srgb, #e9eaee 7%, #1c1c1f);
+    font-size: 1.5em;
+    color: #e9eaee;
+    border-bottom: 1px solid #e4e5e8;
+    padding-bottom: 8px;
   }
-  h3 { font-size: 1.2em; margin: 1.3em 0 0.45em; }
-  h4 { font-size: 1.06em; margin: 1.2em 0 0.4em; }
-  h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: #5c6068; }
-  /* 段落：行高 1.75，段距加大；中文段落首字符不缩进 */
-  p { margin: 0.8em 0; }
-  /* 行内强调：bold/italic 用字重 600 + 微小字距 */
-  strong { font-weight: 650; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1.1em; }
+  h5 { font-size: 1em; color: #5c6068; }
+  h6 { font-size: 0.9em; color: #5c6068; }
+
+  /* 段落：单侧 margin，14px 段距（TizuMark 节奏） */
+  p { margin: 0 0 14px; }
+
+  /* 行内强调 */
+  strong, b { font-weight: 700; }
   em { font-style: italic; }
-  /* 链接：默认无下划线，悬停时浮出下划线 + 浅色背景，节奏更"克制" */
+  del { text-decoration: line-through; color: #5c6068; }
+  mark {
+    display: inline-block;
+    background: #96590a;
+    color: #14151d;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 0.82em;
+    font-family: monospace;
+    color: #e9eaee;
+    background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
+    border: 1px solid #e4e5e8;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    box-shadow: inset 0 -1px 0 #e4e5e8;
+    line-height: 1.5;
+    vertical-align: baseline;
+  }
+  abbr { text-decoration: underline dotted; cursor: help; }
   a {
     color: #4a52a3;
     text-decoration: none;
     text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-    border-bottom: 1px solid transparent;
-    transition: border-color 120ms ease-out, background-color 120ms ease-out;
   }
-  a:hover { border-bottom-color: #4a52a3; }
-  /* 列表：编号用 tabular-nums 让"10."和"1."对齐；段距更舒展 */
-  ul, ol { padding-left: 1.7em; margin: 0.6em 0; }
-  li { margin: 0.25em 0; }
-  li > p { margin: 0.25em 0; }
-  ol li::marker { font-variant-numeric: tabular-nums; }
-  ul li::marker { color: #5c6068; }
-  li.task-list-item { list-style: none; margin-left: -1.4em; }
-  li.task-list-item input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    margin: 0 0.5em 0 0;
-    border: 1px solid #d2d4d9;
-    border-radius: 4px;
-    background: #ffffff;
-    vertical-align: -2px;
-    transition: background 120ms ease-out, border-color 120ms ease-out;
+  a:hover { text-decoration: underline; }
+  a[href^="http"]::after {
+    content: " \\2197";
+    font-size: 0.75em;
+    vertical-align: super;
+    opacity: 0.75;
   }
-  li.task-list-item input:checked {
-    background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
-    border-color: #4a52a3;
-  }
-  /* 引用：左条改为中性细线，背景几乎透明；外距加大；首字不再收缩 */
-  blockquote {
-    margin: 1em 0;
-    padding: 0.5em 1.1em;
-    border-left: 3px solid #d2d4d9;
-    background: color-mix(in srgb, #e9eaee 3%, #1c1c1f);
-    border-radius: 0 6px 6px 0;
-    color: #5c6068;
-  }
-  blockquote > :first-child { margin-top: 0; }
-  blockquote > :last-child { margin-bottom: 0; }
-  /* 行内 code：只用底色区分，去掉描边（等宽视觉偏大，降半档到 ~13.5px） */
+
+  /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
   code {
     font-family: monospace;
-    font-size: 0.84em;
-    font-weight: 500;
+    font-size: 0.88em;
+    padding: 2px 5px;
     background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
-    padding: 0.2em 0.45em;
+    border: 1px solid #e4e5e8;
     border-radius: 4px;
   }
-  /* 代码块：纯底色不描边，圆角 8px；外距上下加大 */
+
+  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
+  ul, ol { padding-left: 24px; margin: 0 0 14px; }
+  li { margin: 0 0 4px; }
+  li > p { margin: 0 0 4px; }
+  ul ul, ol ol, ul ol, ol ul { margin-top: 4px; margin-bottom: 4px; }
+  :where(article) ul { list-style-type: disc; }
+  :where(article) ul ul { list-style-type: circle; }
+  :where(article) ul ul ul { list-style-type: square; }
+  :where(article) ul ul ul ul { list-style-type: disc; }
+  @counter-style paren-decimal { system: extends decimal; suffix: ") "; }
+  @counter-style circled-decimal {
+    system: numeric;
+    symbols: "\\24EA" "\\2460" "\\2461" "\\2462" "\\2463" "\\2464" "\\2465" "\\2466" "\\2467" "\\2468";
+    suffix: " ";
+  }
+  :where(article) ol { list-style-type: decimal; }
+  :where(article) ol ol { list-style-type: paren-decimal; }
+  :where(article) ol ol ol { list-style-type: circled-decimal; }
+  :where(article) ol ol ol ol { list-style-type: circled-decimal; }
+
+  /* 任务列表：16px 绿色勾选框（TizuMark） */
+  ul:has(input[type="checkbox"]) { list-style: none; padding-left: 0; }
+  ul:has(input[type="checkbox"]) > li:not(.task-list-item) { list-style: disc; padding-left: 24px; }
+  li.task-list-item { list-style: none; }
+  li input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0 8px 0 0;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #d2d4d9;
+    border-radius: 3px;
+    background: #ffffff;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    cursor: pointer;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
+  }
+  li input[type="checkbox"]:hover { border-color: #177a3d; }
+  li input[type="checkbox"]:not(:checked) { opacity: 0.7; }
+  li input[type="checkbox"]:checked {
+    background: #177a3d;
+    border-color: #177a3d;
+    opacity: 1;
+  }
+  li input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* 代码块：底色 + 1px 边框 + 6px 圆角 + 300px 按需滚动；行号结构常驻（CSS 默认隐藏） */
   pre {
+    padding: 16px;
     background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
-    padding: 14px 16px;
-    border-radius: 8px;
-    overflow-x: auto;
-    line-height: 1.7;
-    margin: 1em 0;
+    border: 1px solid #e4e5e8;
+    border-radius: 6px;
+    margin: 16px 0;
   }
   pre code {
     background: transparent;
+    border: none;
+    border-radius: 0;
     padding: 0;
-    font-size: 0.84em;
+    font-size: 0.9em;
     font-weight: 400;
-    line-height: 1.7;
+    display: block;
   }
-  /* 表格：行高更松，表头底色更克制；行间分隔用 hairline */
-  .table-wrap { overflow-x: auto; margin: 1em 0; }
-  table {
-    border-collapse: collapse;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.6;
-  }
-  th, td {
-    border: none;
-    border-bottom: 1px solid color-mix(in srgb, #e9eaee 9%, #1c1c1f);
-    padding: 8px 18px 8px 0;
-    text-align: left;
-  }
-  th {
-    font-weight: 600;
-    background: color-mix(in srgb, #e9eaee 3%, #1c1c1f);
-    border-bottom-color: color-mix(in srgb, #e9eaee 16%, #1c1c1f);
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  /* hr：渐变线段，比实线柔和 */
-  hr {
-    border: none;
-    height: 1px;
-    margin: 1.8em auto;
-    width: min(60%, 240px);
-    background: linear-gradient(to right, transparent, color-mix(in srgb, #e9eaee 9%, #1c1c1f), transparent);
-  }
-  img { max-width: 100%; border-radius: 4px; }
-  .img-broken {
-    display: inline-block;
-    max-width: 100%;
-    padding: 6px 10px;
-    border: 1px dashed #d2d4d9;
-    border-radius: 6px;
+  .code-scroll { display: block; max-height: 300px; overflow: auto; }
+  .code-line { display: flex; line-height: 1.8; min-width: 0; }
+  .code-line-num {
+    flex: none;
+    width: 3em;
+    text-align: right;
+    padding-right: 0.8em;
     color: #5c6068;
-    font-size: 0.85em;
-    word-break: break-all;
+    opacity: 0.75;
+    user-select: none;
+    display: none;
   }
+  article.code-line-numbers .code-line-num { display: inline; }
+  .code-line-text { white-space: pre; flex: 1 1 auto; min-width: 0; }
+
   /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
   .tok-keyword { color: var(--syn-keyword); }
   .tok-string, .tok-string2 { color: var(--syn-string); }
@@ -176,23 +209,166 @@ exports[`preview snapshot > dark theme 1`] = `
   .tok-operator, .tok-punctuation, .tok-bracket, .tok-separator { color: var(--syn-punct); }
   .tok-link, .tok-url { color: var(--syn-link); }
   .tok-heading { color: var(--syn-heading); font-weight: 600; }
-  /* 脚注 */
-  .footnote-ref { line-height: 0; }
-  .footnote-ref a, .footnote-backref { color: #4a52a3; text-decoration: none; }
-  .footnotes-sep { margin: 2em 0 0.6em; }
-  .footnotes { font-size: 0.85em; color: #5c6068; }
-  .footnotes-list { padding-left: 1.4em; }
-  .footnote-item { margin: 0.25em 0; }
-  .footnote-item p { margin: 0.2em 0; }
+
+  /* 表格：GitHub 风全边框 + 斑马纹 + 悬停（TizuMark 复刻） */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+  thead { border-bottom: 2px solid #e4e5e8; }
+  th, td {
+    border: 1px solid #e4e5e8;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th {
+    font-weight: 600;
+    background: color-mix(in srgb, #e9eaee 4%, #1c1c1f);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, #e9eaee 4%, #1c1c1f); }
+  tbody tr:hover { background: color-mix(in srgb, #4a52a3 6%, transparent); }
+
+  /* 引用：accent 左条 + soft 底；首元素为 strong 时左条转 warning（TizuMark） */
+  blockquote {
+    margin: 0 0 16px;
+    padding: 12px 20px;
+    border-left: 4px solid #4a52a3;
+    background: color-mix(in srgb, #4a52a3 7%, transparent);
+    border-radius: 0 6px 6px 0;
+    color: #5c6068;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+  blockquote:has(strong:first-child) { border-left-color: #96590a; }
+
+  /* hr：横向渐变分节线 */
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e4e5e8, transparent);
+    margin: 32px 0;
+  }
+
+  img { max-width: 100%; height: auto; border-radius: 4px; }
+  .img-broken {
+    display: inline-block;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px dashed #d2d4d9;
+    border-radius: 6px;
+    color: #5c6068;
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
   /* 定义列表 */
-  dl { margin: 0.8em 0; }
-  dt { font-weight: 600; margin: 0.5em 0 0.1em; }
-  dd { margin: 0.1em 0 0.35em 1.5em; color: #e9eaee; }
-  sub, sup { font-size: 0.72em; line-height: 0; }
-  /* 数学公式 */
-  .math-block { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
-  .math-block .katex-display { margin: 0.2em 0; }
-  .katex { font-size: 1.05em; }
+  dl { margin: 0 0 16px; }
+  dt { font-weight: 600; margin-top: 8px; }
+  dd { margin-left: 24px; margin-bottom: 8px; color: #5c6068; }
+
+  /* [TOC] 目录卡片（TizuMark） */
+  .toc {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, #4a52a3 6%, #1c1c1f) 0%,
+      color-mix(in srgb, #4a52a3 3%, #1c1c1f) 100%);
+    border: 1px solid color-mix(in srgb, #4a52a3 22%, #1c1c1f);
+    border-left: 3px solid #4a52a3;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .toc-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #4a52a3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toc-title svg { flex: none; }
+  .toc-list { list-style: none !important; padding-left: 0 !important; margin: 0; }
+  .toc-list li { margin-bottom: 3px; line-height: 1.6; }
+  .toc-list li::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4a52a3;
+    margin-right: 8px;
+    vertical-align: middle;
+    opacity: 0.6;
+  }
+  .toc-list li.lvl-2 { padding-left: 20px; }
+  .toc-list li.lvl-3 { padding-left: 40px; }
+  .toc-list li.lvl-4 { padding-left: 60px; }
+  .toc-list a {
+    color: #4a52a3;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-size: 0.92em;
+  }
+  .toc-list a:hover { color: color-mix(in srgb, #4a52a3 82%, #e9eaee); }
+
+  /* Callout（GitHub 风 > [!NOTE]，TizuMark 复刻；五色走 --alert-*-rgb） */
+  .alert {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 4px solid;
+    overflow-wrap: break-word;
+  }
+  .alert-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+  .alert-icon { width: 18px; height: 18px; flex: none; }
+  .alert-content { font-size: 0.92em; }
+  .alert-content > :first-child { margin-top: 0; }
+  .alert-content > :last-child { margin-bottom: 0; }
+  .alert-note {
+    background: linear-gradient(135deg, rgba(var(--alert-note-rgb, 74, 82, 163), 0.08) 0%, rgba(var(--alert-note-rgb, 74, 82, 163), 0.04) 100%);
+    border-left-color: rgb(var(--alert-note-rgb, 74, 82, 163));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-note-rgb, 74, 82, 163), 0.1);
+  }
+  .alert-note .alert-title { color: rgb(var(--alert-note-rgb, 74, 82, 163)); }
+  .alert-tip {
+    background: linear-gradient(135deg, rgba(var(--alert-tip-rgb, 23, 122, 61), 0.08) 0%, rgba(var(--alert-tip-rgb, 23, 122, 61), 0.04) 100%);
+    border-left-color: rgb(var(--alert-tip-rgb, 23, 122, 61));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-tip-rgb, 23, 122, 61), 0.1);
+  }
+  .alert-tip .alert-title { color: rgb(var(--alert-tip-rgb, 23, 122, 61)); }
+  .alert-important {
+    background: linear-gradient(135deg, rgba(var(--alert-important-rgb, 124, 58, 237), 0.08) 0%, rgba(var(--alert-important-rgb, 124, 58, 237), 0.04) 100%);
+    border-left-color: rgb(var(--alert-important-rgb, 124, 58, 237));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-important-rgb, 124, 58, 237), 0.1);
+  }
+  .alert-important .alert-title { color: rgb(var(--alert-important-rgb, 124, 58, 237)); }
+  .alert-warning {
+    background: linear-gradient(135deg, rgba(var(--alert-warning-rgb, 150, 89, 10), 0.08) 0%, rgba(var(--alert-warning-rgb, 150, 89, 10), 0.04) 100%);
+    border-left-color: rgb(var(--alert-warning-rgb, 150, 89, 10));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-warning-rgb, 150, 89, 10), 0.1);
+  }
+  .alert-warning .alert-title { color: rgb(var(--alert-warning-rgb, 150, 89, 10)); }
+  .alert-caution {
+    background: linear-gradient(135deg, rgba(var(--alert-caution-rgb, 192, 57, 44), 0.08) 0%, rgba(var(--alert-caution-rgb, 192, 57, 44), 0.04) 100%);
+    border-left-color: rgb(var(--alert-caution-rgb, 192, 57, 44));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-caution-rgb, 192, 57, 44), 0.1);
+  }
+  .alert-caution .alert-title { color: rgb(var(--alert-caution-rgb, 192, 57, 44)); }
+
+  /* 数学公式（KaTeX 1.1em，TizuMark） */
+  .math-block { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block .katex-display { margin: 0; }
+  .katex { font-size: 1.1em; }
+  .katex-error { color: #5c6068; font-style: italic; }
   .math-error {
     color: #5c6068;
     background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
@@ -202,6 +378,25 @@ exports[`preview snapshot > dark theme 1`] = `
     font-family: monospace;
     font-size: 0.88em;
   }
+
+  /* 脚注 */
+  .footnote-ref { line-height: 0; }
+  .footnote-ref a, .footnote-backref {
+    color: #4a52a3;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .footnote-ref a:hover { text-decoration: underline; }
+  .footnotes-sep { margin: 32px 0 16px; border: none; border-top: 1px solid #e4e5e8; }
+  .footnotes { font-size: 0.92em; color: #5c6068; }
+  .footnotes-list { padding-left: 1.6em; margin: 0; }
+  .footnote-item { margin: 0.25em 0; }
+  .footnote-item p { margin: 0 0 4px; }
+  .footnote-backref { margin-left: 4px; font-size: 0.85em; opacity: 0.6; }
+  .footnote-backref:hover { opacity: 1; }
+
+  ins { text-decoration: underline; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
   /* 选中态：随系统颜色，但保证不破坏布局 */
   ::selection { background: color-mix(in srgb, #4a52a3 30%, transparent); }
 </style>
@@ -237,13 +432,13 @@ exports[`preview snapshot > light theme 1`] = `
 <title>doc.md</title>
 <link rel="stylesheet" href="">
 <style>
-  html { color-scheme: light;  }
+  html { color-scheme: light;   }
   html, body { margin: 0; padding: 0; background: #ffffff; }
   body {
     color: #1a1b1f;
     font-family: sans-serif;
     font-size: 16px;
-    line-height: 1.75;
+    line-height: 1.7;
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -259,141 +454,174 @@ exports[`preview snapshot > light theme 1`] = `
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(74ch, 100%); margin: 0 auto; padding: 48px 32px 56px; }
-  /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
+  /* 全宽（TizuMark 复刻）：正文区不再限宽，--measure 仅保留给源码模式 */
+  article { max-width: 100%; margin: 0 auto; padding: 24px 24px 40px; }
+
+  /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 650;
+    font-weight: 700;
     line-height: 1.3;
-    letter-spacing: -0.01em;
+    margin: 24px 0 12px;
   }
   h1 {
-    font-size: 1.75em;
-    letter-spacing: -0.022em;
-    margin: 0.45em 0 0.6em;
-    padding-bottom: 0.3em;
-    border-bottom: 1px solid color-mix(in srgb, #1a1b1f 9%, #ffffff);
+    font-size: 2em;
+    color: #1a1b1f;
+    border-bottom: 2px solid #1a1b1f;
+    padding-bottom: 10px;
   }
   h2 {
-    font-size: 1.35em;
-    margin: 1.6em 0 0.5em;
-    padding-bottom: 0.2em;
-    border-bottom: 1px solid color-mix(in srgb, #1a1b1f 7%, #ffffff);
+    font-size: 1.5em;
+    color: #1a1b1f;
+    border-bottom: 1px solid #e4e5e8;
+    padding-bottom: 8px;
   }
-  h3 { font-size: 1.2em; margin: 1.3em 0 0.45em; }
-  h4 { font-size: 1.06em; margin: 1.2em 0 0.4em; }
-  h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: #5c6068; }
-  /* 段落：行高 1.75，段距加大；中文段落首字符不缩进 */
-  p { margin: 0.8em 0; }
-  /* 行内强调：bold/italic 用字重 600 + 微小字距 */
-  strong { font-weight: 650; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1.1em; }
+  h5 { font-size: 1em; color: #5c6068; }
+  h6 { font-size: 0.9em; color: #5c6068; }
+
+  /* 段落：单侧 margin，14px 段距（TizuMark 节奏） */
+  p { margin: 0 0 14px; }
+
+  /* 行内强调 */
+  strong, b { font-weight: 700; }
   em { font-style: italic; }
-  /* 链接：默认无下划线，悬停时浮出下划线 + 浅色背景，节奏更"克制" */
+  del { text-decoration: line-through; color: #5c6068; }
+  mark {
+    display: inline-block;
+    background: #96590a;
+    color: #1a1b1f;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    font-size: 0.82em;
+    font-family: monospace;
+    color: #1a1b1f;
+    background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
+    border: 1px solid #e4e5e8;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    box-shadow: inset 0 -1px 0 #e4e5e8;
+    line-height: 1.5;
+    vertical-align: baseline;
+  }
+  abbr { text-decoration: underline dotted; cursor: help; }
   a {
     color: #4a52a3;
     text-decoration: none;
     text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-    border-bottom: 1px solid transparent;
-    transition: border-color 120ms ease-out, background-color 120ms ease-out;
   }
-  a:hover { border-bottom-color: #4a52a3; }
-  /* 列表：编号用 tabular-nums 让"10."和"1."对齐；段距更舒展 */
-  ul, ol { padding-left: 1.7em; margin: 0.6em 0; }
-  li { margin: 0.25em 0; }
-  li > p { margin: 0.25em 0; }
-  ol li::marker { font-variant-numeric: tabular-nums; }
-  ul li::marker { color: #5c6068; }
-  li.task-list-item { list-style: none; margin-left: -1.4em; }
-  li.task-list-item input {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    margin: 0 0.5em 0 0;
-    border: 1px solid #d2d4d9;
-    border-radius: 4px;
-    background: #ffffff;
-    vertical-align: -2px;
-    transition: background 120ms ease-out, border-color 120ms ease-out;
+  a:hover { text-decoration: underline; }
+  a[href^="http"]::after {
+    content: " \\2197";
+    font-size: 0.75em;
+    vertical-align: super;
+    opacity: 0.75;
   }
-  li.task-list-item input:checked {
-    background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
-    border-color: #4a52a3;
-  }
-  /* 引用：左条改为中性细线，背景几乎透明；外距加大；首字不再收缩 */
-  blockquote {
-    margin: 1em 0;
-    padding: 0.5em 1.1em;
-    border-left: 3px solid #d2d4d9;
-    background: color-mix(in srgb, #1a1b1f 3%, #ffffff);
-    border-radius: 0 6px 6px 0;
-    color: #5c6068;
-  }
-  blockquote > :first-child { margin-top: 0; }
-  blockquote > :last-child { margin-bottom: 0; }
-  /* 行内 code：只用底色区分，去掉描边（等宽视觉偏大，降半档到 ~13.5px） */
+
+  /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
   code {
     font-family: monospace;
-    font-size: 0.84em;
-    font-weight: 500;
+    font-size: 0.88em;
+    padding: 2px 5px;
     background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
-    padding: 0.2em 0.45em;
+    border: 1px solid #e4e5e8;
     border-radius: 4px;
   }
-  /* 代码块：纯底色不描边，圆角 8px；外距上下加大 */
+
+  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
+  ul, ol { padding-left: 24px; margin: 0 0 14px; }
+  li { margin: 0 0 4px; }
+  li > p { margin: 0 0 4px; }
+  ul ul, ol ol, ul ol, ol ul { margin-top: 4px; margin-bottom: 4px; }
+  :where(article) ul { list-style-type: disc; }
+  :where(article) ul ul { list-style-type: circle; }
+  :where(article) ul ul ul { list-style-type: square; }
+  :where(article) ul ul ul ul { list-style-type: disc; }
+  @counter-style paren-decimal { system: extends decimal; suffix: ") "; }
+  @counter-style circled-decimal {
+    system: numeric;
+    symbols: "\\24EA" "\\2460" "\\2461" "\\2462" "\\2463" "\\2464" "\\2465" "\\2466" "\\2467" "\\2468";
+    suffix: " ";
+  }
+  :where(article) ol { list-style-type: decimal; }
+  :where(article) ol ol { list-style-type: paren-decimal; }
+  :where(article) ol ol ol { list-style-type: circled-decimal; }
+  :where(article) ol ol ol ol { list-style-type: circled-decimal; }
+
+  /* 任务列表：16px 绿色勾选框（TizuMark） */
+  ul:has(input[type="checkbox"]) { list-style: none; padding-left: 0; }
+  ul:has(input[type="checkbox"]) > li:not(.task-list-item) { list-style: disc; padding-left: 24px; }
+  li.task-list-item { list-style: none; }
+  li input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0 8px 0 0;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #d2d4d9;
+    border-radius: 3px;
+    background: #ffffff;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+    cursor: pointer;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
+  }
+  li input[type="checkbox"]:hover { border-color: #177a3d; }
+  li input[type="checkbox"]:not(:checked) { opacity: 0.7; }
+  li input[type="checkbox"]:checked {
+    background: #177a3d;
+    border-color: #177a3d;
+    opacity: 1;
+  }
+  li input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* 代码块：底色 + 1px 边框 + 6px 圆角 + 300px 按需滚动；行号结构常驻（CSS 默认隐藏） */
   pre {
+    padding: 16px;
     background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
-    padding: 14px 16px;
-    border-radius: 8px;
-    overflow-x: auto;
-    line-height: 1.7;
-    margin: 1em 0;
+    border: 1px solid #e4e5e8;
+    border-radius: 6px;
+    margin: 16px 0;
   }
   pre code {
     background: transparent;
+    border: none;
+    border-radius: 0;
     padding: 0;
-    font-size: 0.84em;
+    font-size: 0.9em;
     font-weight: 400;
-    line-height: 1.7;
+    display: block;
   }
-  /* 表格：行高更松，表头底色更克制；行间分隔用 hairline */
-  .table-wrap { overflow-x: auto; margin: 1em 0; }
-  table {
-    border-collapse: collapse;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.6;
-  }
-  th, td {
-    border: none;
-    border-bottom: 1px solid color-mix(in srgb, #1a1b1f 9%, #ffffff);
-    padding: 8px 18px 8px 0;
-    text-align: left;
-  }
-  th {
-    font-weight: 600;
-    background: color-mix(in srgb, #1a1b1f 3%, #ffffff);
-    border-bottom-color: color-mix(in srgb, #1a1b1f 16%, #ffffff);
-  }
-  tbody tr:last-child td { border-bottom: none; }
-  /* hr：渐变线段，比实线柔和 */
-  hr {
-    border: none;
-    height: 1px;
-    margin: 1.8em auto;
-    width: min(60%, 240px);
-    background: linear-gradient(to right, transparent, color-mix(in srgb, #1a1b1f 9%, #ffffff), transparent);
-  }
-  img { max-width: 100%; border-radius: 4px; }
-  .img-broken {
-    display: inline-block;
-    max-width: 100%;
-    padding: 6px 10px;
-    border: 1px dashed #d2d4d9;
-    border-radius: 6px;
+  .code-scroll { display: block; max-height: 300px; overflow: auto; }
+  .code-line { display: flex; line-height: 1.8; min-width: 0; }
+  .code-line-num {
+    flex: none;
+    width: 3em;
+    text-align: right;
+    padding-right: 0.8em;
     color: #5c6068;
-    font-size: 0.85em;
-    word-break: break-all;
+    opacity: 0.75;
+    user-select: none;
+    display: none;
   }
+  article.code-line-numbers .code-line-num { display: inline; }
+  .code-line-text { white-space: pre; flex: 1 1 auto; min-width: 0; }
+
   /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
   .tok-keyword { color: var(--syn-keyword); }
   .tok-string, .tok-string2 { color: var(--syn-string); }
@@ -405,23 +633,166 @@ exports[`preview snapshot > light theme 1`] = `
   .tok-operator, .tok-punctuation, .tok-bracket, .tok-separator { color: var(--syn-punct); }
   .tok-link, .tok-url { color: var(--syn-link); }
   .tok-heading { color: var(--syn-heading); font-weight: 600; }
-  /* 脚注 */
-  .footnote-ref { line-height: 0; }
-  .footnote-ref a, .footnote-backref { color: #4a52a3; text-decoration: none; }
-  .footnotes-sep { margin: 2em 0 0.6em; }
-  .footnotes { font-size: 0.85em; color: #5c6068; }
-  .footnotes-list { padding-left: 1.4em; }
-  .footnote-item { margin: 0.25em 0; }
-  .footnote-item p { margin: 0.2em 0; }
+
+  /* 表格：GitHub 风全边框 + 斑马纹 + 悬停（TizuMark 复刻） */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+  thead { border-bottom: 2px solid #e4e5e8; }
+  th, td {
+    border: 1px solid #e4e5e8;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th {
+    font-weight: 600;
+    background: color-mix(in srgb, #1a1b1f 4%, #ffffff);
+  }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, #1a1b1f 4%, #ffffff); }
+  tbody tr:hover { background: color-mix(in srgb, #4a52a3 6%, transparent); }
+
+  /* 引用：accent 左条 + soft 底；首元素为 strong 时左条转 warning（TizuMark） */
+  blockquote {
+    margin: 0 0 16px;
+    padding: 12px 20px;
+    border-left: 4px solid #4a52a3;
+    background: color-mix(in srgb, #4a52a3 7%, transparent);
+    border-radius: 0 6px 6px 0;
+    color: #5c6068;
+  }
+  blockquote > :last-child { margin-bottom: 0; }
+  blockquote:has(strong:first-child) { border-left-color: #96590a; }
+
+  /* hr：横向渐变分节线 */
+  hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e4e5e8, transparent);
+    margin: 32px 0;
+  }
+
+  img { max-width: 100%; height: auto; border-radius: 4px; }
+  .img-broken {
+    display: inline-block;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px dashed #d2d4d9;
+    border-radius: 6px;
+    color: #5c6068;
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
   /* 定义列表 */
-  dl { margin: 0.8em 0; }
-  dt { font-weight: 600; margin: 0.5em 0 0.1em; }
-  dd { margin: 0.1em 0 0.35em 1.5em; color: #1a1b1f; }
-  sub, sup { font-size: 0.72em; line-height: 0; }
-  /* 数学公式 */
-  .math-block { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
-  .math-block .katex-display { margin: 0.2em 0; }
-  .katex { font-size: 1.05em; }
+  dl { margin: 0 0 16px; }
+  dt { font-weight: 600; margin-top: 8px; }
+  dd { margin-left: 24px; margin-bottom: 8px; color: #5c6068; }
+
+  /* [TOC] 目录卡片（TizuMark） */
+  .toc {
+    background: linear-gradient(135deg,
+      color-mix(in srgb, #4a52a3 6%, #ffffff) 0%,
+      color-mix(in srgb, #4a52a3 3%, #ffffff) 100%);
+    border: 1px solid color-mix(in srgb, #4a52a3 22%, #ffffff);
+    border-left: 3px solid #4a52a3;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .toc-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #4a52a3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toc-title svg { flex: none; }
+  .toc-list { list-style: none !important; padding-left: 0 !important; margin: 0; }
+  .toc-list li { margin-bottom: 3px; line-height: 1.6; }
+  .toc-list li::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4a52a3;
+    margin-right: 8px;
+    vertical-align: middle;
+    opacity: 0.6;
+  }
+  .toc-list li.lvl-2 { padding-left: 20px; }
+  .toc-list li.lvl-3 { padding-left: 40px; }
+  .toc-list li.lvl-4 { padding-left: 60px; }
+  .toc-list a {
+    color: #4a52a3;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-size: 0.92em;
+  }
+  .toc-list a:hover { color: color-mix(in srgb, #4a52a3 82%, #1a1b1f); }
+
+  /* Callout（GitHub 风 > [!NOTE]，TizuMark 复刻；五色走 --alert-*-rgb） */
+  .alert {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 4px solid;
+    overflow-wrap: break-word;
+  }
+  .alert-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+  .alert-icon { width: 18px; height: 18px; flex: none; }
+  .alert-content { font-size: 0.92em; }
+  .alert-content > :first-child { margin-top: 0; }
+  .alert-content > :last-child { margin-bottom: 0; }
+  .alert-note {
+    background: linear-gradient(135deg, rgba(var(--alert-note-rgb, 74, 82, 163), 0.08) 0%, rgba(var(--alert-note-rgb, 74, 82, 163), 0.04) 100%);
+    border-left-color: rgb(var(--alert-note-rgb, 74, 82, 163));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-note-rgb, 74, 82, 163), 0.1);
+  }
+  .alert-note .alert-title { color: rgb(var(--alert-note-rgb, 74, 82, 163)); }
+  .alert-tip {
+    background: linear-gradient(135deg, rgba(var(--alert-tip-rgb, 23, 122, 61), 0.08) 0%, rgba(var(--alert-tip-rgb, 23, 122, 61), 0.04) 100%);
+    border-left-color: rgb(var(--alert-tip-rgb, 23, 122, 61));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-tip-rgb, 23, 122, 61), 0.1);
+  }
+  .alert-tip .alert-title { color: rgb(var(--alert-tip-rgb, 23, 122, 61)); }
+  .alert-important {
+    background: linear-gradient(135deg, rgba(var(--alert-important-rgb, 124, 58, 237), 0.08) 0%, rgba(var(--alert-important-rgb, 124, 58, 237), 0.04) 100%);
+    border-left-color: rgb(var(--alert-important-rgb, 124, 58, 237));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-important-rgb, 124, 58, 237), 0.1);
+  }
+  .alert-important .alert-title { color: rgb(var(--alert-important-rgb, 124, 58, 237)); }
+  .alert-warning {
+    background: linear-gradient(135deg, rgba(var(--alert-warning-rgb, 150, 89, 10), 0.08) 0%, rgba(var(--alert-warning-rgb, 150, 89, 10), 0.04) 100%);
+    border-left-color: rgb(var(--alert-warning-rgb, 150, 89, 10));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-warning-rgb, 150, 89, 10), 0.1);
+  }
+  .alert-warning .alert-title { color: rgb(var(--alert-warning-rgb, 150, 89, 10)); }
+  .alert-caution {
+    background: linear-gradient(135deg, rgba(var(--alert-caution-rgb, 192, 57, 44), 0.08) 0%, rgba(var(--alert-caution-rgb, 192, 57, 44), 0.04) 100%);
+    border-left-color: rgb(var(--alert-caution-rgb, 192, 57, 44));
+    box-shadow: inset 0 0 0 1px rgba(var(--alert-caution-rgb, 192, 57, 44), 0.1);
+  }
+  .alert-caution .alert-title { color: rgb(var(--alert-caution-rgb, 192, 57, 44)); }
+
+  /* 数学公式（KaTeX 1.1em，TizuMark） */
+  .math-block { margin: 16px 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block .katex-display { margin: 0; }
+  .katex { font-size: 1.1em; }
+  .katex-error { color: #5c6068; font-style: italic; }
   .math-error {
     color: #5c6068;
     background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
@@ -431,6 +802,25 @@ exports[`preview snapshot > light theme 1`] = `
     font-family: monospace;
     font-size: 0.88em;
   }
+
+  /* 脚注 */
+  .footnote-ref { line-height: 0; }
+  .footnote-ref a, .footnote-backref {
+    color: #4a52a3;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .footnote-ref a:hover { text-decoration: underline; }
+  .footnotes-sep { margin: 32px 0 16px; border: none; border-top: 1px solid #e4e5e8; }
+  .footnotes { font-size: 0.92em; color: #5c6068; }
+  .footnotes-list { padding-left: 1.6em; margin: 0; }
+  .footnote-item { margin: 0.25em 0; }
+  .footnote-item p { margin: 0 0 4px; }
+  .footnote-backref { margin-left: 4px; font-size: 0.85em; opacity: 0.6; }
+  .footnote-backref:hover { opacity: 1; }
+
+  ins { text-decoration: underline; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
   /* 选中态：随系统颜色，但保证不破坏布局 */
   ::selection { background: color-mix(in srgb, #4a52a3 30%, transparent); }
 </style>

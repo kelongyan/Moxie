@@ -66,6 +66,16 @@
   --lac-warning-soft: rgba(150, 89, 10, 0.12);
   --lac-danger-soft: rgba(192, 57, 44, 0.1);
 
+  /* Callout 五色（RGB 三元组，供预览 callout 渐变/描边 color-mix 使用；TizuMark 复刻） */
+  --lac-alert-note: 74, 82, 163;
+  --lac-alert-tip: 23, 122, 61;
+  --lac-alert-important: 124, 58, 237;
+  --lac-alert-warning: 150, 89, 10;
+  --lac-alert-caution: 192, 57, 44;
+
+  /* 标题色（h2 专用略柔主色，TizuMark heading-h2-color 对应） */
+  --lac-heading-2: #26262a;
+
   /* 阴影：发丝线 + 柔和投影（不用实色描边，避免"到处是框"） */
   --sh-1: 0 0 0 1px rgba(16, 18, 24, 0.05), 0 1px 2px rgba(16, 18, 24, 0.05);
   --sh-2: 0 0 0 1px rgba(16, 18, 24, 0.06), 0 2px 6px rgba(16, 18, 24, 0.06),
@@ -130,6 +140,16 @@
   --lac-success-soft: rgba(92, 214, 138, 0.1);
   --lac-warning-soft: rgba(227, 179, 65, 0.12);
   --lac-danger-soft: rgba(255, 123, 114, 0.12);
+
+  /* Callout 五色（深色成对） */
+  --lac-alert-note: 150, 160, 245;
+  --lac-alert-tip: 92, 214, 138;
+  --lac-alert-important: 167, 139, 250;
+  --lac-alert-warning: 227, 179, 65;
+  --lac-alert-caution: 255, 123, 114;
+
+  /* 标题色（深色成对） */
+  --lac-heading-2: #c6c8d2;
 
   --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35),

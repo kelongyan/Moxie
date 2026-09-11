@@ -135,3 +135,52 @@ export function highlightToHtml(code: string, info: string): string | null {
   );
   return html;
 }
+
+/**
+ * 渲染为 TizuMark 同构的逐行结构：
+ *   <span class="code-line"><span class="code-line-num">N</span><span class="code-line-text">…</span></span>
+ * 高亮保持整块解析（跨行 token 每行着色一致、颜色不断），在换行回调处切分行。
+ * 行号 span 常驻 DOM，由 CSS 控制显隐（默认隐藏，与 TizuMark 一致）。
+ */
+export function highlightToLines(
+  code: string,
+  info: string
+): { html: string; highlighted: boolean } {
+  const key = languageKeyOf(info);
+  const language = key ? languageFor(key) : null;
+  const trimmed = code.replace(/\n$/, "");
+  const canHighlight = Boolean(language) && trimmed.length <= MAX_HIGHLIGHT_CHARS;
+
+  const lines: string[] = [];
+  let buf = "";
+  const flush = () => {
+    lines.push(buf || "&nbsp;");
+    buf = "";
+  };
+  if (language && canHighlight) {
+    highlightCode(
+      trimmed,
+      language.parser.parse(trimmed),
+      classHighlighter,
+      (text, classes) => {
+        buf += classes
+          ? `<span class="${classes}">${escapeHtml(text)}</span>`
+          : escapeHtml(text);
+      },
+      () => flush()
+    );
+    flush();
+  } else {
+    for (const line of trimmed.split("\n")) {
+      lines.push(escapeHtml(line) || "&nbsp;");
+    }
+  }
+
+  const body = lines
+    .map(
+      (text, i) =>
+        `<span class="code-line"><span class="code-line-num">${i + 1}</span><span class="code-line-text">${text}</span></span>`
+    )
+    .join("");
+  return { html: body, highlighted: canHighlight };
+}

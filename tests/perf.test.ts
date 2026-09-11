@@ -11,6 +11,8 @@ const LIGHT: PreviewTokens = {
   border: "#e4e5e8",
   borderStrong: "#d2d4d9",
   accent: "#4a52a3",
+  success: "#177a3d",
+  warning: "#96590a",
   fontUi: "sans-serif",
   fontMono: "monospace",
 };

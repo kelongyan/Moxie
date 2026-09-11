@@ -21,6 +21,8 @@ const LIGHT: PreviewTokens = {
   border: "#e4e5e8",
   borderStrong: "#d2d4d9",
   accent: "#4a52a3",
+  success: "#177a3d",
+  warning: "#96590a",
   fontUi: "sans-serif",
   fontMono: "monospace",
 };
@@ -34,6 +36,8 @@ const DARK: PreviewTokens = {
   border: "#2e3037",
   borderStrong: "#3d3f47",
   accent: "#96a0f5",
+  success: "#5cd68a",
+  warning: "#e3b341",
   fontUi: "sans-serif",
   fontMono: "monospace",
 };
@@ -96,47 +100,45 @@ describe("renderMarkdown", () => {
     expect(light).toContain("color-scheme: light");
   });
 
-  it("uses compact app-like article layout", () => {
+  it("uses the full-width TizuMark-style article layout", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("max-width: min(74ch, 100%)");
-    expect(html).toContain("padding: 48px 32px 56px");
-    expect(html).toContain("padding-bottom: 0.3em");
+    expect(html).toContain("max-width: 100%");
+    expect(html).toContain("padding: 24px 24px 40px");
+    expect(html).toContain("padding-bottom: 10px");
   });
 
-  it("uses 16px/1.75 content typography with a flatter heading scale", () => {
-    // 内容轨道契约：正文 16px、行高 1.75、H1 1.75em、H2 1.35em（与源码模式同号）
+  it("uses 16px/1.7 content typography with the TizuMark heading scale", () => {
+    // TizuMark 复刻：正文 16px/1.7，H1 2em / H2 1.5em，标题字重 700
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("font-size: 16px;");
-    expect(html).toContain("line-height: 1.75;");
-    expect(html).toContain("font-size: 1.75em;");
-    expect(html).toContain("font-size: 1.35em;");
-    expect(html).toContain("font-weight: 650;");
+    expect(html).toContain("line-height: 1.7;");
+    expect(html).toContain("font-size: 2em;");
+    expect(html).toContain("font-size: 1.5em;");
+    expect(html).toContain("font-weight: 700;");
   });
 
-  it("uses hairline separators instead of hard borders for h1/h2", () => {
-    // H1/H2 底边用 9% 透明度的 fg，而不是 border 实色
+  it("uses GitHub-style solid underlines for h1/h2", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toMatch(/border-bottom: 1px solid color-mix\(in srgb, [^;]+ 9%,/);
+    expect(html).toMatch(/h1 \{[^}]*border-bottom: 2px solid/);
+    expect(html).toMatch(/h2 \{[^}]*border-bottom: 1px solid/);
   });
 
-  it("uses hairline gradient for hr instead of solid line", () => {
-    // hr 改为渐变线段 + 居中限宽，比实线柔和
+  it("uses a full-width gradient hr", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("background: linear-gradient(to right, transparent,");
-    expect(html).toContain("margin: 1.8em auto;");
+    expect(html).toContain("background: linear-gradient(90deg, transparent,");
+    expect(html).toContain("margin: 32px 0;");
   });
 
-  it("renders blockquote with a neutral hairline left bar", () => {
+  it("renders blockquote with an accent left bar", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    // 引用块左条改用中性 border-strong（不再混入 accent 色）
-    expect(html).toMatch(/border-left: 3px solid #d2d4d9/);
+    expect(html).toMatch(/border-left: 4px solid #4a52a3/);
   });
 
-  it("renders code blocks without borders at the mono scale", () => {
+  it("renders code with TizuMark borders and line scaffolding", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    // 代码块/行内代码只用底色区分，等宽字号降半档到 0.84em
-    expect(html).toContain("font-size: 0.84em;");
-    expect(html).not.toMatch(/pre \{[^}]*border: 1px solid/);
+    expect(html).toContain("font-size: 0.88em;");
+    expect(html).toMatch(/pre \{[^}]*border: 1px solid/);
+    expect(html).toContain(".code-line-num");
   });
 
   it("wraps tables in a horizontally scrollable container", () => {
@@ -439,5 +441,95 @@ describe("allowHtml", () => {
     expect(html).toContain("<b>ok</b>");
     expect(html).not.toContain("onerror");
     expect(html).not.toContain("<script>");
+  });
+});
+
+describe("TizuMark replica", () => {
+  it("renders callouts of all five types", () => {
+    for (const kind of ["NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION"]) {
+      const html = renderBody(`> [!${kind}]\n> content`, {});
+      expect(html).toContain(`alert alert-${kind.toLowerCase()}`);
+      expect(html).toContain("alert-title");
+      expect(html).toContain("alert-content");
+      expect(html).toContain("content");
+    }
+  });
+
+  it("supports custom callout titles", () => {
+    const html = renderBody("> [!TIP] 自定义标题\n> 内容", {});
+    expect(html).toContain("alert-tip");
+    expect(html).toContain("自定义标题");
+    expect(html).toContain("内容");
+  });
+
+  it("keeps markdown inside callout content", () => {
+    const html = renderBody("> [!NOTE]\n> - item **bold**", {});
+    expect(html).toContain("alert-content");
+    expect(html).toContain("<strong>bold</strong>");
+    expect(html).toContain("<li");
+  });
+
+  it("falls back to a plain blockquote without the marker", () => {
+    const html = renderBody("> plain quote", {});
+    expect(html).toContain("<blockquote");
+    expect(html).not.toContain("alert-title");
+  });
+
+  it("renders ==mark== highlights", () => {
+    const html = renderBody("==highlight==", {});
+    expect(html).toContain("<mark>highlight</mark>");
+  });
+
+  it("keeps inline markdown inside mark", () => {
+    const html = renderBody("==**bold** inside==", {});
+    expect(html).toContain("<mark><strong>bold</strong> inside</mark>");
+  });
+
+  it("does not treat lone == as mark", () => {
+    const html = renderBody("a == b", {});
+    expect(html).not.toContain("<mark>");
+  });
+
+  it("renders [TOC] as a card listing headings", () => {
+    const html = renderBody("[TOC]\n\n# A\n\n## B\n\n### C", {});
+    expect(html).toContain("toc-wrapper");
+    expect(html).toContain("toc-title");
+    expect(html).toContain('href="#a"');
+    expect(html).toContain('href="#b"');
+    expect(html).toContain('href="#c"');
+    expect(html).toContain('class="lvl-2"');
+    expect(html).toContain('class="lvl-3"');
+    expect(html).not.toContain("[TOC]");
+  });
+
+  it("wraps fenced code into TizuMark line scaffolding", () => {
+    const html = renderMarkdown("```js\nlet x = 1;\nlet y = 2;\n```", LIGHT, "t.md");
+    expect(html).toContain("code-scroll");
+    expect(html).toContain('class="code-line-num"');
+    expect(html).toContain('class="code-line-text"');
+    expect(html).toContain("tok-keyword");
+  });
+
+  it("keeps line numbers hidden by default", () => {
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toMatch(/\.code-line-num \{[^}]*display: none/);
+  });
+
+  it("supports ordered-list marker variants via counter styles", () => {
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toContain("@counter-style paren-decimal");
+    expect(html).toContain("circled-decimal");
+  });
+
+  it("adds external-link arrows", () => {
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toContain('a[href^="http"]::after');
+  });
+
+  it("carries callout color variables from tokens", () => {
+    const vars = "--alert-note-rgb:74, 82, 163; --alert-tip-rgb:23, 122, 61;";
+    const html = renderShell({ ...LIGHT, alertVars: vars }, "t.md");
+    expect(html).toContain(vars);
+    expect(html).toContain("rgb(var(--alert-note-rgb");
   });
 });

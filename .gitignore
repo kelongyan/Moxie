@@ -18,3 +18,7 @@ src-tauri/gen/schemas/
 # 本地调试产物
 .playwright-mcp/
 vite-dev.log
+
+# 本地参考项目与工作区数据
+TizuMark-Markdown-Editor/
+.workbuddy/
