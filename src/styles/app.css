@@ -1163,13 +1163,6 @@ body {
   gap: 6px;
 }
 
-.section-empty.small {
-  font-size: var(--fs-small);
-  padding: 4px 7px;
-  height: 25px;
-  justify-content: center;
-}
-
 .section-empty-button {
   align-self: flex-start;
   font-size: var(--fs-caption);

@@ -59,9 +59,8 @@ mod tests {
     fn sidebar_round_trip() {
         let _guard = isolate();
         let value = serde_json::json!({
-            "favorites": ["C:\\a.txt"],
             "groups": [{"id": "g1", "name": "工作", "expanded": true, "paths": ["C:\\b.txt"]}],
-            "sections": {"favorites": true, "groups": false, "recent": true}
+            "sections": {"groups": false, "recent": true}
         });
         save(value.clone()).unwrap();
         assert_eq!(load(), value);

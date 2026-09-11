@@ -1,4 +1,4 @@
-import { ChevronRight, Folder, FolderOpen, History, Settings, Star, Trash2, TriangleAlert } from "lucide-react";
+import { ChevronRight, Folder, FolderOpen, History, Settings, Trash2, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { baseName, inferLanguage } from "../models/language";
@@ -27,7 +27,6 @@ function FileRow(props: {
   const name = baseName(path);
   const missing = sidebar.missing[path] === true;
   const isOpen = documents.some((d) => d.path === path);
-  const isFavorite = sidebar.favorites.includes(path);
   const Icon = languageIconOf(inferLanguage(path));
 
   const open = async () => {
@@ -60,10 +59,6 @@ function FileRow(props: {
     }
     const items: MenuItem[] = [
       { label: "打开", onClick: () => void open() },
-      {
-        label: isFavorite ? "取消收藏" : "添加到收藏夹",
-        onClick: () => sidebar.toggleFavorite(path),
-      },
       {
         label: "重命名…",
         onClick: () => {
@@ -109,8 +104,6 @@ function FileRow(props: {
       label: "从列表中移除",
       danger: true,
       onClick: () => {
-        sidebar.toggleFavorite(path);
-        if (!isFavorite) sidebar.toggleFavorite(path);
         for (const group of sidebar.groups) {
           if (group.paths.includes(path)) sidebar.removeFromGroup(group.id, path);
         }
@@ -233,31 +226,12 @@ export function SidebarView() {
   const openMenu = (x: number, y: number, items: MenuItem[]) =>
     setMenu({ x, y, items });
 
-  const favoritesSection = sidebar.sectionsExpanded.favorites;
   const groupsSection = sidebar.sectionsExpanded.groups;
   const recentSection = sidebar.sectionsExpanded.recent;
 
   return (
     <div className="sidebar-content">
       <div className="sidebar-scroll">
-        <SectionHeader
-          title="收藏"
-          count={sidebar.favorites.length}
-          expanded={favoritesSection}
-          onToggle={() => sidebar.toggleSection("favorites")}
-        />
-        {favoritesSection &&
-          (sidebar.favorites.length === 0 ? (
-            <div className="section-empty small">
-              <Star size={13} />
-              可从文件右键菜单添加收藏
-            </div>
-          ) : (
-            sidebar.favorites.map((path) => (
-              <FileRow key={`fav-${path}`} path={path} onMenu={openMenu} />
-            ))
-          ))}
-
         <SectionHeader
           title="分组"
           count={sidebar.groups.length}

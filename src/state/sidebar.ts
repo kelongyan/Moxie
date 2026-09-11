@@ -9,13 +9,11 @@ export interface SidebarGroup {
 }
 
 export interface SectionsExpanded {
-  favorites: boolean;
   groups: boolean;
   recent: boolean;
 }
 
 interface SidebarState {
-  favorites: string[];
   groups: SidebarGroup[];
   sectionsExpanded: SectionsExpanded;
   recent: string[];
@@ -25,7 +23,6 @@ interface SidebarState {
   refreshRecent: () => Promise<void>;
   refreshMissing: () => Promise<void>;
   toggleSection: (key: keyof SectionsExpanded) => void;
-  toggleFavorite: (path: string) => void;
   addGroup: (name: string) => void;
   renameGroup: (id: string, name: string) => void;
   removeGroup: (id: string) => void;
@@ -44,10 +41,10 @@ function newGroupId(): string {
 }
 
 async function persist(get: () => SidebarState) {
-  const { favorites, groups, sectionsExpanded } = get();
+  const { groups, sectionsExpanded } = get();
   try {
     await invoke("sidebar_save", {
-      value: { favorites, groups, sections: sectionsExpanded },
+      value: { groups, sections: sectionsExpanded },
     });
   } catch {
     // 存储失败不阻断交互
@@ -55,9 +52,8 @@ async function persist(get: () => SidebarState) {
 }
 
 export const useSidebar = create<SidebarState>((set, get) => ({
-  favorites: [],
   groups: [],
-  sectionsExpanded: { favorites: true, groups: true, recent: true },
+  sectionsExpanded: { groups: true, recent: true },
   recent: [],
   missing: {},
   loaded: false,
@@ -65,9 +61,6 @@ export const useSidebar = create<SidebarState>((set, get) => ({
   refresh: async () => {
     try {
       const value = await invoke<Record<string, unknown>>("sidebar_load");
-      const favorites = Array.isArray(value.favorites)
-        ? (value.favorites as string[])
-        : [];
       const groups = Array.isArray(value.groups)
         ? (value.groups as SidebarGroup[]).map((g) => ({
             id: String(g.id ?? newGroupId()),
@@ -78,10 +71,8 @@ export const useSidebar = create<SidebarState>((set, get) => ({
         : [];
       const sections = (value.sections ?? {}) as Partial<SectionsExpanded>;
       set({
-        favorites,
         groups,
         sectionsExpanded: {
-          favorites: sections.favorites !== false,
           groups: sections.groups !== false,
           recent: sections.recent !== false,
         },
@@ -104,9 +95,8 @@ export const useSidebar = create<SidebarState>((set, get) => ({
   },
 
   refreshMissing: async () => {
-    const { favorites, groups, recent } = get();
+    const { groups, recent } = get();
     const paths = new Set<string>([
-      ...favorites,
       ...groups.flatMap((g) => g.paths),
       ...recent,
     ]);
@@ -127,15 +117,6 @@ export const useSidebar = create<SidebarState>((set, get) => ({
   toggleSection: (key) => {
     set((s) => ({
       sectionsExpanded: { ...s.sectionsExpanded, [key]: !s.sectionsExpanded[key] },
-    }));
-    void persist(get);
-  },
-
-  toggleFavorite: (path) => {
-    set((s) => ({
-      favorites: s.favorites.includes(path)
-        ? s.favorites.filter((p) => p !== path)
-        : [...s.favorites, path],
     }));
     void persist(get);
   },
@@ -193,7 +174,6 @@ export const useSidebar = create<SidebarState>((set, get) => ({
 
   replacePath: (oldPath, newPath) => {
     set((s) => ({
-      favorites: s.favorites.map((p) => (p === oldPath ? newPath : p)),
       groups: s.groups.map((g) => ({
         ...g,
         paths: g.paths.map((p) => (p === oldPath ? newPath : p)),
