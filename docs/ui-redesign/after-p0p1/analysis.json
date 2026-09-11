@@ -1,0 +1,13 @@
+{
+  "01-empty-light": {
+    "size": "1121x721",
+    "meanLum": 249,
+    "std": 17,
+    "top": [
+      "#ffffff 88%",
+      "#eeeeee 10%",
+      "#4455aa 0%",
+      "#ddddee 0%"
+    ]
+  }
+}
