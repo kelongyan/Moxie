@@ -16,6 +16,7 @@ import {
   taskToggleInLine,
 } from "../preview/markdown";
 import { renderPreviewHtml } from "../preview/renderWorker";
+import frexFontUrl from "../assets/fonts/FrexSansGB.ttf?url";
 
 function useResolvedDark(): boolean {
   const mode = useThemeStore((s) => s.mode);
@@ -120,9 +121,10 @@ export function MarkdownPreview({ docId }: { docId: string }) {
     }, 120);
   };
 
-  // collectPreviewTokens 读当前主题，dark 变化时重建外壳
+  // collectPreviewTokens 读当前主题，dark 变化时重建外壳；
+  // iframe 是独立文档，需在其中重新声明内置中文字体
   const shell = useMemo(
-    () => renderShell(collectPreviewTokens(), doc?.name ?? ""),
+    () => renderShell(collectPreviewTokens(), doc?.name ?? "", frexFontUrl),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dark, doc?.name]
   );

@@ -556,7 +556,30 @@
 - `docs/ui-redesign/*.png`（根）——改造前基线（18 张，来自阶段 0 的诊断采集）
 - `docs/ui-redesign/final/` ——最终基线（18 张 + 对比度实测）
 - `docs/ui-redesign/after-p0p1|after-p2|after-p3|after-p4/` ——各阶段验收留档
-- `docs/ui-redesign/tools/` ——采集与验收脚本：`seed`（构造工作区快照）/`capture`（截图）/`measure`（计算样式）/`verify`（几何+保存态流程）/`layout`（布局重叠）/`welcome`（欢迎页）/`repro`（可见性不变量）/`type`（源码↔渲染排版对照）/`tiers`（控件档位）/`focus`（焦点环）/`contrast`（对比度）
+- `docs/ui-redesign/tools/` ——采集与验收脚本：`seed`（构造工作区快照）/`capture`（截图）/`measure`（计算样式）/`verify`（几何+保存态流程）/`layout`（布局重叠）/`welcome`（欢迎页）/`repro`（可见性不变量）/`type`（源码↔渲染排版对照）/`tiers`（控件档位）/`focus`（焦点环）/`contrast`（对比度）/`fonts`（实际落地字体）
+
+---
+
+## 11. 补充 · 全局中文字体切换（2026-09-11）
+
+需求：把全局中文字体（界面 + 内容）换成 `Frex Sans GB`。
+
+- **字体**：`src/assets/fonts/FrexSansGB.ttf`（可变字重 **100–700**，默认 400，8.25MB），取自 `FrexSansGB/variable/Frex Sans GB[wght].ttf`，由 Vite 打包为 `/assets/FrexSansGB-<hash>.ttf`。
+- **声明**：`styles/fonts.css` 新增 `@font-face`（`format("truetype-variations")`、`font-weight: 100 700`、`font-display: swap`）。
+- **字体栈**（`tokens.css`）：拉丁保持原样，Frex 插到 CJK 备选之前 —— `--font-ui: "Segoe UI", "Segoe UI Variable Text", "Frex Sans GB", "Source Han Sans SC", "Noto Sans SC", …`，`--font-mono` 同法插在 Consolas 之后。即"拉丁走系统字体、中文走 Frex"。
+- **预览 iframe**：iframe 是独立文档，不继承主文档的 `@font-face`，因此 `renderShell(tokens, title, fontFaceUrl?)` 新增第三参，在 iframe 的 `<style>` 内重新声明；`MarkdownPreview` 传入打包后的字体 URL；导出 HTML 不传（应用外无法引用包内字体，回退本地字体）。
+- **实测**（`tools/fonts.mjs`，用 CDP `CSS.getPlatformFontsForNode` 看**真正落地的平台字体**，而非 CSS 声明）：
+
+| 位置 | 实际字体 |
+|---|---|
+| 主窗口 · 侧栏区块标题 / 状态栏 | `Frex Sans GB VF`（中文）+ Segoe UI（拉丁） |
+| 编辑器（源码模式）正文 | `Frex Sans GB VF`（中文）+ Cascadia Code |
+| 预览 iframe · 段落 / 标题 | `Frex Sans GB VF`（中文）+ Segoe UI |
+| 设置 / 查找 / 编解码窗口 | `Frex Sans GB VF`（中文）+ Segoe UI（拉丁） |
+
+- **后备**：思源黑体 `Noto Sans SC` 仍打包（17.7MB），覆盖 Frex 缺字的长尾字符；若确认不需要可移除，省下约 17.7MB 包体。
+- **体积**：`Moxie.exe` 14.3MB → **19.1MB**（新增字体压缩后净增约 4.8MB）。
+- 基线已随字体重拍（`docs/ui-redesign/final/`）。
 
 
 ---

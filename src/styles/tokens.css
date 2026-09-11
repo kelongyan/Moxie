@@ -172,11 +172,12 @@
   --radius-lg: 12px;
   --radius-full: 999px;
 
-  /* 字体：UI 用 Segoe 系；等宽弃用雅黑冒充，CJK 走 Sarasa/Noto */
-  --font-ui: "Segoe UI", "Segoe UI Variable Text", "Source Han Sans SC",
-    "Noto Sans SC", "Microsoft YaHei UI", system-ui, sans-serif;
-  --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Sarasa Mono SC",
-    "Noto Sans Mono CJK SC", "Microsoft YaHei UI", monospace;
+  /* 字体：拉丁走 Segoe 系；中文统一走内置的 Frex Sans GB，思源黑体作后备 */
+  --font-ui: "Segoe UI", "Segoe UI Variable Text", "Frex Sans GB",
+    "Source Han Sans SC", "Noto Sans SC", "Microsoft YaHei UI", system-ui,
+    sans-serif;
+  --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Frex Sans GB",
+    "Sarasa Mono SC", "Noto Sans Mono CJK SC", "Microsoft YaHei UI", monospace;
 
   /* 字号 · UI 轨道（13px 基准） */
   --fs-meta: 11px; /* 徽标 / kbd */

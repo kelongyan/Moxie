@@ -102,12 +102,30 @@ export function renderBody(text: string, env?: RenderEnv): string {
   return opts.allowHtml ? sanitizeHtml(html) : html;
 }
 
-/** 预览文档外壳：样式与空正文。正文经 renderBody 原地替换，避免整份 srcDoc 重建 */
-export function renderShell(tokens: PreviewTokens, title: string): string {
+/**
+ * 预览文档外壳：样式与空正文。正文经 renderBody 原地替换，避免整份 srcDoc 重建。
+ * fontFaceUrl 传入时在 iframe 内声明内置中文字体（iframe 是独立文档，不继承主文档的 @font-face）；
+ * 导出 HTML 不传，交给读者本地字体。
+ */
+export function renderShell(
+  tokens: PreviewTokens,
+  title: string,
+  fontFaceUrl?: string
+): string {
   const codeBg = `color-mix(in srgb, ${tokens.fg} 6%, ${tokens.bg})`;
   // 比 border 还要淡一档的"分隔线"：让 H1 底边、hr、引用左条都有"高级"质感
   const hairline = `color-mix(in srgb, ${tokens.fg} 9%, ${tokens.bg})`;
   const hairlineSoft = `color-mix(in srgb, ${tokens.fg} 7%, ${tokens.bg})`;
+  const fontFaceBlock = fontFaceUrl
+    ? `  @font-face {
+    font-family: "Frex Sans GB";
+    src: url("${escapeAttribute(fontFaceUrl)}") format("truetype-variations");
+    font-weight: 100 700;
+    font-style: normal;
+    font-display: swap;
+  }
+`
+    : "";
 
   return `<!DOCTYPE html>
 <html>
@@ -118,7 +136,7 @@ ${previewStyleUrls
   .map((url) => `<link rel="stylesheet" href="${escapeAttribute(url)}">`)
   .join("\n")}
 <style>
-  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""} }
+${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""} }
   html, body { margin: 0; padding: 0; background: ${tokens.bg}; }
   body {
     color: ${tokens.fg};

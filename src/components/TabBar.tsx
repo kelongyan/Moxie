@@ -121,7 +121,7 @@ export function TabBar() {
 
   const count = documents.length;
   const tabWidth = Math.min(176, Math.max(96, (barWidth - 120) / Math.max(1, count)));
-  const tabFont = "13px 'Segoe UI', 'Noto Sans SC', sans-serif";
+  const tabFont = "13px 'Segoe UI', 'Frex Sans GB', sans-serif";
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDragIndex(index);
