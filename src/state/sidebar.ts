@@ -8,6 +8,12 @@ export interface SidebarGroup {
   paths: string[];
 }
 
+/** 最近文件条目（与 Rust RecentEntryDto 对应） */
+export interface RecentEntry {
+  path: string;
+  lastOpenedMs: number;
+}
+
 export interface SectionsExpanded {
   groups: boolean;
   recent: boolean;
@@ -16,7 +22,7 @@ export interface SectionsExpanded {
 interface SidebarState {
   groups: SidebarGroup[];
   sectionsExpanded: SectionsExpanded;
-  recent: string[];
+  recent: RecentEntry[];
   missing: Record<string, boolean>;
   loaded: boolean;
   refresh: () => Promise<void>;
@@ -49,6 +55,25 @@ async function persist(get: () => SidebarState) {
   } catch {
     // 存储失败不阻断交互
   }
+}
+
+/** 最近文件行尾的相对时间（阶段 2 展示口径） */
+export function formatRelativeTime(ms: number, now = Date.now()): string {
+  if (!ms || ms <= 0) return "";
+  const diff = now - ms;
+  const MIN = 60_000;
+  const HOUR = 60 * MIN;
+  const DAY = 24 * HOUR;
+  if (diff < MIN) return "刚刚";
+  if (diff < HOUR) return `${Math.floor(diff / MIN)} 分钟前`;
+  if (diff < DAY) return `${Math.floor(diff / HOUR)} 小时前`;
+  if (diff < 7 * DAY) return `${Math.floor(diff / DAY)} 天前`;
+  const date = new Date(ms);
+  const today = new Date(now);
+  if (date.getFullYear() === today.getFullYear()) {
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 export const useSidebar = create<SidebarState>((set, get) => ({
@@ -86,8 +111,13 @@ export const useSidebar = create<SidebarState>((set, get) => ({
 
   refreshRecent: async () => {
     try {
-      const list = await invoke<string[]>("recent_list");
-      set({ recent: list });
+      const list = await invoke<RecentEntry[]>("recent_list");
+      set({
+        recent: (list ?? []).map((e) => ({
+          path: String(e?.path ?? ""),
+          lastOpenedMs: Number(e?.lastOpenedMs ?? 0),
+        })),
+      });
     } catch {
       // ignore
     }
@@ -98,7 +128,7 @@ export const useSidebar = create<SidebarState>((set, get) => ({
     const { groups, recent } = get();
     const paths = new Set<string>([
       ...groups.flatMap((g) => g.paths),
-      ...recent,
+      ...recent.map((e) => e.path),
     ]);
     const missing: Record<string, boolean> = {};
     await Promise.all(

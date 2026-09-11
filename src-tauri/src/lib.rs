@@ -61,6 +61,23 @@ fn finish_read(text: String, encoding: EncodingId) -> ReadResult {
     }
 }
 
+/// 最近文件条目 DTO（camelCase，与前端 RecentEntry 对应）
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecentEntryDto {
+    pub path: String,
+    pub last_opened_ms: u64,
+}
+
+impl From<recent::RecentEntry> for RecentEntryDto {
+    fn from(e: recent::RecentEntry) -> Self {
+        RecentEntryDto {
+            path: e.path,
+            last_opened_ms: e.last_opened_ms,
+        }
+    }
+}
+
 #[command]
 fn read_text_file(path: PathBuf) -> Result<ReadResult, String> {
     let bytes = file_io::read_bytes(&path).map_err(|e| e.to_string())?;
@@ -150,28 +167,28 @@ fn codec_op(operation: String, text: String, confirmed: bool) -> Result<String, 
 }
 
 #[command]
-fn recent_list() -> Vec<String> {
-    recent::list()
+fn recent_list() -> Vec<RecentEntryDto> {
+    recent::list().into_iter().map(RecentEntryDto::from).collect()
 }
 
 #[command]
-fn recent_add(path: String) -> Vec<String> {
-    recent::add(&path)
+fn recent_add(path: String) -> Vec<RecentEntryDto> {
+    recent::add(&path).into_iter().map(RecentEntryDto::from).collect()
 }
 
 #[command]
-fn recent_remove(path: String) -> Vec<String> {
-    recent::remove(&path)
+fn recent_remove(path: String) -> Vec<RecentEntryDto> {
+    recent::remove(&path).into_iter().map(RecentEntryDto::from).collect()
 }
 
 #[command]
-fn recent_clear() -> Vec<String> {
-    recent::clear()
+fn recent_clear() -> Vec<RecentEntryDto> {
+    recent::clear().into_iter().map(RecentEntryDto::from).collect()
 }
 
 #[command]
-fn recent_replace(old: String, new: String) -> Vec<String> {
-    recent::replace(&old, &new)
+fn recent_replace(old: String, new: String) -> Vec<RecentEntryDto> {
+    recent::replace(&old, &new).into_iter().map(RecentEntryDto::from).collect()
 }
 
 #[command]

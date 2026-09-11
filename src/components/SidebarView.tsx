@@ -1,12 +1,27 @@
-import { ChevronRight, Folder, FolderOpen, History, Settings, Trash2, TriangleAlert } from "lucide-react";
+import {
+  ChevronRight,
+  FileQuestion,
+  Folder,
+  FolderOpen,
+  History,
+  Settings,
+  Trash2,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { baseName, inferLanguage } from "../models/language";
 import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { promptConfirm, promptInput } from "../state/prompts";
-import { dirName, SidebarGroup, useSidebar } from "../state/sidebar";
+import {
+  formatRelativeTime,
+  SidebarGroup,
+  useSidebar,
+} from "../state/sidebar";
 import { openSettingsWindow } from "../state/settingsWindow";
+import { Tooltip } from "./Tooltip";
 import { languageIconOf } from "./TabBar";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 
@@ -18,9 +33,13 @@ interface MenuState {
 
 function FileRow(props: {
   path: string;
+  /** 最近文件带时间戳；分组文件无 */
+  lastOpenedMs?: number;
+  variant: "recent" | "group";
+  groupId?: string;
   onMenu: (x: number, y: number, items: MenuItem[]) => void;
 }) {
-  const { path } = props;
+  const { path, lastOpenedMs, variant, groupId } = props;
   const sidebar = useSidebar();
   const documents = useDocuments((s) => s.documents);
 
@@ -29,23 +48,36 @@ function FileRow(props: {
   const isOpen = documents.some((d) => d.path === path);
   const Icon = languageIconOf(inferLanguage(path));
 
+  /** 缺失文件的重新定位：输入新路径 → 校验 → 全链路替换 → 打开 */
+  const relocate = async () => {
+    const target = await promptInput("重新定位文件(输入新路径):", path);
+    if (!target) return;
+    try {
+      await invoke("get_file_revision", { path: target });
+    } catch {
+      useDocuments
+        .getState()
+        .setStatus({ text: "该路径不存在或无法访问", kind: "error" });
+      return;
+    }
+    sidebar.replacePath(path, target);
+    void openPathAction(target);
+  };
+
   const open = async () => {
     if (missing) {
-      const target = await promptInput("重新定位文件(输入新路径):", path);
-      if (!target) return;
-      try {
-        await invoke("get_file_revision", { path: target });
-      } catch {
-        useDocuments
-          .getState()
-          .setStatus({ text: "该路径不存在或无法访问", kind: "error" });
-        return;
-      }
-      sidebar.replacePath(path, target);
-      void openPathAction(target);
+      await relocate();
       return;
     }
     void openPathAction(path);
+  };
+
+  const remove = () => {
+    if (variant === "group" && groupId) {
+      sidebar.removeFromGroup(groupId, path);
+    } else {
+      void sidebar.removeRecent(path);
+    }
   };
 
   const buildMenu = (): MenuItem[] => {
@@ -53,7 +85,7 @@ function FileRow(props: {
       return [
         {
           label: "重新定位…",
-          onClick: () => void open(),
+          onClick: () => void relocate(),
         },
       ];
     }
@@ -101,43 +133,71 @@ function FileRow(props: {
       });
     }
     items.push({
-      label: "从列表中移除",
+      label: variant === "group" ? "移出分组" : "从列表中移除",
       danger: true,
-      onClick: () => {
-        for (const group of sidebar.groups) {
-          if (group.paths.includes(path)) sidebar.removeFromGroup(group.id, path);
-        }
-        void sidebar.removeRecent(path);
-      },
+      onClick: remove,
     });
     return items;
   };
 
   return (
-    <div
-      className={"sidebar-row" + (missing ? " missing" : "")}
-      draggable={!missing}
-      onDragStart={(e) => {
-        e.dataTransfer.setData("text/plain", path);
-        e.dataTransfer.effectAllowed = "copy";
-      }}
-      onClick={() => void open()}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        props.onMenu(e.clientX, e.clientY, buildMenu());
-      }}
-    >
-      <span className={"row-open-indicator" + (isOpen ? " visible" : "")} />
-      <span className="row-icon">
-        {missing ? <TriangleAlert size={14} className="warn" /> : <Icon size={14} />}
-      </span>
-      <span className="row-text">
-        <span className="row-title">{name}</span>
-        <span className="row-subtitle">
-          {missing ? "文件已移动或删除" : dirName(path)}
+    <Tooltip label={path}>
+      <div
+        className={
+          "file-row" +
+          (isOpen ? " is-open" : "") +
+          (missing ? " is-missing" : "")
+        }
+        draggable={!missing}
+        onDragStart={(e) => {
+          e.dataTransfer.setData("text/plain", path);
+          e.dataTransfer.effectAllowed = "copy";
+        }}
+        onClick={() => void open()}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          props.onMenu(e.clientX, e.clientY, buildMenu());
+        }}
+      >
+        <span className="row-indicator" />
+        <span className="row-icon">
+          {missing ? <TriangleAlert size={14} className="warn" /> : <Icon size={14} />}
         </span>
-      </span>
-    </div>
+        <span className="row-name">{name}</span>
+        <span className="row-end">
+          {missing ? (
+            <button
+              className="row-action row-locate"
+              title="重新定位"
+              onClick={(e) => {
+                e.stopPropagation();
+                void relocate();
+              }}
+            >
+              <FileQuestion size={14} />
+            </button>
+          ) : (
+            <>
+              {variant === "recent" && (
+                <span className="row-time">
+                  {formatRelativeTime(lastOpenedMs ?? 0)}
+                </span>
+              )}
+              <button
+                className="row-action row-action-remove"
+                title={variant === "group" ? "移出分组" : "移除"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  remove();
+                }}
+              >
+                <X size={14} />
+              </button>
+            </>
+          )}
+        </span>
+      </div>
+    </Tooltip>
   );
 }
 
@@ -162,16 +222,21 @@ function SectionHeader(props: {
   );
 }
 
-function GroupHeader(props: {
+function GroupRow(props: {
   group: SidebarGroup;
   onMenu: (x: number, y: number, items: MenuItem[]) => void;
 }) {
   const { group } = props;
   const sidebar = useSidebar();
+  const [dropHover, setDropHover] = useState(false);
 
   return (
     <div
-      className="group-row"
+      className={
+        "group-row" +
+        (group.expanded ? " expanded" : "") +
+        (dropHover ? " drop-target" : "")
+      }
       onClick={() => sidebar.toggleGroupExpanded(group.id)}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -201,19 +266,24 @@ function GroupHeader(props: {
         ]);
       }}
       onDragOver={(e) => {
-        if (e.dataTransfer.types.includes("text/plain")) e.preventDefault();
+        if (e.dataTransfer.types.includes("text/plain")) {
+          e.preventDefault();
+          setDropHover(true);
+        }
       }}
+      onDragLeave={() => setDropHover(false)}
       onDrop={(e) => {
         const path = e.dataTransfer.getData("text/plain");
+        setDropHover(false);
         if (path) {
           e.preventDefault();
           sidebar.addToGroup(group.id, path);
         }
       }}
     >
+      <ChevronRight size={11} className="group-chevron" />
       {group.expanded ? <FolderOpen size={14} /> : <Folder size={14} />}
       <span className="group-name">{group.name}</span>
-      <span className="spacer" />
       <span className="group-count">{group.paths.length}</span>
     </div>
   );
@@ -254,12 +324,22 @@ export function SidebarView() {
             )}
             {sidebar.groups.map((group) => (
               <div key={group.id}>
-                <GroupHeader group={group} onMenu={openMenu} />
+                <GroupRow group={group} onMenu={openMenu} />
                 {group.expanded && (
                   <div className="group-children">
-                    {group.paths.map((path) => (
-                      <FileRow key={`grp-${group.id}-${path}`} path={path} onMenu={openMenu} />
-                    ))}
+                    {group.paths.length > 0 ? (
+                      group.paths.map((path) => (
+                        <FileRow
+                          key={`grp-${group.id}-${path}`}
+                          path={path}
+                          variant="group"
+                          groupId={group.id}
+                          onMenu={openMenu}
+                        />
+                      ))
+                    ) : (
+                      <div className="group-empty">拖入文件，或右键分组添加</div>
+                    )}
                   </div>
                 )}
               </div>
@@ -309,8 +389,14 @@ export function SidebarView() {
               </button>
             </div>
           ) : (
-            sidebar.recent.map((path) => (
-              <FileRow key={`rec-${path}`} path={path} onMenu={openMenu} />
+            sidebar.recent.map((entry) => (
+              <FileRow
+                key={`rec-${entry.path}`}
+                path={entry.path}
+                lastOpenedMs={entry.lastOpenedMs}
+                variant="recent"
+                onMenu={openMenu}
+              />
             ))
           ))}
       </div>

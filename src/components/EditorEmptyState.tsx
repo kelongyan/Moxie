@@ -11,7 +11,7 @@ export function EditorEmptyState() {
   const missing = useSidebar((s) => s.missing);
 
   const items = recent
-    .filter((path) => !missing[path])
+    .filter((entry) => !missing[entry.path])
     .slice(0, RECENT_LIMIT);
 
   return (
@@ -37,15 +37,15 @@ export function EditorEmptyState() {
       {items.length > 0 && (
         <div className="editor-empty-recent">
           <div className="editor-empty-recent-title">最近</div>
-          {items.map((path) => (
+          {items.map((entry) => (
             <button
-              key={path}
+              key={entry.path}
               className="editor-empty-recent-item"
-              title={path}
-              onClick={() => void openPathAction(path)}
+              title={entry.path}
+              onClick={() => void openPathAction(entry.path)}
             >
-              <span className="recent-name">{baseName(path)}</span>
-              <span className="recent-dir">{dirName(path)}</span>
+              <span className="recent-name">{baseName(entry.path)}</span>
+              <span className="recent-dir">{dirName(entry.path)}</span>
             </button>
           ))}
         </div>

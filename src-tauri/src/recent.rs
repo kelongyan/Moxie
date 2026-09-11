@@ -3,10 +3,29 @@ use std::path::PathBuf;
 const RECENT_LIMIT: usize = 12;
 const FILE_NAME: &str = "preferences.json";
 
+/// 最近文件条目：路径 + 最后打开时间（毫秒时间戳）。
+/// 旧版存储为 string[]，读取时经 [RecentEntryRaw] 的 untagged 兼容为 ts=0。
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RecentEntry {
+    pub path: String,
+    pub last_opened_ms: u64,
+}
+
+/// 存储层的兼容形态：旧格式是纯字符串，新格式是 {path, last_opened_ms}。
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[serde(untagged)]
+enum RecentEntryRaw {
+    Detailed {
+        path: String,
+        last_opened_ms: u64,
+    },
+    Path(String),
+}
+
 #[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 struct PreferencesFile {
     #[serde(default)]
-    recent_file_paths: Vec<String>,
+    recent_file_paths: Vec<RecentEntryRaw>,
     #[serde(default)]
     preferences: serde_json::Value,
 }
@@ -60,44 +79,84 @@ fn normalize(path: &str) -> String {
         .unwrap_or_else(|_| path.to_string())
 }
 
-pub fn list() -> Vec<String> {
-    load().recent_file_paths
+fn now_ms() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0)
 }
 
-pub fn add(path: &str) -> Vec<String> {
+fn raw_entries(prefs: &PreferencesFile) -> Vec<RecentEntry> {
+    prefs
+        .recent_file_paths
+        .iter()
+        .map(|raw| match raw {
+            RecentEntryRaw::Detailed { path, last_opened_ms } => RecentEntry {
+                path: path.clone(),
+                last_opened_ms: *last_opened_ms,
+            },
+            RecentEntryRaw::Path(path) => RecentEntry {
+                path: path.clone(),
+                last_opened_ms: 0,
+            },
+        })
+        .collect()
+}
+
+fn write_entries(prefs: &mut PreferencesFile, entries: Vec<RecentEntry>) {
+    prefs.recent_file_paths = entries
+        .into_iter()
+        .map(|e| RecentEntryRaw::Detailed {
+            path: e.path,
+            last_opened_ms: e.last_opened_ms,
+        })
+        .collect();
+}
+
+pub fn list() -> Vec<RecentEntry> {
+    raw_entries(&load())
+}
+
+pub fn add(path: &str) -> Vec<RecentEntry> {
     let entry = normalize(path);
     let mut prefs = load();
-    prefs.recent_file_paths.retain(|p| *p != entry);
-    prefs.recent_file_paths.insert(0, entry);
-    prefs.recent_file_paths.truncate(RECENT_LIMIT);
+    let mut entries = raw_entries(&prefs);
+    entries.retain(|e| e.path != entry);
+    entries.insert(0, RecentEntry { path: entry, last_opened_ms: now_ms() });
+    entries.truncate(RECENT_LIMIT);
+    write_entries(&mut prefs, entries.clone());
     let _ = save(&prefs);
-    prefs.recent_file_paths
+    entries
 }
 
-pub fn remove(path: &str) -> Vec<String> {
+pub fn remove(path: &str) -> Vec<RecentEntry> {
     let mut prefs = load();
-    prefs.recent_file_paths.retain(|p| *p != path);
+    let mut entries = raw_entries(&prefs);
+    entries.retain(|e| e.path != path);
+    write_entries(&mut prefs, entries.clone());
     let _ = save(&prefs);
-    prefs.recent_file_paths
+    entries
 }
 
-pub fn clear() -> Vec<String> {
+pub fn clear() -> Vec<RecentEntry> {
     let mut prefs = load();
-    prefs.recent_file_paths.clear();
+    write_entries(&mut prefs, Vec::new());
     let _ = save(&prefs);
-    prefs.recent_file_paths
+    Vec::new()
 }
 
-pub fn replace(old: &str, new: &str) -> Vec<String> {
+pub fn replace(old: &str, new: &str) -> Vec<RecentEntry> {
     let mut prefs = load();
     let target = normalize(new);
-    for entry in prefs.recent_file_paths.iter_mut() {
-        if *entry == old {
-            *entry = target.clone();
+    let mut entries = raw_entries(&prefs);
+    for entry in entries.iter_mut() {
+        if entry.path == old {
+            entry.path = target.clone();
         }
     }
+    write_entries(&mut prefs, entries.clone());
     let _ = save(&prefs);
-    prefs.recent_file_paths
+    entries
 }
 
 #[cfg(test)]
@@ -117,17 +176,47 @@ mod tests {
         }
         let entries = list();
         assert_eq!(entries.len(), RECENT_LIMIT);
-        assert_eq!(entries[0], "C:\\fake\\file14.txt");
+        assert_eq!(entries[0].path, "C:\\fake\\file14.txt");
+        assert!(entries[0].last_opened_ms > 0);
         add("C:\\fake\\file10.txt");
         let entries = list();
-        assert_eq!(entries[0], "C:\\fake\\file10.txt");
+        assert_eq!(entries[0].path, "C:\\fake\\file10.txt");
         assert_eq!(
-            entries.iter().filter(|p| **p == "C:\\fake\\file10.txt").count(),
+            entries.iter().filter(|e| e.path == "C:\\fake\\file10.txt").count(),
             1
         );
         remove("C:\\fake\\file10.txt");
-        assert!(!list().contains(&"C:\\fake\\file10.txt".to_string()));
+        assert!(!list().iter().any(|e| e.path == "C:\\fake\\file10.txt"));
         clear();
         assert!(list().is_empty());
+    }
+
+    #[test]
+    fn legacy_string_entries_are_read_and_upgraded() {
+        let _guard = isolate();
+        // 模拟旧版 preferences.json：纯 string 数组
+        let dir = app_data_dir();
+        std::fs::create_dir_all(&dir).unwrap();
+        let legacy = serde_json::json!({
+            "recent_file_paths": ["C:\\old\\a.txt", "C:\\old\\b.txt"],
+            "preferences": {}
+        });
+        std::fs::write(
+            prefs_path(),
+            serde_json::to_string_pretty(&legacy).unwrap(),
+        )
+        .unwrap();
+
+        let entries = list();
+        assert_eq!(entries.len(), 2);
+        assert_eq!(entries[0].path, "C:\\old\\a.txt");
+        assert_eq!(entries[0].last_opened_ms, 0, "旧格式无时间戳，读为 0");
+
+        // 任意写操作后应升级为新格式（带时间戳的对象）
+        add("C:\\old\\a.txt");
+        let raw = std::fs::read_to_string(prefs_path()).unwrap();
+        assert!(raw.contains("last_opened_ms"), "保存后应为新格式");
+        let entries = list();
+        assert!(entries[0].last_opened_ms > 0, "升级后应写入真实时间戳");
     }
 }
