@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   ChevronDown,
-  Columns2,
   Copy,
+  Eye,
   Minus,
   PanelLeft,
   Redo2,
@@ -16,7 +16,6 @@ import { EditorDocument, useDocuments } from "../state/documents";
 import { EditorLanguage, LANGUAGE_LABELS } from "../models/language";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 import { Tooltip } from "./Tooltip";
-import brandMark from "../../src-tauri/icons/32x32.png";
 
 interface TitleToolbarProps {
   activeDoc: EditorDocument | null;
@@ -25,6 +24,8 @@ interface TitleToolbarProps {
   onSidebarHoverStart: () => void;
   onSidebarHoverEnd: () => void;
   onTogglePreview: () => void;
+  /** 标签栏并入同一行：作为中段的弹性内容渲染 */
+  children?: ReactNode;
 }
 
 function WindowControls() {
@@ -84,6 +85,7 @@ export function TitleToolbar({
   onSidebarHoverStart,
   onSidebarHoverEnd,
   onTogglePreview,
+  children,
 }: TitleToolbarProps) {
   const hasDocument = activeDoc !== null;
   const [langMenu, setLangMenu] = useState<{ x: number; y: number } | null>(
@@ -124,19 +126,8 @@ export function TitleToolbar({
         </button>
       </Tooltip>
 
-      <img
-        className="title-brand"
-        src={brandMark}
-        alt=""
-        draggable={false}
-        data-tauri-drag-region
-      />
-      <span className="window-title" data-tauri-drag-region>
-        {activeDoc
-          ? `${activeDoc.isDirty ? "● " : ""}${activeDoc.name} — Moxie`
-          : "Moxie"}
-      </span>
-      <span className="spacer" data-tauri-drag-region />
+      {/* 标签栏并入顶栏中段：占满标签开关与右侧动作之间的全部宽度 */}
+      {children}
 
       <Tooltip label="撤销" shortcut="Ctrl+Z">
         <button
@@ -176,7 +167,14 @@ export function TitleToolbar({
         </button>
       </Tooltip>
 
-      <Tooltip label="显示/隐藏 Markdown 预览" shortcut="Ctrl+Shift+P">
+      <Tooltip
+        label={
+          activeDoc?.previewVisible
+            ? "切到源码模式（Ctrl+Shift+P）"
+            : "切到渲染模式（Ctrl+Shift+P）"
+        }
+        shortcut="Ctrl+Shift+P"
+      >
         <button
           className={
             "tool-button" +
@@ -184,11 +182,11 @@ export function TitleToolbar({
               ? " active"
               : "")
           }
-          aria-label="切换 Markdown 预览"
+          aria-label="切换 Markdown 视图模式"
           disabled={!hasDocument || activeDoc?.language !== "markdown"}
           onClick={onTogglePreview}
         >
-          <Columns2 />
+          <Eye />
         </button>
       </Tooltip>
 

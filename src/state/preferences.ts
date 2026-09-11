@@ -84,7 +84,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
   exitBehavior: "preserveWorkspace",
   sidebarPinned: true,
   markdownBreaks: false,
-  markdownTypographer: false,
+  // Typora 风格的灵魂：直引号 → 弯引号、-- → —、... → …
+  // 默认开启：新装用户的预览就带"出版物感"，老用户的偏好不受影响
+  markdownTypographer: true,
   markdownAllowHtml: false,
   prefsVersion: 0,
 

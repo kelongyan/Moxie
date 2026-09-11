@@ -120,8 +120,8 @@ export function TabBar() {
   }, [activeId]);
 
   const count = documents.length;
-  const tabWidth = Math.min(208, Math.max(128, (barWidth - 64) / Math.max(1, count)));
-  const tabFont = "14px 'Segoe UI', 'Noto Sans SC', sans-serif";
+  const tabWidth = Math.min(176, Math.max(96, (barWidth - 120) / Math.max(1, count)));
+  const tabFont = "13px 'Segoe UI', 'Noto Sans SC', sans-serif";
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDragIndex(index);
@@ -254,7 +254,6 @@ export function TabBar() {
         {dropIndex === count && dragIndex !== null && (
           <span className="tab-drop-indicator end" />
         )}
-        <span className="tab-end-zone" />
       </div>
       <button
         className="tab-new-button"
@@ -263,6 +262,8 @@ export function TabBar() {
       >
         <Plus size={14} />
       </button>
+      {/* 拖拽区放在滚动容器之外：既不会被裁掉，也不随标签滚动 */}
+      <span className="tab-end-zone" data-tauri-drag-region />
       {menu && (
         <ContextMenu
           x={menu.x}

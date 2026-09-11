@@ -14,7 +14,13 @@ exports[`preview snapshot > dark theme 1`] = `
     color: #e9eaee;
     font-family: sans-serif;
     font-size: 15px;
-    line-height: 1.75;
+    line-height: 1.8;
+    /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
+    text-spacing-trim: space-first;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
@@ -24,69 +30,136 @@ exports[`preview snapshot > dark theme 1`] = `
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
-  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
-       border-bottom: 1px solid #e7e8eb; }
-  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
-       border-bottom: 1px solid #e7e8eb; }
-  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
-  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
-  p { margin: 0.55em 0; }
-  a { color: #4a52a3; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
-  li { margin: 0.15em 0; }
+  article { max-width: min(72ch, 100%); margin: 0 auto; padding: 40px 32px 56px; }
+  /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0.4em 0 0.6em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid color-mix(in srgb, #e9eaee 9%, #1a1b1f);
+  }
+  h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 1.6em 0 0.5em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid color-mix(in srgb, #e9eaee 7%, #1a1b1f);
+  }
+  h3 { font-size: 1.25em; margin: 1.3em 0 0.45em; }
+  h4 { font-size: 1.08em; margin: 1.2em 0 0.4em; }
+  h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: #5f636e; }
+  /* 段落：行高 1.8，段距加大；中文段落首字符不缩进 */
+  p { margin: 0.7em 0; }
+  /* 行内强调：bold/italic 用字重 600 + 微小字距 */
+  strong { font-weight: 650; }
+  em { font-style: italic; }
+  /* 链接：默认无下划线，悬停时浮出下划线 + 浅色背景，节奏更"克制" */
+  a {
+    color: #4a52a3;
+    text-decoration: none;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+  a:hover { border-bottom-color: #4a52a3; }
+  /* 列表：编号用 tabular-nums 让"10."和"1."对齐；段距更舒展 */
+  ul, ol { padding-left: 1.7em; margin: 0.6em 0; }
+  li { margin: 0.25em 0; }
+  li > p { margin: 0.25em 0; }
+  ol li::marker { font-variant-numeric: tabular-nums; }
+  ul li::marker { color: #5f636e; }
   li.task-list-item { list-style: none; margin-left: -1.4em; }
   li.task-list-item input {
     appearance: none;
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     margin: 0 0.5em 0 0;
     border: 1px solid #d4d6db;
     border-radius: 4px;
     background: #ffffff;
     vertical-align: -2px;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
   }
   li.task-list-item input:checked {
     background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
     border-color: #4a52a3;
   }
+  /* 引用：左条改为更细、但更深；背景几乎透明；外距加大；首字不再收缩 */
   blockquote {
-    margin: 0.8em 0; padding: 0.35em 0.9em;
-    border-left: 3px solid #d4d6db;
+    margin: 1em 0;
+    padding: 0.5em 1.1em;
+    border-left: 2.5px solid color-mix(in srgb, #4a52a3 60%, #e9eaee);
     background: color-mix(in srgb, #e9eaee 3%, #1a1b1f);
     border-radius: 0 6px 6px 0;
     color: #5f636e;
   }
+  blockquote > :first-child { margin-top: 0; }
+  blockquote > :last-child { margin-bottom: 0; }
+  /* 行内 code：背景更柔和，圆角更小，字重略加 */
   code {
     font-family: monospace;
     font-size: 0.875em;
+    font-weight: 500;
     background: color-mix(in srgb, #e9eaee 6%, #1a1b1f);
-    padding: 0.18em 0.4em;
-    border-radius: 5px;
-    border: 1px solid #e7e8eb;
+    padding: 0.2em 0.45em;
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, #e7e8eb 70%, transparent);
   }
+  /* 代码块：圆角更紧凑，行高 1.7；外距上下加大 */
   pre {
     background: color-mix(in srgb, #e9eaee 6%, #1a1b1f);
-    border: 1px solid #e7e8eb;
+    border: 1px solid color-mix(in srgb, #e9eaee 9%, #1a1b1f);
     padding: 14px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow-x: auto;
+    line-height: 1.7;
+    margin: 1em 0;
   }
-  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
-  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
-  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  pre code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+  /* 表格：行高更松，表头底色更克制；行间分隔用 hairline */
+  .table-wrap { overflow-x: auto; margin: 1em 0; }
+  table {
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.6;
+  }
   th, td {
     border: none;
-    border-bottom: 1px solid #e7e8eb;
-    padding: 6px 16px 6px 0;
+    border-bottom: 1px solid color-mix(in srgb, #e9eaee 9%, #1a1b1f);
+    padding: 8px 18px 8px 0;
     text-align: left;
   }
-  th { font-weight: 600; background: color-mix(in srgb, #e9eaee 6%, #1a1b1f); border-bottom-color: #d4d6db; }
-  hr { border: none; border-top: 1px solid #e7e8eb; margin: 1.4em 0; }
-  img { max-width: 100%; }
+  th {
+    font-weight: 600;
+    background: color-mix(in srgb, #e9eaee 4%, #1a1b1f);
+    border-bottom-color: color-mix(in srgb, #e9eaee 14%, #1a1b1f);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  /* hr：渐变线段，比实线柔和 */
+  hr {
+    border: none;
+    height: 1px;
+    margin: 1.8em auto;
+    width: min(60%, 240px);
+    background: linear-gradient(to right, transparent, color-mix(in srgb, #e9eaee 9%, #1a1b1f), transparent);
+  }
+  img { max-width: 100%; border-radius: 4px; }
   .img-broken {
     display: inline-block;
     max-width: 100%;
@@ -117,12 +190,12 @@ exports[`preview snapshot > dark theme 1`] = `
   .footnote-item { margin: 0.25em 0; }
   .footnote-item p { margin: 0.2em 0; }
   /* 定义列表 */
-  dl { margin: 0.7em 0; }
+  dl { margin: 0.8em 0; }
   dt { font-weight: 600; margin: 0.5em 0 0.1em; }
   dd { margin: 0.1em 0 0.35em 1.5em; color: #e9eaee; }
   sub, sup { font-size: 0.72em; line-height: 0; }
   /* 数学公式 */
-  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
   .math-block .katex-display { margin: 0.2em 0; }
   .katex { font-size: 1.05em; }
   .math-error {
@@ -134,6 +207,8 @@ exports[`preview snapshot > dark theme 1`] = `
     font-family: monospace;
     font-size: 0.88em;
   }
+  /* 选中态：随系统颜色，但保证不破坏布局 */
+  ::selection { background: color-mix(in srgb, #4a52a3 30%, transparent); }
 </style>
 </head>
 <body>
@@ -173,7 +248,13 @@ exports[`preview snapshot > light theme 1`] = `
     color: #17181c;
     font-family: sans-serif;
     font-size: 15px;
-    line-height: 1.75;
+    line-height: 1.8;
+    /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
+    text-spacing-trim: space-first;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
@@ -183,69 +264,136 @@ exports[`preview snapshot > light theme 1`] = `
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
-  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
-       border-bottom: 1px solid #e7e8eb; }
-  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
-       border-bottom: 1px solid #e7e8eb; }
-  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
-  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
-  p { margin: 0.55em 0; }
-  a { color: #4a52a3; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
-  li { margin: 0.15em 0; }
+  article { max-width: min(72ch, 100%); margin: 0 auto; padding: 40px 32px 56px; }
+  /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0.4em 0 0.6em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid color-mix(in srgb, #17181c 9%, #f9f9fb);
+  }
+  h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 1.6em 0 0.5em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid color-mix(in srgb, #17181c 7%, #f9f9fb);
+  }
+  h3 { font-size: 1.25em; margin: 1.3em 0 0.45em; }
+  h4 { font-size: 1.08em; margin: 1.2em 0 0.4em; }
+  h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: #5f636e; }
+  /* 段落：行高 1.8，段距加大；中文段落首字符不缩进 */
+  p { margin: 0.7em 0; }
+  /* 行内强调：bold/italic 用字重 600 + 微小字距 */
+  strong { font-weight: 650; }
+  em { font-style: italic; }
+  /* 链接：默认无下划线，悬停时浮出下划线 + 浅色背景，节奏更"克制" */
+  a {
+    color: #4a52a3;
+    text-decoration: none;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+  a:hover { border-bottom-color: #4a52a3; }
+  /* 列表：编号用 tabular-nums 让"10."和"1."对齐；段距更舒展 */
+  ul, ol { padding-left: 1.7em; margin: 0.6em 0; }
+  li { margin: 0.25em 0; }
+  li > p { margin: 0.25em 0; }
+  ol li::marker { font-variant-numeric: tabular-nums; }
+  ul li::marker { color: #5f636e; }
   li.task-list-item { list-style: none; margin-left: -1.4em; }
   li.task-list-item input {
     appearance: none;
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     margin: 0 0.5em 0 0;
     border: 1px solid #d4d6db;
     border-radius: 4px;
     background: #ffffff;
     vertical-align: -2px;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
   }
   li.task-list-item input:checked {
     background: #4a52a3 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 8.5l3 3 6-6.5'/></svg>") center/10px no-repeat;
     border-color: #4a52a3;
   }
+  /* 引用：左条改为更细、但更深；背景几乎透明；外距加大；首字不再收缩 */
   blockquote {
-    margin: 0.8em 0; padding: 0.35em 0.9em;
-    border-left: 3px solid #d4d6db;
+    margin: 1em 0;
+    padding: 0.5em 1.1em;
+    border-left: 2.5px solid color-mix(in srgb, #4a52a3 60%, #17181c);
     background: color-mix(in srgb, #17181c 3%, #f9f9fb);
     border-radius: 0 6px 6px 0;
     color: #5f636e;
   }
+  blockquote > :first-child { margin-top: 0; }
+  blockquote > :last-child { margin-bottom: 0; }
+  /* 行内 code：背景更柔和，圆角更小，字重略加 */
   code {
     font-family: monospace;
     font-size: 0.875em;
+    font-weight: 500;
     background: color-mix(in srgb, #17181c 6%, #f9f9fb);
-    padding: 0.18em 0.4em;
-    border-radius: 5px;
-    border: 1px solid #e7e8eb;
+    padding: 0.2em 0.45em;
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, #e7e8eb 70%, transparent);
   }
+  /* 代码块：圆角更紧凑，行高 1.7；外距上下加大 */
   pre {
     background: color-mix(in srgb, #17181c 6%, #f9f9fb);
-    border: 1px solid #e7e8eb;
+    border: 1px solid color-mix(in srgb, #17181c 9%, #f9f9fb);
     padding: 14px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow-x: auto;
+    line-height: 1.7;
+    margin: 1em 0;
   }
-  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
-  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
-  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  pre code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+  /* 表格：行高更松，表头底色更克制；行间分隔用 hairline */
+  .table-wrap { overflow-x: auto; margin: 1em 0; }
+  table {
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.6;
+  }
   th, td {
     border: none;
-    border-bottom: 1px solid #e7e8eb;
-    padding: 6px 16px 6px 0;
+    border-bottom: 1px solid color-mix(in srgb, #17181c 9%, #f9f9fb);
+    padding: 8px 18px 8px 0;
     text-align: left;
   }
-  th { font-weight: 600; background: color-mix(in srgb, #17181c 6%, #f9f9fb); border-bottom-color: #d4d6db; }
-  hr { border: none; border-top: 1px solid #e7e8eb; margin: 1.4em 0; }
-  img { max-width: 100%; }
+  th {
+    font-weight: 600;
+    background: color-mix(in srgb, #17181c 4%, #f9f9fb);
+    border-bottom-color: color-mix(in srgb, #17181c 14%, #f9f9fb);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  /* hr：渐变线段，比实线柔和 */
+  hr {
+    border: none;
+    height: 1px;
+    margin: 1.8em auto;
+    width: min(60%, 240px);
+    background: linear-gradient(to right, transparent, color-mix(in srgb, #17181c 9%, #f9f9fb), transparent);
+  }
+  img { max-width: 100%; border-radius: 4px; }
   .img-broken {
     display: inline-block;
     max-width: 100%;
@@ -276,12 +424,12 @@ exports[`preview snapshot > light theme 1`] = `
   .footnote-item { margin: 0.25em 0; }
   .footnote-item p { margin: 0.2em 0; }
   /* 定义列表 */
-  dl { margin: 0.7em 0; }
+  dl { margin: 0.8em 0; }
   dt { font-weight: 600; margin: 0.5em 0 0.1em; }
   dd { margin: 0.1em 0 0.35em 1.5em; color: #17181c; }
   sub, sup { font-size: 0.72em; line-height: 0; }
   /* 数学公式 */
-  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
   .math-block .katex-display { margin: 0.2em 0; }
   .katex { font-size: 1.05em; }
   .math-error {
@@ -293,6 +441,8 @@ exports[`preview snapshot > light theme 1`] = `
     font-family: monospace;
     font-size: 0.88em;
   }
+  /* 选中态：随系统颜色，但保证不破坏布局 */
+  ::selection { background: color-mix(in srgb, #4a52a3 30%, transparent); }
 </style>
 </head>
 <body>

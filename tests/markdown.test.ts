@@ -99,8 +99,38 @@ describe("renderMarkdown", () => {
   it("uses compact app-like article layout", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("max-width: min(72ch, 100%)");
-    expect(html).toContain("padding: 20px 26px 56px");
+    expect(html).toContain("padding: 40px 32px 56px");
     expect(html).toContain("padding-bottom: 0.3em");
+  });
+
+  it("uses publication-grade typography (h1 2em, line-height 1.8)", () => {
+    // Typora 风味的视觉契约：H1 接近 2em、行高 1.8、字距 -0.025em
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toContain("font-size: 2em;");
+    expect(html).toContain("font-size: 1.5em;");
+    expect(html).toContain("letter-spacing: -0.025em;");
+    expect(html).toContain("line-height: 1.8;");
+  });
+
+  it("uses hairline separators instead of hard borders for h1/h2", () => {
+    // H1/H2 底边用 9% 透明度的 fg，而不是 border 实色
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toMatch(/border-bottom: 1px solid color-mix\(in srgb, [^;]+ 9%,/);
+  });
+
+  it("uses hairline gradient for hr instead of solid line", () => {
+    // hr 改为渐变线段 + 居中限宽，比实线柔和
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    expect(html).toContain("background: linear-gradient(to right, transparent,");
+    expect(html).toContain("margin: 1.8em auto;");
+  });
+
+  it("renders blockquote with tinted accent left bar", () => {
+    const html = renderMarkdown("x", LIGHT, "t.md");
+    // 引用块左条用 accent 着色，比纯灰条更"出版物感"
+    expect(html).toMatch(
+      /border-left: 2\.5px solid color-mix\(in srgb, [^;]+ 60%,/
+    );
   });
 
   it("wraps tables in a horizontally scrollable container", () => {

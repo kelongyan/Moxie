@@ -1,31 +1,31 @@
-/* 设计令牌：层级靠明度、分隔靠 1px 实色、尺度对齐 Windows px */
+/* 设计令牌 v3：层次靠明度（chrome < canvas < surface），分隔靠留白与发丝线，尺度对齐 Windows px */
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  /* 表面：chrome / 内容 / 侧栏 / 浮层 / 遮罩 */
-  --lac-bg-chrome: #f4f4f6;
+  /* 表面：chrome（顶栏/状态栏）/ 内容面 / 侧栏与画布 / 浮层 / 内嵌 / 遮罩 */
+  --lac-bg-chrome: #ececee;
   --lac-bg: #ffffff;
-  --lac-bg-sidebar: #f9f9fb;
+  --lac-bg-sidebar: #f4f4f5;
   --lac-bg-elevated: #ffffff;
-  --lac-bg-inset: #f6f7f9;
-  --lac-overlay: rgba(20, 22, 28, 0.42);
+  --lac-bg-inset: #f3f3f5;
+  --lac-overlay: rgba(20, 22, 28, 0.32);
 
-  /* 文本三级 */
-  --lac-text: #17181c;
-  --lac-text-secondary: #5f636e;
-  --lac-text-tertiary: #8b8f9a;
+  /* 文本三级（三级灰在浅底 ≥ 4.5:1，承担副标题/区块标题/状态栏） */
+  --lac-text: #1a1b1f;
+  --lac-text-secondary: #5c6068;
+  --lac-text-tertiary: #6b6e76;
 
-  /* 分隔（1px 实色） */
-  --lac-border: #e7e8eb;
-  --lac-border-strong: #d4d6db;
+  /* 分隔（发丝线，只在必要时出现） */
+  --lac-border: #e4e5e8;
+  --lac-border-strong: #d2d4d9;
 
   /* 交互明度三态 */
-  --lac-hover: rgba(23, 24, 28, 0.045);
-  --lac-pressed: rgba(23, 24, 28, 0.09);
+  --lac-hover: rgba(23, 24, 28, 0.05);
+  --lac-pressed: rgba(23, 24, 28, 0.1);
   --lac-selected: rgba(23, 24, 28, 0.12);
-  --lac-button-bg: rgba(23, 24, 28, 0.035);
+  --lac-button-bg: rgba(23, 24, 28, 0.04);
   --lac-button-bg-hover: rgba(23, 24, 28, 0.08);
 
   --lac-accent: #4a52a3;
@@ -36,7 +36,7 @@
   --lac-accent-contrast: #ffffff;
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
-  /* 编辑器状态色（完整三态分离在 R4） */
+  /* 编辑器状态色 */
   --lac-current-line: rgba(23, 24, 28, 0.04);
   --lac-delimiter-match: rgba(74, 82, 163, 0.14);
   --lac-selection: rgba(74, 82, 163, 0.22);
@@ -66,23 +66,22 @@
   --lac-warning-soft: rgba(150, 89, 10, 0.12);
   --lac-danger-soft: rgba(192, 57, 44, 0.1);
 
-  /* 阴影：边框 + 微投影双轨 */
-  --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(16, 18, 24, 0.05);
-  --sh-2: 0 0 0 1px var(--lac-border),
-    0 1px 2px rgba(16, 18, 24, 0.06), 0 8px 24px rgba(16, 18, 24, 0.1);
-  --sh-3: 0 0 0 1px var(--lac-border-strong),
-    0 24px 64px rgba(16, 18, 24, 0.2);
+  /* 阴影：发丝线 + 柔和投影（不用实色描边，避免"到处是框"） */
+  --sh-1: 0 0 0 1px rgba(16, 18, 24, 0.05), 0 1px 2px rgba(16, 18, 24, 0.05);
+  --sh-2: 0 0 0 1px rgba(16, 18, 24, 0.06), 0 2px 6px rgba(16, 18, 24, 0.06),
+    0 10px 28px rgba(16, 18, 24, 0.12);
+  --sh-3: 0 0 0 1px rgba(16, 18, 24, 0.07), 0 20px 48px rgba(16, 18, 24, 0.2);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --lac-bg-chrome: #17181b;
-  --lac-bg: #1d1e22;
-  --lac-bg-sidebar: #1a1b1f;
-  --lac-bg-elevated: #25262b;
+  --lac-bg-chrome: #141416;
+  --lac-bg: #1c1c1f;
+  --lac-bg-sidebar: #171719;
+  --lac-bg-elevated: #242428;
   --lac-bg-inset: #17181c;
-  --lac-overlay: rgba(0, 0, 0, 0.6);
+  --lac-overlay: rgba(0, 0, 0, 0.5);
 
   --lac-text: #e9eaee;
   --lac-text-secondary: #a4a8b2;
@@ -109,7 +108,7 @@
   --lac-selection: rgba(150, 160, 245, 0.28);
   --lac-find-match: rgba(255, 166, 87, 0.22);
 
-  --lac-tab-selected-bg: #25262b;
+  --lac-tab-selected-bg: #242428;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
   --syn-keyword: #a5b4fc;
@@ -132,29 +131,31 @@
   --lac-warning-soft: rgba(227, 179, 65, 0.12);
   --lac-danger-soft: rgba(255, 123, 114, 0.12);
 
-  --sh-1: 0 0 0 1px var(--lac-border), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --sh-2: 0 0 0 1px var(--lac-border),
-    0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.5);
-  --sh-3: 0 0 0 1px var(--lac-border-strong),
-    0 24px 64px rgba(0, 0, 0, 0.55);
+  --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+  --sh-3: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 20px 48px rgba(0, 0, 0, 0.55);
 }
 
 :root {
-  /* 结构尺寸（R3 框架改造前保持现值） */
+  /* 结构尺寸：顶栏与标签合并为一行，状态栏减薄 */
   --lac-window-min-w: 900px;
   --lac-window-min-h: 560px;
-  --lac-titlebar-height: 40px;
-  --lac-tabbar-height: 36px;
-  --lac-statusbar-height: 26px;
-  --lac-sidebar-width: 240px;
-  --lac-sidebar-row-height: 36px;
-  --lac-section-header-height: 25px;
-  --lac-group-row-height: 28px;
+  --lac-header-height: 44px;
+  --lac-statusbar-height: 22px;
+  --lac-sidebar-width: 232px;
+  --lac-sidebar-row-height: 32px;
+  --lac-section-header-height: 28px;
+  --lac-group-row-height: 26px;
   --lac-editor-min-width: 300px;
   --lac-preview-min-width: 280px;
 
-  /* 控件统一高度：按钮 / 输入框 / 下拉 */
-  --control-h: 30px;
+  /* 控件三档：紧凑（密集区）/ 标准（默认）/ 强调（主按钮） */
+  --ctl-sm: 24px;
+  --ctl-md: 28px;
+  --ctl-lg: 32px;
+  /* 兼容旧引用，等价于标准档 */
+  --control-h: var(--ctl-md);
 
   /* 间距刻度（4 的倍数体系） */
   --sp-1: 4px;
@@ -164,11 +165,11 @@
   --sp-5: 20px;
   --sp-6: 24px;
 
-  /* 圆角 */
+  /* 圆角：按角色（内嵌 4 / 控件与输入 6 / 浮层与卡片 8 / 对话框 12 / 胶囊 999） */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 10px;
+  --radius-lg: 12px;
   --radius-full: 999px;
 
   /* 字体：UI 用 Segoe 系；等宽弃用雅黑冒充，CJK 走 Sarasa/Noto */
@@ -177,20 +178,31 @@
   --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Sarasa Mono SC",
     "Noto Sans Mono CJK SC", "Microsoft YaHei UI", monospace;
 
-  /* 字号：Windows 尺度，基准 14px（数字阶为底，语义名引用之） */
-  --fs-11: 11px;
-  --fs-12: 12px;
-  --fs-13: 13px;
-  --fs-14: 14px;
+  /* 字号 · UI 轨道（13px 基准） */
+  --fs-meta: 11px; /* 徽标 / kbd */
+  --fs-caption: 12px; /* 状态栏 / 描述 / 快捷键 */
+  --fs-ui: 13px; /* 标签 / 菜单 / 按钮 / 输入 / 侧栏行 */
+  --fs-title: 14px; /* 对话框标题 / 设置分组标题 */
+
+  /* 字号 · 内容轨道（16px 基准，阶段 3 起接管编辑器与预览） */
+  --fs-content: 16px;
+  --fs-content-line: 1.75;
+  --fs-mono: 13.5px;
+  --measure: min(74ch, 100%);
+
+  /* 旧名兼容（逐阶段迁移完成后删除） */
+  --fs-11: var(--fs-meta);
+  --fs-12: var(--fs-caption);
+  --fs-13: var(--fs-ui);
+  --fs-14: var(--fs-ui);
   --fs-20: 20px;
-  --fs-editor: 18.5px; /* 编辑器默认字号（pt 换算），R4 重排 */
-  --fs-window-title: var(--fs-13);
-  --fs-dialog-title: var(--fs-14);
+  --fs-editor: 18.5px; /* 由设置页字号 pt 换算覆盖，此值仅兜底 */
+  --fs-window-title: var(--fs-ui);
+  --fs-dialog-title: var(--fs-title);
   --fs-settings-title: var(--fs-20);
-  --fs-body: var(--fs-14);
-  --fs-caption: var(--fs-12);
-  --fs-small: var(--fs-12);
-  --fs-badge: var(--fs-11);
+  --fs-body: var(--fs-ui);
+  --fs-small: var(--fs-caption);
+  --fs-badge: var(--fs-meta);
 
   /* 动效 */
   --dur-1: 80ms;

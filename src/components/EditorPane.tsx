@@ -158,13 +158,26 @@ export function EditorPane() {
         view.dispatch({ selection: { anchor } });
       }
       view.dom.dataset.docId = doc.id;
-      view.dom.style.display = doc.id === activeId ? "block" : "none";
+      view.dom.classList.toggle("cm-doc-hidden", doc.id !== activeId);
     }
 
     evictInactive(activeId);
 
+    // 当前文档若是 markdown + 预览被允许 → 渲染模式，cm-host 整体隐藏
+    const cur = activeId ? documents.find((d) => d.id === activeId) : null;
+    const inRenderMode =
+      !!cur &&
+      cur.language === "markdown" &&
+      cur.previewVisible &&
+      featureEnabled("preview", cur.perfTier, cur.featureOverrides);
+
     const activeView = activeId ? viewFor(activeId) : undefined;
-    if (activeView) activeView.focus();
+    if (activeView) {
+      // 视图在隐藏期间量到的是 0 尺寸，重新显示后必须再测一次
+      activeView.requestMeasure();
+      // 渲染模式下 cm-host 被整体隐藏，focus() 会失败且无意义；只在源码模式抢焦点
+      if (!inRenderMode) activeView.focus();
+    }
   }, [documents, activeId, prefsVersion]);
 
   const evictInactive = (activeIdNow: string | null) => {
@@ -198,13 +211,13 @@ export function EditorPane() {
   };
 
   const activeDoc = documents.find((d) => d.id === activeId);
-  const wantsPreview =
-    !!activeDoc && activeDoc.language === "markdown" && activeDoc.previewVisible;
+  const isMarkdown = !!activeDoc && activeDoc.language === "markdown";
+  const wantsRenderMode = isMarkdown && !!activeDoc?.previewVisible;
   const previewAllowed =
     !!activeDoc &&
     featureEnabled("preview", activeDoc.perfTier, activeDoc.featureOverrides);
-  const showPreview = wantsPreview && previewAllowed;
-  const previewBlocked = wantsPreview && !previewAllowed;
+  const renderMode = wantsRenderMode && previewAllowed;
+  const previewBlocked = wantsRenderMode && !previewAllowed;
 
   return (
     <div className="editor-pane">
@@ -212,21 +225,70 @@ export function EditorPane() {
         <EditorEmptyState />
       ) : (
         <>
-          <div className="cm-host" ref={containerRef} />
-          {showPreview && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
-          {previewBlocked && (
-            <>
-              <div className="preview-splitter preview-splitter-static" aria-hidden="true" />
-              <div className="preview-pane preview-pane-notice" style={{ flexBasis: "42%" }}>
-                <p className="preview-notice-text">
-                  该文档较大，为保证编辑流畅，预览已自动停用。
-                  如需强制开启，可在状态栏“大文件模式”中勾选预览。
-                </p>
-              </div>
-            </>
+          {/* cm-host 始终挂载（保持 view 存活以便切回源码模式继续编辑），
+              渲染模式下用 .cm-host-hidden 整体隐藏，避免和 MarkdownPreview 重叠 */}
+          <div
+            className={
+              "cm-host" + (renderMode ? " cm-host-hidden" : "")
+            }
+            ref={containerRef}
+          />
+          {renderMode && activeDoc && <MarkdownPreview docId={activeDoc.id} />}
+          {isMarkdown && activeDoc && (
+            <ViewModeToggle
+              docId={activeDoc.id}
+              renderMode={renderMode}
+              blocked={previewBlocked}
+            />
           )}
         </>
       )}
     </div>
+  );
+}
+
+/**
+ * Typora 风格：左下角浮动按钮，切换"渲染 / 源码"两种视图模式。
+ * - 渲染模式：显示"源码"按钮 → 点击切到源码编辑
+ * - 源码模式：显示"渲染"按钮 → 点击切到渲染视图
+ * - 大文件被自动降级时：按钮 disabled 并提示
+ */
+function ViewModeToggle({
+  docId,
+  renderMode,
+  blocked,
+}: {
+  docId: string;
+  renderMode: boolean;
+  blocked: boolean;
+}) {
+  const onToggle = () => {
+    const doc = useDocuments.getState().documents.find((d) => d.id === docId);
+    if (!doc) return;
+    useDocuments
+      .getState()
+      .patchDocument(docId, { previewVisible: !doc.previewVisible });
+  };
+  const label = renderMode ? "源码" : "渲染";
+  const title = blocked
+    ? "该文档较大，预览已自动停用；如需强制开启可在状态栏“大文件模式”中勾选"
+    : renderMode
+      ? "切到源码模式（Ctrl+Shift+P）"
+      : "切到渲染模式（Ctrl+Shift+P）";
+  return (
+    <button
+      className={
+        "view-mode-toggle" + (renderMode ? " mode-render" : " mode-source")
+      }
+      onClick={onToggle}
+      disabled={blocked}
+      title={title}
+      aria-label={title}
+    >
+      <span className="view-mode-toggle-icon" aria-hidden="true">
+        {renderMode ? "</>" : "◉"}
+      </span>
+      <span className="view-mode-toggle-label">{label}</span>
+    </button>
   );
 }

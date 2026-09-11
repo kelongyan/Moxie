@@ -158,13 +158,13 @@ body {
   margin-left: 4px;
 }
 
-/* 标题/工具行（无框窗口，兼作拖拽区） */
+/* 顶栏：无框窗口的自绘标题区，兼作拖拽区；标签栏并入同一行 */
 .title-toolbar {
-  height: var(--lac-titlebar-height);
+  height: var(--lac-header-height);
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 0 0 0 10px;
   background: var(--lac-bg-chrome);
   border-bottom: 1px solid var(--lac-border);
@@ -172,24 +172,6 @@ body {
 
 .title-toolbar .spacer {
   flex: 1;
-}
-
-.title-toolbar .window-title {
-  font-size: var(--fs-window-title);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: clamp(160px, 30vw, 360px);
-  margin-left: 4px;
-}
-
-.title-brand {
-  width: 16px;
-  height: 16px;
-  border-radius: var(--radius-xs);
-  flex-shrink: 0;
-  margin-left: 2px;
 }
 
 /* 窗口控制按钮：46 宽贴右缘，关闭悬停系统红 */
@@ -234,23 +216,23 @@ body {
 }
 
 .tool-button {
-  width: 32px;
-  height: 32px;
+  width: var(--ctl-md);
+  height: var(--ctl-md);
   color: var(--lac-text);
 }
 
 .tool-button svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
 
 .language-button {
   width: auto;
-  min-width: 112px;
+  min-width: 0;
   gap: 6px;
   padding: 0 8px;
   font-family: inherit;
-  font-size: var(--fs-caption);
+  font-size: var(--fs-ui);
   color: var(--lac-text);
 }
 
@@ -289,19 +271,29 @@ body {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 9px;
+  gap: 8px;
+  padding: 0 8px;
   background: var(--lac-bg-chrome);
-  border-top: 1px solid var(--lac-border);
   color: var(--lac-text-secondary);
   font-size: var(--fs-caption);
 }
 
 .status-item {
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
+  padding: 0;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+  color: var(--lac-text-secondary);
+}
+
+/* 右侧信息用中点分隔，代替分散的块状留白 */
+.status-item + .status-item {
+  margin-left: 8px;
+}
+
+.status-item + .status-item::before {
+  content: "·";
+  margin-right: 8px;
+  color: var(--lac-text-tertiary);
 }
 
 .status-bar .spacer {
@@ -347,25 +339,25 @@ body {
   color: var(--lac-text-secondary);
 }
 
-/* 标签栏 */
+/* 标签栏：并入顶栏一行，横向占满可用宽度（自身不设高度与底边） */
 .tab-bar {
-  height: var(--lac-tabbar-height);
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
   display: flex;
   align-items: center;
-  background: var(--lac-bg-chrome);
-  border-bottom: 1px solid var(--lac-border);
 }
 
 .tab-scroll {
-  flex: 1;
+  flex: 0 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-left: 6px;
+  padding-left: 4px;
   scrollbar-width: none;
 }
 
@@ -373,8 +365,11 @@ body {
   display: none;
 }
 
+/* 标签右侧空白：撑开布局，同时作为窗口拖拽区（不参与标签滚动） */
 .tab-end-zone {
-  flex: 0 0 8px;
+  flex: 1 1 auto;
+  min-width: 56px;
+  height: 100%;
 }
 
 .tab-slot {
@@ -388,11 +383,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 32px;
+  height: 30px;
   padding: 0 8px 0 10px;
   border-radius: var(--radius-sm);
   cursor: default;
-  transition: background var(--anim-hover);
+  transition: background var(--anim-hover), color var(--anim-hover);
   flex-shrink: 0;
   position: relative;
 }
@@ -405,22 +400,22 @@ body {
   background: var(--lac-tab-selected-bg);
 }
 
-/* 圆头指示器：切换时 140ms 展开，替代原 2px 直角 inset 硬线 */
+/* 选中指示：顶部 2px × 40% 的圆头短条，切换时缩放入场 */
 .tab::after {
   content: "";
   position: absolute;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2.5px;
-  border-radius: 2px;
+  width: 40%;
+  height: 2px;
+  border-radius: var(--radius-full);
   background: var(--lac-accent);
-  transition: width var(--dur-2) var(--ease-out);
+  transform: translateX(-50%) scaleX(0);
+  transition: transform var(--dur-2) var(--ease-out);
 }
 
 .tab.selected::after {
-  width: calc(100% - 20px);
+  transform: translateX(-50%) scaleX(1);
 }
 
 .tab.dragging {
@@ -431,10 +426,6 @@ body {
 .tab-icon {
   flex-shrink: 0;
   color: var(--lac-text-secondary);
-}
-
-.tab-icon.selected {
-  color: var(--lac-accent);
 }
 
 .tab-name {
@@ -487,7 +478,7 @@ body {
 
 .tab-drop-indicator {
   width: 2px;
-  height: 26px;
+  height: 24px;
   background: var(--lac-accent);
   border-radius: 1px;
   flex-shrink: 0;
@@ -495,9 +486,9 @@ body {
 
 .tab-new-button {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  margin: 0 5px 0 2px;
+  width: var(--ctl-sm);
+  height: var(--ctl-sm);
+  margin: 0 4px 0 2px;
   border: none;
   border-radius: var(--radius-sm);
   background: var(--lac-button-bg);
@@ -518,7 +509,7 @@ body {
   position: fixed;
   top: -1000px;
   left: -1000px;
-  height: 32px;
+  height: 30px;
   display: flex;
   align-items: center;
   padding: 0 12px;
@@ -551,15 +542,15 @@ body {
   align-items: center;
   gap: 8px;
   width: 100%;
-  height: 30px;
+  height: var(--ctl-md);
   border: none;
   background: transparent;
   font-family: inherit;
-  font-size: var(--fs-body);
+  font-size: var(--fs-ui);
   color: var(--lac-text);
   text-align: left;
   padding: 0 10px 0 8px;
-  border-radius: 5px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
 }
 
@@ -618,6 +609,11 @@ body {
 
 .save-state.dirty {
   color: var(--lac-warning);
+}
+
+/* 保存成功只在切换瞬间提示，1.6s 后淡出（由组件控制卸载） */
+.save-state.saved {
+  animation: lac-fade-in var(--dur-2) var(--ease-out);
 }
 
 .save-spin {
@@ -738,7 +734,7 @@ body {
 }
 
 .modal-choice-button {
-  height: 34px;
+  height: var(--ctl-lg);
   justify-content: flex-start;
   text-align: left;
   padding: 0 12px;
@@ -788,7 +784,7 @@ body {
 
 .segmented {
   display: inline-flex;
-  height: 30px;
+  height: var(--ctl-md);
   padding: 2px;
   gap: 2px;
   background: var(--lac-button-bg);
@@ -801,7 +797,7 @@ body {
   background: transparent;
   color: var(--lac-text-secondary);
   font-family: inherit;
-  font-size: var(--fs-caption);
+  font-size: var(--fs-ui);
   padding: 0 12px;
   border-radius: var(--radius-xs);
   cursor: pointer;
@@ -1005,7 +1001,6 @@ body {
   width: var(--lac-sidebar-width);
   z-index: var(--z-sidebar);
   background: var(--lac-bg-sidebar);
-  border-right: 1px solid var(--lac-border);
   display: flex;
   flex-direction: column;
   transition: transform var(--anim-structural), opacity var(--anim-structural);
@@ -1032,10 +1027,10 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px 8px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .section-header {
@@ -1219,7 +1214,7 @@ body {
 
 .sidebar-settings {
   width: 100%;
-  height: 35px;
+  height: var(--lac-sidebar-row-height);
   display: flex;
   align-items: center;
   gap: 7px;
@@ -1346,7 +1341,7 @@ body {
 }
 
 .stepper-button {
-  width: 28px;
+  width: 26px;
   height: 26px;
 }
 
@@ -1439,27 +1434,94 @@ body {
   height: 100%;
 }
 
-.preview-splitter {
-  flex: 0 0 5px;
-  height: 100%;
-  margin-left: -1px;
-  border-left: 1px solid var(--lac-border);
-  cursor: col-resize;
-  transition: border-left-color var(--anim-hover);
+/* CodeMirror 基础主题给 .cm-editor 加了 display: flex !important，
+   行内 display 隐藏不掉非当前标签的视图，必须用同权重的规则，
+   否则多标签时所有视图会纵向堆叠、当前文档被顶到可视区之外 */
+.cm-host .cm-editor.cm-doc-hidden {
+  display: none !important;
 }
 
-.preview-splitter:hover,
-.preview-splitter:active {
-  border-left-color: var(--lac-accent);
+/* Typora 风格：渲染模式下整体隐藏 cm-host（view 仍存活以便切回源码继续编辑） */
+.cm-host.cm-host-hidden {
+  display: none !important;
 }
 
-.preview-splitter-static {
-  cursor: default;
+/* Typora 风格：渲染模式占满整个 editor-pane（替代旧分屏 42% 宽度） */
+.preview-pane.preview-pane-render {
+  flex: 1 1 100%;
+  min-width: 0;
+  border-left: none;
 }
 
-.preview-splitter-static:hover,
-.preview-splitter-static:active {
-  border-left-color: var(--lac-border);
+/* 渲染模式下的极简 toolbar：去掉标题与下边框，只留右侧操作按钮 */
+.preview-pane-render .preview-toolbar {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  padding: 6px 10px 0;
+  border-bottom: none;
+  background: transparent;
+}
+
+/* Typora 风格：左下角浮动"渲染 / 源码"模式切换按钮。
+   整体像一个不起眼的小药丸，hover 才明显，定位在 editor-pane 内。 */
+.view-mode-toggle {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--lac-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lac-bg-elevated) 88%, transparent);
+  color: var(--lac-text-secondary);
+  font-family: inherit;
+  font-size: var(--fs-12);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 1px 2px rgba(16, 18, 24, 0.06),
+    0 6px 16px rgba(16, 18, 24, 0.08);
+  transition: background var(--anim-hover), color var(--anim-hover),
+    border-color var(--anim-hover), transform var(--anim-hover);
+}
+
+.view-mode-toggle:hover:not(:disabled) {
+  background: var(--lac-bg-elevated);
+  color: var(--lac-text);
+  border-color: var(--lac-border-strong);
+  transform: translateY(-1px);
+}
+
+.view-mode-toggle:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.view-mode-toggle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.view-mode-toggle-icon {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--lac-accent);
+  /* 等宽数字让 "</>" 和 "◉" 不会跳 */
+  font-variant-numeric: tabular-nums;
+}
+
+.view-mode-toggle.mode-render .view-mode-toggle-icon {
+  color: var(--lac-accent);
+}
+
+.view-mode-toggle.mode-source .view-mode-toggle-icon {
+  color: var(--lac-text-secondary);
 }
 
 .preview-pane {
@@ -1479,15 +1541,6 @@ body {
   padding: 0 var(--sp-1) 0 var(--sp-3);
   border-bottom: 1px solid var(--lac-border);
   background: var(--lac-bg-chrome);
-}
-
-.preview-toolbar-title {
-  font-size: var(--fs-12);
-  color: var(--lac-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
 }
 
 .preview-toolbar-actions {
@@ -1515,8 +1568,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: var(--ctl-sm);
+  height: var(--ctl-sm);
   padding: 0;
   border: none;
   border-radius: var(--radius-sm);
@@ -1590,23 +1643,6 @@ body {
   min-height: 0;
   border: none;
   display: block;
-}
-
-.preview-pane-notice {
-  background: var(--lac-bg-sidebar);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--sp-4);
-}
-
-.preview-notice-text {
-  max-width: 36ch;
-  margin: 0;
-  color: var(--lac-text-secondary);
-  font-size: var(--fs-13);
-  line-height: 1.7;
-  text-align: center;
 }
 
 /* 折叠 */

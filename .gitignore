@@ -14,3 +14,7 @@ src-tauri/gen/schemas/
 # 文档仅本地保留，只提交 README
 /*.md
 !README.md
+
+# 本地调试产物
+.playwright-mcp/
+vite-dev.log

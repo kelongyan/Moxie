@@ -35,9 +35,6 @@ function toAssetUrl(absPath: string): string {
   return isTauri() ? convertFileSrc(absPath) : absPath;
 }
 
-const MIN_PCT = 25;
-const MAX_PCT = 75;
-
 // 自适应渲染调度：文档越长，防抖越久，避免输入时频繁阻塞
 const DEBOUNCE_FAST_LEN = 20_000;
 const DEBOUNCE_SLOW_LEN = 100_000;
@@ -87,7 +84,6 @@ function toggleTaskAtLine(docId: string, line0: number): void {
 
 export function MarkdownPreview({ docId }: { docId: string }) {
   const dark = useResolvedDark();
-  const [basisPct, setBasisPct] = useState(42);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const doc = useDocuments((s) => s.documents.find((d) => d.id === docId));
   const baseDir = doc?.path ? directoryOf(doc.path) : null;
@@ -382,8 +378,15 @@ export function MarkdownPreview({ docId }: { docId: string }) {
       (event) => {
         const img = event.target as HTMLElement | null;
         if (!img || img.tagName !== "IMG") return;
+        // src 已被换成 asset URL（路径经过百分号编码），先解码再取文件名
         const src = img.getAttribute("src") ?? "";
-        const name = src.split(/[\\/]/).pop() || "图片";
+        let path = src;
+        try {
+          path = decodeURIComponent(src);
+        } catch {
+          // 非法编码时保留原值
+        }
+        const name = path.split(/[\\/]/).pop() || "图片";
         const placeholder = iframeDoc.createElement("span");
         placeholder.className = "img-broken";
         placeholder.textContent = `图片不可用:${name}`;
@@ -425,23 +428,6 @@ export function MarkdownPreview({ docId }: { docId: string }) {
     return current;
   }, [outline, activeLine]);
 
-  const startDrag = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const host = e.currentTarget.parentElement;
-    if (!host) return;
-    const rect = host.getBoundingClientRect();
-    const onMove = (ev: MouseEvent) => {
-      const pct = 100 - ((ev.clientX - rect.left) / rect.width) * 100;
-      setBasisPct(Math.min(MAX_PCT, Math.max(MIN_PCT, pct)));
-    };
-    const onUp = () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  };
-
   const handlePrint = () => {
     iframeRef.current?.contentWindow?.print();
   };
@@ -475,82 +461,71 @@ export function MarkdownPreview({ docId }: { docId: string }) {
   };
 
   return (
-    <>
-      <div
-        className="preview-splitter"
-        role="separator"
-        aria-orientation="vertical"
-        onMouseDown={startDrag}
-      />
-      <div className="preview-pane" style={{ flexBasis: `${basisPct}%` }}>
-        <div className="preview-toolbar">
-          <span className="preview-toolbar-title">
-            {doc?.name ?? ""}
-            {slowRender && (
-              <span className="preview-slow-hint" title="文档较大，预览渲染已降速">
-                渲染降速
-              </span>
+    <div className="preview-pane preview-pane-render">
+      <div className="preview-toolbar">
+        <div className="preview-toolbar-actions">
+          <div className="preview-outline" ref={outlineBoxRef}>
+            <button
+              className="preview-outline-trigger"
+              onClick={() => setOutlineOpen((v) => !v)}
+              disabled={outline.length === 0}
+              aria-label="预览大纲"
+              aria-expanded={outlineOpen}
+              aria-haspopup="menu"
+              title="大纲"
+            >
+              <List size={14} />
+            </button>
+            {outlineOpen && outline.length > 0 && (
+              <div className="preview-outline-menu" role="menu">
+                {outline.map((item) => (
+                  <button
+                    key={`${item.line}-${item.text}`}
+                    role="menuitem"
+                    className={
+                      "preview-outline-item lvl-" +
+                      item.level +
+                      (activeHeading === item ? " active" : "")
+                    }
+                    onClick={() => jumpToLine(item.line)}
+                  >
+                    {item.text}
+                  </button>
+                ))}
+              </div>
             )}
-          </span>
-          <div className="preview-toolbar-actions">
-            <div className="preview-outline" ref={outlineBoxRef}>
-              <button
-                className="preview-outline-trigger"
-                onClick={() => setOutlineOpen((v) => !v)}
-                disabled={outline.length === 0}
-                aria-label="预览大纲"
-                aria-expanded={outlineOpen}
-                aria-haspopup="menu"
-                title="大纲"
-              >
-                <List size={14} />
-              </button>
-              {outlineOpen && outline.length > 0 && (
-                <div className="preview-outline-menu" role="menu">
-                  {outline.map((item) => (
-                    <button
-                      key={`${item.line}-${item.text}`}
-                      role="menuitem"
-                      className={
-                        "preview-outline-item lvl-" +
-                        item.level +
-                        (activeHeading === item ? " active" : "")
-                      }
-                      onClick={() => jumpToLine(item.line)}
-                    >
-                      {item.text}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              className="preview-outline-trigger"
-              onClick={handlePrint}
-              aria-label="打印预览"
-              title="打印"
-            >
-              <Printer size={14} />
-            </button>
-            <button
-              className="preview-outline-trigger"
-              onClick={() => void handleExport()}
-              aria-label="导出为 HTML"
-              title="导出为 HTML"
-            >
-              <Download size={14} />
-            </button>
           </div>
+          <button
+            className="preview-outline-trigger"
+            onClick={handlePrint}
+            aria-label="打印预览"
+            title="打印"
+          >
+            <Printer size={14} />
+          </button>
+          <button
+            className="preview-outline-trigger"
+            onClick={() => void handleExport()}
+            aria-label="导出为 HTML"
+            title="导出为 HTML"
+          >
+            <Download size={14} />
+          </button>
+          {slowRender && (
+            <span className="preview-slow-hint" title="文档较大，预览渲染已降速">
+              渲染降速
+            </span>
+          )}
         </div>
-        <iframe
-          ref={iframeRef}
-          className="preview-iframe"
-          sandbox="allow-same-origin"
-          srcDoc={shell}
-          onLoad={handleLoad}
-          title="Markdown 预览"
-        />
       </div>
-    </>
+      <iframe
+        ref={iframeRef}
+        className="preview-iframe"
+        sandbox="allow-same-origin"
+        srcDoc={shell}
+        onLoad={handleLoad}
+        title="Markdown 预览"
+      />
+    </div>
   );
 }

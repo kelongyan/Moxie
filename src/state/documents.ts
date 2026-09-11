@@ -76,7 +76,8 @@ function makeDocument(partial: Partial<EditorDocument>): EditorDocument {
     fileIdentity: null,
     fileRevision: null,
     ioState: "idle",
-    previewVisible: false,
+    // Markdown 默认进入"渲染模式"（Typora 风），true=渲染，false=源码
+    previewVisible: true,
     perfTier: "standard",
     perfBytes: 0,
     featureOverrides: {},

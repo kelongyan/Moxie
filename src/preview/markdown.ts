@@ -104,6 +104,9 @@ export function renderBody(text: string, env?: RenderEnv): string {
 /** 预览文档外壳：样式与空正文。正文经 renderBody 原地替换，避免整份 srcDoc 重建 */
 export function renderShell(tokens: PreviewTokens, title: string): string {
   const codeBg = `color-mix(in srgb, ${tokens.fg} 6%, ${tokens.bg})`;
+  // 比 border 还要淡一档的"分隔线"：让 H1 底边、hr、引用左条都有"高级"质感
+  const hairline = `color-mix(in srgb, ${tokens.fg} 9%, ${tokens.bg})`;
+  const hairlineSoft = `color-mix(in srgb, ${tokens.fg} 7%, ${tokens.bg})`;
 
   return `<!DOCTYPE html>
 <html>
@@ -120,7 +123,13 @@ ${previewStyleUrls
     color: ${tokens.fg};
     font-family: ${tokens.fontUi};
     font-size: 15px;
-    line-height: 1.75;
+    line-height: 1.8;
+    /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
+    text-spacing-trim: space-first;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
@@ -130,69 +139,136 @@ ${previewStyleUrls
     border-radius: 999px;
     background-clip: content-box;
   }
-  article { max-width: min(72ch, 100%); margin: 0; padding: 20px 26px 56px; }
-  h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.35; }
-  h1 { font-size: 1.6em; margin: 1.2em 0 0.5em; padding-bottom: 0.3em;
-       border-bottom: 1px solid ${tokens.border}; }
-  h2 { font-size: 1.35em; margin: 1.2em 0 0.5em; padding-bottom: 0.25em;
-       border-bottom: 1px solid ${tokens.border}; }
-  h3 { font-size: 1.18em; margin: 1.15em 0 0.45em; }
-  h4, h5, h6 { font-size: 1.02em; margin: 1.15em 0 0.45em; }
-  p { margin: 0.55em 0; }
-  a { color: ${tokens.accent}; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  ul, ol { padding-left: 1.6em; margin: 0.5em 0; }
-  li { margin: 0.15em 0; }
+  article { max-width: min(72ch, 100%); margin: 0 auto; padding: 40px 32px 56px; }
+  /* 标题：字号梯度更接近"出版物"。H1 顶部留白放大，底边改为极淡渐变而非实线。 */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0.4em 0 0.6em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid ${hairline};
+  }
+  h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    margin: 1.6em 0 0.5em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid ${hairlineSoft};
+  }
+  h3 { font-size: 1.25em; margin: 1.3em 0 0.45em; }
+  h4 { font-size: 1.08em; margin: 1.2em 0 0.4em; }
+  h5, h6 { font-size: 1em; margin: 1.2em 0 0.4em; color: ${tokens.secondary}; }
+  /* 段落：行高 1.8，段距加大；中文段落首字符不缩进 */
+  p { margin: 0.7em 0; }
+  /* 行内强调：bold/italic 用字重 600 + 微小字距 */
+  strong { font-weight: 650; }
+  em { font-style: italic; }
+  /* 链接：默认无下划线，悬停时浮出下划线 + 浅色背景，节奏更"克制" */
+  a {
+    color: ${tokens.accent};
+    text-decoration: none;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+  a:hover { border-bottom-color: ${tokens.accent}; }
+  /* 列表：编号用 tabular-nums 让"10."和"1."对齐；段距更舒展 */
+  ul, ol { padding-left: 1.7em; margin: 0.6em 0; }
+  li { margin: 0.25em 0; }
+  li > p { margin: 0.25em 0; }
+  ol li::marker { font-variant-numeric: tabular-nums; }
+  ul li::marker { color: ${tokens.secondary}; }
   li.task-list-item { list-style: none; margin-left: -1.4em; }
   li.task-list-item input {
     appearance: none;
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     margin: 0 0.5em 0 0;
     border: 1px solid ${tokens.borderStrong};
     border-radius: 4px;
     background: ${tokens.surface};
     vertical-align: -2px;
+    transition: background 120ms ease-out, border-color 120ms ease-out;
   }
   li.task-list-item input:checked {
     background: ${tokens.accent} ${CHECK_SVG} center/10px no-repeat;
     border-color: ${tokens.accent};
   }
+  /* 引用：左条改为更细、但更深；背景几乎透明；外距加大；首字不再收缩 */
   blockquote {
-    margin: 0.8em 0; padding: 0.35em 0.9em;
-    border-left: 3px solid ${tokens.borderStrong};
+    margin: 1em 0;
+    padding: 0.5em 1.1em;
+    border-left: 2.5px solid color-mix(in srgb, ${tokens.accent} 60%, ${tokens.fg});
     background: color-mix(in srgb, ${tokens.fg} 3%, ${tokens.bg});
     border-radius: 0 6px 6px 0;
     color: ${tokens.secondary};
   }
+  blockquote > :first-child { margin-top: 0; }
+  blockquote > :last-child { margin-bottom: 0; }
+  /* 行内 code：背景更柔和，圆角更小，字重略加 */
   code {
     font-family: ${tokens.fontMono};
     font-size: 0.875em;
+    font-weight: 500;
     background: ${codeBg};
-    padding: 0.18em 0.4em;
-    border-radius: 5px;
-    border: 1px solid ${tokens.border};
+    padding: 0.2em 0.45em;
+    border-radius: 4px;
+    border: 1px solid color-mix(in srgb, ${tokens.border} 70%, transparent);
   }
+  /* 代码块：圆角更紧凑，行高 1.7；外距上下加大 */
   pre {
     background: ${codeBg};
-    border: 1px solid ${tokens.border};
+    border: 1px solid ${hairline};
     padding: 14px 16px;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow-x: auto;
+    line-height: 1.7;
+    margin: 1em 0;
   }
-  pre code { background: transparent; padding: 0; border: none; font-size: 0.875em; line-height: 1.65; }
-  .table-wrap { overflow-x: auto; margin: 0.8em 0; }
-  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  pre code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+  /* 表格：行高更松，表头底色更克制；行间分隔用 hairline */
+  .table-wrap { overflow-x: auto; margin: 1em 0; }
+  table {
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.6;
+  }
   th, td {
     border: none;
-    border-bottom: 1px solid ${tokens.border};
-    padding: 6px 16px 6px 0;
+    border-bottom: 1px solid ${hairline};
+    padding: 8px 18px 8px 0;
     text-align: left;
   }
-  th { font-weight: 600; background: ${codeBg}; border-bottom-color: ${tokens.borderStrong}; }
-  hr { border: none; border-top: 1px solid ${tokens.border}; margin: 1.4em 0; }
-  img { max-width: 100%; }
+  th {
+    font-weight: 600;
+    background: color-mix(in srgb, ${tokens.fg} 4%, ${tokens.bg});
+    border-bottom-color: color-mix(in srgb, ${tokens.fg} 14%, ${tokens.bg});
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  /* hr：渐变线段，比实线柔和 */
+  hr {
+    border: none;
+    height: 1px;
+    margin: 1.8em auto;
+    width: min(60%, 240px);
+    background: linear-gradient(to right, transparent, ${hairline}, transparent);
+  }
+  img { max-width: 100%; border-radius: 4px; }
   .img-broken {
     display: inline-block;
     max-width: 100%;
@@ -223,12 +299,12 @@ ${previewStyleUrls
   .footnote-item { margin: 0.25em 0; }
   .footnote-item p { margin: 0.2em 0; }
   /* 定义列表 */
-  dl { margin: 0.7em 0; }
+  dl { margin: 0.8em 0; }
   dt { font-weight: 600; margin: 0.5em 0 0.1em; }
   dd { margin: 0.1em 0 0.35em 1.5em; color: ${tokens.fg}; }
   sub, sup { font-size: 0.72em; line-height: 0; }
   /* 数学公式 */
-  .math-block { margin: 0.8em 0; overflow-x: auto; overflow-y: hidden; }
+  .math-block { margin: 1em 0; overflow-x: auto; overflow-y: hidden; }
   .math-block .katex-display { margin: 0.2em 0; }
   .katex { font-size: 1.05em; }
   .math-error {
@@ -240,6 +316,8 @@ ${previewStyleUrls
     font-family: ${tokens.fontMono};
     font-size: 0.88em;
   }
+  /* 选中态：随系统颜色，但保证不破坏布局 */
+  ::selection { background: color-mix(in srgb, ${tokens.accent} 30%, transparent); }
 </style>
 </head>
 <body>

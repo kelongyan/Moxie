@@ -59,7 +59,7 @@ function importPayload(payload: DocTransferPayload) {
     lineEnding: meta.lineEnding ?? "lf",
     cursorLine: meta.cursorLine ?? 1,
     cursorColumn: meta.cursorColumn ?? 1,
-    previewVisible: meta.previewVisible ?? false,
+    previewVisible: meta.previewVisible ?? true,
     perfTier: meta.perfTier ?? "standard",
     perfBytes: meta.perfBytes ?? 0,
     text: payload.content,

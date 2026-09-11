@@ -19,7 +19,7 @@ export function replaceContent(docId: string, text: string) {
   const old = views.get(docId);
   if (!old || !contentFactory) return;
   const parent = old.dom.parentElement;
-  const display = old.dom.style.display;
+  const hidden = old.dom.classList.contains("cm-doc-hidden");
   const timer = syncTimers.get(docId);
   if (timer !== undefined) window.clearTimeout(timer);
   syncTimers.delete(docId);
@@ -28,7 +28,8 @@ export function replaceContent(docId: string, text: string) {
   const next = contentFactory(docId, text);
   views.set(docId, next);
   if (parent) parent.appendChild(next.dom);
-  next.dom.style.display = display;
+  next.dom.dataset.docId = docId;
+  next.dom.classList.toggle("cm-doc-hidden", hidden);
 }
 
 export function registerView(docId: string, view: EditorView) {

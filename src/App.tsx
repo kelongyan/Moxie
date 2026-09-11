@@ -123,8 +123,9 @@ export default function App() {
         onSidebarHoverStart={onSidebarHoverStart}
         onSidebarHoverEnd={onSidebarHoverEnd}
         onTogglePreview={onTogglePreview}
-      />
-      <TabBar />
+      >
+        <TabBar />
+      </TitleToolbar>
       <div className={"lac-main" + (sidebarMode === "pinned" ? " sidebar-pinned" : "")}>
         <aside
           className={`sidebar mode-${sidebarMode}`}

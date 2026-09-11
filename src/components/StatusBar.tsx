@@ -15,6 +15,9 @@ interface StatusBarProps {
   activeDoc: EditorDocument | null;
 }
 
+/** "已保存"提示的常驻时长（毫秒） */
+const SAVED_FLASH_MS = 1600;
+
 function encodingLabel(id: string): string {
   return ENCODING_LABELS[id as StoredEncodingId] ?? id.toUpperCase();
 }
@@ -75,7 +78,7 @@ function useWordCount(doc: EditorDocument | null): string {
 
 const OVERRIDE_ITEMS: { key: FeatureKey; label: string; markdownOnly?: boolean }[] = [
   { key: "wordWrap", label: "自动换行" },
-  { key: "preview", label: "Markdown 预览", markdownOnly: true },
+  { key: "preview", label: "Markdown 渲染", markdownOnly: true },
   { key: "highlight", label: "语法高亮" },
   { key: "fold", label: "代码折叠" },
   { key: "wordCount", label: "实时字数统计" },
@@ -134,6 +137,25 @@ function LargeFileMenu({ doc }: { doc: EditorDocument }) {
 export function StatusBar({ activeDoc }: StatusBarProps) {
   const statusMessage = useDocuments((s) => s.statusMessage);
   const wordCount = useWordCount(activeDoc);
+  // 常态不常驻"已保存"：只在"脏 → 净"的瞬间提示一次，随后淡出
+  const [justSaved, setJustSaved] = useState(false);
+  const lastDirtyRef = useRef<{ id: string | null; dirty: boolean }>({
+    id: null,
+    dirty: false,
+  });
+
+  useEffect(() => {
+    const id = activeDoc?.id ?? null;
+    const dirty = !!activeDoc?.isDirty;
+    const prev = lastDirtyRef.current;
+    lastDirtyRef.current = { id, dirty };
+    if (prev.id !== id) return; // 切换文档不算"保存完成"
+    if (!prev.dirty || dirty) return;
+    if (!activeDoc || activeDoc.ioState !== "idle") return;
+    setJustSaved(true);
+    const timer = window.setTimeout(() => setJustSaved(false), SAVED_FLASH_MS);
+    return () => window.clearTimeout(timer);
+  }, [activeDoc?.id, activeDoc?.isDirty, activeDoc?.ioState]);
 
   return (
     <footer className="status-bar">
@@ -148,12 +170,12 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
             <span className="dot" />
             未保存
           </span>
-        ) : (
+        ) : justSaved ? (
           <span className="save-state saved">
             <Check size={12} />
             已保存
           </span>
-        ))}
+        ) : null)}
       {activeDoc && activeDoc.perfTier !== "standard" && (
         <LargeFileMenu doc={activeDoc} />
       )}
@@ -167,12 +189,12 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
       <span className="spacer" />
       {activeDoc && (
         <>
-          <span className="status-item">{encodingLabel(activeDoc.encoding)}</span>
-          <span className="status-item">{LANGUAGE_LABELS[activeDoc.language]}</span>
-          {wordCount && <span className="status-item">{wordCount}</span>}
           <span className="status-item">
             行 {activeDoc.cursorLine} · 列 {activeDoc.cursorColumn}
           </span>
+          <span className="status-item">{encodingLabel(activeDoc.encoding)}</span>
+          <span className="status-item">{LANGUAGE_LABELS[activeDoc.language]}</span>
+          {wordCount && <span className="status-item">{wordCount}</span>}
         </>
       )}
     </footer>
