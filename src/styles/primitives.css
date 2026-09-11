@@ -66,7 +66,8 @@
   cursor: default;
 }
 
-/* 操作按钮：弹窗 / 查找 / 编解码共用一套 */
+/* 操作按钮：弹窗 / 查找 / 编解码共用一套。
+   弹窗内按钮走"强调档"（32px），与主窗口的 28px 档控件形成层级 */
 .modal-button,
 .modal-choice-button,
 .find-button {
@@ -74,13 +75,18 @@
   background: var(--lac-button-bg);
   color: var(--lac-text);
   font-family: inherit;
-  font-size: var(--fs-body);
+  font-size: var(--fs-ui);
   height: var(--control-h);
   min-width: 80px;
   padding: 0 14px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background var(--anim-hover), filter var(--anim-hover);
+}
+
+.modal-button,
+.modal-choice-button {
+  height: var(--ctl-lg);
 }
 
 .modal-button:hover:not(:disabled),
@@ -180,12 +186,12 @@ input[type="checkbox"]:checked::after {
   transform: rotate(45deg);
 }
 
-/* 浮层表面：tooltip / 右键菜单 / 弹层 / 模态面板 */
+/* 浮层表面：tooltip / 右键菜单 / 弹层 / 模态面板。
+   阴影自带 1px 发丝边（--sh-1/2/3 的首层），不再另加实色描边 */
 .lac-tooltip,
 .context-menu,
 .bigfile-popover,
 .modal-panel {
   background: var(--lac-bg-elevated);
-  border: 1px solid var(--lac-border);
   border-radius: var(--radius-sm);
 }

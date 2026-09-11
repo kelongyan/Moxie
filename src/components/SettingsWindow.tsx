@@ -186,9 +186,9 @@ export function SettingsWindow() {
             value={prefs.fontSizePt}
             min={9}
             max={32}
-            defaultValue={13.5}
+            defaultValue={12}
             onChange={(v) => set({ fontSizePt: v })}
-            onReset={() => set({ fontSizePt: 13.5 })}
+            onReset={() => set({ fontSizePt: 12 })}
           />
         </SettingRow>
 

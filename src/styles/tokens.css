@@ -199,7 +199,7 @@
   --fs-editor: 16px; /* 与 --fs-content 同号，由设置页字号 pt 换算覆盖，此值仅兜底 */
   --fs-window-title: var(--fs-ui);
   --fs-dialog-title: var(--fs-title);
-  --fs-settings-title: var(--fs-20);
+  --fs-settings-title: 16px; /* 设置页标题（独立窗口，比主窗口 UI 大一档） */
   --fs-body: var(--fs-ui);
   --fs-small: var(--fs-caption);
   --fs-badge: var(--fs-meta);
