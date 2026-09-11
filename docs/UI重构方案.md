@@ -562,7 +562,7 @@
 
 ## 11. 补充 · 全局中文字体切换（2026-09-11）
 
-需求：把全局中文字体（界面 + 内容）换成 `Frex Sans GB`。
+需求：把全局中文字体（界面 + 内容）换成 `Frex Sans GB`，并移除内置的思源黑体。
 
 - **字体**：`src/assets/fonts/FrexSansGB.ttf`（可变字重 **100–700**，默认 400，8.25MB），取自 `FrexSansGB/variable/Frex Sans GB[wght].ttf`，由 Vite 打包为 `/assets/FrexSansGB-<hash>.ttf`。
 - **声明**：`styles/fonts.css` 新增 `@font-face`（`format("truetype-variations")`、`font-weight: 100 700`、`font-display: swap`）。
@@ -577,9 +577,9 @@
 | 预览 iframe · 段落 / 标题 | `Frex Sans GB VF`（中文）+ Segoe UI |
 | 设置 / 查找 / 编解码窗口 | `Frex Sans GB VF`（中文）+ Segoe UI（拉丁） |
 
-- **后备**：思源黑体 `Noto Sans SC` 仍打包（17.7MB），覆盖 Frex 缺字的长尾字符；若确认不需要可移除，省下约 17.7MB 包体。
-- **体积**：`Moxie.exe` 14.3MB → **19.1MB**（新增字体压缩后净增约 4.8MB）。
-- 基线已随字体重拍（`docs/ui-redesign/final/`）。
+- **后备**：思源黑体 `Noto Sans SC`（17.7MB）**已移除**——实测它从未被用到（中文全部命中 Frex），移除后缺字回退交给系统 CJK 字体（微软雅黑 / 更纱等宽）。
+- **体积**：`Moxie.exe` 14.3MB（含 Noto 时期）→ 19.1MB（加入 Frex）→ **9.98MB**（移除 Noto 后，比改造前还小 4.3MB）；`dist/` 21MB → 12MB；安装包 17.0MB → 待刷新。
+- 基线截图无需重拍：移除 Noto 不改变任何实际渲染（中文此前已全部命中 Frex，平台字体实测已确认）。
 
 
 ---

@@ -24,11 +24,7 @@ await send("DOM.enable");
 await send("CSS.enable");
 
 // 1) 主文档：字体是否可用 + 中文元素的实际平台字体
-console.log("字体已加载（document.fonts.check）:", await evalJs(`JSON.stringify({
-  frex: document.fonts.check('16px "Frex Sans GB"'),
-  noto: document.fonts.check('16px "Noto Sans SC"'),
-  status: document.fonts.status
-})`));
+console.log("字体已加载（document.fonts.check）:", await evalJs(`JSON.stringify({ frex: document.fonts.check('16px "Frex Sans GB"'), status: document.fonts.status })`));
 
 const doc = await send("DOM.getDocument", { depth: -1, pierce: true });
 const rootId = doc.result.root.nodeId;
