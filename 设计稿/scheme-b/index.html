@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>方案 B · 双行卡片 | Moxie 侧栏设计稿</title>
+  <link rel="stylesheet" href="../shared/tokens.css">
+  <link rel="stylesheet" href="../shared/base.css">
+  <link rel="stylesheet" href="scheme-b.css">
+</head>
+<body>
+  <header class="design-toolbar">
+    <a class="back" href="../index.html">← 方案总览</a>
+    <h1>方案 B · 双行卡片</h1>
+    <span class="design-badge">信息最全</span>
+    <span class="spacer"></span>
+    <div class="theme-toggle">
+      <button data-theme="light" class="active">浅色</button>
+      <button data-theme="dark">深色</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="stage-col-main">
+      <div class="app-mock">
+        <aside class="sidebar" id="sidebar"><!-- 方案 B 渲染 --></aside>
+        <section class="editor-mock">
+          <div class="mock-toolbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="mock-body">
+            <div class="mock-line accent"></div>
+            <div class="mock-line"></div><div class="mock-line"></div><div class="mock-line" style="width:88%"></div>
+            <div class="mock-line" style="width:70%"></div><div class="mock-line" style="width:92%"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <aside class="stage-col-notes">
+      <div class="design-notes">
+        <h2>设计要点</h2>
+        <ul>
+          <li><strong>双行 40px</strong>：标题 13px/500 + 副标题 11px/tertiary——目录与时间直接可见，信息最全。</li>
+          <li><strong>副标题语义</strong>：分组文件显示目录名，最近文件显示相对时间（各行有各行的话）。</li>
+          <li><strong>卡片呼吸</strong>：行间距 2px，悬停浮起 accent-soft 描边底。</li>
+          <li><strong>激活整行染</strong>：accent-soft 底 + 3px 左条，比方案 A 的信号更强。</li>
+          <li><strong>取舍</strong>：一屏可见条目约为方案 A 的 78%；列表长时扫读 slower。</li>
+        </ul>
+        <div class="try">
+          <strong>试试：</strong>对比方案 A 的一屏密度；悬停看卡片浮起；拖拽到分组；切深色看卡片底。
+        </div>
+        <h3>适合场景</h3>
+        <ul>
+          <li>侧栏条目通常 ≤ 15 条、偏爱信息密度低的高级感</li>
+          <li>实现代价：行高令牌 32→40，其余同方案 A</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <script src="../shared/mock-data.js"></script>
+  <script src="../shared/preview.js"></script>
+  <script src="scheme-b.js"></script>
+</body>
+</html>

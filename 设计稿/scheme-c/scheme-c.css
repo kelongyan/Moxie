@@ -1,0 +1,284 @@
+/* ============================================================
+ * 方案 C · 沉浸树形
+ * 30px 紧行 + 分组底色块（inset 通栏）+ hover 浮现 chevron。
+ * ============================================================ */
+
+.sidebar {
+  width: var(--lac-sidebar-width);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--lac-bg-sidebar);
+  overflow: hidden;
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- 区块头 ---------- */
+
+.section-header {
+  height: var(--lac-section-header-height);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 7px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+  flex: none;
+}
+
+.section-header:hover { background: var(--lac-hover); }
+
+.section-chevron {
+  color: var(--lac-text-tertiary);
+  opacity: 0.65;
+  flex-shrink: 0;
+  transition: transform var(--dur-1) var(--ease-out);
+}
+
+.section-chevron.expanded { transform: rotate(90deg); }
+
+.section-title {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--lac-text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+.section-count {
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-header .spacer { flex: 1; }
+
+.section-trash {
+  width: var(--ctl-sm);
+  height: var(--ctl-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-xs);
+  color: var(--lac-text-tertiary);
+  cursor: pointer;
+}
+
+.section-trash:hover { background: var(--lac-pressed); color: var(--lac-text); }
+
+/* ---------- 分组行：inset 底色块（方案 C 的识别点） ---------- */
+
+.group-row {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+  background: var(--lac-bg-inset);
+  transition: background var(--anim-hover), box-shadow var(--anim-hover);
+}
+
+.group-row:hover { background: var(--lac-hover); }
+
+.group-row.drop-target {
+  background: var(--lac-accent-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lac-accent) 40%, transparent);
+}
+
+/* chevron：默认隐藏，hover/展开时浮现 */
+.group-chevron {
+  display: none;
+  color: var(--lac-text-tertiary);
+  transition: transform var(--dur-1) var(--ease-out);
+}
+
+.group-row:hover .group-chevron { display: inline-flex; }
+.group-row.expanded .group-chevron { display: inline-flex; transform: rotate(90deg); }
+
+.group-icon {
+  display: inline-flex;
+  color: var(--lac-text-secondary);
+  flex-shrink: 0;
+}
+
+.group-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-ui);
+  font-weight: 500;
+  color: var(--lac-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-count {
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  min-width: 16px;
+  text-align: right;
+}
+
+.group-children {
+  /* 子级贴左 6px 缩进，不占一整档 */
+  padding-left: 8px;
+}
+
+.group-empty {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+}
+
+/* ---------- 文件行：30px 紧行 ---------- */
+
+.file-row {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px 0 6px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+  transition: background var(--anim-hover);
+}
+
+.file-row:hover { background: var(--lac-hover); }
+
+.row-icon {
+  width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lac-text-secondary);
+  flex-shrink: 0;
+}
+
+.row-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-ui);
+  color: var(--lac-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 激活：整行染（通栏，不留指示条位） */
+.file-row.is-open {
+  background: var(--lac-accent-soft);
+}
+.file-row.is-open .row-icon { color: var(--lac-accent); }
+.file-row.is-open .row-name { font-weight: 500; }
+
+.file-row.is-missing .row-name { color: var(--lac-text-tertiary); }
+.file-row.is-missing .row-icon .warn { color: var(--lac-warning); }
+
+/* ---------- 行尾：时间 / 浮现操作 ---------- */
+
+.row-end {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.row-time {
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.row-action {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-xs);
+  color: var(--lac-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-out), background var(--anim-hover), color var(--anim-hover);
+}
+
+.file-row:hover .row-action { opacity: 1; }
+.file-row:hover .row-time { display: none; }
+.row-action:hover { background: var(--lac-pressed); color: var(--lac-text); }
+.row-action.danger:hover { color: var(--lac-danger); }
+
+.row-locate {
+  display: none;
+  color: var(--lac-warning);
+}
+
+.file-row.is-missing:hover .row-locate { display: inline-flex; }
+
+/* ---------- 空状态 / 底部 ---------- */
+
+.section-empty {
+  font-size: var(--fs-caption);
+  color: var(--lac-text-tertiary);
+  padding: 10px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.section-empty-button {
+  font-size: var(--fs-caption);
+  font-family: inherit;
+  color: var(--lac-text-secondary);
+  padding: 0 10px;
+  height: var(--ctl-sm);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+}
+
+.section-empty-button:hover { background: var(--lac-hover); color: var(--lac-text); }
+
+.sidebar-footer {
+  flex: none;
+  border-top: 1px solid var(--lac-border);
+  padding: 3px 8px;
+}
+
+.sidebar-settings {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--lac-text-secondary);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  cursor: pointer;
+}
+
+.sidebar-settings:hover { background: var(--lac-hover); color: var(--lac-text); }

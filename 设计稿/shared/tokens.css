@@ -1,0 +1,110 @@
+/* ============================================================
+ * Moxie 侧栏设计稿 · 共享设计令牌
+ * 来源：src/styles/tokens.css（v3）的精简副本，仅保留侧栏设计稿
+ * 用到的令牌；深浅两套与源码同值，保证设计稿与真实软件观感一致。
+ * ============================================================ */
+
+/* 内置中文字体（与真实软件一致），路径指向源码资源 */
+@font-face {
+  font-family: "Frex Sans GB";
+  src: url("../src/assets/fonts/FrexSansGB.ttf") format("truetype-variations");
+  font-weight: 100 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --lac-bg-chrome: #ececee;
+  --lac-bg: #ffffff;
+  --lac-bg-sidebar: #f4f4f5;
+  --lac-bg-elevated: #ffffff;
+  --lac-bg-inset: #f3f3f5;
+
+  --lac-text: #1a1b1f;
+  --lac-text-secondary: #5c6068;
+  --lac-text-tertiary: #6b6e76;
+
+  --lac-border: #e4e5e8;
+  --lac-border-strong: #d2d4d9;
+
+  --lac-hover: rgba(23, 24, 28, 0.05);
+  --lac-pressed: rgba(23, 24, 28, 0.1);
+  --lac-button-bg: rgba(23, 24, 28, 0.04);
+
+  --lac-accent: #4a52a3;
+  --lac-accent-soft: rgba(74, 82, 163, 0.1);
+  --lac-accent-softer: rgba(74, 82, 163, 0.055);
+
+  --lac-success: #177a3d;
+  --lac-warning: #96590a;
+  --lac-danger: #c0392c;
+
+  --sh-1: 0 0 0 1px rgba(16, 18, 24, 0.05), 0 1px 2px rgba(16, 18, 24, 0.05);
+  --sh-2: 0 0 0 1px rgba(16, 18, 24, 0.06), 0 2px 6px rgba(16, 18, 24, 0.06),
+    0 10px 28px rgba(16, 18, 24, 0.12);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --lac-bg-chrome: #141416;
+  --lac-bg: #1c1c1f;
+  --lac-bg-sidebar: #171719;
+  --lac-bg-elevated: #242428;
+  --lac-bg-inset: #17181c;
+
+  --lac-text: #e9eaee;
+  --lac-text-secondary: #a4a8b2;
+  --lac-text-tertiary: #83878f;
+
+  --lac-border: #2e3037;
+  --lac-border-strong: #3d3f47;
+
+  --lac-hover: rgba(255, 255, 255, 0.06);
+  --lac-pressed: rgba(255, 255, 255, 0.11);
+  --lac-button-bg: rgba(255, 255, 255, 0.05);
+
+  --lac-accent: #96a0f5;
+  --lac-accent-soft: rgba(150, 160, 245, 0.16);
+  --lac-accent-softer: rgba(150, 160, 245, 0.09);
+
+  --lac-success: #5cd68a;
+  --lac-warning: #e3b341;
+  --lac-danger: #ff7b72;
+
+  --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35),
+    0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+:root {
+  /* 结构尺寸（与源码一致） */
+  --lac-sidebar-width: 232px;
+  --lac-sidebar-row-height: 32px;
+  --lac-group-row-height: 28px;
+  --lac-section-header-height: 28px;
+
+  /* 控件与字号 */
+  --ctl-sm: 24px;
+  --fs-caption: 12px;
+  --fs-ui: 13px;
+  --fs-meta: 11px;
+
+  /* 字体栈：拉丁 Segoe 系，中文 Frex（真实软件同款） */
+  --font-ui: "Segoe UI", "Segoe UI Variable Text", "Frex Sans GB",
+    "Microsoft YaHei UI", system-ui, sans-serif;
+
+  /* 圆角 */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+
+  /* 动效 */
+  --dur-1: 80ms;
+  --dur-2: 140ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.25, 1);
+  --anim-hover: var(--dur-1) var(--ease-out);
+}
