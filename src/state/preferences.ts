@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { emit } from "@tauri-apps/api/event";
 import { ThemeMode, useThemeStore } from "./theme";
+import type { BlockSpacing } from "../preview/typography";
 
 export type IndentStyle = "spaces" | "tabs";
 export type ExitBehavior = "preserveWorkspace" | "askToSave";
@@ -15,6 +16,7 @@ interface PreferencesState {
   statusBarVisible: boolean;
   fontSizePt: number;
   lineSpacingPt: number;
+  blockSpacing: BlockSpacing;
   indentStyle: IndentStyle;
   tabWidth: 2 | 4 | 8;
   exitBehavior: ExitBehavior;
@@ -32,6 +34,7 @@ const EDITOR_KEYS = new Set([
   "lineNumbers",
   "fontSizePt",
   "lineSpacingPt",
+  "blockSpacing",
   "indentStyle",
   "tabWidth",
 ]);
@@ -45,6 +48,7 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     isStatusBarVisible: state.statusBarVisible,
     editorFontSize: state.fontSizePt,
     editorLineSpacing: state.lineSpacingPt,
+    editorBlockSpacing: state.blockSpacing,
     editorIndentationStyle: state.indentStyle,
     editorTabWidth: state.tabWidth,
     appTheme: useThemeStore.getState().mode,
@@ -81,6 +85,7 @@ export const usePreferences = create<PreferencesState>((set) => ({
   /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
   fontSizePt: 12,
   lineSpacingPt: 4,
+  blockSpacing: "standard",
   indentStyle: "spaces",
   tabWidth: 4,
   exitBehavior: "preserveWorkspace",
@@ -112,6 +117,13 @@ export const usePreferences = create<PreferencesState>((set) => ({
     }
     if (typeof disk.editorLineSpacing === "number") {
       patch.lineSpacingPt = Math.min(10, Math.max(0, disk.editorLineSpacing));
+    }
+    if (
+      disk.editorBlockSpacing === "compact" ||
+      disk.editorBlockSpacing === "standard" ||
+      disk.editorBlockSpacing === "relaxed"
+    ) {
+      patch.blockSpacing = disk.editorBlockSpacing;
     }
     if (disk.editorIndentationStyle === "spaces" || disk.editorIndentationStyle === "tabs") {
       patch.indentStyle = disk.editorIndentationStyle;

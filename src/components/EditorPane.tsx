@@ -84,6 +84,7 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     showLineNumbers: prefs.lineNumbers,
     fontSizePt: prefs.fontSizePt,
     lineSpacingPt: prefs.lineSpacingPt,
+    blockSpacing: prefs.blockSpacing,
     indentUnitText: indentUnitOf(prefs.indentStyle, prefs.tabWidth),
     enableHighlight: features.highlight,
     enableFold: features.fold,

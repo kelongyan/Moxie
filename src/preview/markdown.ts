@@ -182,7 +182,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   h1 {
     font-size: 2em;
     color: ${tokens.fg};
-    border-bottom: 2px solid ${tokens.fg};
+    border-bottom: 2px solid ${tokens.borderStrong};
     padding-bottom: 10px;
   }
   h2 {
@@ -324,7 +324,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     display: block;
   }
   .code-scroll { display: block; max-height: 300px; overflow: auto; }
-  .code-line { display: flex; line-height: 1.8; min-width: 0; }
+  .code-line { display: flex; line-height: 1.6; min-width: 0; }
   .code-line-num {
     flex: none;
     width: 3em;

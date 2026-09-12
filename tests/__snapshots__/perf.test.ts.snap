@@ -42,7 +42,7 @@ exports[`preview snapshot > dark theme 1`] = `
   h1 {
     font-size: 2em;
     color: #e9eaee;
-    border-bottom: 2px solid #e9eaee;
+    border-bottom: 2px solid #d2d4d9;
     padding-bottom: 10px;
   }
   h2 {
@@ -184,7 +184,7 @@ exports[`preview snapshot > dark theme 1`] = `
     display: block;
   }
   .code-scroll { display: block; max-height: 300px; overflow: auto; }
-  .code-line { display: flex; line-height: 1.8; min-width: 0; }
+  .code-line { display: flex; line-height: 1.6; min-width: 0; }
   .code-line-num {
     flex: none;
     width: 3em;
@@ -247,7 +247,7 @@ exports[`preview snapshot > dark theme 1`] = `
     border: none;
     height: 1px;
     background: linear-gradient(90deg, transparent, #e4e5e8, transparent);
-    margin: 32px 0;
+    margin: 24px 0;
   }
 
   img { max-width: 100%; height: auto; border-radius: 4px; }
@@ -466,7 +466,7 @@ exports[`preview snapshot > light theme 1`] = `
   h1 {
     font-size: 2em;
     color: #1a1b1f;
-    border-bottom: 2px solid #1a1b1f;
+    border-bottom: 2px solid #d2d4d9;
     padding-bottom: 10px;
   }
   h2 {
@@ -608,7 +608,7 @@ exports[`preview snapshot > light theme 1`] = `
     display: block;
   }
   .code-scroll { display: block; max-height: 300px; overflow: auto; }
-  .code-line { display: flex; line-height: 1.8; min-width: 0; }
+  .code-line { display: flex; line-height: 1.6; min-width: 0; }
   .code-line-num {
     flex: none;
     width: 3em;
@@ -671,7 +671,7 @@ exports[`preview snapshot > light theme 1`] = `
     border: none;
     height: 1px;
     background: linear-gradient(90deg, transparent, #e4e5e8, transparent);
-    margin: 32px 0;
+    margin: 24px 0;
   }
 
   img { max-width: 100%; height: auto; border-radius: 4px; }

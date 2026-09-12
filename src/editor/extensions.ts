@@ -29,6 +29,7 @@ import {
 } from "./listContinuation";
 import { searchHighlightField } from "./searchHighlight";
 import { PT_TO_PX } from "../state/preferences";
+import { spacingScale, type BlockSpacing } from "../preview/typography";
 
 export interface EditorOptions {
   docId: string;
@@ -37,6 +38,8 @@ export interface EditorOptions {
   showLineNumbers: boolean;
   fontSizePt: number;
   lineSpacingPt: number;
+  /** 段间距档位（缺省 standard）；仅书写面（livePreview）使用 */
+  blockSpacing?: BlockSpacing;
   indentUnitText: string;
   enableHighlight: boolean;
   enableFold: boolean;
@@ -116,6 +119,11 @@ export function buildEditorState(options: EditorOptions): EditorState {
         fontFamily: editable ? "var(--font-ui)" : "var(--font-mono)",
         // 基准 1.7em（TizuMark 正文行高）+ 行距偏离量；默认 lineSpacingPt=4 → 恰好 1.7
         lineHeight: `calc(1.7em + ${lineSpacingPx}px)`,
+        // 中文排版增强，与导出 renderShell 对齐（markdown.ts）：全角标点挤压、
+        // 等宽数字、kern/liga；旧 WebView2 不识别时无害回落
+        textSpacingTrim: "space-first",
+        fontVariantNumeric: "tabular-nums",
+        fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
         // 书写面：正文区限宽居中（--measure-writing），两端留白；16/24 内边距由 .cm-content padding 提供
         // 源码视图：整块（行号 + 正文）居中并限制列宽；56px 是行号槽的预留宽度
         paddingInline: editable
@@ -124,7 +132,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
       },
       ".cm-content": {
         caretColor: "var(--lac-accent)",
-        padding: editable ? "16px 24px 32px" : "16px 0 32px",
+        padding: editable ? "24px 24px 32px" : "24px 0 32px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {
@@ -215,7 +223,12 @@ export function buildEditorState(options: EditorOptions): EditorState {
     extensions.push(...markdownExtensions());
   }
   if (options.enableLivePreview && options.imageSrcResolver) {
-    extensions.push(livePreview(options.imageSrcResolver));
+    extensions.push(
+      livePreview(
+        options.imageSrcResolver,
+        spacingScale(fontSizePx, options.blockSpacing ?? "standard")
+      )
+    );
   }
   if (options.enableFold) {
     extensions.push(codeFolding());

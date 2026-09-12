@@ -103,6 +103,106 @@ class HorizontalRuleWidget extends WidgetType {
   }
 }
 
+/** 无序列表标记 → 项目符号（•/◦/▪ 按嵌套层级，对齐导出侧 disc/circle/square） */
+class BulletWidget extends WidgetType {
+  constructor(readonly level: number) {
+    super();
+  }
+  eq(other: BulletWidget) {
+    return other.level === this.level;
+  }
+  toDOM() {
+    const level = Math.min(this.level, 2);
+    const el = document.createElement("span");
+    el.className = `md-bullet md-bullet-${level}`;
+    el.textContent = ["•", "◦", "▪"][level];
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
+interface TableData {
+  header: string[];
+  rows: string[][];
+}
+
+/** 从语法树提取表格内容：首行 = 表头，其余为数据行；单元格取纯文本。
+ *  lezer 结构：表头行是 TableHeader（直接含 TableCell），数据行是 TableRow > TableCell */
+function tableDataOf(node: SyntaxNode, doc: Text): TableData | null {
+  const rows: string[][] = [];
+  const cellsOf = (n: SyntaxNode): string[] => {
+    const cells: string[] = [];
+    for (let c = n.firstChild; c; c = c.nextSibling) {
+      if (c.name === "TableCell") cells.push(doc.sliceString(c.from, c.to).trim());
+    }
+    return cells;
+  };
+  const walk = (n: SyntaxNode) => {
+    for (let c = n.firstChild; c; c = c.nextSibling) {
+      if (c.name === "TableRow") {
+        rows.push(cellsOf(c));
+      } else if (c.name === "TableHeader") {
+        const cells = cellsOf(c);
+        if (cells.length > 0) rows.push(cells);
+      }
+    }
+  };
+  walk(node);
+  if (rows.length === 0) return null;
+  return { header: rows[0], rows: rows.slice(1) };
+}
+
+/** GFM 表格 → 只读 HTML 表格（光标进入还原源码编辑）；gap 为与上一块的折叠间距 */
+class TableWidget extends WidgetType {
+  constructor(
+    readonly header: string[],
+    readonly rows: string[][],
+    readonly gap: number
+  ) {
+    super();
+  }
+  eq(other: TableWidget) {
+    return (
+      other.gap === this.gap &&
+      other.header.length === this.header.length &&
+      other.rows.length === this.rows.length &&
+      other.header.every((c, i) => c === this.header[i]) &&
+      other.rows.every(
+        (r, i) =>
+          r.length === this.rows[i].length &&
+          r.every((c, j) => c === this.rows[i][j])
+      )
+    );
+  }
+  toDOM() {
+    const wrap = document.createElement("div");
+    wrap.className = "md-table-wrap";
+    if (this.gap > 0) wrap.style.paddingTop = `${this.gap}px`;
+    const table = document.createElement("table");
+    table.className = "md-table";
+    const headRow = table.createTHead().insertRow();
+    for (const cell of this.header) {
+      const th = document.createElement("th");
+      th.textContent = cell;
+      headRow.appendChild(th);
+    }
+    const tbody = table.createTBody();
+    for (const row of this.rows) {
+      const tr = tbody.insertRow();
+      for (const cell of row) {
+        tr.insertCell().textContent = cell;
+      }
+    }
+    wrap.appendChild(table);
+    return wrap;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
 class TaskWidget extends WidgetType {
   constructor(readonly checked: boolean) {
     super();
@@ -178,11 +278,13 @@ function imageReplace(
 /**
  * 计算即时渲染的全部装饰区间（纯函数，便于单测）。
  * parseTo：要求语法树解析到的位置（编辑器里传视口末端，测试里传文档全长）。
+ * scale：块间距缩放系数（见 typography.spacingScale），1 = 16px 正文 + 标准档。
  */
 export function computeLiveRanges(
   state: EditorState,
   parseTo: number,
-  resolveImageSrc: ImageSrcResolver
+  resolveImageSrc: ImageSrcResolver,
+  scale = 1
 ): Range<Decoration>[] {
   const doc = state.doc;
   const tree =
@@ -219,6 +321,8 @@ export function computeLiveRanges(
     lastLine: number;
   }
   const blocks: TopBlock[] = [];
+  /** 待渲染的顶层表格（光标不在其内），折叠间距算好后替换为 widget */
+  const tables: { from: number; to: number; data: TableData }[] = [];
   const blockKindOf = (name: string): BlockKind | null => {
     if (/^(ATXHeading[1-6]|SetextHeading[12])$/.test(name)) return "heading";
     if (name === "Paragraph") return "paragraph";
@@ -226,7 +330,8 @@ export function computeLiveRanges(
     if (name === "Blockquote") return "blockquote";
     if (name === "FencedCode" || name === "CodeBlock") return "pre";
     if (name === "HorizontalRule") return "hr";
-    if (name === "Table" || name === "HTMLBlock") return "paragraph";
+    if (name === "Table") return "table";
+    if (name === "HTMLBlock") return "paragraph";
     return null;
   };
 
@@ -251,6 +356,11 @@ export function computeLiveRanges(
             firstLine: doc.lineAt(from).number,
             lastLine: doc.lineAt(to > from ? to - 1 : from).number,
           });
+        }
+        // 顶层表格：光标在外时收集，折叠间距算好后整块替换为只读 widget
+        if (node.name === "Table" && !selectionTouches(state, from, to)) {
+          const data = tableDataOf(node, doc);
+          if (data) tables.push({ from, to, data });
         }
       }
 
@@ -367,6 +477,11 @@ export function computeLiveRanges(
       if (node.name === "QuoteMark") {
         const line = doc.lineAt(from);
         pushLineClass(line.from, "md-quote");
+        // 引用内的空引用行（">"/">>"后无正文）压缩为分隔空行高度，与顶层空行节奏一致，
+        // 避免引用卡片中间出现全行高的空洞；光标停在该行时不压缩，保留完整可编辑原文
+        if (/^\s*>+\s*$/.test(line.text) && !selectionOnLine(state, line.from, line.to)) {
+          pushLineClass(line.from, "md-blank");
+        }
         if (!selectionOnLine(state, line.from, line.to)) hideChild(node, true);
         return;
       }
@@ -394,6 +509,11 @@ export function computeLiveRanges(
           ranges.push(
             Decoration.replace({ widget: new TaskWidget(checked) }).range(from, to)
           );
+          // 任务行不再显示 "- ☑" 双标记：隐藏行首列表标记与其后空格（保留缩进）
+          const m = /^([ \t]*)[-*+][ \t]/.exec(line.text);
+          if (m) {
+            ranges.push(HIDE.range(line.from + m[1].length, line.from + m[0].length));
+          }
         }
         return false;
       }
@@ -403,6 +523,25 @@ export function computeLiveRanges(
         const next = node.nextSibling;
         if (next && next.name === "ListItem") {
           pushLineClass(doc.lineAt(to).from, "md-li-end");
+        }
+        // 无序列表标记 → 项目符号 widget（光标进入显示原文；任务行由上方分支处理）
+        if (parent && parent.name === "BulletList") {
+          const mark = node.firstChild;
+          if (mark && mark.name === "ListMark") {
+            const line = doc.lineAt(mark.from);
+            if (!selectionOnLine(state, line.from, line.to) && !taskToggleInLine(line.text)) {
+              let level = 0;
+              for (let p = parent.parent; p; p = p.parent) {
+                if (p.name === "BulletList") level += 1;
+              }
+              ranges.push(
+                Decoration.replace({ widget: new BulletWidget(level) }).range(
+                  mark.from,
+                  mark.to
+                )
+              );
+            }
+          }
         }
         return;
       }
@@ -417,8 +556,8 @@ export function computeLiveRanges(
     const prev = i > 0 ? blocks[i - 1] : null;
     const firstLine = doc.line(block.firstLine);
 
-    // 承载自身顶部内边距的块（引用 / 代码）由 CSS 读取 var，不加 md-block 以免双计
-    if (block.kind !== "blockquote" && block.kind !== "pre") {
+    // 承载自身顶部内边距的块（引用 / 代码 / 表格 widget）由 CSS 或 widget 读取，不加 md-block 以免双计
+    if (block.kind !== "blockquote" && block.kind !== "pre" && block.kind !== "table") {
       pushLineClass(firstLine.from, "md-block");
     }
     if (block.kind === "blockquote") {
@@ -430,10 +569,23 @@ export function computeLiveRanges(
     for (let ln = blankFrom; ln < block.firstLine; ln++) {
       pushLineClass(doc.line(ln).from, "md-blank");
     }
+    const blankLines = prev ? Math.max(0, block.firstLine - prev.lastLine - 1) : 0;
     if (prev) {
-      const blankLines = Math.max(0, block.firstLine - prev.lastLine - 1);
-      const gap = spaceBefore(prev.kind, block.kind, blankLines);
+      const gap = spaceBefore(prev.kind, block.kind, blankLines, scale);
       if (gap > 0) setSpaceBefore(firstLine.from, gap);
+    }
+    // 表格整块替换：与上一块的折叠间距由 widget 自身 padding 承载
+    if (block.kind === "table") {
+      const t = tables.find((x) => doc.lineAt(x.from).number === block.firstLine);
+      if (t) {
+        const gap = prev ? spaceBefore(prev.kind, "table", blankLines, scale) : 0;
+        ranges.push(
+          Decoration.replace({
+            widget: new TableWidget(t.data.header, t.data.rows, gap),
+            block: true,
+          }).range(firstLine.from, doc.line(block.lastLine).to)
+        );
+      }
     }
   }
   if (blocks.length > 0) {
@@ -471,16 +623,19 @@ export function computeLiveRanges(
  * - 视口变化（滚动到未解析区域）→ ViewPlugin 在微任务里 dispatch recompute effect 补算，
  *   不能在 update 循环内直接 dispatch。
  */
-export function livePreview(resolveImageSrc: ImageSrcResolver): Extension {
+export function livePreview(
+  resolveImageSrc: ImageSrcResolver,
+  scale = 1
+): Extension {
   const recompute = StateEffect.define<null>();
 
   const field = StateField.define<DecorationSet>({
     create(state) {
-      return safeCompute(state, resolveImageSrc);
+      return safeCompute(state, resolveImageSrc, scale);
     },
     update(value, tr) {
       if (tr.docChanged || tr.selection || tr.effects.some((e) => e.is(recompute))) {
-        return safeCompute(tr.state, resolveImageSrc);
+        return safeCompute(tr.state, resolveImageSrc, scale);
       }
       return value;
     },
@@ -504,9 +659,16 @@ export function livePreview(resolveImageSrc: ImageSrcResolver): Extension {
 }
 
 /** 装饰计算出错绝不能炸掉视图（前车之鉴：跨行 replace 直接让 EditorView 创建失败） */
-function safeCompute(state: EditorState, resolver: ImageSrcResolver): DecorationSet {
+function safeCompute(
+  state: EditorState,
+  resolver: ImageSrcResolver,
+  scale = 1
+): DecorationSet {
   try {
-    return Decoration.set(computeLiveRanges(state, state.doc.length, resolver), true);
+    return Decoration.set(
+      computeLiveRanges(state, state.doc.length, resolver, scale),
+      true
+    );
   } catch {
     return Decoration.none;
   }

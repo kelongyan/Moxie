@@ -7,6 +7,13 @@ import {
   usePreferences,
 } from "../state/preferences";
 import { THEME_LABELS, ThemeMode, useThemeStore } from "../state/theme";
+import type { BlockSpacing } from "../preview/typography";
+
+const BLOCK_SPACING_LABELS: Record<BlockSpacing, string> = {
+  compact: "紧凑",
+  standard: "标准",
+  relaxed: "宽松",
+};
 
 function SettingRow(props: {
   title: string;
@@ -201,6 +208,20 @@ export function SettingsWindow() {
             onChange={(v) => set({ lineSpacingPt: v })}
             onReset={() => set({ lineSpacingPt: 4 })}
           />
+        </SettingRow>
+
+        <SettingRow title="段间距" description="段落与区块之间的留白节奏">
+          <div className="segmented wide" role="tablist">
+            {(["compact", "standard", "relaxed"] as BlockSpacing[]).map((mode) => (
+              <button
+                key={mode}
+                className={prefs.blockSpacing === mode ? "active" : ""}
+                onClick={() => set({ blockSpacing: mode })}
+              >
+                {BLOCK_SPACING_LABELS[mode]}
+              </button>
+            ))}
+          </div>
         </SettingRow>
 
         <SettingRow

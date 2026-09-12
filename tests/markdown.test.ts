@@ -126,7 +126,7 @@ describe("renderMarkdown", () => {
   it("uses a full-width gradient hr", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("background: linear-gradient(90deg, transparent,");
-    expect(html).toContain("margin: 32px 0;");
+    expect(html).toContain("margin: 24px 0;");
   });
 
   it("renders blockquote with an accent left bar", () => {
