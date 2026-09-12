@@ -97,9 +97,11 @@ describe("livePreview · 标题", () => {
     expect(hasClass(ranges, 0, "md-h1")).toBe(true);
   });
 
-  it("光标在标题行时显示原始 #", () => {
+  it("光标在标题行时 # 保持隐藏（Typora 式）", () => {
     const ranges = rangesOf(doc, 0);
-    expect(plainHides(ranges)).toEqual([]);
+    expect(plainHides(ranges)).toContainEqual([0, 2]);
+    expect(visibleText(doc, ranges)).toBe("标题\n正文\n");
+    expect(hasClass(ranges, 0, "md-h1")).toBe(true);
   });
 });
 
@@ -161,9 +163,9 @@ describe("livePreview · 代码围栏", () => {
     expect(hasClass(ranges, 19, "md-code-fence-close")).toBe(true);
   });
 
-  it("光标进入代码块时显示 fence 行原文", () => {
+  it("光标进入代码块时：开 fence 显示原文（改语言），闭 fence 保持隐藏", () => {
     const ranges = rangesOf(doc, 8);
-    expect(plainHides(ranges)).toEqual([]);
+    expect(plainHides(ranges)).toContainEqual([19, 22]);
     expect(widgets(ranges)).toEqual([]);
   });
 });
@@ -200,9 +202,10 @@ describe("livePreview · 引用 / 分割线 / 任务清单", () => {
     expect(hasClass(ranges, 0, "md-quote-first")).toBe(true);
   });
 
-  it("光标在引用行时显示原始 >", () => {
+  it("光标在引用行时 > 保持隐藏（Typora 式）", () => {
     const ranges = rangesOf("> 引用行\n正文", 2);
-    expect(plainHides(ranges)).toEqual([]);
+    expect(plainHides(ranges)).toContainEqual([0, 2]);
+    expect(hasClass(ranges, 0, "md-quote")).toBe(true);
   });
 
   it("隐藏删除线 ~~ 标记", () => {
@@ -224,16 +227,18 @@ describe("livePreview · 引用 / 分割线 / 任务清单", () => {
     expect(ws[0].to).toBe(7);
   });
 
-  it("任务清单替换为 checkbox widget，勾选状态正确", () => {
+  it("任务清单 checkbox 无条件渲染（光标在行上也保持）", () => {
     const doc = "- [x] 完成\n- [ ] 待办";
-    // 光标在第 2 行：第 2 行显原文，第 1 行渲染成 checkbox
+    // 光标在第 2 行：两行都渲染 checkbox
     const atLine2 = widgets(rangesOf(doc, 16));
     expect(atLine2.map((w) => [w.from, w.to, w.widget.checked])).toEqual([
       [2, 5, true],
+      [11, 14, false],
     ]);
-    // 光标在第 1 行：反过来，第 2 行渲染成未勾选 checkbox
+    // 光标在第 1 行：同样双 checkbox
     const atLine1 = widgets(rangesOf(doc, 4));
     expect(atLine1.map((w) => [w.from, w.to, w.widget.checked])).toEqual([
+      [2, 5, true],
       [11, 14, false],
     ]);
   });
@@ -363,9 +368,10 @@ describe("livePreview · 无序列表符号 widget", () => {
     ]);
   });
 
-  it("光标在列表行上时显示原始标记", () => {
+  it("光标在列表行上项目符号保持渲染（Typora 式）", () => {
     const ranges = rangesOf("- 一\n", 0);
-    expect(widgets(ranges).some((w) => "level" in w.widget)).toBe(false);
+    const bullets = widgets(ranges).filter((w) => "level" in w.widget);
+    expect(bullets).toEqual([{ from: 0, to: 1, widget: { level: 0 } }]);
   });
 
   it("任务行不替换项目符号（由任务分支处理双标记）", () => {

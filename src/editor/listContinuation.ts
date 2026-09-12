@@ -4,6 +4,7 @@ export const ORDERED = /^(\s*)(\d+)([.)])(\s+)(.*)$/;
 export const UNORDERED = /^(\s*)([-*+])(\s+)(.*)$/;
 export const EMPTY_ITEM = /^(\s*)(?:\d+[.)]|[-*+])[ \t]*$/;
 const ORDERED_PREFIX = /^(\s*)(\d+)([.)])(\s+)/;
+const QUOTE_PREFIX = /^(\s*)((?:>\s?)+)(.*)$/;
 const RENUMBER_ITEM_LIMIT = 500;
 
 export type Continuation =
@@ -78,6 +79,33 @@ export function markdownEnterHandler(view: EditorView): boolean {
       changes: { from: line.from + empty[1].length, to: line.to, insert: "" },
       selection: { anchor: line.from + empty[1].length },
       userEvent: "delete",
+      scrollIntoView: true,
+    });
+    return true;
+  }
+
+  // 引用续行：Enter 续写 "> " 前缀（Typora 式）；空引用行退出引用
+  const quote = QUOTE_PREFIX.exec(line.text);
+  if (quote) {
+    const [, indent, marks, content] = quote;
+    const prefixLen = indent.length + marks.length;
+    if (content.trim() === "" && range.head >= line.from + prefixLen) {
+      view.dispatch({
+        changes: { from: line.from + indent.length, to: line.to, insert: "" },
+        selection: { anchor: line.from + indent.length },
+        userEvent: "delete",
+        scrollIntoView: true,
+      });
+      return true;
+    }
+    const markerEnd = line.from + prefixLen;
+    if (range.head < markerEnd) return false;
+    // 引用内是列表时连同列表标记续写（"> - " → "\n> - "）
+    const cont = continuationForLine(content);
+    const listPart = cont?.kind === "insert" ? cont.text.trimStart() : "";
+    const insert = `\n${indent}${marks}${listPart}`;
+    view.dispatch(state.replaceSelection(insert), {
+      userEvent: "input",
       scrollIntoView: true,
     });
     return true;

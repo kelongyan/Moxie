@@ -88,12 +88,33 @@ function makeShiftTabHandler(tabWidth: number) {
       ? 1
       : Math.min(tabWidth, leading.length);
     view.dispatch({
-      changes: { from: line.from, to: line.from + removeCount },
+      changes: { from: line.from, to: line.from + removeCount, insert: "" },
       selection: {
         anchor: Math.max(line.from, range.anchor - removeCount),
         head: Math.max(line.from, range.head - removeCount),
       },
       userEvent: "delete",
+    });
+    return true;
+  };
+}
+
+/** 标题级别快捷键（Ctrl+0-6，0=正文）：标题标记在书写面常隐藏后的级别调整入口 */
+export function makeHeadingLevelHandler(level: number) {
+  return (view: EditorView): boolean => {
+    const { state } = view;
+    const line = state.doc.lineAt(state.selection.main.head);
+    const m = /^(#{1,6})[ \t]/.exec(line.text);
+    const target = level === 0 ? "" : `${"#".repeat(level)} `;
+    // 已是目标级别时不动
+    if (level === 0 ? !m : m !== null && m[1].length === level) return true;
+    view.dispatch({
+      changes: m
+        ? { from: line.from, to: line.from + m[0].length, insert: target }
+        : { from: line.from, to: line.from, insert: target },
+      selection: { anchor: line.from + target.length },
+      userEvent: "input",
+      scrollIntoView: true,
     });
     return true;
   };
@@ -191,6 +212,14 @@ export function buildEditorState(options: EditorOptions): EditorState {
     { key: "Shift-Tab", run: makeShiftTabHandler(tabWidth) },
     { key: "Mod-z", run: undo },
     { key: "Mod-Shift-z", run: redo },
+    // 标题级别：Ctrl+0 正文、Ctrl+1-6 一到六级
+    { key: "Mod-0", run: makeHeadingLevelHandler(0) },
+    { key: "Mod-1", run: makeHeadingLevelHandler(1) },
+    { key: "Mod-2", run: makeHeadingLevelHandler(2) },
+    { key: "Mod-3", run: makeHeadingLevelHandler(3) },
+    { key: "Mod-4", run: makeHeadingLevelHandler(4) },
+    { key: "Mod-5", run: makeHeadingLevelHandler(5) },
+    { key: "Mod-6", run: makeHeadingLevelHandler(6) },
   ]);
 
   const extensions: Extension[] = [

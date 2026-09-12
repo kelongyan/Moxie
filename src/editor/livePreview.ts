@@ -632,9 +632,10 @@ export function computeLiveRanges(
         return;
       }
       if (node.name === "HeaderMark") {
+        // 标题标记无条件隐藏（Typora 式）：编辑标题时标题保持渲染，
+        // 级别调整走 Ctrl+0-6 快捷键（extensions.ts）
         if (parent && /^ATXHeading[1-6]$/.test(parent.name)) {
-          const line = doc.lineAt(from);
-          if (!selectionOnLine(state, line.from, line.to)) hideChild(node, true);
+          hideChild(node, true);
         }
         return;
       }
@@ -726,10 +727,11 @@ export function computeLiveRanges(
               : HIDE
             ).range(first.from, first.to)
           );
-          if (hasClosing) {
-            const r = hideRange(state, last.from, last.to);
-            if (r) ranges.push(r);
-          }
+        }
+        // 闭 fence 无条件隐藏；开 fence 光标进入时显示原文，便于修改语言标注
+        if (hasClosing) {
+          const r = hideRange(state, last.from, last.to);
+          if (r) ranges.push(r);
         }
         return false;
       }
@@ -738,43 +740,38 @@ export function computeLiveRanges(
       if (node.name === "QuoteMark") {
         const line = doc.lineAt(from);
         pushLineClass(line.from, "md-quote");
-        // 引用内的空引用行（">"/">>"后无正文）压缩为分隔空行高度，与顶层空行节奏一致，
-        // 避免引用卡片中间出现全行高的空洞；光标停在该行时不压缩，保留完整可编辑原文
+        // 引用内的空引用行压缩为分隔高度；光标停在该行时还原为可编辑的普通空行
         if (/^\s*>+\s*$/.test(line.text) && !selectionOnLine(state, line.from, line.to)) {
           pushLineClass(line.from, "md-blank");
         }
-        if (!selectionOnLine(state, line.from, line.to)) hideChild(node, true);
+        hideChild(node, true);
         return;
       }
 
-      // —— 分割线：整行替换为 hr ——
+      // —— 分割线：整行替换为 hr（无条件，Typora 式） ——
       if (node.name === "HorizontalRule") {
         const line = doc.lineAt(from);
-        if (!selectionOnLine(state, line.from, line.to)) {
-          pushLineClass(line.from, "md-hr-line");
-          ranges.push(
-            Decoration.replace({ widget: new HorizontalRuleWidget() }).range(
-              line.from,
-              line.to
-            )
-          );
-        }
+        pushLineClass(line.from, "md-hr-line");
+        ranges.push(
+          Decoration.replace({ widget: new HorizontalRuleWidget() }).range(
+            line.from,
+            line.to
+          )
+        );
         return false;
       }
 
-      // —— 任务清单：[ ] / [x] → 可点击 checkbox ——
+      // —— 任务清单：[ ] / [x] → 可点击 checkbox（无条件，光标在行上也保持） ——
       if (node.name === "TaskMarker") {
         const line = doc.lineAt(from);
-        if (!selectionOnLine(state, line.from, line.to)) {
-          const checked = /^\[[xX]\]/.test(doc.sliceString(from, to));
-          ranges.push(
-            Decoration.replace({ widget: new TaskWidget(checked) }).range(from, to)
-          );
-          // 任务行不再显示 "- ☑" 双标记：隐藏行首列表标记与其后空格（保留缩进）
-          const m = /^([ \t]*)[-*+][ \t]/.exec(line.text);
-          if (m) {
-            ranges.push(HIDE.range(line.from + m[1].length, line.from + m[0].length));
-          }
+        const checked = /^\[[xX]\]/.test(doc.sliceString(from, to));
+        ranges.push(
+          Decoration.replace({ widget: new TaskWidget(checked) }).range(from, to)
+        );
+        // 任务行不再显示 "- ☑" 双标记：隐藏行首列表标记与其后空格（保留缩进）
+        const m = /^([ \t]*)[-*+][ \t]/.exec(line.text);
+        if (m) {
+          ranges.push(HIDE.range(line.from + m[1].length, line.from + m[0].length));
         }
         return false;
       }
@@ -785,12 +782,13 @@ export function computeLiveRanges(
         if (next && next.name === "ListItem") {
           pushLineClass(doc.lineAt(to).from, "md-li-end");
         }
-        // 无序列表标记 → 项目符号 widget（光标进入显示原文；任务行由上方分支处理）
+        // 无序列表标记 → 项目符号 widget（Typora 式：光标在行上也保持渲染；
+        // 任务行由上方分支处理双标记）
         if (parent && parent.name === "BulletList") {
           const mark = node.firstChild;
           if (mark && mark.name === "ListMark") {
             const line = doc.lineAt(mark.from);
-            if (!selectionOnLine(state, line.from, line.to) && !taskToggleInLine(line.text)) {
+            if (!taskToggleInLine(line.text)) {
               let level = 0;
               for (let p = parent.parent; p; p = p.parent) {
                 if (p.name === "BulletList") level += 1;

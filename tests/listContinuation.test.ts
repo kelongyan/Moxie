@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { EditorState } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import {
   computeRenumbering,
   continuationForLine,
+  markdownEnterHandler,
 } from "../src/editor/listContinuation";
 
 describe("continuationForLine", () => {
@@ -77,5 +80,45 @@ describe("computeRenumbering", () => {
   it("respects the item cap", () => {
     const lines = Array.from({ length: 501 }, (_, i) => `${i + 1}. x`);
     expect(computeRenumbering(lines, 250)).toBeNull();
+  });
+});
+
+describe("markdownEnterHandler · 引用续行", () => {
+  function enterAt(doc: string, anchor: number) {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const view = new EditorView({
+      parent: host,
+      state: EditorState.create({ doc }),
+    });
+    view.dispatch({ selection: { anchor } });
+    const handled = markdownEnterHandler(view);
+    const result = view.state.doc.toString();
+    view.destroy();
+    host.remove();
+    return { handled, result };
+  }
+
+  it("引用行末 Enter 续写 > 前缀", () => {
+    const { handled, result } = enterAt("> 第一行\n", 5);
+    expect(handled).toBe(true);
+    expect(result).toBe("> 第一行\n> \n");
+  });
+
+  it("引用内列表连同列表标记续写", () => {
+    const { result } = enterAt("> - 甲\n", 5);
+    expect(result).toBe("> - 甲\n> - \n");
+  });
+
+  it("空引用行 Enter 退出引用", () => {
+    const { handled, result } = enterAt("> \n正文", 2);
+    expect(handled).toBe(true);
+    expect(result).toBe("\n正文");
+  });
+
+  it("光标在 > 前缀内时不接管", () => {
+    const { handled, result } = enterAt("> 文字\n", 1);
+    expect(handled).toBe(false);
+    expect(result).toBe("> 文字\n");
   });
 });
