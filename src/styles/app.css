@@ -1747,6 +1747,7 @@ body {
   padding: 5px 12px;
   text-align: left;
   vertical-align: top;
+  position: relative;
 }
 
 .md-table th {
@@ -1757,6 +1758,32 @@ body {
 
 .md-table tbody tr:nth-child(2n) {
   background: var(--lac-bg-inset);
+}
+
+/* 单元格原位编辑（Typora 式）：textarea 覆盖单元格，字体与内边距一致；
+   编辑期间不动文档（widget 不重建、光标稳定），离开时单事务写回 */
+.md-cell-active {
+  outline: 2px solid var(--lac-accent);
+  outline-offset: -2px;
+}
+
+.md-cell-editor {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 5px 12px;
+  font: inherit;
+  line-height: inherit;
+  color: var(--lac-text);
+  background: inherit;
+  white-space: pre-wrap;
+  overflow: hidden;
+  caret-color: var(--lac-accent);
 }
 
 .md-image {

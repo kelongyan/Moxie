@@ -123,84 +123,345 @@ class BulletWidget extends WidgetType {
   }
 }
 
-interface TableData {
-  header: string[];
-  rows: string[][];
+interface TableCellRange {
+  from: number;
+  to: number;
 }
 
-/** 从语法树提取表格内容：首行 = 表头，其余为数据行；单元格取纯文本。
+interface TableData {
+  /** 行文本（首行为表头），与 cellRanges 同序同形；文本保留源码转义（\|） */
+  rowsText: string[][];
+  cellRanges: TableCellRange[][];
+  /** 表格节点在文档中的起止（块替换范围与提交光标回放用） */
+  from: number;
+  to: number;
+}
+
+/** 单元格显示态：源码里的 \| 显示为 | */
+const unescapeCell = (s: string): string => s.replace(/\\\|/g, "|");
+/** 单元格写回文档：字面 | 转义为 \|，换行折叠为空格（GFM 单元格不能换行） */
+const escapeCell = (s: string): string =>
+  s.replace(/\r/g, "").replace(/\n+/g, " ").replace(/\|/g, "\\|").trim();
+
+/** 空单元格行兜底：lezer 对全空行（|  |  |）不产 TableCell，
+ *  按行文本切分顶层管道还原单元格文本与（可插入的）文档位置 */
+function rowCellsFromLine(
+  lineText: string,
+  lineFrom: number
+): { texts: string[]; ranges: TableCellRange[] } {
+  const texts: string[] = [];
+  const ranges: TableCellRange[] = [];
+  const segs: { start: number; end: number }[] = [];
+  let start = -1;
+  for (let i = 0; i < lineText.length; i++) {
+    const ch = lineText[i];
+    if (ch === "\\" && lineText[i + 1] === "|") {
+      i++;
+      continue;
+    }
+    if (ch === "|") {
+      if (start >= 0) segs.push({ start, end: i });
+      start = i + 1;
+    }
+  }
+  // 首个管道之前与最后一个管道之后是边缘段，丢弃
+  for (const seg of segs) {
+    let s = seg.start;
+    let e = seg.end;
+    while (s < e && lineText[s] === " ") s++;
+    while (e > s && lineText[e - 1] === " ") e--;
+    texts.push(lineText.slice(s, e));
+    ranges.push({ from: lineFrom + s, to: lineFrom + e });
+  }
+  return { texts, ranges };
+}
+
+/** 表格结构操作后，重建出的新 widget 自动打开的单元格（桌面单活动编辑面，构建时立即消费） */
+let pendingCellEdit: { tableFrom: number; row: number; col: number } | null = null;
+
+/** 存活表格 widget 注册表：按文档起点索引，供结构操作后的编辑位置恢复定位最新实例 */
+const liveTableWidgets = new Map<number, TableWidget>();
+
+/** 从语法树提取表格内容：首行 = 表头，其余为数据行；同时记录单元格文档位置供提交。
  *  lezer 结构：表头行是 TableHeader（直接含 TableCell），数据行是 TableRow > TableCell */
 function tableDataOf(node: SyntaxNode, doc: Text): TableData | null {
-  const rows: string[][] = [];
-  const cellsOf = (n: SyntaxNode): string[] => {
-    const cells: string[] = [];
+  const rowsText: string[][] = [];
+  const cellRanges: TableCellRange[][] = [];
+  const cellsOf = (n: SyntaxNode) => {
+    const texts: string[] = [];
+    const ranges: TableCellRange[] = [];
     for (let c = n.firstChild; c; c = c.nextSibling) {
-      if (c.name === "TableCell") cells.push(doc.sliceString(c.from, c.to).trim());
-    }
-    return cells;
-  };
-  const walk = (n: SyntaxNode) => {
-    for (let c = n.firstChild; c; c = c.nextSibling) {
-      if (c.name === "TableRow") {
-        rows.push(cellsOf(c));
-      } else if (c.name === "TableHeader") {
-        const cells = cellsOf(c);
-        if (cells.length > 0) rows.push(cells);
+      if (c.name === "TableCell") {
+        texts.push(doc.sliceString(c.from, c.to).trim());
+        ranges.push({ from: c.from, to: c.to });
       }
     }
+    return { texts, ranges };
   };
-  walk(node);
-  if (rows.length === 0) return null;
-  return { header: rows[0], rows: rows.slice(1) };
+  for (let c = node.firstChild; c; c = c.nextSibling) {
+    if (c.name === "TableRow") {
+      let { texts, ranges } = cellsOf(c);
+      if (texts.length === 0) {
+        // 全空行：lezer 不产 TableCell，按管道位置兜底切分
+        const line = doc.lineAt(c.from);
+        ({ texts, ranges } = rowCellsFromLine(line.text, line.from));
+      }
+      rowsText.push(texts);
+      cellRanges.push(ranges);
+    } else if (c.name === "TableHeader") {
+      const { texts, ranges } = cellsOf(c);
+      if (texts.length > 0) {
+        rowsText.push(texts);
+        cellRanges.push(ranges);
+      }
+    }
+  }
+  if (rowsText.length === 0) return null;
+  // node.to 可能包含末行之后的换行符；以末行内容结尾为准，追加行才能紧贴表格
+  const lastLine = doc.lineAt(Math.max(0, node.to - 1));
+  return { rowsText, cellRanges, from: node.from, to: lastLine.to };
 }
 
-/** GFM 表格 → 只读 HTML 表格（光标进入还原源码编辑）；gap 为与上一块的折叠间距 */
+/**
+ * GFM 表格 → 常渲染表格（光标进入不再还原源码）。点击单元格在原位打开
+ * 编辑器（覆盖该单元格的 textarea，widget 内编辑、光标稳定），离开时把
+ * 改动合成一个事务写回文档；Enter/Tab 导航，末行 Enter、末格 Tab、
+ * Ctrl+Enter 追加新行，Escape 结束编辑。
+ */
 class TableWidget extends WidgetType {
-  constructor(
-    readonly header: string[],
-    readonly rows: string[][],
-    readonly gap: number
-  ) {
+  /** 编辑中未落盘的单元格文本（key = "r,c"，保存用户原始输入） */
+  private pending = new Map<string, string>();
+  private cellEls: HTMLTableCellElement[][] = [];
+  private overlay: HTMLTextAreaElement | null = null;
+  private activeRow = -1;
+  private activeCol = -1;
+  private view: EditorView | null = null;
+  private wrapEl: HTMLElement | null = null;
+
+  constructor(readonly data: TableData, readonly gap: number) {
     super();
   }
+
+  private get rowCount(): number {
+    return this.data.rowsText.length;
+  }
+
+  private get colCount(): number {
+    return this.data.rowsText[0]?.length ?? 0;
+  }
+
   eq(other: TableWidget) {
     return (
       other.gap === this.gap &&
-      other.header.length === this.header.length &&
-      other.rows.length === this.rows.length &&
-      other.header.every((c, i) => c === this.header[i]) &&
-      other.rows.every(
-        (r, i) =>
-          r.length === this.rows[i].length &&
-          r.every((c, j) => c === this.rows[i][j])
-      )
+      same2D(other.data.rowsText, this.data.rowsText) &&
+      sameRanges2D(other.data.cellRanges, this.data.cellRanges)
     );
   }
-  toDOM() {
+
+  toDOM(view: EditorView) {
+    this.view = view;
     const wrap = document.createElement("div");
     wrap.className = "md-table-wrap";
     if (this.gap > 0) wrap.style.paddingTop = `${this.gap}px`;
     const table = document.createElement("table");
     table.className = "md-table";
-    const headRow = table.createTHead().insertRow();
-    for (const cell of this.header) {
-      const th = document.createElement("th");
-      th.textContent = cell;
-      headRow.appendChild(th);
-    }
-    const tbody = table.createTBody();
-    for (const row of this.rows) {
-      const tr = tbody.insertRow();
-      for (const cell of row) {
-        tr.insertCell().textContent = cell;
-      }
-    }
+    table.addEventListener("keydown", (e) => this.onKeydown(e));
+    this.cellEls = this.data.rowsText.map((row, r) => {
+      const tr =
+        r === 0
+          ? table.createTHead().insertRow()
+          : table.createTBody().insertRow();
+      return row.map((text, c) => {
+        const el = document.createElement(r === 0 ? "th" : "td");
+        el.textContent = unescapeCell(text);
+        el.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.openEditor(r, c);
+        });
+        tr.appendChild(el);
+        return el;
+      });
+    });
     wrap.appendChild(table);
+    this.wrapEl = wrap;
+    liveTableWidgets.set(this.data.from, this);
     return wrap;
   }
+
+  destroy(dom: HTMLElement) {
+    // 重建时新实例先注册、旧实例后销毁；只在仍指向自己时清除
+    if (liveTableWidgets.get(this.data.from) === this) {
+      liveTableWidgets.delete(this.data.from);
+    }
+    this.overlay = null;
+    this.wrapEl = null;
+    super.destroy(dom);
+  }
+
+  /** 结构操作后的编辑位置恢复（由 livePreview 的 ViewPlugin 消费 pendingCellEdit 调用） */
+  restoreCellEdit(row: number, col: number) {
+    if (this.wrapEl?.isConnected && this.cellEls[row]?.[col]) {
+      this.openEditor(row, col);
+    }
+  }
+
+  /** 打开（或移动）单元格编辑器；同一 widget 内移动不触发重建 */
+  private openEditor(r: number, c: number) {
+    const row = this.cellEls[r];
+    const cell = row?.[c];
+    if (!cell) return;
+    // 先把上一个单元格的输入落到显示层与 pending
+    this.stashActiveCell();
+    this.activeRow = r;
+    this.activeCol = c;
+    cell.classList.add("md-cell-active");
+    if (!this.overlay) {
+      this.overlay = document.createElement("textarea");
+      this.overlay.className = "md-cell-editor";
+      this.overlay.rows = 1;
+      this.overlay.addEventListener("blur", () => this.finish());
+      this.overlay.addEventListener("keydown", (e) => {
+        // 阻止 textarea 自身的换行/焦点行为，统一走表格导航
+        if (e.key === "Enter" || e.key === "Tab" || e.key === "Escape") {
+          e.preventDefault();
+        }
+      });
+    }
+    this.overlay.value = this.pending.get(`${r},${c}`) ?? unescapeCell(this.data.rowsText[r][c]);
+    cell.appendChild(this.overlay);
+    this.overlay.focus();
+    this.overlay.setSelectionRange(this.overlay.value.length, this.overlay.value.length);
+  }
+
+  /** 把当前编辑中的文本记入 pending，并同步到单元格显示层 */
+  private stashActiveCell() {
+    if (!this.overlay || this.activeRow < 0 || this.activeCol < 0) return;
+    const key = `${this.activeRow},${this.activeCol}`;
+    const text = this.overlay.value;
+    this.pending.set(key, text);
+    this.cellEls[this.activeRow][this.activeCol].textContent = unescapeCell(
+      escapeCell(text)
+    );
+    this.cellEls[this.activeRow][this.activeCol].classList.remove("md-cell-active");
+  }
+
+  private onKeydown(e: KeyboardEvent) {
+    if (!this.overlay || this.activeRow < 0 || e.isComposing) return;
+    if (e.ctrlKey && e.key === "Enter") {
+      e.preventDefault();
+      this.addRowBelow();
+      return;
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      this.moveBy(1, 0);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) this.moveBy(0, -1);
+      else this.moveBy(0, 1);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      this.finish();
+    }
+  }
+
+  /** 相对移动；行末水平越界换行，末行继续下移 / 末格 Tab 时追加新行 */
+  private moveBy(dr: number, dc: number) {
+    let r = this.activeRow + dr;
+    let c = this.activeCol + dc;
+    if (c >= (this.cellEls[r]?.length ?? 0)) {
+      r += 1;
+      c = 0;
+    } else if (c < 0) {
+      r -= 1;
+      c = Math.max(0, (this.cellEls[r]?.length ?? 1) - 1);
+    }
+    if (r < 0) r = 0;
+    if (r >= this.rowCount) {
+      this.addRowBelow();
+      return;
+    }
+    this.openEditor(r, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1));
+  }
+
+  /** pending 中与原文不同的单元格 → 文档替换（用建 widget 时的位置） */
+  private collectChanges(): { from: number; to: number; insert: string }[] {
+    const changes: { from: number; to: number; insert: string }[] = [];
+    for (const [key, text] of this.pending) {
+      const [r, c] = key.split(",").map(Number);
+      const range = this.data.cellRanges[r]?.[c];
+      if (!range) continue;
+      const insert = escapeCell(text);
+      if (insert !== this.data.rowsText[r][c]) {
+        changes.push({ from: range.from, to: range.to, insert });
+      }
+    }
+    return changes;
+  }
+
+  /** 在表格末尾追加一行（连同 pending 的文本改动合成一个事务） */
+  private addRowBelow() {
+    const view = this.view;
+    if (!view) return;
+    this.stashActiveCell();
+    const changes = this.collectChanges();
+    const rowText = "| " + Array(this.colCount).fill("").join(" | ") + " |";
+    changes.push({ from: this.data.to, to: this.data.to, insert: `\n${rowText}` });
+    // 新行打开编辑器的位置（当前列，越界取末列）
+    pendingCellEdit = {
+      tableFrom: this.data.from,
+      row: this.rowCount,
+      col: Math.min(this.activeCol, this.colCount - 1),
+    };
+    view.dispatch({ changes, selection: { anchor: this.data.to + rowText.length + 1 } });
+  }
+
+  /** 结束编辑：落盘全部改动并把光标放回文档（表格之后） */
+  private finish() {
+    const view = this.view;
+    if (!view) return;
+    this.stashActiveCell();
+    const changes = this.collectChanges();
+    const caret = Math.min(this.data.to, view.state.doc.length);
+    this.teardown();
+    if (changes.length > 0) {
+      view.dispatch({ changes, selection: { anchor: caret } });
+    } else {
+      view.dispatch({ selection: { anchor: caret } });
+    }
+    view.focus();
+  }
+
+  private teardown() {
+    this.overlay?.remove();
+    this.overlay = null;
+    for (const row of this.cellEls) for (const el of row) el.classList.remove("md-cell-active");
+    this.pending.clear();
+    this.activeRow = -1;
+    this.activeCol = -1;
+  }
+
   ignoreEvent() {
     return false;
   }
+}
+
+function same2D(a: string[][], b: string[][]): boolean {
+  return (
+    a.length === b.length &&
+    a.every((row, i) => row.length === b[i].length && row.every((c, j) => c === b[i][j]))
+  );
+}
+
+function sameRanges2D(a: TableCellRange[][], b: TableCellRange[][]): boolean {
+  return (
+    a.length === b.length &&
+    a.every((row, i) =>
+      row.length === b[i].length &&
+      row.every((r, j) => r.from === b[i][j].from && r.to === b[i][j].to)
+    )
+  );
 }
 
 class TaskWidget extends WidgetType {
@@ -357,8 +618,8 @@ export function computeLiveRanges(
             lastLine: doc.lineAt(to > from ? to - 1 : from).number,
           });
         }
-        // 顶层表格：光标在外时收集，折叠间距算好后整块替换为只读 widget
-        if (node.name === "Table" && !selectionTouches(state, from, to)) {
+        // 顶层表格：常渲染（Typora 式），编辑在 widget 内完成，与光标位置无关
+        if (node.name === "Table") {
           const data = tableDataOf(node, doc);
           if (data) tables.push({ from, to, data });
         }
@@ -581,7 +842,7 @@ export function computeLiveRanges(
         const gap = prev ? spaceBefore(prev.kind, "table", blankLines, scale) : 0;
         ranges.push(
           Decoration.replace({
-            widget: new TableWidget(t.data.header, t.data.rows, gap),
+            widget: new TableWidget(t.data, gap),
             block: true,
           }).range(firstLine.from, doc.line(block.lastLine).to)
         );
@@ -645,6 +906,17 @@ export function livePreview(
   const viewportDriver = ViewPlugin.fromClass(
     class {
       update(update: ViewUpdate) {
+        // 表格结构操作后：在最新存活实例上恢复单元格编辑
+        if (pendingCellEdit) {
+          const pend = pendingCellEdit;
+          pendingCellEdit = null;
+          queueMicrotask(() => {
+            liveTableWidgets.get(pend.tableFrom)?.restoreCellEdit(
+              pend.row,
+              pend.col,
+            );
+          });
+        }
         if (!update.viewportChanged) return;
         const view = update.view;
         queueMicrotask(() => {

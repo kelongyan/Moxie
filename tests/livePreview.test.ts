@@ -394,31 +394,58 @@ describe("livePreview · 块间距缩放贯通", () => {
   });
 });
 
-describe("livePreview · 表格只读 widget", () => {
+describe("livePreview · 表格常渲染与原位编辑", () => {
   const TABLE_DOC = "前文\n\n| 列一 | 列二 |\n| --- | --- |\n| a | b |\n| c | d |\n\n后文\n";
+
+  interface TableWidgetLike {
+    data: {
+      rowsText: string[][];
+      cellRanges: { from: number; to: number }[][];
+      from: number;
+      to: number;
+    };
+    gap: number;
+  }
+
+  const tableWidgets = (ranges: Range<Decoration>[]) =>
+    widgets(ranges).filter((w) => "data" in (w.widget as object)) as unknown as {
+      from: number;
+      to: number;
+      widget: TableWidgetLike;
+    }[];
 
   it("光标不在表格内时整块替换为 TableWidget，含表头与数据行", () => {
     const ranges = rangesOf(TABLE_DOC, 0);
-    const tables = widgets(ranges).filter((w) => "header" in (w.widget as object));
+    const tables = tableWidgets(ranges);
     expect(tables).toHaveLength(1);
-    const widget = tables[0].widget as unknown as {
-      header: string[];
-      rows: string[][];
-      gap: number;
-    };
-    expect(widget.header).toEqual(["列一", "列二"]);
-    expect(widget.rows).toEqual([["a", "b"], ["c", "d"]]);
+    const { data, gap } = tables[0].widget;
+    expect(data.rowsText).toEqual([
+      ["列一", "列二"],
+      ["a", "b"],
+      ["c", "d"],
+    ]);
     // 前文段落(底14) → 表格(上0) 折叠 14，扣除 1 个压缩空行(8) = 6
-    expect(widget.gap).toBe(6);
+    expect(gap).toBe(6);
     // 替换范围覆盖表格全部 4 行（"前文\n\n" = 4 起，到 | c | d | 行尾）
     expect(tables[0].from).toBe(4);
     expect(tables[0].to).toBe(4 + "| 列一 | 列二 |\n| --- | --- |\n| a | b |\n| c | d |".length);
   });
 
-  it("光标进入表格时还原源码", () => {
+  it("光标进入表格时保持渲染（Typora 式，不再还原源码）", () => {
     const ranges = rangesOf(TABLE_DOC, 20);
-    const tables = widgets(ranges).filter((w) => "header" in (w.widget as object));
-    expect(tables).toHaveLength(0);
+    const tables = tableWidgets(ranges);
+    expect(tables).toHaveLength(1);
+    // widget 携带单元格文档位置，供原位编辑提交时定位（第二行单元格 a/b）
+    expect(tables[0].widget.data.cellRanges[1]).toEqual([
+      { from: 32, to: 33 },
+      { from: 36, to: 37 },
+    ]);
+  });
+
+  it("单元格文本保留源码转义（\\| 原样提取，显示时由 widget 反转义）", () => {
+    const ranges = rangesOf("前文\n\n| a \\| b |\n| --- |\n| c |\n", 0);
+    const tables = tableWidgets(ranges);
+    expect(tables[0].widget.data.rowsText).toEqual([["a \\| b"], ["c"]]);
   });
 
   it("表格作为独立块参与空行压缩，后文块从表格底边距折叠", () => {
@@ -431,8 +458,8 @@ describe("livePreview · 表格只读 widget", () => {
   it("文档首个块是表格时 gap 为 0", () => {
     // 锚点放在表格后的段落上（Table 节点 [0,33]，后文行 from 34）
     const ranges = rangesOf("| a | b |\n| --- | --- |\n| c | d |\n\n后文\n", 35);
-    const tables = widgets(ranges).filter((w) => "header" in (w.widget as object));
+    const tables = tableWidgets(ranges);
     expect(tables).toHaveLength(1);
-    expect((tables[0].widget as unknown as { gap: number }).gap).toBe(0);
+    expect(tables[0].widget.gap).toBe(0);
   });
 });
