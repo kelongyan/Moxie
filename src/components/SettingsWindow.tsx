@@ -171,6 +171,74 @@ export function SettingsWindow() {
           </label>
         </SettingRow>
 
+        <SettingRow title="专注模式" description="当前段落之外的行降低透明度">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.focusMode}
+              onChange={(e) => set({ focusMode: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow title="打字机模式" description="光标行始终保持屏幕垂直居中">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.typewriterMode}
+              onChange={(e) => set({ typewriterMode: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow title="图片保存目录" description="粘贴或拖入图片时，相对文档的存放目录">
+          <input
+            className="settings-select"
+            style={{ width: 120, height: 28, padding: "0 8px" }}
+            value={prefs.imageFolder}
+            onChange={(e) => set({ imageFolder: e.target.value })}
+            placeholder="assets"
+          />
+        </SettingRow>
+
+        <SettingRow title="导出主题" description="导出 HTML / 富文本使用的配色">
+          <div className="segmented wide" role="tablist">
+            {(["auto", "light", "dark"] as const).map((t) => (
+              <button
+                key={t}
+                className={prefs.exportTheme === t ? "active" : ""}
+                onClick={() => set({ exportTheme: t })}
+              >
+                {t === "auto" ? "跟随当前" : t === "light" ? "浅色" : "深色"}
+              </button>
+            ))}
+          </div>
+        </SettingRow>
+
+        <SettingRow title="导出正文限宽" description="导出 HTML 时正文限制在 960px 内居中">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.exportNarrow}
+              onChange={(e) => set({ exportNarrow: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
+        <SettingRow title="导出代码行号" description="导出 HTML / 富文本时代码块显示行号">
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={prefs.exportCodeLineNumbers}
+              onChange={(e) => set({ exportCodeLineNumbers: e.target.checked })}
+            />
+            <span className="switch-track" />
+          </label>
+        </SettingRow>
+
         <SettingRow title="退出行为" description="退出应用时对未保存内容的处理">
           <select
             className="settings-select wide"
@@ -185,6 +253,25 @@ export function SettingsWindow() {
           >
             <option value="preserveWorkspace">保留工作区并退出</option>
             <option value="askToSave">每次检查未保存文件</option>
+          </select>
+        </SettingRow>
+
+        <SettingRow
+          title="自动保存"
+          description="定时（30 秒）或窗口失焦时保存已保存过的文档"
+        >
+          <select
+            className="settings-select wide"
+            value={prefs.autosave}
+            onChange={(e) =>
+              set({
+                autosave: e.target.value as "off" | "interval" | "focus",
+              })
+            }
+          >
+            <option value="off">关闭</option>
+            <option value="interval">定时保存</option>
+            <option value="focus">失焦保存</option>
           </select>
         </SettingRow>
 

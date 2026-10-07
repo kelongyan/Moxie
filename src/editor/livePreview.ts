@@ -17,6 +17,8 @@ import {
   WidgetType,
 } from "@codemirror/view";
 import { taskToggleInLine } from "../preview/markdownCore";
+import { renderKatex } from "../preview/math";
+import { FENCE_LANGUAGE_OPTIONS } from "./languages";
 import { spaceBefore, type BlockKind } from "../preview/typography";
 
 /**
@@ -30,7 +32,21 @@ export type ImageSrcResolver = (rawSrc: string) => string | null;
 
 const HIDE = Decoration.replace({});
 
-/** 开 fence 行的语言标签（当代码块头部显示） */
+/** 开 fence 行的语言标签（当代码块头部显示），点击弹出语言切换菜单 */
+let openLangMenu: HTMLElement | null = null;
+
+function closeLangMenu() {
+  openLangMenu?.remove();
+  openLangMenu = null;
+}
+
+document.addEventListener("mousedown", (e) => {
+  if (openLangMenu && !openLangMenu.contains(e.target as Node)) closeLangMenu();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeLangMenu();
+});
+
 class FenceWidget extends WidgetType {
   constructor(readonly lang: string) {
     super();
@@ -38,10 +54,46 @@ class FenceWidget extends WidgetType {
   eq(other: FenceWidget) {
     return other.lang === this.lang;
   }
-  toDOM() {
+  toDOM(view: EditorView) {
     const el = document.createElement("span");
     el.className = "md-lang-tag";
     el.textContent = this.lang;
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeLangMenu();
+      const menu = document.createElement("div");
+      menu.className = "md-lang-menu";
+      menu.setAttribute("role", "menu");
+      for (const opt of FENCE_LANGUAGE_OPTIONS) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = opt.label;
+        if (opt.key === this.lang) btn.classList.add("current");
+        btn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+        btn.addEventListener("click", () => {
+          closeLangMenu();
+          const pos = view.posAtDOM(el);
+          const line = view.state.doc.lineAt(pos);
+          const m = /^(\s*(?:`{3,}|~{3,}))( ?)(\S*)/.exec(line.text);
+          if (!m) return;
+          const from = line.from + m[1].length + m[2].length;
+          view.dispatch({
+            changes: { from, to: from + m[3].length, insert: opt.key },
+            // 光标留在 fence 行上：语言标注保持可见可继续编辑
+            selection: { anchor: line.to },
+            userEvent: "input",
+          });
+          view.focus();
+        });
+        menu.appendChild(btn);
+      }
+      const rect = el.getBoundingClientRect();
+      menu.style.left = `${Math.max(4, Math.min(rect.left, window.innerWidth - 170))}px`;
+      menu.style.top = `${Math.min(rect.bottom + 4, window.innerHeight - 260)}px`;
+      document.body.appendChild(menu);
+      openLangMenu = menu;
+    });
     return el;
   }
   ignoreEvent() {
@@ -464,6 +516,59 @@ function sameRanges2D(a: TableCellRange[][], b: TableCellRange[][]): boolean {
   );
 }
 
+/** mermaid 动态加载（首次遇到 mermaid 围栏才拉包），主题变化时重新 initialize */
+let mermaidTheme: string | null = null;
+
+async function getMermaid(dark: boolean) {
+  const theme = dark ? "dark" : "default";
+  const mermaid = (await import("mermaid")).default;
+  if (mermaidTheme !== theme) {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      theme,
+    });
+    mermaidTheme = theme;
+  }
+  return mermaid;
+}
+
+/** mermaid 围栏 → SVG 图（渲染失败回退错误提示，光标进入显示源码） */
+class MermaidWidget extends WidgetType {
+  constructor(
+    readonly source: string,
+    readonly dark: boolean
+  ) {
+    super();
+  }
+  eq(other: MermaidWidget) {
+    return other.source === this.source && other.dark === this.dark;
+  }
+  toDOM() {
+    const el = document.createElement("div");
+    el.className = "md-mermaid";
+    el.textContent = "mermaid 渲染中…";
+    void (async () => {
+      try {
+        const mermaid = await getMermaid(this.dark);
+        const id = `mmd-${Math.random().toString(36).slice(2)}`;
+        const { svg } = await mermaid.render(id, this.source);
+        const holder = document.createElement("div");
+        holder.innerHTML = svg;
+        el.replaceChildren(...Array.from(holder.childNodes));
+        el.classList.add("done");
+      } catch {
+        el.textContent = "mermaid 语法错误";
+        el.classList.add("error");
+      }
+    })();
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
 class TaskWidget extends WidgetType {
   constructor(readonly checked: boolean) {
     super();
@@ -509,6 +614,28 @@ function hideRange(
   }
   if (to <= from) return null;
   return HIDE.range(from, to);
+}
+
+/** 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span，渲染失败回退原文） */
+class MathWidget extends WidgetType {
+  constructor(
+    readonly tex: string,
+    readonly display: boolean
+  ) {
+    super();
+  }
+  eq(other: MathWidget) {
+    return other.tex === this.tex && other.display === this.display;
+  }
+  toDOM() {
+    const el = document.createElement(this.display ? "div" : "span");
+    el.className = this.display ? "md-math-block" : "md-math-inline";
+    el.innerHTML = renderKatex(this.tex, this.display);
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
 }
 
 /** 取围栏的语言标注（```js → "js"），无标注返回空串 */
@@ -601,12 +728,30 @@ export function computeLiveRanges(
     if (r) ranges.push(r);
   };
 
+  /** 数学公式扫描的禁区（代码块/行内代码/表格/HTML 块/已识别的块级公式） */
+  const excluded: { from: number; to: number }[] = [];
+  const inExcluded = (pos: number): boolean => {
+    for (const r of excluded) {
+      if (pos >= r.from && pos < r.to) return true;
+    }
+    return false;
+  };
+
   tree.iterate({
     enter: (iter) => {
       const node = iter.node;
       const parent = node.parent;
       const from = node.from;
       const to = node.to;
+
+      // 公式扫描禁区
+      if (
+        node.name === "CodeBlock" ||
+        node.name === "HTMLBlock" ||
+        node.name === "InlineCode"
+      ) {
+        excluded.push({ from, to });
+      }
 
       // 顶层块：收集用于折叠间距与空行压缩
       if (parent && parent.name === "Document") {
@@ -622,6 +767,7 @@ export function computeLiveRanges(
         if (node.name === "Table") {
           const data = tableDataOf(node, doc);
           if (data) tables.push({ from, to, data });
+          excluded.push({ from, to });
         }
       }
 
@@ -708,6 +854,7 @@ export function computeLiveRanges(
         const active = selectionTouches(state, from, to);
         const hasClosing =
           last.number > first.number && /^\s*(`{3,}|~{3,})\s*$/.test(last.text);
+        excluded.push({ from, to });
 
         for (let ln = first.number; ln <= last.number; ln++) {
           const line = doc.line(ln);
@@ -719,8 +866,26 @@ export function computeLiveRanges(
                 : "md-code-block";
           pushLineClass(line.from, cls);
         }
+        const lang = codeInfoOf(node, doc);
+        // mermaid 围栏：整块替换为渲染后的 SVG（StateField 允许跨行 block replace）
+        if (!active && lang === "mermaid") {
+          const dark = document.documentElement.dataset.theme === "dark";
+          // 有闭合围栏时源码不含闭合行
+          const source = doc
+            .sliceString(
+              first.to,
+              hasClosing ? doc.line(last.number - 1).to : last.to
+            )
+            .trim();
+          ranges.push(
+            Decoration.replace({
+              widget: new MermaidWidget(source, dark),
+              block: true,
+            }).range(first.from, last.to)
+          );
+          return false;
+        }
         if (!active) {
-          const lang = codeInfoOf(node, doc);
           ranges.push(
             (lang
               ? Decoration.replace({ widget: new FenceWidget(lang) })
@@ -734,6 +899,28 @@ export function computeLiveRanges(
           if (r) ranges.push(r);
         }
         return false;
+      }
+
+      // —— callout（> [!NOTE] 等）：整块五色样式，首行标记隐藏（光标进入回显） ——
+      if (node.name === "Blockquote") {
+        const firstLine = doc.lineAt(from);
+        const cm = /^\s*>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i.exec(firstLine.text);
+        if (cm) {
+          const kind = cm[1].toLowerCase();
+          const lastLine = doc.lineAt(to > from ? to - 1 : from);
+          for (let ln = firstLine.number; ln <= lastLine.number; ln++) {
+            pushLineClass(doc.line(ln).from, `md-callout md-callout-${kind}`);
+          }
+          if (!selectionOnLine(state, firstLine.from, firstLine.to)) {
+            const mark = /\[![^\]]+\]/.exec(firstLine.text);
+            if (mark) {
+              ranges.push(
+                HIDE.range(firstLine.from + mark.index, firstLine.from + mark.index + mark[0].length)
+              );
+            }
+          }
+        }
+        return;
       }
 
       // —— 引用：隐藏 > 标记，行上引用样式 ——
@@ -808,6 +995,110 @@ export function computeLiveRanges(
       return;
     },
   });
+
+  // —— 数学公式：语法树不认识 $...$，单独线性扫描 ——
+  // 块级 $$..$$（单行或跨行）整块替换（StateField 允许跨行 replace）；
+  // 行内 $..$ 内容非空、首尾无空白（降低把价格符号误判为公式的概率）。
+  const mathRanges: Range<Decoration>[] = [];
+  const blockMathLines = new Set<number>();
+  for (let ln = 1; ln <= doc.lines; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    if (inExcluded(line.from)) continue;
+    const t = line.text.trim();
+    if (!t.startsWith("$$")) continue;
+    const sameLineClose = t.indexOf("$$", 2);
+    if (sameLineClose > 2) {
+      if (!selectionTouches(state, line.from, line.to)) {
+        mathRanges.push(
+          Decoration.replace({
+            widget: new MathWidget(t.slice(2, sameLineClose).trim(), true),
+            block: true,
+          }).range(line.from, line.to)
+        );
+      }
+      blockMathLines.add(ln);
+      excluded.push({ from: line.from, to: line.to });
+      continue;
+    }
+    let endLine = -1;
+    for (let j = ln + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        endLine = j;
+        break;
+      }
+    }
+    if (endLine > 0) {
+      const absTo = doc.line(endLine).to;
+      if (selectionTouches(state, line.from, absTo)) {
+        for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
+        continue;
+      }
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(doc.sliceString(line.to, doc.line(endLine).from).trim(), true),
+          block: true,
+        }).range(line.from, absTo)
+      );
+      for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
+      excluded.push({ from: line.from, to: absTo });
+    }
+  }
+  for (let ln = 1; ln <= doc.lines; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    const text = line.text;
+    let i = 0;
+    while (i < text.length - 1) {
+      if (text[i] !== "$" || text[i + 1] === "$" || (i > 0 && text[i - 1] === "\\")) {
+        i += 1;
+        continue;
+      }
+      if (inExcluded(line.from + i)) {
+        i += 1;
+        continue;
+      }
+      let close = -1;
+      for (let j = i + 1; j < text.length; j++) {
+        if (text[j] === "\\") {
+          j += 1;
+          continue;
+        }
+        if (text[j] === "$") {
+          close = j;
+          break;
+        }
+      }
+      const content = close > i + 1 ? text.slice(i + 1, close) : "";
+      if (close < 0 || content === "" || content.length > 1000 || /^\s|\s$/.test(content)) {
+        i += 1;
+        continue;
+      }
+      const absFrom = line.from + i;
+      const absTo = line.from + close + 1;
+      if (!selectionTouches(state, absFrom, absTo)) {
+        mathRanges.push(
+          Decoration.replace({ widget: new MathWidget(content, false) }).range(absFrom, absTo)
+        );
+      }
+      i = close + 1;
+    }
+  }
+  // 与其他替换/隐藏区间（强调标记、图片、fence 标签等）重叠的公式放弃渲染
+  if (mathRanges.length > 0) {
+    const taken = [...ranges].sort((a, b) => a.from - b.from);
+    const overlaps = (from: number, to: number): boolean => {
+      for (const r of taken) {
+        if (r.to <= from) continue;
+        if (r.from >= to) break;
+        return true;
+      }
+      return false;
+    };
+    for (const r of mathRanges) {
+      if (!overlaps(r.from, r.to)) ranges.push(r);
+    }
+  }
 
   // —— 顶层块间距与分隔空行压缩（Typora 式） ——
   for (let i = 0; i < blocks.length; i++) {

@@ -42,6 +42,10 @@ export interface PreviewTokens {
   alertVars?: string;
   /** h2 标题专用色（略柔主色），缺省用 fg */
   heading2?: string;
+  /** 导出时代码块显示行号（写入 article.code-line-numbers） */
+  codeLineNumbers?: boolean;
+  /** 导出正文限宽（960px 居中） */
+  narrow?: boolean;
 }
 
 /** 净化 HTML：保留 KaTeX 需要的 style 属性与 data-line，剥离脚本/事件处理器 */
@@ -66,16 +70,26 @@ const SYN_TOKEN_NAMES = [
 
 const ALERT_TOKEN_NAMES = ["note", "tip", "important", "warning", "caution"] as const;
 
-/** 从主文档读取当前主题令牌，预览 iframe 与应用保持单一色源 */
-export function collectPreviewTokens(): PreviewTokens {
+/** 从主文档读取当前主题令牌，预览 iframe 与应用保持单一色源。
+ *  opts.theme 可固定导出配色（非 auto 且与当前不同时，临时翻转主题读变量再还原） */
+export function collectPreviewTokens(opts?: {
+  theme?: "auto" | "light" | "dark";
+  codeLineNumbers?: boolean;
+  narrow?: boolean;
+}): PreviewTokens {
+  const want = opts?.theme ?? "auto";
+  const current = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  const flip = want !== "auto" && want !== current;
+  const prevTheme = document.documentElement.dataset.theme;
+  if (flip && want) document.documentElement.dataset.theme = want;
   const style = getComputedStyle(document.documentElement);
   const v = (name: string) => style.getPropertyValue(name).trim();
   const synVars = SYN_TOKEN_NAMES.map((name) => `--syn-${name}:${v(`--syn-${name}`)};`).join(" ");
   const alertVars = ALERT_TOKEN_NAMES.map(
     (name) => `--alert-${name}-rgb:${v(`--lac-alert-${name}`)};`
   ).join(" ");
-  return {
-    scheme: document.documentElement.dataset.theme === "dark" ? "dark" : "light",
+  const tokens: PreviewTokens = {
+    scheme: flip ? (want as "light" | "dark") : current,
     // 预览页底色 = 编辑器内容面：渲染/源码切换时底色不跳
     bg: v("--lac-bg"),
     surface: v("--lac-bg"),
@@ -91,7 +105,11 @@ export function collectPreviewTokens(): PreviewTokens {
     synVars,
     alertVars,
     heading2: v("--lac-heading-2"),
+    codeLineNumbers: opts?.codeLineNumbers,
+    narrow: opts?.narrow,
   };
+  if (flip && prevTheme) document.documentElement.dataset.theme = prevTheme;
+  return tokens;
 }
 
 function escapeAttribute(text: string): string {
@@ -139,6 +157,16 @@ export function renderShell(
 `
     : "";
 
+  const articleClass = [
+    tokens.codeLineNumbers ? "code-line-numbers" : "",
+    tokens.narrow ? "code-narrow" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const articleTag = articleClass
+    ? `<article class="${articleClass}"></article>`
+    : "<article></article>";
+
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -172,6 +200,8 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   }
   /* 全宽（TizuMark 复刻）：正文区不再限宽，--measure 仅保留给源码模式 */
   article { max-width: 100%; margin: 0 auto; padding: 24px 24px 40px; }
+  /* 导出限宽变体：正文 960px 居中 */
+  article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
   /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
   h1, h2, h3, h4, h5, h6 {
@@ -542,7 +572,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
 </style>
 </head>
 <body>
-<article></article>
+${articleTag}
 </body>
 </html>`;
 }
@@ -555,5 +585,8 @@ export function renderMarkdown(
   env?: RenderEnv
 ): string {
   const shell = renderShell(tokens, title);
-  return shell.replace("<article></article>", `<article>${renderBody(text, env)}</article>`);
+  return shell.replace(
+    /<article([^>]*)><\/article>/,
+    (_m, attrs: string) => `<article${attrs}>${renderBody(text, env)}</article>`
+  );
 }

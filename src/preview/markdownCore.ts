@@ -96,7 +96,8 @@ const CALLOUT_LABELS: Record<string, string> = {
   caution: "Caution",
 };
 
-const CALLOUT_RE = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*(.*)$/i;
+/** 书写面与导出共用的 callout 首行判定（[!NOTE] / [!TIP] / …） */
+export const CALLOUT_RE = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*(.*)$/i;
 
 function calloutTitleHtml(
   kind: string,

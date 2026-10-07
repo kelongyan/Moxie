@@ -32,6 +32,8 @@ exports[`preview snapshot > dark theme 1`] = `
   }
   /* 全宽（TizuMark 复刻）：正文区不再限宽，--measure 仅保留给源码模式 */
   article { max-width: 100%; margin: 0 auto; padding: 24px 24px 40px; }
+  /* 导出限宽变体：正文 960px 居中 */
+  article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
   /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
   h1, h2, h3, h4, h5, h6 {
@@ -456,6 +458,8 @@ exports[`preview snapshot > light theme 1`] = `
   }
   /* 全宽（TizuMark 复刻）：正文区不再限宽，--measure 仅保留给源码模式 */
   article { max-width: 100%; margin: 0 auto; padding: 24px 24px 40px; }
+  /* 导出限宽变体：正文 960px 居中 */
+  article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
   /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
   h1, h2, h3, h4, h5, h6 {

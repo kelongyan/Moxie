@@ -469,3 +469,73 @@ describe("livePreview · 表格常渲染与原位编辑", () => {
     expect(tables[0].widget.gap).toBe(0);
   });
 });
+
+type MathWidgetLike = { tex?: string; display?: boolean };
+
+function mathWidgets(ranges: Range<Decoration>[]) {
+  return ranges
+    .filter((r) => {
+      const spec = r.value.spec as AnySpec;
+      return !!spec.widget && (spec.widget as MathWidgetLike).tex !== undefined;
+    })
+    .map((r) => {
+      const w = (r.value.spec as { widget: MathWidgetLike }).widget;
+      return { from: r.from, to: r.to, tex: w.tex, display: w.display };
+    });
+}
+
+describe("livePreview · 数学公式（KaTeX）", () => {
+  it("行内 $..$ 替换为公式 widget", () => {
+    const ranges = rangesOf("能量 $E=mc^2$ 公式", 0);
+    const math = mathWidgets(ranges);
+    expect(math).toHaveLength(1);
+    expect(math[0].tex).toBe("E=mc^2");
+    expect(math[0].display).toBe(false);
+  });
+
+  it("光标进入公式区间时回显原文", () => {
+    const doc = "能量 $E=mc^2$ 公式";
+    const ranges = rangesOf(doc, doc.indexOf("E=mc"));
+    expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("单行 $$..$$ 渲染为块级公式", () => {
+    const ranges = rangesOf("前文\n\n$$y=2x$$\n\n后文", 0);
+    const math = mathWidgets(ranges);
+    expect(math).toHaveLength(1);
+    expect(math[0].display).toBe(true);
+    expect(math[0].tex).toBe("y=2x");
+  });
+
+  it("跨行 $$ 块整块替换，内容为中间各行", () => {
+    // 光标在前文（块外）：光标在公式块内时会按预期回显原文
+    const doc = "前文\n\n$$\na = 1\nb = a + 1\n$$";
+    const ranges = rangesOf(doc, 0);
+    const math = mathWidgets(ranges);
+    expect(math).toHaveLength(1);
+    expect(math[0].display).toBe(true);
+    expect(math[0].tex).toBe("a = 1\nb = a + 1");
+    expect(math[0].from).toBe(4);
+    expect(math[0].to).toBe(doc.length);
+  });
+
+  it("代码围栏与行内代码内的 $ 不渲染公式", () => {
+    const ranges = rangesOf("```\n$a$\n```\n\n文本 `$b$` 结尾", 0);
+    expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("内容首尾带空白的 $..$ 视为价格符号不渲染", () => {
+    const ranges = rangesOf("总共 $ 100 $ 元", 0);
+    expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("与强调标记重叠的公式放弃渲染，避免装饰冲突", () => {
+    const ranges = rangesOf("$*x*$", 0);
+    expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("未闭合的 $$ 不渲染", () => {
+    const ranges = rangesOf("$$\nx = 1\n", 0);
+    expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+});

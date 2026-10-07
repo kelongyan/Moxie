@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { openPathAction } from "./state/actions";
+import { initAutosave } from "./state/autosave";
+import { initExternalWatch } from "./state/externalWatch";
 import { EditorPane } from "./components/EditorPane";
+import { QuickOpen } from "./components/QuickOpen";
+import { useQuickOpen } from "./state/quickOpen";
 import { ConflictDialog, EncodingDialog, LossyDialog } from "./components/FileDialogs";
 import { PromptDialogs } from "./components/PromptDialogs";
 import { SavePromptDialog } from "./components/SavePromptDialog";
@@ -26,6 +32,7 @@ export default function App() {
   const activeDoc = documents.find((d) => d.id === activeId) ?? null;
   const dragActive = useFileDrop();
   const sidebarPinned = usePreferences((s) => s.sidebarPinned);
+  const quickOpenOpen = useQuickOpen((s) => s.open);
   const [sidebarPeek, setSidebarPeek] = useState(false);
   const showTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
@@ -33,10 +40,23 @@ export default function App() {
   useShortcuts();
   useCloseGuard();
 
+  useEffect(() => initAutosave(), []);
+  useEffect(() => initExternalWatch(), []);
+
   useEffect(() => {
     let disposed = false;
+    let unlistenFiles: (() => void) | null = null;
     let unlistenFind: (() => void) | null = null;
     let unlistenCodec: (() => void) | null = null;
+    // 单实例：二次启动转发的文件参数
+    void listen<string[]>("open-files-request", (event) => {
+      for (const path of event.payload ?? []) {
+        void openPathAction(path);
+      }
+    }).then((fn) => {
+      if (disposed) fn();
+      else unlistenFiles = fn;
+    });
     void initFindSession().then((fn) => {
       if (disposed) fn();
       else unlistenFind = fn;
@@ -47,6 +67,7 @@ export default function App() {
     });
     return () => {
       disposed = true;
+      unlistenFiles?.();
       if (unlistenFind) unlistenFind();
       if (unlistenCodec) unlistenCodec();
     };
@@ -139,6 +160,7 @@ export default function App() {
       <ConflictDialog />
       <LossyDialog />
       <PromptDialogs />
+      {quickOpenOpen && <QuickOpen />}
       <DropOverlay visible={dragActive} />
     </div>
   );

@@ -26,6 +26,10 @@ export function useShortcuts() {
         } else if (key === "d") {
           e.preventDefault();
           void openCodecWindow("smart-decode");
+        } else if (key === "0") {
+          // Ctrl+Alt+0 重置字号；Ctrl+0 留给编辑器的"标题转正文"
+          e.preventDefault();
+          usePreferences.getState().set({ fontSizePt: 12 });
         }
         return;
       }
@@ -47,6 +51,15 @@ export function useShortcuts() {
       } else if (e.shiftKey && key === "s") {
         e.preventDefault();
         void saveAsAction();
+      } else if (e.shiftKey && key === "c") {
+        e.preventDefault();
+        void import("../state/actions").then((m) => m.copyRichTextAction());
+      } else if (key === "l") {
+        e.preventDefault();
+        void import("../state/actions").then((m) => m.gotoLineAction());
+      } else if (key === "p") {
+        e.preventDefault();
+        void import("../state/quickOpen").then((m) => m.openQuickOpen());
       } else if (!e.shiftKey && key === "w") {
         e.preventDefault();
         if (state.activeId) void closeTabAction(state.activeId);
@@ -68,6 +81,14 @@ export function useShortcuts() {
         e.preventDefault();
         if (hasActiveFindQuery()) forwardFindNavigation(-1);
         else void openFindWindow("find");
+      } else if (key === "=" || key === "+") {
+        e.preventDefault();
+        const prefs = usePreferences.getState();
+        prefs.set({ fontSizePt: Math.min(32, prefs.fontSizePt + 1) });
+      } else if (key === "-") {
+        e.preventDefault();
+        const prefs = usePreferences.getState();
+        prefs.set({ fontSizePt: Math.max(9, prefs.fontSizePt - 1) });
       } else if (key === "tab") {
         e.preventDefault();
         state.cycleTab(e.shiftKey ? -1 : 1);

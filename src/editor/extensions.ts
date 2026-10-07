@@ -19,7 +19,9 @@ import {
   foldGutter,
   foldKeymap,
   indentUnit,
+  syntaxTree,
 } from "@codemirror/language";
+import type { SyntaxNode } from "@lezer/common";
 import { highlightExtension } from "./highlightTheme";
 import { markdownExtensions } from "./languages";
 import { livePreview, ImageSrcResolver } from "./livePreview";
@@ -27,6 +29,13 @@ import {
   markdownEnterHandler,
   renumberOrderedList,
 } from "./listContinuation";
+import {
+  makeLinkHandler,
+  makeQuoteHandler,
+  makeWrapHandler,
+} from "./formatting";
+import { pasteImageExtension } from "./pasteImage";
+import { focusMode, typewriterMode } from "./focusMode";
 import { searchHighlightField } from "./searchHighlight";
 import { PT_TO_PX } from "../state/preferences";
 import { spacingScale, type BlockSpacing } from "../preview/typography";
@@ -47,6 +56,14 @@ export interface EditorOptions {
   enableLivePreview: boolean;
   /** 图片 src → 可显示 URL（本地路径 → asset 协议），null 表示保持原文 */
   imageSrcResolver: ImageSrcResolver | null;
+  /** Ctrl+点击书写面链接时回调（仅 http/https；未提供则不响应点击） */
+  onOpenLink?: (url: string) => void;
+  /** 粘贴图片时回调（落盘与插入见 actions.insertImageFileAction）；未提供则不拦截粘贴 */
+  onImagePaste?: (file: File) => void;
+  /** 专注模式：当前顶层块之外降透明度（仅书写面） */
+  focusMode?: boolean;
+  /** 打字机模式：光标行保持垂直居中（仅书写面） */
+  typewriterMode?: boolean;
   onUpdate: (update: { docChanged: boolean; state: EditorState }) => void;
   onCursor: (line: number, column: number) => void;
 }
@@ -118,6 +135,45 @@ export function makeHeadingLevelHandler(level: number) {
     });
     return true;
   };
+}
+
+/** Ctrl+点击链接打开：命中 Link / Autolink 节点里的 http(s) URL 时交给 onOpenLink */
+function linkClickExtension(onOpenLink: (url: string) => void): Extension {
+  return EditorView.domEventHandlers({
+    mousedown(event, view) {
+      if (event.button !== 0 || !(event.ctrlKey || event.metaKey)) return false;
+      const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+      if (pos == null) return false;
+      let link: SyntaxNode | null = null;
+      for (
+        let n: SyntaxNode | null = syntaxTree(view.state).resolveInner(pos, 0);
+        n;
+        n = n.parent
+      ) {
+        if (n.name === "Link" || n.name === "Autolink") {
+          link = n;
+          break;
+        }
+      }
+      if (!link) return false;
+      let url: string | null = null;
+      if (link.name === "Autolink") {
+        url = view.state.sliceDoc(link.from, link.to);
+      } else {
+        for (let ch = link.firstChild; ch; ch = ch.nextSibling) {
+          if (ch.name === "URL") {
+            url = view.state.sliceDoc(ch.from, ch.to);
+            break;
+          }
+        }
+      }
+      url = url?.trim() ?? "";
+      if (!/^https?:\/\//i.test(url)) return false;
+      event.preventDefault();
+      onOpenLink(url);
+      return true;
+    },
+  });
 }
 
 export function buildEditorState(options: EditorOptions): EditorState {
@@ -212,6 +268,12 @@ export function buildEditorState(options: EditorOptions): EditorState {
     { key: "Shift-Tab", run: makeShiftTabHandler(tabWidth) },
     { key: "Mod-z", run: undo },
     { key: "Mod-Shift-z", run: redo },
+    // 书写面格式化：加粗/斜体/行内代码/链接/引用块
+    { key: "Mod-b", run: makeWrapHandler("**") },
+    { key: "Mod-i", run: makeWrapHandler("*") },
+    { key: "Mod-e", run: makeWrapHandler("`") },
+    { key: "Mod-k", run: makeLinkHandler() },
+    { key: "Mod-Shift-q", run: makeQuoteHandler() },
     // 标题级别：Ctrl+0 正文、Ctrl+1-6 一到六级
     { key: "Mod-0", run: makeHeadingLevelHandler(0) },
     { key: "Mod-1", run: makeHeadingLevelHandler(1) },
@@ -258,6 +320,18 @@ export function buildEditorState(options: EditorOptions): EditorState {
         spacingScale(fontSizePx, options.blockSpacing ?? "standard")
       )
     );
+  }
+  if (options.onOpenLink) {
+    extensions.push(linkClickExtension(options.onOpenLink));
+  }
+  if (options.onImagePaste) {
+    extensions.push(pasteImageExtension(options.onImagePaste));
+  }
+  if (editable && options.focusMode) {
+    extensions.push(focusMode());
+  }
+  if (editable && options.typewriterMode) {
+    extensions.push(typewriterMode());
   }
   if (options.enableFold) {
     extensions.push(codeFolding());

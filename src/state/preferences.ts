@@ -24,6 +24,20 @@ interface PreferencesState {
   markdownBreaks: boolean;
   markdownTypographer: boolean;
   markdownAllowHtml: boolean;
+  /** 粘贴/拖入图片的落盘目录（相对文档目录，默认 assets） */
+  imageFolder: string;
+  /** 专注模式：当前顶层块之外的行降透明度 */
+  focusMode: boolean;
+  /** 打字机模式：光标行保持屏幕垂直居中 */
+  typewriterMode: boolean;
+  /** 导出主题：跟随当前 / 固定浅色 / 固定深色 */
+  exportTheme: "auto" | "light" | "dark";
+  /** 导出正文限宽（960px 居中） */
+  exportNarrow: boolean;
+  /** 导出 HTML / 富文本时代码块显示行号 */
+  exportCodeLineNumbers: boolean;
+  /** 自动保存模式：关闭 / 定时（30s，仅已保存过的文档）/ 失焦保存 */
+  autosave: "off" | "interval" | "focus";
   prefsVersion: number;
   set: (partial: Partial<Omit<PreferencesState, "set" | "prefsVersion">>) => void;
   hydrate: (disk: Record<string, unknown>) => void;
@@ -37,6 +51,8 @@ const EDITOR_KEYS = new Set([
   "blockSpacing",
   "indentStyle",
   "tabWidth",
+  "focusMode",
+  "typewriterMode",
 ]);
 
 let saveTimer: number | null = null;
@@ -57,6 +73,13 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     markdownBreaks: state.markdownBreaks,
     markdownTypographer: state.markdownTypographer,
     markdownAllowHtml: state.markdownAllowHtml,
+    editorImageFolder: state.imageFolder,
+    isFocusModeEnabled: state.focusMode,
+    isTypewriterModeEnabled: state.typewriterMode,
+    exportTheme: state.exportTheme,
+    isExportNarrow: state.exportNarrow,
+    isExportCodeLineNumbers: state.exportCodeLineNumbers,
+    autosaveMode: state.autosave,
   };
 }
 
@@ -95,6 +118,13 @@ export const usePreferences = create<PreferencesState>((set) => ({
   // 默认开启：新装用户的预览就带"出版物感"，老用户的偏好不受影响
   markdownTypographer: true,
   markdownAllowHtml: false,
+  imageFolder: "assets",
+  focusMode: false,
+  typewriterMode: false,
+  exportTheme: "auto",
+  exportNarrow: false,
+  exportCodeLineNumbers: false,
+  autosave: "off",
   prefsVersion: 0,
 
   set: (partial) => {
@@ -141,6 +171,35 @@ export const usePreferences = create<PreferencesState>((set) => ({
     }
     if (typeof disk.markdownAllowHtml === "boolean") {
       patch.markdownAllowHtml = disk.markdownAllowHtml;
+    }
+    if (typeof disk.editorImageFolder === "string" && disk.editorImageFolder.trim() !== "") {
+      patch.imageFolder = disk.editorImageFolder.trim();
+    }
+    if (typeof disk.isFocusModeEnabled === "boolean") {
+      patch.focusMode = disk.isFocusModeEnabled;
+    }
+    if (typeof disk.isTypewriterModeEnabled === "boolean") {
+      patch.typewriterMode = disk.isTypewriterModeEnabled;
+    }
+    if (
+      disk.exportTheme === "auto" ||
+      disk.exportTheme === "light" ||
+      disk.exportTheme === "dark"
+    ) {
+      patch.exportTheme = disk.exportTheme;
+    }
+    if (typeof disk.isExportNarrow === "boolean") {
+      patch.exportNarrow = disk.isExportNarrow;
+    }
+    if (typeof disk.isExportCodeLineNumbers === "boolean") {
+      patch.exportCodeLineNumbers = disk.isExportCodeLineNumbers;
+    }
+    if (
+      disk.autosaveMode === "off" ||
+      disk.autosaveMode === "interval" ||
+      disk.autosaveMode === "focus"
+    ) {
+      patch.autosave = disk.autosaveMode;
     }
     if (typeof disk.appTheme === "string") {
       const mode = disk.appTheme as ThemeMode;

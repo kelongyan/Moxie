@@ -51,7 +51,10 @@ export async function inlineLocalImages(html: string): Promise<string> {
 /** 组装独立 HTML：外壳样式内联，KaTeX 样式内联，正文注入 */
 export function buildExportHtml(shell: string, bodyHtml: string): string {
   let out = shell.replace(/<link rel="stylesheet"[^>]*>/g, () => `<style>${katexCssInline}</style>`);
-  out = out.replace("<article></article>", `<article>${bodyHtml}</article>`);
+  out = out.replace(
+    /<article([^>]*)><\/article>/,
+    (_m, attrs: string) => `<article${attrs}>${bodyHtml}</article>`
+  );
   return out;
 }
 

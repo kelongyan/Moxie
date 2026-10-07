@@ -1079,18 +1079,24 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px 10px;
+  padding: 10px 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
+}
+
+/* 区块容器：分区内行距靠行自身高度，分区间距统一走 scroll 的 gap */
+.nav-section {
+  display: flex;
+  flex-direction: column;
 }
 
 .section-header {
   height: var(--lac-section-header-height);
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 7px;
+  gap: 5px;
+  padding: 0 6px;
   cursor: default;
   border-radius: var(--radius-sm);
 }
@@ -1116,10 +1122,10 @@ body {
 }
 
 .section-title {
-  font-size: var(--fs-caption);
-  font-weight: 500;
+  font-size: var(--fs-meta);
+  font-weight: 600;
   color: var(--lac-text-tertiary);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
 }
 
 .section-count {
@@ -1127,257 +1133,19 @@ body {
   font-weight: 500;
   color: var(--lac-text-tertiary);
   font-variant-numeric: tabular-nums;
-}
-
-.section-trash {
-  width: var(--ctl-sm);
-  height: var(--ctl-sm);
+  opacity: 0.8;
 }
 
 .section-empty {
   font-size: var(--fs-caption);
   color: var(--lac-text-tertiary);
-  padding: 10px 7px;
+  padding: 6px 6px 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   align-items: flex-start;
 }
 
-.section-empty-button {
-  font-size: var(--fs-caption);
-  font-family: inherit;
-  color: var(--lac-text-secondary);
-  padding: 0 10px;
-  height: var(--ctl-sm);
-  border: 1px solid var(--lac-border);
-  border-radius: var(--radius-xs);
-  background: transparent;
-  cursor: pointer;
-  transition: background var(--anim-hover), color var(--anim-hover);
-}
-
-.section-empty-button:hover {
-  background: var(--lac-hover);
-  color: var(--lac-text);
-}
-
-/* Tooltip 锚点在侧栏内撑满行宽（全局是 inline-flex，会让行收缩） */
-.sidebar-content .tooltip-anchor {
-  display: flex;
-  width: 100%;
-  min-width: 0;
-}
-
-/* ---------- 文件行（方案 A · 单行索引） ---------- */
-
-.file-row {
-  height: var(--lac-sidebar-row-height);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 8px 0 6px;
-  border-radius: var(--radius-sm);
-  cursor: default;
-  position: relative;
-  transition: background var(--anim-hover);
-}
-
-.file-row:hover {
-  background: var(--lac-hover);
-}
-
-/* 打开中指示条：3×14，默认透明 */
-.row-indicator {
-  width: 3px;
-  height: 14px;
-  border-radius: var(--radius-full);
-  background: transparent;
-  flex-shrink: 0;
-  transition: background var(--anim-hover);
-}
-
-.file-row.is-open .row-indicator {
-  background: var(--lac-accent);
-}
-
-.row-icon {
-  width: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--lac-text-secondary);
-  flex-shrink: 0;
-  transition: color var(--anim-hover);
-}
-
-.row-icon .warn {
-  color: var(--lac-warning);
-}
-
-.row-name {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--fs-ui);
-  color: var(--lac-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color var(--anim-hover);
-}
-
-/* 激活行：图标与文字双 accent 信号 */
-.file-row.is-open .row-icon {
-  color: var(--lac-accent);
-}
-
-.file-row.is-open .row-name {
-  font-weight: 500;
-}
-
-/* 缺失行：不降整行透明度，文件名转 tertiary + 警告图标 */
-.file-row.is-missing .row-name {
-  color: var(--lac-text-tertiary);
-}
-
-/* ---------- 行尾状态区：hover 浮现 ---------- */
-
-.row-end {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  min-width: 0;
-}
-
-.row-time {
-  font-size: var(--fs-meta);
-  color: var(--lac-text-tertiary);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.row-action {
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: var(--radius-xs);
-  color: var(--lac-text-tertiary);
-  cursor: pointer;
-  padding: 0;
-  opacity: 0;
-  transition: opacity var(--dur-1) var(--ease-out), background var(--anim-hover),
-    color var(--anim-hover);
-}
-
-.file-row:hover .row-action {
-  opacity: 1;
-}
-
-.file-row:hover .row-time {
-  display: none;
-}
-
-.row-action:hover {
-  background: var(--lac-pressed);
-  color: var(--lac-text);
-}
-
-.row-action.danger:hover {
-  color: var(--lac-danger);
-}
-
-/* 重新定位按钮（missing 行）：默认隐藏，hover 出现 */
-.row-locate {
-  display: none;
-  color: var(--lac-warning);
-}
-
-.file-row.is-missing:hover .row-locate {
-  display: inline-flex;
-}
-
-/* ---------- 分组行 ---------- */
-
-.group-row {
-  height: var(--lac-group-row-height);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 8px;
-  border-radius: var(--radius-sm);
-  color: var(--lac-text-secondary);
-  cursor: default;
-  transition: background var(--anim-hover), box-shadow var(--anim-hover);
-}
-
-.group-row:hover {
-  background: var(--lac-hover);
-}
-
-/* 拖拽落点高亮 */
-.group-row.drop-target {
-  background: var(--lac-accent-soft);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lac-accent) 40%, transparent);
-}
-
-.group-chevron {
-  color: var(--lac-text-tertiary);
-  opacity: 0.65;
-  flex-shrink: 0;
-  transition: transform var(--dur-1) var(--ease-out);
-}
-
-.group-row:hover .group-chevron {
-  opacity: 1;
-}
-
-.group-row.expanded .group-chevron {
-  transform: rotate(90deg);
-}
-
-.group-icon {
-  display: inline-flex;
-  align-items: center;
-  color: var(--lac-text-secondary);
-  flex-shrink: 0;
-}
-
-.group-name {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--fs-ui);
-  font-weight: 500;
-  color: var(--lac-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.group-count {
-  font-size: var(--fs-meta);
-  color: var(--lac-text-tertiary);
-  font-variant-numeric: tabular-nums;
-  min-width: 16px;
-  text-align: right;
-}
-
-.group-children {
-  padding-left: 14px;
-}
-
-.group-empty {
-  height: 28px;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  font-size: var(--fs-meta);
-  color: var(--lac-text-tertiary);
-}
 
 .sidebar-footer {
   border-top: 1px solid var(--lac-border);
@@ -1671,6 +1439,28 @@ body {
   padding-bottom: 12px;
 }
 
+/* callout（> [!NOTE] 等）：覆盖引用的中性配色，五色对齐导出侧 */
+.cm-host .cm-line.md-callout-note {
+  border-left-color: rgb(var(--lac-alert-note));
+  background: color-mix(in srgb, rgb(var(--lac-alert-note)) 8%, transparent);
+}
+.cm-host .cm-line.md-callout-tip {
+  border-left-color: rgb(var(--lac-alert-tip));
+  background: color-mix(in srgb, rgb(var(--lac-alert-tip)) 8%, transparent);
+}
+.cm-host .cm-line.md-callout-important {
+  border-left-color: rgb(var(--lac-alert-important));
+  background: color-mix(in srgb, rgb(var(--lac-alert-important)) 8%, transparent);
+}
+.cm-host .cm-line.md-callout-warning {
+  border-left-color: rgb(var(--lac-alert-warning));
+  background: color-mix(in srgb, rgb(var(--lac-alert-warning)) 8%, transparent);
+}
+.cm-host .cm-line.md-callout-caution {
+  border-left-color: rgb(var(--lac-alert-caution));
+  background: color-mix(in srgb, rgb(var(--lac-alert-caution)) 8%, transparent);
+}
+
 .cm-host .cm-line.md-code-block {
   font-family: var(--font-mono);
   font-size: 0.9em;
@@ -1958,4 +1748,261 @@ body {
   border-top: 1px solid var(--lac-border);
   font-size: var(--fs-small);
   color: var(--lac-text-tertiary);
+}
+
+/* ---------- 右键菜单禁用态 ---------- */
+
+.context-menu button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.context-menu button:disabled:hover {
+  background: transparent;
+}
+
+/* ---------- 侧栏大纲 ---------- */
+
+.outline-list {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0 4px;
+}
+
+.outline-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 26px;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--lac-text-secondary);
+  font-family: inherit;
+  font-size: var(--fs-caption);
+  line-height: 1;
+  text-align: left;
+  padding-right: 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--anim-hover), color var(--anim-hover);
+}
+
+.outline-row:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+/* 层级分层：h1 最重、h2 正文、h3 及以下转灰，缩进在行内联样式中给出 */
+.outline-row.lvl-1 {
+  color: var(--lac-text);
+  font-weight: 600;
+}
+
+.outline-row.lvl-2 {
+  color: var(--lac-text);
+}
+
+.outline-row.lvl-3,
+.outline-row.lvl-4,
+.outline-row.lvl-5,
+.outline-row.lvl-6 {
+  color: var(--lac-text-secondary);
+}
+
+.outline-row.active {
+  background: var(--lac-accent-soft);
+  color: var(--lac-accent);
+  font-weight: 600;
+}
+
+.outline-row.active:hover {
+  background: var(--lac-accent-soft);
+  color: var(--lac-accent);
+}
+
+/* ---------- 围栏语言切换菜单（书写面 md-lang-tag 点击弹出） ---------- */
+
+.md-lang-menu {
+  position: fixed;
+  z-index: var(--z-popover);
+  min-width: 150px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--lac-bg);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--sh-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.md-lang-menu button {
+  border: none;
+  background: transparent;
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.md-lang-menu button:hover {
+  background: var(--lac-hover);
+}
+
+.md-lang-menu button.current {
+  color: var(--lac-accent);
+  font-weight: 600;
+}
+
+/* ---------- 快速打开（Ctrl+P） ---------- */
+
+.quick-open-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: var(--lac-overlay-bg, rgba(0, 0, 0, 0.25));
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+}
+
+.quick-open {
+  width: 480px;
+  max-width: calc(100vw - 48px);
+  background: var(--lac-bg);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--sh-3, 0 12px 32px rgba(0, 0, 0, 0.18));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-open-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--lac-border);
+  color: var(--lac-text-tertiary);
+}
+
+.quick-open-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  outline: none;
+}
+
+.quick-open-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.quick-open-empty {
+  padding: 16px;
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--lac-text-tertiary);
+}
+
+.quick-open-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.quick-open-item.selected {
+  background: var(--lac-hover);
+}
+
+.quick-open-item.is-open .quick-open-name {
+  color: var(--lac-accent);
+  font-weight: 600;
+}
+
+.quick-open-name {
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.quick-open-dir {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+/* ---------- 书写面 mermaid ---------- */
+
+.md-mermaid {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  overflow-x: auto;
+  color: var(--lac-text);
+  font-size: var(--fs-caption);
+}
+
+.md-mermaid.error {
+  color: var(--lac-danger);
+}
+
+.md-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- 专注模式 ---------- */
+
+.cm-line.md-dim {
+  opacity: 0.35;
+}
+
+/* ---------- 书写面数学公式（KaTeX） ---------- */
+
+.md-math-inline {
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.md-math-block {
+  display: block;
+  text-align: center;
+  margin: 6px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0;
 }

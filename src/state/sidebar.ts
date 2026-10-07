@@ -17,6 +17,7 @@ export interface RecentEntry {
 export interface SectionsExpanded {
   groups: boolean;
   recent: boolean;
+  outline: boolean;
 }
 
 interface SidebarState {
@@ -78,7 +79,7 @@ export function formatRelativeTime(ms: number, now = Date.now()): string {
 
 export const useSidebar = create<SidebarState>((set, get) => ({
   groups: [],
-  sectionsExpanded: { groups: true, recent: true },
+  sectionsExpanded: { groups: true, recent: true, outline: true },
   recent: [],
   missing: {},
   loaded: false,
@@ -100,6 +101,7 @@ export const useSidebar = create<SidebarState>((set, get) => ({
         sectionsExpanded: {
           groups: sections.groups !== false,
           recent: sections.recent !== false,
+          outline: sections.outline !== false,
         },
         loaded: true,
       });

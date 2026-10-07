@@ -16,6 +16,7 @@ import {
 import { EditorDocument, useDocuments } from "../state/documents";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
+import { insertImageFileAction } from "../state/actions";
 import { directoryOf, resolveLocalImageSrc } from "../preview/markdownCore";
 import { EditorEmptyState } from "./EditorEmptyState";
 
@@ -90,6 +91,16 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     enableFold: features.fold,
     enableLivePreview: features.livePreview,
     imageSrcResolver: features.livePreview ? imageSrcResolverFor(baseDir) : null,
+    onOpenLink: (url) => {
+      void invoke("open_external", { url }).catch((error) => {
+        useDocuments.getState().setStatus({ text: `无法打开链接:${error}`, kind: "error" });
+      });
+    },
+    onImagePaste: (file) => {
+      void insertImageFileAction(file);
+    },
+    focusMode: prefs.focusMode,
+    typewriterMode: prefs.typewriterMode,
     onUpdate: ({ state: nextState }) => {
       reportDirtyState(doc.id, nextState.doc.length, () =>
         nextState.doc.toString()

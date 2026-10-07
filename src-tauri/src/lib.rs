@@ -6,6 +6,7 @@ mod file_meta;
 mod recent;
 mod recovery;
 mod sidebar;
+mod watcher;
 
 #[cfg(test)]
 pub(crate) mod testutil {
@@ -114,11 +115,21 @@ fn write_text_file(
         "crlf" => LineEnding::Crlf,
         _ => LineEnding::Lf,
     };
-    let converted = apply_line_ending(&text, ending);
+    let converted = apply_line_ending(&normalize_to_lf(&text), ending);
     let bytes = encodings::encode_strict(id, &converted).map_err(|e| match e {
         encodings::CodecError::Unrepresentable => "unrepresentable".to_string(),
         encodings::CodecError::DecodeFailed => "decode-failed".to_string(),
     })?;
+    file_io::write_bytes_atomic(&path, &bytes).map_err(|e| e.to_string())
+}
+
+/// base64 → 字节落盘（图片粘贴/拖拽），复用原子写并自动创建父目录
+#[command]
+fn write_file_base64(path: PathBuf, data_base64: String) -> Result<(), String> {
+    use base64::Engine;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64)
+        .map_err(|e| format!("invalid-base64: {e}"))?;
     file_io::write_bytes_atomic(&path, &bytes).map_err(|e| e.to_string())
 }
 
@@ -224,6 +235,12 @@ fn allow_asset_directory(app: tauri::AppHandle, path: PathBuf) -> Result<(), Str
         .map_err(|e| e.to_string())
 }
 
+/// 打开文档目录的外部修改监听（幂等，集合不变时不重建）
+#[command]
+fn fs_watch(app: tauri::AppHandle, dirs: Vec<String>) {
+    watcher::update_dirs(&app, dirs);
+}
+
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoveryEntryDto {
@@ -286,6 +303,27 @@ pub struct WorkspaceSnapshotDto {
     pub docs: Vec<(String, String)>,
 }
 
+/// 从命令行参数筛出存在的 Markdown 文件（单实例二次启动 / 首次启动共用）
+fn markdown_paths_from_args(argv: &[String]) -> Vec<String> {
+    argv.iter()
+        .skip(1)
+        .filter(|arg| {
+            let lower = arg.to_lowercase();
+            ["md", "markdown", "mdown", "mkd", "mkdown"]
+                .iter()
+                .any(|ext| lower.rsplit('.').next() == Some(*ext))
+                && std::path::Path::new(arg).is_file()
+        })
+        .cloned()
+        .collect()
+}
+
+/// 首次启动的命令行文件参数（双击 .md 打开）
+#[command]
+fn launch_args() -> Vec<String> {
+    markdown_paths_from_args(&std::env::args().collect::<Vec<String>>())
+}
+
 #[command]
 fn workspace_load_and_consume() -> Option<WorkspaceSnapshotDto> {
     recovery::workspace_load_and_consume().map(|s| WorkspaceSnapshotDto {
@@ -296,11 +334,20 @@ fn workspace_load_and_consume() -> Option<WorkspaceSnapshotDto> {
 
 pub fn run() {
     tauri::Builder::default()
+        // 单实例必须最先注册：二次启动把文件参数转发给主窗口
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let paths = markdown_paths_from_args(&argv);
+            if !paths.is_empty() {
+                use tauri::Emitter;
+                let _ = app.emit_to("main", "open-files-request", paths);
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             read_text_file,
             read_text_file_with_encoding,
             write_text_file,
+            write_file_base64,
             get_file_identity,
             get_file_revision,
             read_file_base64,
@@ -326,7 +373,9 @@ pub fn run() {
             recovery_cleanup,
             recovery_finish_cleanly,
             workspace_save,
-            workspace_load_and_consume
+            workspace_load_and_consume,
+            launch_args,
+            fs_watch
         ])
         .run(tauri::generate_context!())
         .expect("error while running Moxie");

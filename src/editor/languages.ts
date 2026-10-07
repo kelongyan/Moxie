@@ -112,3 +112,17 @@ const CODE_LANGUAGES: LanguageDescription[] = [
 export function markdownExtensions(): Extension[] {
   return [markdown({ codeLanguages: CODE_LANGUAGES, extensions: [GFM] }), markdownHeadingFold];
 }
+
+/** fence 语言切换菜单可选项（key 用 CODE_LANGUAGES 的 name，保证切换后高亮可加载） */
+export const FENCE_LANGUAGE_OPTIONS: { key: string; label: string }[] = [
+  { key: "", label: "无标注" },
+  { key: "javascript", label: "JavaScript" },
+  { key: "typescript", label: "TypeScript" },
+  { key: "json", label: "JSON" },
+  { key: "css", label: "CSS" },
+  { key: "html", label: "HTML" },
+  { key: "python", label: "Python" },
+  { key: "sql", label: "SQL" },
+  { key: "yaml", label: "YAML" },
+  { key: "cpp", label: "C/C++" },
+];
