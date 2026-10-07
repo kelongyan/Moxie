@@ -1,4 +1,5 @@
 import MarkdownIt from "markdown-it";
+import abbr from "markdown-it-abbr";
 import deflist from "markdown-it-deflist";
 import { full as emoji } from "markdown-it-emoji";
 import footnote from "markdown-it-footnote";
@@ -16,6 +17,7 @@ const md = new MarkdownIt({ html: false, linkify: true, breaks: false });
 md.use(taskLists, { enabled: true });
 md.use(footnote);
 md.use(deflist);
+md.use(abbr);
 md.use(sub);
 md.use(sup);
 md.use(emoji);

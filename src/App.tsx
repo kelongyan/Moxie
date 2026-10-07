@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { openPathAction } from "./state/actions";
 import { initAutosave } from "./state/autosave";
 import { initExternalWatch } from "./state/externalWatch";
 import { EditorPane } from "./components/EditorPane";
+import { FindBar } from "./components/FindBar";
+import { HistoryOverlay } from "./components/HistoryOverlay";
 import { QuickOpen } from "./components/QuickOpen";
+import { useFindBar } from "./state/findBar";
+import { useHistoryOverlay } from "./state/historyOverlay";
 import { useQuickOpen } from "./state/quickOpen";
+import { saveWorkspaceAndFinish } from "./state/recovery";
 import { ConflictDialog, EncodingDialog, LossyDialog } from "./components/FileDialogs";
 import { PromptDialogs } from "./components/PromptDialogs";
 import { SavePromptDialog } from "./components/SavePromptDialog";
@@ -33,6 +39,8 @@ export default function App() {
   const dragActive = useFileDrop();
   const sidebarPinned = usePreferences((s) => s.sidebarPinned);
   const quickOpenOpen = useQuickOpen((s) => s.open);
+  const findBarOpen = useFindBar((s) => s.open);
+  const historyOpen = useHistoryOverlay((s) => s.open);
   const [sidebarPeek, setSidebarPeek] = useState(false);
   const showTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
@@ -46,6 +54,7 @@ export default function App() {
   useEffect(() => {
     let disposed = false;
     let unlistenFiles: (() => void) | null = null;
+    let unlistenQuit: (() => void) | null = null;
     let unlistenFind: (() => void) | null = null;
     let unlistenCodec: (() => void) | null = null;
     // 单实例：二次启动转发的文件参数
@@ -56,6 +65,16 @@ export default function App() {
     }).then((fn) => {
       if (disposed) fn();
       else unlistenFiles = fn;
+    });
+    // 托盘"退出"：先保存工作区快照再退出
+    void listen("app:quit", () => {
+      void (async () => {
+        await saveWorkspaceAndFinish();
+        await invoke("app_exit");
+      })();
+    }).then((fn) => {
+      if (disposed) fn();
+      else unlistenQuit = fn;
     });
     void initFindSession().then((fn) => {
       if (disposed) fn();
@@ -68,6 +87,7 @@ export default function App() {
     return () => {
       disposed = true;
       unlistenFiles?.();
+      unlistenQuit?.();
       if (unlistenFind) unlistenFind();
       if (unlistenCodec) unlistenCodec();
     };
@@ -161,6 +181,8 @@ export default function App() {
       <LossyDialog />
       <PromptDialogs />
       {quickOpenOpen && <QuickOpen />}
+      {findBarOpen && <FindBar />}
+      {historyOpen && <HistoryOverlay />}
       <DropOverlay visible={dragActive} />
     </div>
   );

@@ -16,13 +16,27 @@ import { openSettingsWindow } from "../state/settingsWindow";
 export function useShortcuts() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "F11") {
+        e.preventDefault();
+        void (async () => {
+          const win = await import("@tauri-apps/api/window").then((m) =>
+            m.getCurrentWindow()
+          );
+          await win.setFullscreen(!(await win.isFullscreen()));
+        })();
+        return;
+      }
       if (!e.ctrlKey) return;
       const key = e.key.toLowerCase();
 
       if (e.altKey) {
         if (key === "f") {
           e.preventDefault();
-          void openFindWindow("replace");
+          if (usePreferences.getState().findStyle === "inline") {
+            void import("../state/findBar").then((m) => m.openFindBar("replace"));
+          } else {
+            void openFindWindow("replace");
+          }
         } else if (key === "d") {
           e.preventDefault();
           void openCodecWindow("smart-decode");
@@ -65,7 +79,11 @@ export function useShortcuts() {
         if (state.activeId) void closeTabAction(state.activeId);
       } else if (!e.shiftKey && key === "f") {
         e.preventDefault();
-        void openFindWindow("find");
+        if (usePreferences.getState().findStyle === "inline") {
+          void import("../state/findBar").then((m) => m.openFindBar("find"));
+        } else {
+          void openFindWindow("find");
+        }
       } else if (e.shiftKey && key === "b") {
         e.preventDefault();
         const prefs = usePreferences.getState();

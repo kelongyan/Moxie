@@ -68,8 +68,8 @@ export interface ExportOptions {
   allowHtml: boolean;
 }
 
-/** 导出当前预览为独立 HTML 文件（内联样式与本地图片），返回是否完成保存 */
-export async function exportPreviewHtml(opts: ExportOptions): Promise<boolean> {
+/** 渲染完整独立 HTML（正文 + 图片内联 + 外壳） */
+async function buildFullHtml(opts: ExportOptions): Promise<string> {
   const body = renderBody(opts.text, {
     baseDir: opts.baseDir,
     assetUrl: localImagePlaceholder,
@@ -79,13 +79,20 @@ export async function exportPreviewHtml(opts: ExportOptions): Promise<boolean> {
   });
   const withImages = await inlineLocalImages(body);
   const shell = renderShell(opts.tokens, opts.title);
-  const full = buildExportHtml(shell, withImages);
+  return buildExportHtml(shell, withImages);
+}
 
-  const base = (opts.title || "预览").replace(/\.md$/i, "");
+async function saveHtmlFile(
+  title: string,
+  baseName: string,
+  filterName: string,
+  ext: string,
+  full: string
+): Promise<boolean> {
   const target = await save({
-    title: "导出预览为 HTML",
-    defaultPath: `${base}.html`,
-    filters: [{ name: "HTML 文件", extensions: ["html"] }],
+    title,
+    defaultPath: `${baseName}.${ext}`,
+    filters: [{ name: filterName, extensions: [ext] }],
   });
   if (!target) return false;
   await invoke("write_text_file", {
@@ -95,4 +102,31 @@ export async function exportPreviewHtml(opts: ExportOptions): Promise<boolean> {
     lineEnding: "lf",
   });
   return true;
+}
+
+/** 导出当前预览为独立 HTML 文件（内联样式与本地图片），返回是否完成保存 */
+export async function exportPreviewHtml(opts: ExportOptions): Promise<boolean> {
+  const full = await buildFullHtml(opts);
+  const base = (opts.title || "预览").replace(/\.md$/i, "");
+  const saved = await saveHtmlFile(
+    "导出预览为 HTML",
+    base,
+    "HTML 文件",
+    "html",
+    full
+  );
+  return saved;
+}
+
+/**
+ * 导出为 Word 可直接打开的 .doc（HTML 兼容路线，零依赖）：
+ * 注入 Word 文档标识，扩展名 .doc；公式/表格/样式随 HTML 带入。
+ */
+export async function exportWordDoc(opts: ExportOptions): Promise<boolean> {
+  const full = (await buildFullHtml(opts)).replace(
+    /<head>/i,
+    '<head><meta name="ProgId" content="Word.Document" /><meta name="Generator" content="Moxie" />'
+  );
+  const base = (opts.title || "预览").replace(/\.md$/i, "");
+  return saveHtmlFile("导出为 Word 文档", base, "Word 文档", "doc", full);
 }

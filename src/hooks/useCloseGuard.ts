@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getAllWindows, getCurrentWindow } from "@tauri-apps/api/window";
 import { saveDocumentAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { usePreferences } from "../state/preferences";
@@ -80,6 +80,14 @@ export function useCloseGuard() {
           const labels = await editorWindowLabels();
           const isLastWindow = labels.length <= 1;
           const exitBehavior = usePreferences.getState().exitBehavior;
+
+          // 关闭到托盘：隐藏全部窗口，内容保持在内存（恢复机制持续兜底）
+          if (usePreferences.getState().closeToTray && isLastWindow) {
+            const wins = await getAllWindows();
+            for (const w of wins) await w.hide().catch(() => {});
+            return;
+          }
+
           const dirtyDocs = useDocuments
             .getState()
             .documents.filter((d) => d.isDirty);

@@ -38,6 +38,16 @@ interface PreferencesState {
   exportCodeLineNumbers: boolean;
   /** 自动保存模式：关闭 / 定时（30s，仅已保存过的文档）/ 失焦保存 */
   autosave: "off" | "interval" | "focus";
+  /** 界面语言（en 为实验性，未完全覆盖） */
+  lang: "zh" | "en";
+  /** 查找形态：独立窗口 / 编辑器内浮层 */
+  findStyle: "window" | "inline";
+  /** 关闭窗口时最小化到托盘（需重启应用生效托盘图标恢复） */
+  closeToTray: boolean;
+  /** 界面字体（空 = 默认 Frex Sans GB） */
+  uiFont: string;
+  /** 强调色（hex，空 = 主题默认） */
+  accentColor: string;
   prefsVersion: number;
   set: (partial: Partial<Omit<PreferencesState, "set" | "prefsVersion">>) => void;
   hydrate: (disk: Record<string, unknown>) => void;
@@ -80,6 +90,11 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     isExportNarrow: state.exportNarrow,
     isExportCodeLineNumbers: state.exportCodeLineNumbers,
     autosaveMode: state.autosave,
+    appLang: state.lang,
+    findStyle: state.findStyle,
+    isCloseToTray: state.closeToTray,
+    uiFontFamily: state.uiFont,
+    accentColor: state.accentColor,
   };
 }
 
@@ -125,6 +140,11 @@ export const usePreferences = create<PreferencesState>((set) => ({
   exportNarrow: false,
   exportCodeLineNumbers: false,
   autosave: "off",
+  lang: "zh",
+  findStyle: "window",
+  closeToTray: false,
+  uiFont: "",
+  accentColor: "",
   prefsVersion: 0,
 
   set: (partial) => {
@@ -200,6 +220,21 @@ export const usePreferences = create<PreferencesState>((set) => ({
       disk.autosaveMode === "focus"
     ) {
       patch.autosave = disk.autosaveMode;
+    }
+    if (disk.appLang === "zh" || disk.appLang === "en") {
+      patch.lang = disk.appLang;
+    }
+    if (disk.findStyle === "window" || disk.findStyle === "inline") {
+      patch.findStyle = disk.findStyle;
+    }
+    if (typeof disk.isCloseToTray === "boolean") {
+      patch.closeToTray = disk.isCloseToTray;
+    }
+    if (typeof disk.uiFontFamily === "string") {
+      patch.uiFont = disk.uiFontFamily;
+    }
+    if (typeof disk.accentColor === "string") {
+      patch.accentColor = disk.accentColor;
     }
     if (typeof disk.appTheme === "string") {
       const mode = disk.appTheme as ThemeMode;

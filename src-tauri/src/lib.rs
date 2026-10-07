@@ -6,6 +6,8 @@ mod file_meta;
 mod recent;
 mod recovery;
 mod sidebar;
+mod timeline;
+mod tray;
 mod watcher;
 
 #[cfg(test)]
@@ -241,6 +243,51 @@ fn fs_watch(app: tauri::AppHandle, dirs: Vec<String>) {
     watcher::update_dirs(&app, dirs);
 }
 
+/// 托盘开关（设置页"关闭到托盘"切换；启动时按偏好恢复）
+#[command]
+fn tray_set_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    if enabled {
+        tray::build_tray(&app)
+    } else {
+        tray::destroy_tray();
+        Ok(())
+    }
+}
+
+/// 托盘"退出"：前端先保存工作区，再调本命令退出
+#[command]
+fn app_exit(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimelineEntryDto {
+    pub timestamp_ms: u64,
+    pub size: u64,
+}
+
+#[command]
+fn timeline_save(path: String, content: String) -> Result<(), String> {
+    timeline::save_snapshot(&path, &content)
+}
+
+#[command]
+fn timeline_list(path: String) -> Vec<TimelineEntryDto> {
+    timeline::list_snapshots(&path)
+        .into_iter()
+        .map(|e| TimelineEntryDto {
+            timestamp_ms: e.timestamp_ms,
+            size: e.size,
+        })
+        .collect()
+}
+
+#[command]
+fn timeline_read(path: String, timestamp_ms: u64) -> Result<String, String> {
+    timeline::read_snapshot(&path, timestamp_ms)
+}
+
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecoveryEntryDto {
@@ -343,6 +390,21 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
+        .setup(|app| {
+            // 上次开启过"关闭到托盘"则恢复托盘图标
+            if recent::load_preferences()
+                .get("isCloseToTray")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false)
+            {
+                let _ = tray::build_tray(app.handle());
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             read_text_file,
             read_text_file_with_encoding,
@@ -375,7 +437,12 @@ pub fn run() {
             workspace_save,
             workspace_load_and_consume,
             launch_args,
-            fs_watch
+            fs_watch,
+            tray_set_enabled,
+            app_exit,
+            timeline_save,
+            timeline_list,
+            timeline_read
         ])
         .run(tauri::generate_context!())
         .expect("error while running Moxie");

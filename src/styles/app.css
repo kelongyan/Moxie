@@ -1761,6 +1761,35 @@ body {
   background: transparent;
 }
 
+/* ---------- 表格编辑工具条 ---------- */
+
+.md-table-toolbar {
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 4px;
+  background: var(--lac-bg);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--sh-1);
+  width: fit-content;
+}
+
+.md-table-toolbar button {
+  border: 1px solid var(--lac-border);
+  background: transparent;
+  color: var(--lac-text-secondary);
+  font-family: inherit;
+  font-size: var(--fs-meta);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.md-table-toolbar button:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
 /* ---------- 侧栏大纲 ---------- */
 
 .outline-list {
@@ -1981,6 +2010,104 @@ body {
 .md-mermaid svg {
   max-width: 100%;
   height: auto;
+}
+
+/* ---------- 设置页取色器 ---------- */
+
+.settings-color {
+  width: 40px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-xs);
+  background: var(--lac-bg);
+  cursor: pointer;
+}
+
+/* ---------- 编辑器内查找浮层 ---------- */
+
+.find-inline {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  z-index: var(--z-popover);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--lac-bg);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--sh-2);
+}
+
+.find-inline-input {
+  width: 150px;
+  border: 1px solid var(--lac-border);
+  background: var(--lac-bg);
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-ui);
+  border-radius: var(--radius-xs);
+  padding: 3px 6px;
+  outline: none;
+}
+
+.find-inline-input:focus-visible {
+  outline: 2px solid var(--lac-accent);
+  outline-offset: -1px;
+}
+
+.find-inline-btn {
+  border: none;
+  background: transparent;
+  color: var(--lac-text-secondary);
+  border-radius: var(--radius-xs);
+  padding: 3px 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: var(--fs-caption);
+}
+
+.find-inline-btn:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+.find-inline-status {
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
+  white-space: nowrap;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.find-inline .check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-meta);
+  color: var(--lac-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ---------- 历史版本浮层 ---------- */
+
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--lac-border);
+}
+
+.history-hint {
+  font-size: var(--fs-meta);
+  color: var(--lac-text-tertiary);
 }
 
 /* ---------- 专注模式 ---------- */

@@ -23,12 +23,14 @@ import {
 import { openCodecWindow } from "../state/codecWindow";
 import { EditorDocument, useDocuments } from "../state/documents";
 import { openFindWindow } from "../state/findWindow";
+import { openHistoryOverlay } from "../state/historyOverlay";
 import { usePreferences } from "../state/preferences";
 import { promptConfirm } from "../state/prompts";
 import { openSettingsWindow } from "../state/settingsWindow";
+import { createEmptyWindow } from "../state/windows";
 import { directoryOf } from "../preview/markdownCore";
 import { collectPreviewTokens } from "../preview/markdown";
-import { exportPreviewHtml } from "../preview/exportHtml";
+import { exportPreviewHtml, exportWordDoc } from "../preview/exportHtml";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 import { Tooltip } from "./Tooltip";
 
@@ -104,14 +106,17 @@ export function TitleToolbar({
   const exportingRef = useRef(false);
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 
-  const handleExport = async () => {
+  const runExport = async (
+    fn: (opts: Parameters<typeof exportPreviewHtml>[0]) => Promise<boolean>,
+    doneMessage: string
+  ) => {
     if (!activeDoc || exportingRef.current) return;
     const view = viewFor(activeDoc.id);
     if (!view) return;
     exportingRef.current = true;
     try {
       const prefs = usePreferences.getState();
-      const saved = await exportPreviewHtml({
+      const saved = await fn({
         tokens: collectPreviewTokens({
           theme: prefs.exportTheme,
           codeLineNumbers: prefs.exportCodeLineNumbers,
@@ -126,7 +131,7 @@ export function TitleToolbar({
       });
       useDocuments
         .getState()
-        .setStatus(saved ? { text: "已导出为 HTML", kind: "info" } : null);
+        .setStatus(saved ? { text: doneMessage, kind: "info" } : null);
     } catch (error) {
       useDocuments
         .getState()
@@ -135,6 +140,8 @@ export function TitleToolbar({
       exportingRef.current = false;
     }
   };
+
+  const handleExport = () => runExport(exportPreviewHtml, "已导出为 HTML");
 
   const handleAbout = async () => {
     let version = "";
@@ -152,11 +159,14 @@ export function TitleToolbar({
 
   const menuItems: MenuItem[] = [
     { label: "新建标签", shortcut: "Ctrl+T", onClick: () => newTabAction() },
+    { label: "新建窗口", onClick: () => void createEmptyWindow() },
     { label: "打开文件", shortcut: "Ctrl+O", onClick: () => void openFileAction() },
     { label: "保存", shortcut: "Ctrl+S", onClick: () => void saveActiveAction() },
     { label: "另存为", shortcut: "Ctrl+Shift+S", onClick: () => void saveAsAction() },
     { label: "复制为富文本", shortcut: "Ctrl+Shift+C", disabled: !hasDocument, onClick: () => void copyRichTextAction() },
     { label: "导出为 HTML", disabled: !hasDocument, onClick: () => void handleExport() },
+    { label: "导出为 Word(.doc)", disabled: !hasDocument, onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档") },
+    { label: "历史版本…", disabled: !hasDocument, onClick: () => openHistoryOverlay() },
     { label: "查找/替换", shortcut: "Ctrl+F", separatorBefore: true, onClick: () => void openFindWindow("find") },
     { label: "编码转换", shortcut: "Alt+D", onClick: () => void openCodecWindow("smart-decode") },
     { label: "设置", shortcut: "Ctrl+,", separatorBefore: true, onClick: () => void openSettingsWindow() },

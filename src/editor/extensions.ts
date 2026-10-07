@@ -1,4 +1,8 @@
-import { EditorState, Extension, Prec } from "@codemirror/state";
+import {
+  EditorState,
+  Extension,
+  Prec,
+} from "@codemirror/state";
 import {
   EditorView,
   drawSelection,
@@ -6,6 +10,7 @@ import {
   highlightActiveLineGutter,
   keymap,
   lineNumbers,
+  rectangularSelection,
 } from "@codemirror/view";
 import {
   defaultKeymap,
@@ -288,6 +293,15 @@ export function buildEditorState(options: EditorOptions): EditorState {
     theme,
     history(),
     drawSelection(),
+    // 多光标与列选择：Alt+Click 加光标（Ctrl+Click 留给链接），Alt+拖拽列选；
+    // livePreview 的 selectionTouches 遍历全部选区，装饰天然兼容
+    EditorState.allowMultipleSelections.of(true),
+    EditorView.clickAddsSelectionRange.of(
+      (e) => e.altKey && !e.ctrlKey && !e.shiftKey
+    ),
+    rectangularSelection({
+      eventFilter: (e) => e.altKey && e.shiftKey,
+    }),
     searchHighlightField,
     indentUnit.of(options.indentUnitText),
     Prec.highest(customKeys),

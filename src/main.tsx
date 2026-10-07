@@ -6,9 +6,11 @@ import { CodecWindow } from "./components/CodecWindow";
 import { FindReplaceWindow } from "./components/FindReplaceWindow";
 import { SettingsWindow } from "./components/SettingsWindow";
 import { openPathAction } from "./state/actions";
+import { initAppearance } from "./state/appearance";
 import { hydrateSettings, initSettingsSync } from "./state/preferences";
 import { initRecoveryPersistence, restoreOnStartup } from "./state/recovery";
 import { initTheme } from "./state/theme";
+import { restoreWindowState, trackWindowState } from "./state/windowState";
 import { initSpawnedWindow, initWindowTransfer } from "./state/windows";
 import "./styles/fonts.css";
 import "./styles/tokens.css";
@@ -43,8 +45,11 @@ if (view === "find") {
 } else {
   const params = new URLSearchParams(window.location.search);
   const spawned = params.get("spawn") === "1";
+  const emptyWindow = params.get("empty") === "1";
+  restoreWindowState();
   void (async () => {
     await hydrateSettings();
+    initAppearance();
     initWindowTransfer();
     try {
       if (spawned) {
@@ -60,8 +65,10 @@ if (view === "find") {
     } catch {
       // 恢复失败时进入编辑区空状态（docs/UI精修方案.md §4.10），不自动新建标签
     }
-    initRecoveryPersistence();
+    if (!emptyWindow) initRecoveryPersistence();
     void initSettingsSync();
+    const cleanup = trackWindowState();
+    window.addEventListener("beforeunload", cleanup, { once: true });
     ReactDOM.createRoot(document.getElementById("root")!).render(
       <React.StrictMode>
         <App />

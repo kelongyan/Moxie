@@ -110,6 +110,31 @@ export async function moveDocToNewWindow(docId: string): Promise<void> {
   }
 }
 
+/** 新建空白窗口（无文档，进欢迎页）；empty=1 跳过 spawn 握手立即渲染 */
+export async function createEmptyWindow(): Promise<void> {
+  const label = `${EDITOR_PREFIX}${Date.now().toString(36)}${Math.random()
+    .toString(36)
+    .slice(2, 6)}`;
+  const url = `${location.origin}${location.pathname}?view=main&empty=1`;
+  try {
+    const win = new WebviewWindow(label, {
+      url,
+      title: "Moxie",
+      width: 1120,
+      height: 720,
+      minWidth: 900,
+      minHeight: 560,
+      center: true,
+      decorations: false,
+    });
+    win.once("tauri://error", (event) => {
+      console.error("[empty-window] error:", label, event);
+    });
+  } catch (error) {
+    console.error("[empty-window] create threw:", label, error);
+  }
+}
+
 export async function moveDocToWindow(docId: string, targetLabel: string): Promise<void> {
   const doc = useDocuments.getState().documents.find((d) => d.id === docId);
   if (!doc) return;

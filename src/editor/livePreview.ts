@@ -19,6 +19,8 @@ import {
 import { taskToggleInLine } from "../preview/markdownCore";
 import { renderKatex } from "../preview/math";
 import { FENCE_LANGUAGE_OPTIONS } from "./languages";
+// eslint-disable-next-line import/no-relative-packages -- 该子路径是 emoji 短代码映射表
+import EMOJI_MAP from "markdown-it-emoji/lib/data/light.mjs";
 import { spaceBefore, type BlockKind } from "../preview/typography";
 
 /**
@@ -285,6 +287,7 @@ class TableWidget extends WidgetType {
   private pending = new Map<string, string>();
   private cellEls: HTMLTableCellElement[][] = [];
   private overlay: HTMLTextAreaElement | null = null;
+  private toolbar: HTMLDivElement | null = null;
   private activeRow = -1;
   private activeCol = -1;
   private view: EditorView | null = null;
@@ -336,6 +339,8 @@ class TableWidget extends WidgetType {
       });
     });
     wrap.appendChild(table);
+    this.toolbar = this.buildToolbar();
+    wrap.appendChild(this.toolbar);
     this.wrapEl = wrap;
     liveTableWidgets.set(this.data.from, this);
     return wrap;
@@ -384,6 +389,7 @@ class TableWidget extends WidgetType {
     cell.appendChild(this.overlay);
     this.overlay.focus();
     this.overlay.setSelectionRange(this.overlay.value.length, this.overlay.value.length);
+    if (this.toolbar) this.toolbar.style.display = "flex";
   }
 
   /** 把当前编辑中的文本记入 pending，并同步到单元格显示层 */
@@ -437,7 +443,7 @@ class TableWidget extends WidgetType {
     this.openEditor(r, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1));
   }
 
-  /** pending 中与原文不同的单元格 → 文档替换（用建 widget 时的位置） */
+  /** pending 中与原文不同的单元格 → 文档替换（用建 widget 时的位置），按位置升序 */
   private collectChanges(): { from: number; to: number; insert: string }[] {
     const changes: { from: number; to: number; insert: string }[] = [];
     for (const [key, text] of this.pending) {
@@ -449,7 +455,7 @@ class TableWidget extends WidgetType {
         changes.push({ from: range.from, to: range.to, insert });
       }
     }
-    return changes;
+    return changes.sort((a, b) => a.from - b.from);
   }
 
   /** 在表格末尾追加一行（连同 pending 的文本改动合成一个事务） */
@@ -467,6 +473,135 @@ class TableWidget extends WidgetType {
       col: Math.min(this.activeCol, this.colCount - 1),
     };
     view.dispatch({ changes, selection: { anchor: this.data.to + rowText.length + 1 } });
+  }
+
+  /** 行 i 在文档中的整行（GFM 表格行都是单行，行首相对 data.from 连续） */
+  private rowLine(row: number): { from: number; to: number } {
+    const view = this.view!;
+    const line = view.state.doc.lineAt(this.data.from + row);
+    return { from: line.from, to: line.to };
+  }
+
+  /** 把 pending 中的编辑并入单元格文本（原始文本已带转义，用户输入需转义） */
+  private withPending(row: number, cells: string[]): string[] {
+    return cells.map((c, ci) => {
+      const t = this.pending.get(`${row},${ci}`);
+      return t === undefined ? c : escapeCell(t);
+    });
+  }
+
+  private addRowAbove() {
+    const view = this.view;
+    if (!view) return;
+    this.stashActiveCell();
+    const changes = this.collectChanges();
+    const rowText = "| " + Array(this.colCount).fill("").join(" | ") + " |";
+    // 插入点在表首，位置 ≤ 全部单元格编辑位置，单事务按原始坐标合成
+    changes.unshift({ from: this.data.from, to: this.data.from, insert: `${rowText}\n` });
+    pendingCellEdit = {
+      tableFrom: this.data.from + rowText.length + 1,
+      row: 0,
+      col: Math.max(0, Math.min(this.activeCol, this.colCount - 1)),
+    };
+    view.dispatch({ changes, selection: { anchor: this.data.from } });
+  }
+
+  private deleteRow(row: number) {
+    const view = this.view;
+    if (!view || row < 0 || row >= this.rowCount || this.rowCount <= 1) return;
+    this.stashActiveCell();
+    // 被删行上的 pending 编辑直接丢弃（内容随行删除），其余行的编辑保留
+    const changes = this.collectChanges().filter((ch) => {
+      const editedRow = this.data.cellRanges.findIndex((cells) =>
+        cells.some((cr) => cr.from <= ch.from && cr.to >= ch.to)
+      );
+      return editedRow !== row;
+    });
+    const line = this.rowLine(row);
+    const doc = view.state.doc;
+    if (line.to < doc.length) {
+      changes.push({ from: line.from, to: line.to + 1, insert: "" });
+    } else if (line.from > 0) {
+      changes.push({ from: line.from - 1, to: line.to, insert: "" });
+    } else {
+      return; // 全文档仅此一行，无法删除
+    }
+    changes.sort((a, b) => a.from - b.from);
+    pendingCellEdit = {
+      tableFrom: this.data.from,
+      row: Math.max(0, Math.min(row, this.rowCount - 2)),
+      col: Math.max(0, Math.min(this.activeCol, this.colCount - 1)),
+    };
+    view.dispatch({ changes, selection: { anchor: this.data.from } });
+  }
+
+  private addCol(at: number) {
+    const view = this.view;
+    if (!view) return;
+    this.stashActiveCell();
+    const changes: { from: number; to: number; insert: string }[] = [];
+    for (let r = 0; r < this.rowCount; r++) {
+      const cells = this.withPending(r, [...this.data.rowsText[r]]);
+      while (cells.length < this.colCount) cells.push("");
+      const insertAt = Math.max(0, Math.min(at, cells.length));
+      cells.splice(insertAt, 0, "");
+      const line = this.rowLine(r);
+      changes.push({ from: line.from, to: line.to, insert: `| ${cells.join(" | ")} |` });
+    }
+    changes.sort((a, b) => a.from - b.from);
+    pendingCellEdit = {
+      tableFrom: this.data.from,
+      row: Math.max(0, this.activeRow),
+      col: Math.max(0, Math.min(at, this.colCount)),
+    };
+    view.dispatch({ changes, selection: { anchor: this.data.from } });
+  }
+
+  private deleteCol(col: number) {
+    const view = this.view;
+    if (!view || this.colCount <= 1 || col < 0 || col >= this.colCount) return;
+    this.stashActiveCell();
+    const changes: { from: number; to: number; insert: string }[] = [];
+    for (let r = 0; r < this.rowCount; r++) {
+      const cells = this.withPending(r, [...this.data.rowsText[r]]);
+      if (cells.length <= col) continue; // 短行没有该列，保持原样
+      cells.splice(col, 1);
+      const line = this.rowLine(r);
+      changes.push({ from: line.from, to: line.to, insert: `| ${cells.join(" | ")} |` });
+    }
+    changes.sort((a, b) => a.from - b.from);
+    pendingCellEdit = {
+      tableFrom: this.data.from,
+      row: Math.max(0, this.activeRow),
+      col: Math.max(0, Math.min(col, this.colCount - 2)),
+    };
+    view.dispatch({ changes, selection: { anchor: this.data.from } });
+  }
+
+  /** 编辑态工具条：行/列结构操作（操作后由 pendingCellEdit 恢复编辑位置） */
+  private buildToolbar(): HTMLDivElement {
+    const bar = document.createElement("div");
+    bar.className = "md-table-toolbar";
+    bar.style.display = "none";
+    const mk = (label: string, title: string, fn: () => void) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.title = title;
+      b.addEventListener("mousedown", (e) => e.preventDefault());
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fn();
+      });
+      bar.appendChild(b);
+    };
+    mk("＋↑", "在上方插入行", () => this.addRowAbove());
+    mk("＋↓", "在下方插入行", () => this.addRowBelow());
+    mk("－行", "删除当前行", () => this.deleteRow(this.activeRow));
+    mk("＋|←", "在左侧插入列", () => this.addCol(this.activeCol));
+    mk("＋|→", "在右侧插入列", () => this.addCol(this.activeCol + 1));
+    mk("－|", "删除当前列", () => this.deleteCol(this.activeCol));
+    return bar;
   }
 
   /** 结束编辑：落盘全部改动并把光标放回文档（表格之后） */
@@ -488,6 +623,7 @@ class TableWidget extends WidgetType {
   private teardown() {
     this.overlay?.remove();
     this.overlay = null;
+    if (this.toolbar) this.toolbar.style.display = "none";
     for (const row of this.cellEls) for (const el of row) el.classList.remove("md-cell-active");
     this.pending.clear();
     this.activeRow = -1;
@@ -562,6 +698,25 @@ class MermaidWidget extends WidgetType {
         el.classList.add("error");
       }
     })();
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
+/** emoji 短代码（:smile:）→ unicode 字符 widget */
+class EmojiWidget extends WidgetType {
+  constructor(readonly char: string) {
+    super();
+  }
+  eq(other: EmojiWidget) {
+    return other.char === this.char;
+  }
+  toDOM() {
+    const el = document.createElement("span");
+    el.className = "md-emoji";
+    el.textContent = this.char;
     return el;
   }
   ignoreEvent() {
@@ -1084,8 +1239,29 @@ export function computeLiveRanges(
       i = close + 1;
     }
   }
+  // —— emoji 短代码：:name: → unicode（语法树不认识，单独扫描，与公式同一禁区） ——
+  const emojiRanges: Range<Decoration>[] = [];
+  for (let ln = 1; ln <= doc.lines; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    const text = line.text;
+    const re = /(^|[^\\]):([a-zA-Z0-9_+-]+):/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      const char = (EMOJI_MAP as Record<string, string>)[m[2].toLowerCase()];
+      if (!char) continue;
+      const absFrom = line.from + m.index + m[1].length;
+      const absTo = line.from + m.index + m[0].length;
+      if (inExcluded(absFrom)) continue;
+      if (!selectionTouches(state, absFrom, absTo)) {
+        emojiRanges.push(
+          Decoration.replace({ widget: new EmojiWidget(char) }).range(absFrom, absTo)
+        );
+      }
+    }
+  }
   // 与其他替换/隐藏区间（强调标记、图片、fence 标签等）重叠的公式放弃渲染
-  if (mathRanges.length > 0) {
+  if (mathRanges.length > 0 || emojiRanges.length > 0) {
     const taken = [...ranges].sort((a, b) => a.from - b.from);
     const overlaps = (from: number, to: number): boolean => {
       for (const r of taken) {
@@ -1095,7 +1271,7 @@ export function computeLiveRanges(
       }
       return false;
     };
-    for (const r of mathRanges) {
+    for (const r of [...mathRanges, ...emojiRanges]) {
       if (!overlaps(r.from, r.to)) ranges.push(r);
     }
   }
