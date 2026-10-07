@@ -194,8 +194,8 @@ async function writeToFile(
   // 自身写盘也会触发 notify 事件：记录时间窗供 externalWatch 抑制
   markSelfWrite(target);
   void syncWatchedDirs();
-  // 本地版本时间线：每次成功写盘记一份快照
-  void invoke("timeline_save", { path: target, text: doc.text }).catch(() => {});
+  // 本地版本时间线：每次成功写盘记一份快照（Rust 形参名为 content）
+  void invoke("timeline_save", { path: target, content: doc.text }).catch(() => {});
 
   const liveText = viewFor(docId)?.state.doc.toString();
   if (liveText !== undefined && liveText !== doc.text) {
