@@ -129,10 +129,11 @@
   filter: brightness(1.08);
 }
 
-/* 输入域：查找 / 提示框 / 下拉 / 编码文本域 */
+/* 输入域：查找 / 提示框 / 下拉 / 编码文本域 / 设置输入框 */
 .find-grid input,
 .prompt-input,
 .settings-select,
+.settings-input,
 .codec-text {
   border: 1px solid var(--lac-border);
   background: var(--lac-bg);
@@ -144,6 +145,7 @@
 .find-grid input:focus-visible,
 .prompt-input:focus-visible,
 .settings-select:focus-visible,
+.settings-input:focus-visible,
 .codec-text:focus-visible {
   outline: 2px solid var(--lac-accent);
   outline-offset: -1px;

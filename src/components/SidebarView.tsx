@@ -175,7 +175,11 @@ export function SidebarView() {
   return (
     <div className="sidebar-content">
       <div className="sidebar-scroll">
-        <OutlineSection activeId={activeId} />
+        {activeId ? (
+          <OutlineSection activeId={activeId} />
+        ) : (
+          <div className="sidebar-empty">打开文档后，这里会显示它的大纲导航。</div>
+        )}
       </div>
 
       <div className="sidebar-footer">

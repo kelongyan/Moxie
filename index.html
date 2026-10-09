@@ -24,6 +24,57 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="module">
+      // 浏览器预览 mock：仅在 dev 且不在 Tauri webview 内生效（生产构建被摇树），
+      // 用于无 Tauri 环境时渲染真实 UI 做视觉验证。
+      if (import.meta.env.DEV && !window.__TAURI_INTERNALS__) {
+        let cbId = 0;
+        const listeners = new Map();
+        window.__TAURI_INTERNALS__ = {
+          transformCallback(callback) {
+            const id = ++cbId;
+            listeners.set(id, callback);
+            return id;
+          },
+          transformers: {
+            unregisterListener() {},
+            registerListener() {},
+          },
+          metadata: {
+            currentWindow: { label: "main" },
+            currentWebview: { label: "main", windowLabel: "main" },
+          },
+          plugins: {},
+          invoke(cmd, args) {
+            const empty = () => Promise.resolve(null);
+            const table = {
+              launch_args: () => [],
+              recent_list: () => [],
+              recovery_load: empty,
+              recovery_read_marker: empty,
+              settings_save: empty,
+              sidebar_save: empty,
+              workspace_save: empty,
+              fs_watch: empty,
+              timeline_save: empty,
+              recovery_cleanup: empty,
+              recovery_finish_cleanly: empty,
+              recovery_write_marker: empty,
+              recovery_save_doc: empty,
+              recovery_remove_doc: empty,
+              recent_add: empty,
+              recent_remove: empty,
+              recent_replace: empty,
+              recent_clear: empty,
+              get_file_revision: empty,
+            };
+            return table[cmd]
+              ? table[cmd](args)
+              : Promise.reject(new Error(`mock: unhandled command ${cmd}`));
+          },
+        };
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -81,6 +81,28 @@ const en: Record<string, string> = {
   "界面与正文字体（留空使用默认）": "UI and body font (empty = default)",
   "恢复默认": "Reset",
   "版本": "Version",
+  // 设置页 v2（导航分区）
+  "通用": "General",
+  "关于": "About",
+  "编辑器": "Editor",
+  "导出": "Export",
+  "基础行为与系统集成": "Core behavior & system integration",
+  "主题": "Theme",
+  "强调色与字体": "Accent & fonts",
+  "界面外观的个性化": "Personalize the interface",
+  "视图": "View",
+  "书写面的显示方式": "How the writing surface is displayed",
+  "排版": "Typography",
+  "正文的字号与间距节奏": "Font size and spacing rhythm",
+  "正文字号": "Body size",
+  "范围 9–32": "9–32",
+  "缩进与文件": "Indent & files",
+  "缩进行为与图片存放": "Indentation and image storage",
+  "解析与渲染选项": "Parsing and rendering options",
+  "导出 HTML / Word 的外观": "Look of exported HTML / Word",
+  "按文档体量自动分级，无需手动配置": "Auto-tiered by document size; no config needed",
+  "数据": "Data",
+  "全部保存在本地磁盘": "Everything stays on your local disk",
 };
 
 export function t(key: string): string {
