@@ -489,6 +489,32 @@ export interface CoreRenderOptions {
   allowHtml?: boolean;
 }
 
+/** 行内 markdown → HTML（书写面表格单元格渲染；html 恒关，转义安全）。
+ *  resolveImageSrc：把 markdown-it 规范化后的图片 src 解析为最终 URL，可选 */
+export function renderInlineMarkdown(
+  text: string,
+  resolveImageSrc?: ((rawSrc: string) => string | null) | null
+): string {
+  try {
+    let html = md.renderInline(text, {});
+    if (resolveImageSrc) {
+      html = html.replace(/src="([^"]*)"/g, (whole, src: string) => {
+        let raw = src;
+        try {
+          raw = decodeURIComponent(src);
+        } catch {
+          // 未编码的 src 按原样解析
+        }
+        const resolved = resolveImageSrc(raw);
+        return resolved ? `src="${resolved}"` : whole;
+      });
+    }
+    return html;
+  } catch {
+    return "";
+  }
+}
+
 /** 纯渲染：markdown-it + 插件，返回 HTML 与被剥离的 frontmatter 行数 */
 export function renderWithPlugins(
   text: string,

@@ -65,6 +65,10 @@ export function useShortcuts() {
       } else if (e.shiftKey && key === "s") {
         e.preventDefault();
         void saveAsAction();
+      } else if (e.shiftKey && key === "t") {
+        // 插入表格：行列选择浮层（确认后由编辑器写入光标处）
+        e.preventDefault();
+        void import("../state/tableInsert").then((m) => m.openTableInsert());
       } else if (e.shiftKey && key === "c") {
         e.preventDefault();
         void import("../state/actions").then((m) => m.copyRichTextAction());

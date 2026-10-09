@@ -400,13 +400,13 @@ describe("livePreview · 块间距缩放贯通", () => {
   });
 });
 
-describe("livePreview · 表格常渲染与原位编辑", () => {
+describe("livePreview · 表格渲染与源码切换", () => {
   const TABLE_DOC = "前文\n\n| 列一 | 列二 |\n| --- | --- |\n| a | b |\n| c | d |\n\n后文\n";
 
   interface TableWidgetLike {
     data: {
-      rowsText: string[][];
-      cellRanges: { from: number; to: number }[][];
+      rows: { text: string; from: number; to: number }[][];
+      aligns: (string | null)[];
       from: number;
       to: number;
     };
@@ -425,7 +425,7 @@ describe("livePreview · 表格常渲染与原位编辑", () => {
     const tables = tableWidgets(ranges);
     expect(tables).toHaveLength(1);
     const { data, gap } = tables[0].widget;
-    expect(data.rowsText).toEqual([
+    expect(data.rows.map((r) => r.map((c) => c.text))).toEqual([
       ["列一", "列二"],
       ["a", "b"],
       ["c", "d"],
@@ -437,21 +437,30 @@ describe("livePreview · 表格常渲染与原位编辑", () => {
     expect(tables[0].to).toBe(4 + "| 列一 | 列二 |\n| --- | --- |\n| a | b |\n| c | d |".length);
   });
 
-  it("光标进入表格时保持渲染（Typora 式，不再还原源码）", () => {
+  it("光标进入表格时保持渲染（编辑在 widget 内完成，不还原源码）", () => {
     const ranges = rangesOf(TABLE_DOC, 20);
     const tables = tableWidgets(ranges);
     expect(tables).toHaveLength(1);
-    // widget 携带单元格文档位置，供原位编辑提交时定位（第二行单元格 a/b）
-    expect(tables[0].widget.data.cellRanges[1]).toEqual([
-      { from: 32, to: 33 },
-      { from: 36, to: 37 },
+    // 单元格引用携带 trim 后的文档位置（第二行数据 a/b）
+    expect(tables[0].widget.data.rows[1]).toEqual([
+      { text: "a", from: 32, to: 33 },
+      { text: "b", from: 36, to: 37 },
     ]);
   });
 
-  it("单元格文本保留源码转义（\\| 原样提取，显示时由 widget 反转义）", () => {
+  it("单元格引用保留源码转义（\\| 原样提取，显示时由 widget 反转义）", () => {
     const ranges = rangesOf("前文\n\n| a \\| b |\n| --- |\n| c |\n", 0);
     const tables = tableWidgets(ranges);
-    expect(tables[0].widget.data.rowsText).toEqual([["a \\| b"], ["c"]]);
+    expect(tables[0].widget.data.rows.map((r) => r.map((c) => c.text))).toEqual([
+      ["a \\| b"],
+      ["c"],
+    ]);
+  });
+
+  it("解析分隔行的对齐标记并携带给 widget", () => {
+    const ranges = rangesOf("前文\n\n| a | b | c |\n| :-- | :-: | --: |\n| 1 | 2 | 3 |", 0);
+    const tables = tableWidgets(ranges);
+    expect(tables[0].widget.data.aligns).toEqual(["left", "center", "right"]);
   });
 
   it("表格作为独立块参与空行压缩，后文块从表格底边距折叠", () => {

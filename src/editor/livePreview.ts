@@ -16,7 +16,26 @@ import {
   ViewUpdate,
   WidgetType,
 } from "@codemirror/view";
-import { taskToggleInLine } from "../preview/markdownCore";
+import { renderInlineMarkdown, taskToggleInLine } from "../preview/markdownCore";
+import {
+  buildTable,
+  escapeCell,
+  findTableAt,
+  insertRowEdit,
+  type TableEdit,
+  type TableCellRef,
+  type TableModel,
+  tableModelOf,
+  unescapeCell,
+} from "./table";
+import {
+  caretPosInTable,
+  clearActiveEdit,
+  getActiveEdit,
+  liveTableWidgets,
+  openTableMenu,
+  setActiveEdit,
+} from "./tableNav";
 import { renderKatex } from "../preview/math";
 import { FENCE_LANGUAGE_OPTIONS } from "./languages";
 // eslint-disable-next-line import/no-relative-packages -- 该子路径是 emoji 短代码映射表
@@ -31,6 +50,9 @@ import { spaceBefore, type BlockKind } from "../preview/typography";
 
 /** 把 Markdown 图片 src 解析为最终 URL（本地路径 → asset 协议），由调用方注入 */
 export type ImageSrcResolver = (rawSrc: string) => string | null;
+
+/** 当前窗口的图片解析器（livePreview() 注册，渲染态表格单元格复用） */
+let imageResolver: ImageSrcResolver | null = null;
 
 const HIDE = Decoration.replace({});
 
@@ -177,140 +199,39 @@ class BulletWidget extends WidgetType {
   }
 }
 
-interface TableCellRange {
-  from: number;
-  to: number;
-}
-
-interface TableData {
-  /** 行文本（首行为表头），与 cellRanges 同序同形；文本保留源码转义（\|） */
-  rowsText: string[][];
-  cellRanges: TableCellRange[][];
-  /** 表格节点在文档中的起止（块替换范围与提交光标回放用） */
-  from: number;
-  to: number;
-}
-
-/** 单元格显示态：源码里的 \| 显示为 | */
-const unescapeCell = (s: string): string => s.replace(/\\\|/g, "|");
-/** 单元格写回文档：字面 | 转义为 \|，换行折叠为空格（GFM 单元格不能换行） */
-const escapeCell = (s: string): string =>
-  s.replace(/\r/g, "").replace(/\n+/g, " ").replace(/\|/g, "\\|").trim();
-
-/** 空单元格行兜底：lezer 对全空行（|  |  |）不产 TableCell，
- *  按行文本切分顶层管道还原单元格文本与（可插入的）文档位置 */
-function rowCellsFromLine(
-  lineText: string,
-  lineFrom: number
-): { texts: string[]; ranges: TableCellRange[] } {
-  const texts: string[] = [];
-  const ranges: TableCellRange[] = [];
-  const segs: { start: number; end: number }[] = [];
-  let start = -1;
-  for (let i = 0; i < lineText.length; i++) {
-    const ch = lineText[i];
-    if (ch === "\\" && lineText[i + 1] === "|") {
-      i++;
-      continue;
-    }
-    if (ch === "|") {
-      if (start >= 0) segs.push({ start, end: i });
-      start = i + 1;
-    }
-  }
-  // 首个管道之前与最后一个管道之后是边缘段，丢弃
-  for (const seg of segs) {
-    let s = seg.start;
-    let e = seg.end;
-    while (s < e && lineText[s] === " ") s++;
-    while (e > s && lineText[e - 1] === " ") e--;
-    texts.push(lineText.slice(s, e));
-    ranges.push({ from: lineFrom + s, to: lineFrom + e });
-  }
-  return { texts, ranges };
-}
-
-/** 表格结构操作后，重建出的新 widget 自动打开的单元格（桌面单活动编辑面，构建时立即消费） */
-let pendingCellEdit: { tableFrom: number; row: number; col: number } | null = null;
-
-/** 存活表格 widget 注册表：按文档起点索引，供结构操作后的编辑位置恢复定位最新实例 */
-const liveTableWidgets = new Map<number, TableWidget>();
-
-/** 从语法树提取表格内容：首行 = 表头，其余为数据行；同时记录单元格文档位置供提交。
- *  lezer 结构：表头行是 TableHeader（直接含 TableCell），数据行是 TableRow > TableCell */
-function tableDataOf(node: SyntaxNode, doc: Text): TableData | null {
-  const rowsText: string[][] = [];
-  const cellRanges: TableCellRange[][] = [];
-  const cellsOf = (n: SyntaxNode) => {
-    const texts: string[] = [];
-    const ranges: TableCellRange[] = [];
-    for (let c = n.firstChild; c; c = c.nextSibling) {
-      if (c.name === "TableCell") {
-        texts.push(doc.sliceString(c.from, c.to).trim());
-        ranges.push({ from: c.from, to: c.to });
-      }
-    }
-    return { texts, ranges };
-  };
-  for (let c = node.firstChild; c; c = c.nextSibling) {
-    if (c.name === "TableRow") {
-      let { texts, ranges } = cellsOf(c);
-      if (texts.length === 0) {
-        // 全空行：lezer 不产 TableCell，按管道位置兜底切分
-        const line = doc.lineAt(c.from);
-        ({ texts, ranges } = rowCellsFromLine(line.text, line.from));
-      }
-      rowsText.push(texts);
-      cellRanges.push(ranges);
-    } else if (c.name === "TableHeader") {
-      const { texts, ranges } = cellsOf(c);
-      if (texts.length > 0) {
-        rowsText.push(texts);
-        cellRanges.push(ranges);
-      }
-    }
-  }
-  if (rowsText.length === 0) return null;
-  // node.to 可能包含末行之后的换行符；以末行内容结尾为准，追加行才能紧贴表格
-  const lastLine = doc.lineAt(Math.max(0, node.to - 1));
-  return { rowsText, cellRanges, from: node.from, to: lastLine.to };
-}
-
 /**
- * GFM 表格 → 常渲染表格（光标进入不再还原源码）。点击单元格在原位打开
- * 编辑器（覆盖该单元格的 textarea，widget 内编辑、光标稳定），离开时把
- * 改动合成一个事务写回文档；Enter/Tab 导航，末行 Enter、末格 Tab、
- * Ctrl+Enter 追加新行，Escape 结束编辑。
+ * 表格（GFM，Typora 式）：始终渲染为带对齐与行内 markdown 的真实表格。
+ * 点击单元格 → 原位内嵌 textarea 编辑（表格保持渲染，其他单元格不动）；
+ * Tab/Enter 在格间导航（末行 Enter、末格 Tab 追加行），Escape 结束编辑；
+ * 行/列结构操作与对齐走右键菜单与列头手柄，全部经 table.ts 整表重写
+ * （单事务、一步撤销），编辑中未落盘的内容由 widget 合并进模型。
  */
+
+/** 渲染表格 widget：编辑会话（pending + 内嵌 textarea）挂在实例上 */
 class TableWidget extends WidgetType {
-  /** 编辑中未落盘的单元格文本（key = "r,c"，保存用户原始输入） */
+  /** 编辑中未落盘的单元格文本（key = "r,c"，保存显示态原文，未转义） */
   private pending = new Map<string, string>();
   private cellEls: HTMLTableCellElement[][] = [];
   private overlay: HTMLTextAreaElement | null = null;
-  private toolbar: HTMLDivElement | null = null;
   private activeRow = -1;
   private activeCol = -1;
   private view: EditorView | null = null;
-  private wrapEl: HTMLElement | null = null;
 
-  constructor(readonly data: TableData, readonly gap: number) {
+  constructor(readonly data: TableModel, readonly gap: number) {
     super();
   }
 
   private get rowCount(): number {
-    return this.data.rowsText.length;
+    return this.data.rows.length;
   }
 
-  private get colCount(): number {
-    return this.data.rowsText[0]?.length ?? 0;
+  /** TableSessionHost 接口要求 */
+  get tableFrom(): number {
+    return this.data.from;
   }
 
   eq(other: TableWidget) {
-    return (
-      other.gap === this.gap &&
-      same2D(other.data.rowsText, this.data.rowsText) &&
-      sameRanges2D(other.data.cellRanges, this.data.cellRanges)
-    );
+    return other.gap === this.gap && sameModel(other.data, this.data);
   }
 
   toDOM(view: EditorView) {
@@ -318,30 +239,53 @@ class TableWidget extends WidgetType {
     const wrap = document.createElement("div");
     wrap.className = "md-table-wrap";
     if (this.gap > 0) wrap.style.paddingTop = `${this.gap}px`;
+    // 单元格内的链接不做导航：点击即进入该格编辑
+    wrap.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) e.preventDefault();
+    });
+    // 右键：结构菜单，目标格取右键所在单元格
+    wrap.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const cell = (e.target as HTMLElement).closest("td,th");
+      const r = cell?.getAttribute("data-r");
+      const c = cell?.getAttribute("data-c");
+      openTableMenu(view, this.data.from, e.clientX, e.clientY, {
+        at:
+          r !== null && c !== null && r !== undefined && c !== undefined
+            ? { row: Number(r), col: Number(c) }
+            : undefined,
+      });
+    });
     const table = document.createElement("table");
     table.className = "md-table";
-    table.addEventListener("keydown", (e) => this.onKeydown(e));
-    this.cellEls = this.data.rowsText.map((row, r) => {
+    const alignOf = (c: number) => this.data.aligns[c] ?? "left";
+    this.cellEls = this.data.rows.map((row, r) => {
       const tr =
-        r === 0
-          ? table.createTHead().insertRow()
-          : table.createTBody().insertRow();
-      return row.map((text, c) => {
+        r === 0 ? table.createTHead().insertRow() : table.createTBody().insertRow();
+      return row.map((cell, c) => {
         const el = document.createElement(r === 0 ? "th" : "td");
-        el.textContent = unescapeCell(text);
+        el.setAttribute("data-r", String(r));
+        el.setAttribute("data-c", String(c));
+        const align = alignOf(c);
+        if (align !== "left") el.style.textAlign = align;
+        el.innerHTML = renderInlineMarkdown(unescapeCell(cell.text), imageResolver);
         el.addEventListener("mousedown", (e) => {
+          if ((e.target as HTMLElement).closest(".md-table-handle")) return;
+          if (r === this.activeRow && c === this.activeCol) return; // textarea 自管光标
           e.preventDefault();
           e.stopPropagation();
-          this.openEditor(r, c);
+          this.openEditor(r, c, {
+            x: e.clientX,
+            y: e.clientY,
+          });
         });
+        if (r === 0) el.appendChild(this.buildHandle(view, c));
         tr.appendChild(el);
         return el;
       });
     });
     wrap.appendChild(table);
-    this.toolbar = this.buildToolbar();
-    wrap.appendChild(this.toolbar);
-    this.wrapEl = wrap;
     liveTableWidgets.set(this.data.from, this);
     return wrap;
   }
@@ -352,23 +296,29 @@ class TableWidget extends WidgetType {
       liveTableWidgets.delete(this.data.from);
     }
     this.overlay = null;
-    this.wrapEl = null;
     super.destroy(dom);
   }
 
-  /** 结构操作后的编辑位置恢复（由 livePreview 的 ViewPlugin 消费 pendingCellEdit 调用） */
+  /** 结构操作后的编辑位置恢复（ViewPlugin 消费活动编辑标记） */
   restoreCellEdit(row: number, col: number) {
-    if (this.wrapEl?.isConnected && this.cellEls[row]?.[col]) {
-      this.openEditor(row, col);
+    if (this.wrapConnected() && this.cellEls[row]?.[col]) {
+      this.openEditor(row, col, { selectAll: true });
     }
   }
 
-  /** 打开（或移动）单元格编辑器；同一 widget 内移动不触发重建 */
-  private openEditor(r: number, c: number) {
-    const row = this.cellEls[r];
-    const cell = row?.[c];
+  private wrapConnected(): boolean {
+    return this.cellEls[0]?.[0]?.isConnected ?? false;
+  }
+
+  /** 打开（或切换）单元格编辑器；同一 widget 内移动不触发重建 */
+  private openEditor(
+    r: number,
+    c: number,
+    opts: { selectAll?: boolean; x?: number; y?: number } = {}
+  ) {
+    const cell = this.cellEls[r]?.[c];
     if (!cell) return;
-    // 先把上一个单元格的输入落到显示层与 pending
+    // 先把上一个单元格的输入记入 pending 并同步到显示层
     this.stashActiveCell();
     this.activeRow = r;
     this.activeCol = c;
@@ -377,38 +327,62 @@ class TableWidget extends WidgetType {
       this.overlay = document.createElement("textarea");
       this.overlay.className = "md-cell-editor";
       this.overlay.rows = 1;
-      this.overlay.addEventListener("blur", () => this.finish());
-      this.overlay.addEventListener("keydown", (e) => {
-        // 阻止 textarea 自身的换行/焦点行为，统一走表格导航
-        if (e.key === "Enter" || e.key === "Tab" || e.key === "Escape") {
-          e.preventDefault();
-        }
-      });
+      this.overlay.spellcheck = false;
+      this.overlay.addEventListener("blur", () => this.finish(false));
+      this.overlay.addEventListener("keydown", (e) => this.onKeydown(e));
     }
-    this.overlay.value = this.pending.get(`${r},${c}`) ?? unescapeCell(this.data.rowsText[r][c]);
+    const raw = this.pending.get(`${r},${c}`) ?? unescapeCell(this.data.rows[r][c].text);
+    this.overlay.value = raw;
     cell.appendChild(this.overlay);
     this.overlay.focus();
-    this.overlay.setSelectionRange(this.overlay.value.length, this.overlay.value.length);
-    if (this.toolbar) this.toolbar.style.display = "flex";
+    const at =
+      opts.selectAll || opts.x === undefined
+        ? opts.selectAll
+          ? [0, raw.length]
+          : [raw.length, raw.length]
+        : this.caretFromPoint(r, c, opts.x, opts.y);
+    this.overlay.setSelectionRange(at[0], at[1]);
+    setActiveEdit({ tableFrom: this.data.from, row: r, col: c });
   }
 
-  /** 把当前编辑中的文本记入 pending，并同步到单元格显示层 */
+  /** 点击位置 → 单元格内字符偏移（渲染文本与源文 1:1 时精确，其余就近） */
+  private caretFromPoint(
+    r: number,
+    c: number,
+    x?: number,
+    y?: number
+  ): [number, number] {
+    const raw = this.overlay?.value ?? "";
+    const range = document.caretRangeFromPoint?.(x ?? 0, y ?? 0);
+    const cell = this.cellEls[r][c];
+    if (!range || !cell.contains(range.startContainer)) return [raw.length, raw.length];
+    const pre = document.createRange();
+    pre.setStart(cell, 0);
+    pre.setEnd(range.startContainer, range.startOffset);
+    return [Math.min(pre.toString().length, raw.length), Math.min(pre.toString().length, raw.length)];
+  }
+
+  /** 把编辑中的文本记入 pending，并同步到单元格显示层 */
   private stashActiveCell() {
     if (!this.overlay || this.activeRow < 0 || this.activeCol < 0) return;
     const key = `${this.activeRow},${this.activeCol}`;
     const text = this.overlay.value;
     this.pending.set(key, text);
-    this.cellEls[this.activeRow][this.activeCol].textContent = unescapeCell(
-      escapeCell(text)
+    const el = this.cellEls[this.activeRow][this.activeCol];
+    el.innerHTML = renderInlineMarkdown(
+      unescapeCell(escapeCell(text)),
+      imageResolver
     );
-    this.cellEls[this.activeRow][this.activeCol].classList.remove("md-cell-active");
+    el.classList.remove("md-cell-active");
   }
 
   private onKeydown(e: KeyboardEvent) {
     if (!this.overlay || this.activeRow < 0 || e.isComposing) return;
     if (e.ctrlKey && e.key === "Enter") {
       e.preventDefault();
-      this.addRowBelow();
+      this.applyEdit((m) =>
+        insertRowEdit(m, Math.max(1, this.activeRow + 1), this.activeCol)
+      );
       return;
     }
     if (e.key === "Enter") {
@@ -418,13 +392,23 @@ class TableWidget extends WidgetType {
       e.preventDefault();
       if (e.shiftKey) this.moveBy(0, -1);
       else this.moveBy(0, 1);
+    } else if (e.key === "ArrowUp") {
+      if (this.activeRow > 0) {
+        e.preventDefault();
+        this.moveBy(-1, 0);
+      }
+    } else if (e.key === "ArrowDown") {
+      if (this.activeRow < this.rowCount - 1) {
+        e.preventDefault();
+        this.moveBy(1, 0);
+      }
     } else if (e.key === "Escape") {
       e.preventDefault();
-      this.finish();
+      this.finish(true);
     }
   }
 
-  /** 相对移动；行末水平越界换行，末行继续下移 / 末格 Tab 时追加新行 */
+  /** 相对移动；行末水平越界换行，末行下移 / 末格 Tab 时追加新行 */
   private moveBy(dr: number, dc: number) {
     let r = this.activeRow + dr;
     let c = this.activeCol + dc;
@@ -437,218 +421,143 @@ class TableWidget extends WidgetType {
     }
     if (r < 0) r = 0;
     if (r >= this.rowCount) {
-      this.addRowBelow();
+      // 末行 Enter / 末格 Tab：追加行（Typora 式），新行当前列进入编辑
+      this.applyEdit((m) =>
+        insertRowEdit(m, m.rows.length, Math.max(0, Math.min(this.activeCol, m.rows[0].length - 1)))
+      );
       return;
     }
-    this.openEditor(r, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1));
-  }
-
-  /** pending 中与原文不同的单元格 → 文档替换（用建 widget 时的位置），按位置升序 */
-  private collectChanges(): { from: number; to: number; insert: string }[] {
-    const changes: { from: number; to: number; insert: string }[] = [];
-    for (const [key, text] of this.pending) {
-      const [r, c] = key.split(",").map(Number);
-      const range = this.data.cellRanges[r]?.[c];
-      if (!range) continue;
-      const insert = escapeCell(text);
-      if (insert !== this.data.rowsText[r][c]) {
-        changes.push({ from: range.from, to: range.to, insert });
-      }
-    }
-    return changes.sort((a, b) => a.from - b.from);
-  }
-
-  /** 在表格末尾追加一行（连同 pending 的文本改动合成一个事务） */
-  private addRowBelow() {
-    const view = this.view;
-    if (!view) return;
-    this.stashActiveCell();
-    const changes = this.collectChanges();
-    const rowText = "| " + Array(this.colCount).fill("").join(" | ") + " |";
-    changes.push({ from: this.data.to, to: this.data.to, insert: `\n${rowText}` });
-    // 新行打开编辑器的位置（当前列，越界取末列）
-    pendingCellEdit = {
-      tableFrom: this.data.from,
-      row: this.rowCount,
-      col: Math.min(this.activeCol, this.colCount - 1),
-    };
-    view.dispatch({ changes, selection: { anchor: this.data.to + rowText.length + 1 } });
-  }
-
-  /** 行 i 在文档中的整行（GFM 表格行都是单行，行首相对 data.from 连续） */
-  private rowLine(row: number): { from: number; to: number } {
-    const view = this.view!;
-    const line = view.state.doc.lineAt(this.data.from + row);
-    return { from: line.from, to: line.to };
-  }
-
-  /** 把 pending 中的编辑并入单元格文本（原始文本已带转义，用户输入需转义） */
-  private withPending(row: number, cells: string[]): string[] {
-    return cells.map((c, ci) => {
-      const t = this.pending.get(`${row},${ci}`);
-      return t === undefined ? c : escapeCell(t);
+    this.openEditor(r, Math.max(0, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1)), {
+      selectAll: true,
     });
   }
 
-  private addRowAbove() {
+  /** 编辑中内容合并进当前文档的表格模型（结构操作与落盘共用） */
+  private modelWithPending(): TableModel | null {
+    const view = this.view;
+    if (!view) return null;
+    const model = findTableAt(view.state, this.data.from);
+    if (!model) return null;
+    if (this.pending.size === 0) return model;
+    const rows = model.rows.map((row, ri) =>
+      row.map((cell, ci) => {
+        const t = this.pending.get(`${ri},${ci}`);
+        return t === undefined ? cell : { ...cell, text: escapeCell(t) };
+      })
+    );
+    return { ...model, rows };
+  }
+
+  /** 执行结构操作：合并编辑中内容 → 整表重写。有编辑会话时把编辑位置
+   *  恢复到落点格；纯菜单操作（无会话）保持渲染态不打开编辑器 */
+  applyEdit(make: (model: TableModel) => TableEdit | null) {
     const view = this.view;
     if (!view) return;
+    const hadSession = this.activeRow >= 0;
     this.stashActiveCell();
-    const changes = this.collectChanges();
-    const rowText = "| " + Array(this.colCount).fill("").join(" | ") + " |";
-    // 插入点在表首，位置 ≤ 全部单元格编辑位置，单事务按原始坐标合成
-    changes.unshift({ from: this.data.from, to: this.data.from, insert: `${rowText}\n` });
-    pendingCellEdit = {
-      tableFrom: this.data.from + rowText.length + 1,
-      row: 0,
-      col: Math.max(0, Math.min(this.activeCol, this.colCount - 1)),
-    };
-    view.dispatch({ changes, selection: { anchor: this.data.from } });
-  }
-
-  private deleteRow(row: number) {
-    const view = this.view;
-    if (!view || row < 0 || row >= this.rowCount || this.rowCount <= 1) return;
-    this.stashActiveCell();
-    // 被删行上的 pending 编辑直接丢弃（内容随行删除），其余行的编辑保留
-    const changes = this.collectChanges().filter((ch) => {
-      const editedRow = this.data.cellRanges.findIndex((cells) =>
-        cells.some((cr) => cr.from <= ch.from && cr.to >= ch.to)
-      );
-      return editedRow !== row;
-    });
-    const line = this.rowLine(row);
-    const doc = view.state.doc;
-    if (line.to < doc.length) {
-      changes.push({ from: line.from, to: line.to + 1, insert: "" });
-    } else if (line.from > 0) {
-      changes.push({ from: line.from - 1, to: line.to, insert: "" });
-    } else {
-      return; // 全文档仅此一行，无法删除
-    }
-    changes.sort((a, b) => a.from - b.from);
-    pendingCellEdit = {
-      tableFrom: this.data.from,
-      row: Math.max(0, Math.min(row, this.rowCount - 2)),
-      col: Math.max(0, Math.min(this.activeCol, this.colCount - 1)),
-    };
-    view.dispatch({ changes, selection: { anchor: this.data.from } });
-  }
-
-  private addCol(at: number) {
-    const view = this.view;
-    if (!view) return;
-    this.stashActiveCell();
-    const changes: { from: number; to: number; insert: string }[] = [];
-    for (let r = 0; r < this.rowCount; r++) {
-      const cells = this.withPending(r, [...this.data.rowsText[r]]);
-      while (cells.length < this.colCount) cells.push("");
-      const insertAt = Math.max(0, Math.min(at, cells.length));
-      cells.splice(insertAt, 0, "");
-      const line = this.rowLine(r);
-      changes.push({ from: line.from, to: line.to, insert: `| ${cells.join(" | ")} |` });
-    }
-    changes.sort((a, b) => a.from - b.from);
-    pendingCellEdit = {
-      tableFrom: this.data.from,
-      row: Math.max(0, this.activeRow),
-      col: Math.max(0, Math.min(at, this.colCount)),
-    };
-    view.dispatch({ changes, selection: { anchor: this.data.from } });
-  }
-
-  private deleteCol(col: number) {
-    const view = this.view;
-    if (!view || this.colCount <= 1 || col < 0 || col >= this.colCount) return;
-    this.stashActiveCell();
-    const changes: { from: number; to: number; insert: string }[] = [];
-    for (let r = 0; r < this.rowCount; r++) {
-      const cells = this.withPending(r, [...this.data.rowsText[r]]);
-      if (cells.length <= col) continue; // 短行没有该列，保持原样
-      cells.splice(col, 1);
-      const line = this.rowLine(r);
-      changes.push({ from: line.from, to: line.to, insert: `| ${cells.join(" | ")} |` });
-    }
-    changes.sort((a, b) => a.from - b.from);
-    pendingCellEdit = {
-      tableFrom: this.data.from,
-      row: Math.max(0, this.activeRow),
-      col: Math.max(0, Math.min(col, this.colCount - 2)),
-    };
-    view.dispatch({ changes, selection: { anchor: this.data.from } });
-  }
-
-  /** 编辑态工具条：行/列结构操作（操作后由 pendingCellEdit 恢复编辑位置） */
-  private buildToolbar(): HTMLDivElement {
-    const bar = document.createElement("div");
-    bar.className = "md-table-toolbar";
-    bar.style.display = "none";
-    const mk = (label: string, title: string, fn: () => void) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = label;
-      b.title = title;
-      b.addEventListener("mousedown", (e) => e.preventDefault());
-      b.addEventListener("click", (e) => {
-        e.stopPropagation();
-        fn();
-      });
-      bar.appendChild(b);
-    };
-    mk("＋↑", "在上方插入行", () => this.addRowAbove());
-    mk("＋↓", "在下方插入行", () => this.addRowBelow());
-    mk("－行", "删除当前行", () => this.deleteRow(this.activeRow));
-    mk("＋|←", "在左侧插入列", () => this.addCol(this.activeCol));
-    mk("＋|→", "在右侧插入列", () => this.addCol(this.activeCol + 1));
-    mk("－|", "删除当前列", () => this.deleteCol(this.activeCol));
-    return bar;
-  }
-
-  /** 结束编辑：落盘全部改动并把光标放回文档（表格之后） */
-  private finish() {
-    const view = this.view;
-    if (!view) return;
-    this.stashActiveCell();
-    const changes = this.collectChanges();
-    const caret = Math.min(this.data.to, view.state.doc.length);
+    const model = this.modelWithPending();
+    if (!model) return;
+    const edit = make(model);
+    if (!edit) return;
     this.teardown();
-    if (changes.length > 0) {
-      view.dispatch({ changes, selection: { anchor: caret } });
+    if (hadSession) {
+      const caret = caretPosInTable(edit.insert, edit.caretRow, edit.caretCol);
+      setActiveEdit({
+        tableFrom: this.data.from,
+        row: edit.caretRow,
+        col: edit.caretCol,
+      });
+      view.dispatch({
+        changes: { from: edit.from, to: edit.to, insert: edit.insert },
+        selection: { anchor: edit.from + caret },
+      });
     } else {
-      view.dispatch({ selection: { anchor: caret } });
+      clearActiveEdit(this.data.from);
+      view.dispatch({
+        changes: { from: edit.from, to: edit.to, insert: edit.insert },
+      });
     }
+  }
+
+  /** 结束编辑：落盘全部改动；caretAfter 时（Escape）光标移到表格之后 */
+  finish(caretAfter: boolean) {
+    const view = this.view;
+    if (!view) return;
+    this.stashActiveCell();
+    const model = this.modelWithPending();
+    clearActiveEdit(this.data.from);
+    this.teardown();
+    if (!model) return;
+    const insert = buildTable(model);
+    if (insert === view.state.doc.sliceString(model.from, model.to)) {
+      if (caretAfter) this.moveCaretAfterTable();
+      return;
+    }
+    if (caretAfter) {
+      view.dispatch({
+        changes: { from: model.from, to: model.to, insert },
+        selection: { anchor: model.from + insert.length },
+      });
+    } else {
+      view.dispatch({ changes: { from: model.from, to: model.to, insert } });
+    }
+    view.focus();
+  }
+
+  private moveCaretAfterTable() {
+    const view = this.view;
+    if (!view) return;
+    const doc = view.state.doc;
+    const after = doc.lineAt(this.data.to).number;
+    const anchor = after + 1 <= doc.lines ? doc.line(after + 1).from : doc.length;
+    view.dispatch({ selection: { anchor } });
     view.focus();
   }
 
   private teardown() {
     this.overlay?.remove();
     this.overlay = null;
-    if (this.toolbar) this.toolbar.style.display = "none";
     for (const row of this.cellEls) for (const el of row) el.classList.remove("md-cell-active");
     this.pending.clear();
     this.activeRow = -1;
     this.activeCol = -1;
   }
 
+  /** 列头手柄：悬停显示，点击弹出列操作/对齐菜单（Typora 式列交互） */
+  private buildHandle(view: EditorView, col: number) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "md-table-handle";
+    btn.setAttribute("aria-label", "列操作");
+    btn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = btn.getBoundingClientRect();
+      openTableMenu(view, this.data.from, rect.left, rect.bottom + 4, { col });
+    });
+    return btn;
+  }
+
+  /** 事件全权由 widget 自己的处理器负责：CM 若再处理 mousedown 会移动光标
+   *  并夺走 textarea 焦点（blur → 立即结束编辑） */
   ignoreEvent() {
-    return false;
+    return true;
   }
 }
 
-function same2D(a: string[][], b: string[][]): boolean {
+function sameModel(a: TableModel, b: TableModel): boolean {
+  const sameCells = (x: TableCellRef[], y: TableCellRef[]) =>
+    x.length === y.length &&
+    x.every(
+      (c, i) => c.text === y[i].text && c.from === y[i].from && c.to === y[i].to
+    );
   return (
-    a.length === b.length &&
-    a.every((row, i) => row.length === b[i].length && row.every((c, j) => c === b[i][j]))
-  );
-}
-
-function sameRanges2D(a: TableCellRange[][], b: TableCellRange[][]): boolean {
-  return (
-    a.length === b.length &&
-    a.every((row, i) =>
-      row.length === b[i].length &&
-      row.every((r, j) => r.from === b[i][j].from && r.to === b[i][j].to)
-    )
+    a.from === b.from &&
+    a.to === b.to &&
+    a.rows.length === b.rows.length &&
+    a.rows.every((row, i) => sameCells(row, b.rows[i])) &&
+    a.aligns.length === b.aligns.length &&
+    a.aligns.every((al, i) => al === b.aligns[i])
   );
 }
 
@@ -865,7 +774,7 @@ export function computeLiveRanges(
   }
   const blocks: TopBlock[] = [];
   /** 待渲染的顶层表格（光标不在其内），折叠间距算好后替换为 widget */
-  const tables: { from: number; to: number; data: TableData }[] = [];
+  const tables: TableModel[] = [];
   const blockKindOf = (name: string): BlockKind | null => {
     if (/^(ATXHeading[1-6]|SetextHeading[12])$/.test(name)) return "heading";
     if (name === "Paragraph") return "paragraph";
@@ -918,11 +827,12 @@ export function computeLiveRanges(
             lastLine: doc.lineAt(to > from ? to - 1 : from).number,
           });
         }
-        // 顶层表格：常渲染（Typora 式），编辑在 widget 内完成，与光标位置无关
+        // 顶层表格：恒渲染（Typora 式），编辑在 widget 内完成。
+        // 公式/emoji 扫描禁区与渲染无关（表格行不容公式与 emoji 短代码）
         if (node.name === "Table") {
-          const data = tableDataOf(node, doc);
-          if (data) tables.push({ from, to, data });
           excluded.push({ from, to });
+          const model = tableModelOf(node, doc);
+          if (model) tables.push(model);
         }
       }
 
@@ -1281,7 +1191,6 @@ export function computeLiveRanges(
     const block = blocks[i];
     const prev = i > 0 ? blocks[i - 1] : null;
     const firstLine = doc.line(block.firstLine);
-
     // 承载自身顶部内边距的块（引用 / 代码 / 表格 widget）由 CSS 或 widget 读取，不加 md-block 以免双计
     if (block.kind !== "blockquote" && block.kind !== "pre" && block.kind !== "table") {
       pushLineClass(firstLine.from, "md-block");
@@ -1307,7 +1216,7 @@ export function computeLiveRanges(
         const gap = prev ? spaceBefore(prev.kind, "table", blankLines, scale) : 0;
         ranges.push(
           Decoration.replace({
-            widget: new TableWidget(t.data, gap),
+            widget: new TableWidget(t, gap),
             block: true,
           }).range(firstLine.from, doc.line(block.lastLine).to)
         );
@@ -1353,6 +1262,8 @@ export function livePreview(
   resolveImageSrc: ImageSrcResolver,
   scale = 1
 ): Extension {
+  // 渲染态表格单元格里的本地图片需要走同一解析器（窗口内各文档闭包等价）
+  imageResolver = resolveImageSrc;
   const recompute = StateEffect.define<null>();
 
   const field = StateField.define<DecorationSet>({
@@ -1371,16 +1282,14 @@ export function livePreview(
   const viewportDriver = ViewPlugin.fromClass(
     class {
       update(update: ViewUpdate) {
-        // 表格结构操作后：在最新存活实例上恢复单元格编辑
-        if (pendingCellEdit) {
-          const pend = pendingCellEdit;
-          pendingCellEdit = null;
-          queueMicrotask(() => {
-            liveTableWidgets.get(pend.tableFrom)?.restoreCellEdit(
-              pend.row,
-              pend.col,
-            );
-          });
+        // 表格结构操作/落盘后：文档已变，在重建出的最新 widget 实例上恢复单元格编辑
+        if (update.docChanged) {
+          const edit = getActiveEdit();
+          if (edit) {
+            queueMicrotask(() => {
+              liveTableWidgets.get(edit.tableFrom)?.restoreCellEdit(edit.row, edit.col);
+            });
+          }
         }
         if (!update.viewportChanged) return;
         const view = update.view;

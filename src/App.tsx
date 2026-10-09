@@ -18,6 +18,7 @@ import { PromptDialogs } from "./components/PromptDialogs";
 import { SavePromptDialog } from "./components/SavePromptDialog";
 import { SidebarView } from "./components/SidebarView";
 import { StatusBar } from "./components/StatusBar";
+import { TableInsertPicker } from "./components/TableInsertPicker";
 import { TabBar } from "./components/TabBar";
 import { TitleToolbar } from "./components/TitleToolbar";
 import { useCloseGuard } from "./hooks/useCloseGuard";
@@ -28,6 +29,7 @@ import { useDocuments } from "./state/documents";
 import { initFindSession } from "./state/findSession";
 import { usePreferences } from "./state/preferences";
 import { useSidebar } from "./state/sidebar";
+import { useTableInsert } from "./state/tableInsert";
 
 const PREVIEW_SHOW_MS = 160;
 const PREVIEW_HIDE_MS = 220;
@@ -41,6 +43,7 @@ export default function App() {
   const quickOpenOpen = useQuickOpen((s) => s.open);
   const findBarOpen = useFindBar((s) => s.open);
   const historyOpen = useHistoryOverlay((s) => s.open);
+  const tableInsertOpen = useTableInsert((s) => s.open);
   const [sidebarPeek, setSidebarPeek] = useState(false);
   const showTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
@@ -183,6 +186,7 @@ export default function App() {
       {quickOpenOpen && <QuickOpen />}
       {findBarOpen && <FindBar />}
       {historyOpen && <HistoryOverlay />}
+      {tableInsertOpen && <TableInsertPicker />}
       <DropOverlay visible={dragActive} />
     </div>
   );

@@ -164,6 +164,7 @@ export function TitleToolbar({
     { label: "保存", shortcut: "Ctrl+S", onClick: () => void saveActiveAction() },
     { label: "另存为", shortcut: "Ctrl+Shift+S", onClick: () => void saveAsAction() },
     { label: "复制为富文本", shortcut: "Ctrl+Shift+C", disabled: !hasDocument, onClick: () => void copyRichTextAction() },
+    { label: "插入表格…", shortcut: "Ctrl+Shift+T", disabled: !hasDocument, onClick: () => void import("../state/tableInsert").then((m) => m.openTableInsert()) },
     { label: "导出为 HTML", disabled: !hasDocument, onClick: () => void handleExport() },
     { label: "导出为 Word(.doc)", disabled: !hasDocument, onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档") },
     { label: "历史版本…", disabled: !hasDocument, onClick: () => openHistoryOverlay() },
