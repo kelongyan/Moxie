@@ -387,7 +387,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
           ? "var(--font-content, var(--font-ui))"
           : "var(--font-mono)",
         // 基准行高（typography.CONTENT_LINE_HEIGHT，与导出 renderShell 同源）+ 行距偏离量；
-        // 默认 lineSpacingPt=4 → 恰好 1.65em（16px 正文 ≈ 26.4px 行盒）
+        // 默认 lineSpacingPt=4 → 恰好 1.625em（16px 正文 = 26px 整数网格行盒）
         lineHeight: `calc(${CONTENT_LINE_HEIGHT}em + ${lineSpacingPx}px)`,
         // 中文排版增强，与导出 renderShell 对齐（markdown.ts）：全角标点挤压、
         // 等宽数字、kern/liga；旧 WebView2 不识别时无害回落

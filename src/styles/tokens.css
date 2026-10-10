@@ -15,10 +15,10 @@
   --lac-bg-inset: #eceff4;
   --lac-overlay: rgba(0, 0, 0, 0.32);
 
-  /* 文本三级：纯黑 / mute / 辅助灰（蓝灰调，三级在浅底 ≥ 4:1） */
-  --lac-text: #000000;
-  --lac-text-secondary: #64748b;
-  --lac-text-tertiary: #5d7089;
+  /* 文本三级：纸墨炭黑 / mute / 辅助灰（对标 Typora 舒适沉稳的纸面阅读对比度） */
+  --lac-text: #24292e;
+  --lac-text-secondary: #57606a;
+  --lac-text-tertiary: #8c959f;
 
   /* 分隔（发丝线） */
   --lac-border: #d6dce4;
@@ -102,9 +102,9 @@
   --lac-bg-inset: rgba(255, 255, 255, 0.07);
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
-  --lac-text: #e2e8f0;
-  --lac-text-secondary: #94a3b8;
-  --lac-text-tertiary: #7c8aa0;
+  --lac-text: #e6edf3;
+  --lac-text-secondary: #8b949e;
+  --lac-text-tertiary: #6e7681;
 
   --lac-border: #2a3542;
   --lac-border-strong: #3c4a5c;
@@ -222,9 +222,9 @@
   --fs-ui: 13px; /* 标签 / 菜单 / 按钮 / 输入 / 侧栏行 */
   --fs-title: 14px; /* 对话框标题 / 设置分组标题 */
 
-  /* 字号 · 内容轨道（16px 基准，阶段 3 起接管编辑器与预览） */
+  /* 字号 · 内容轨道（16px 基准，对标 Typora 26px 整数网格行盒） */
   --fs-content: 16px;
-  --fs-content-line: 1.65;
+  --fs-content-line: 1.625;
   --fs-mono: 13.5px;
   --measure: min(74ch, 100%);
   /* 书写面（所见即所得）正文区限宽：居中显示，两端留白。

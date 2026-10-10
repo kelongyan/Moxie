@@ -107,37 +107,37 @@ describe("renderMarkdown", () => {
     expect(html).toContain("padding-bottom: 8px");
   });
 
-  it("uses 16px/1.65 content typography with the proof-sheet heading scale", () => {
-    // 对标 Typora：正文 16px/1.65，H1 2.1em 丝线 / H2 1.5em 无线
+  it("uses 16px/1.625 content typography with the proof-sheet heading scale", () => {
+    // 对标 Typora：正文 16px/1.625，H1 2.0em 丝线 / H2 1.5em 发丝底框
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("font-size: 16px;");
-    expect(html).toContain("line-height: 1.65;");
-    expect(html).toContain("font-size: 2.1em;");
+    expect(html).toContain("line-height: 1.625;");
+    expect(html).toContain("font-size: 2.0em;");
     expect(html).toContain("font-size: 1.5em;");
-    expect(html).toContain("font-weight: 700;");
+    expect(html).toContain("font-weight: 650;");
   });
 
-  it("gives h1 the hairline underline and drops the h2 border", () => {
+  it("gives h1 and h2 the hairline underline", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toMatch(/h1 \{[^}]*border-bottom: 1px solid/);
-    expect(html).not.toMatch(/h2 \{[^}]*border-bottom/);
+    expect(html).toMatch(/h2 \{[^}]*border-bottom: 1px solid/);
   });
 
   it("uses a hairline hr with a centered accent dot", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("hr::after");
     expect(html).toContain("border-radius: 50%");
-    expect(html).toContain("margin: 22px 0;");
+    expect(html).toContain("margin: 24px 0;");
   });
 
   it("renders blockquote with an accent left bar", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toMatch(/border-left: 3px solid #4a52a3/);
+    expect(html).toMatch(/border-left: 3.5px solid #4a52a3/);
   });
 
   it("renders code with TizuMark borders and line scaffolding", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("font-size: 0.88em;");
+    expect(html).toContain("font-size: 0.85em;");
     expect(html).toMatch(/pre \{[^}]*border: 1px solid/);
     expect(html).toContain(".code-line-num");
   });

@@ -208,11 +208,11 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   /* 导出限宽变体：正文 960px 居中 */
   article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
-  /* 标题：对标 Typora 黄金比例层级——h1 丝线、h2 无线、层级紧凑；间距走 typography 单一来源 */
+  /* 标题：对标 Typora 黄金比例层级——h1/h2 发丝底线、层级紧凑透气；间距走 typography 单一来源 */
   h1, h2, h3, h4, h5, h6 { line-height: 1.35; }
   h1 {
-    font-size: 2.1em;
-    font-weight: 700;
+    font-size: 2.0em;
+    font-weight: 650;
     line-height: 1.25;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
@@ -221,33 +221,34 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   }
   h2 {
     font-size: 1.5em;
-    font-weight: 650;
-    line-height: 1.35;
+    font-weight: 600;
+    line-height: 1.3;
     color: ${tokens.heading2 || tokens.fg};
     margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
-    padding-bottom: 4px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, ${tokens.border} 70%, transparent);
   }
   h3 {
     font-size: 1.25em;
-    font-weight: 650;
-    line-height: 1.4;
+    font-weight: 600;
+    line-height: 1.35;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h4 {
-    font-size: 1.1em;
-    font-weight: 700;
+    font-size: 1.0em;
+    font-weight: 600;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h5 {
-    font-size: 1.0em;
+    font-size: 0.875em;
     font-weight: 600;
     color: ${tokens.secondary};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h6 {
-    font-size: 0.9em;
+    font-size: 0.8125em;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: ${tokens.secondary};
@@ -258,7 +259,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   p { margin: 0 0 ${MD_MARGIN.paragraph.bottom}px; }
 
   /* 行内强调 */
-  strong, b { font-weight: 700; }
+  strong, b { font-weight: 600; }
   em { font-style: italic; }
   del { text-decoration: line-through; color: ${tokens.secondary}; }
   /* ==高亮== 荧光标记（校对样张高亮黄） */
@@ -286,7 +287,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     vertical-align: baseline;
   }
   abbr { text-decoration: underline dotted; cursor: help; }
-  /* 链接：校对样张——墨字 + 校对红下划线 */
+  /* 链接：墨字 + 强调色发丝下划线 */
   a {
     color: ${tokens.fg};
     text-decoration: underline;
@@ -295,17 +296,16 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   }
   a:hover { color: ${tokens.accent}; }
 
-  /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
+  /* 行内 code：无边框淡灰胶囊（Typora 风格） */
   code {
     font-family: ${tokens.fontMono};
-    font-size: 0.88em;
+    font-size: 0.85em;
     padding: 2px 5px;
     background: ${codeBg};
-    border: 1px solid ${tokens.border};
-    border-radius: 4px;
+    border-radius: 3px;
   }
 
-  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
+  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker */
   ul, ol { padding-left: 24px; margin: 0 0 ${MD_MARGIN.list.bottom}px; }
   li { margin: 0 0 4px; }
   li > p { margin: 0 0 4px; }
@@ -368,13 +368,13 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、8px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
   pre {
     position: relative;
-    padding: 14px 18px;
+    padding: 14px 16px;
     background: ${codeBg};
     border: 1px solid ${tokens.border};
-    border-radius: 8px;
+    border-radius: 6px;
     margin: ${MD_MARGIN.pre.top}px 0;
   }
   pre[data-lang]::after {

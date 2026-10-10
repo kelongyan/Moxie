@@ -264,11 +264,11 @@ describe("livePreview · 折叠间距（校样样张）", () => {
     ]);
   });
 
-  it("段→h1/h2 大节标题：折叠 28px = 空行(8) + padding(20)", () => {
+  it("段→h1/h2 大节标题：折叠 26px = 空行(8) + padding(18)", () => {
     // "正文\n\n# 标题\n"：line3(from4) 是标题行
     const ranges = rangesOf("正文\n\n# 标题\n", 8);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 4, style: "--md-space-before:20px" },
+      { from: 4, style: "--md-space-before:18px" },
     ]);
   });
 
@@ -290,13 +290,13 @@ describe("livePreview · 折叠间距（校样样张）", () => {
     expect(hasClass(ranges, 4, "md-block")).toBe(false);
   });
 
-  it("分割线→段：折叠 22px = 空行(8) + padding(14)", () => {
+  it("分割线→段：折叠 24px = 空行(8) + padding(16)", () => {
     // "---\n\n后文\n"：line1 hr、line3(from5) 正文
     const ranges = rangesOf("---\n\n后文\n", 7);
     expect(hasClass(ranges, 0, "md-hr-line")).toBe(true);
     expect(hasClass(ranges, 4, "md-blank")).toBe(true);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 5, style: "--md-space-before:14px" },
+      { from: 5, style: "--md-space-before:16px" },
     ]);
   });
 

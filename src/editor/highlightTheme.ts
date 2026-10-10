@@ -47,57 +47,57 @@ const lacHighlightStyle = HighlightStyle.define([
     color: "var(--syn-punct)",
   },
 
-  // —— Markdown 书写排版（对标 Typora 黄金比例字号梯队：h1 2.1 / h2 1.5 / h3 1.25 / h4 1.1 / h5 1.0 / h6 0.9） ——
+  // —— Markdown 书写排版（对标 Typora 优雅字阶：h1 2.0 / h2 1.5 / h3 1.25 / h4 1.0 / h5 0.875 / h6 0.8125，SemiBold 600 透气字重） ——
   {
     tag: tags.heading1,
     color: "var(--lac-text)",
-    fontWeight: "700",
-    fontSize: "2.1em",
+    fontWeight: "650",
+    fontSize: "2.0em",
   },
   {
     tag: tags.heading2,
     color: "var(--lac-text)",
-    fontWeight: "650",
+    fontWeight: "600",
     fontSize: "1.5em",
   },
   {
     tag: tags.heading3,
     color: "var(--lac-text)",
-    fontWeight: "650",
+    fontWeight: "600",
     fontSize: "1.25em",
   },
   {
     tag: tags.heading4,
     color: "var(--lac-text)",
-    fontWeight: "700",
-    fontSize: "1.1em",
+    fontWeight: "600",
+    fontSize: "1.0em",
   },
   {
     tag: tags.heading5,
     color: "var(--lac-text-secondary)",
     fontWeight: "600",
-    fontSize: "1.0em",
+    fontSize: "0.875em",
   },
   {
     tag: tags.heading6,
     color: "var(--lac-text-secondary)",
     fontWeight: "600",
-    fontSize: "0.9em",
+    fontSize: "0.8125em",
   },
   {
     tag: tags.heading,
     color: "var(--lac-text)",
-    fontWeight: "700",
+    fontWeight: "600",
   },
   { tag: tags.emphasis, fontStyle: "italic" },
-  { tag: tags.strong, fontWeight: "700" },
+  { tag: tags.strong, fontWeight: "600" },
   {
     tag: tags.strikethrough,
     textDecoration: "line-through",
     color: "var(--lac-text-secondary)",
   },
   {
-    // 校样样张链接：墨字 + 校对红下划线（hover 语义交给渲染视图）
+    // 链接：墨字 + 强调色发丝下划线
     tag: tags.link,
     color: "var(--lac-text)",
     textDecoration: "underline",
@@ -118,16 +118,15 @@ const lacHighlightStyle = HighlightStyle.define([
     tag: tags.quote,
     color: "var(--lac-text-secondary)",
   },
-  // 行内代码：等宽 0.88em + 内嵌底色圆角片（TizuMark code 规格）
+  // 行内代码：等宽 0.85em + 极淡底色（Typora 风格无边框胶囊，不切割横向阅读视线）
   {
     tag: tags.monospace,
     fontFamily: "var(--font-mono)",
-    fontSize: "0.88em",
+    fontSize: "0.85em",
     color: "var(--lac-text)",
     backgroundColor: "var(--lac-bg-inset)",
-    border: "1px solid var(--lac-border)",
-    borderRadius: "4px",
-    padding: "0 5px",
+    borderRadius: "3px",
+    padding: "2px 5px",
   },
 ]);
 

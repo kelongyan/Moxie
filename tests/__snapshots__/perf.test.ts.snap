@@ -14,7 +14,7 @@ exports[`preview snapshot > dark theme 1`] = `
     color: #e9eaee;
     font-family: sans-serif;
     font-size: 16px;
-    line-height: 1.65;
+    line-height: 1.625;
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -35,57 +35,58 @@ exports[`preview snapshot > dark theme 1`] = `
   /* 导出限宽变体：正文 960px 居中 */
   article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
-  /* 标题：对标 Typora 黄金比例层级——h1 丝线、h2 无线、层级紧凑；间距走 typography 单一来源 */
+  /* 标题：对标 Typora 黄金比例层级——h1/h2 发丝底线、层级紧凑透气；间距走 typography 单一来源 */
   h1, h2, h3, h4, h5, h6 { line-height: 1.35; }
   h1 {
-    font-size: 2.1em;
-    font-weight: 700;
+    font-size: 2.0em;
+    font-weight: 650;
     line-height: 1.25;
     color: #e9eaee;
-    margin: 28px 0 14px;
+    margin: 26px 0 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid #e4e5e8;
   }
   h2 {
     font-size: 1.5em;
-    font-weight: 650;
-    line-height: 1.35;
+    font-weight: 600;
+    line-height: 1.3;
     color: #e9eaee;
-    margin: 28px 0 14px;
-    padding-bottom: 4px;
+    margin: 26px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, #e4e5e8 70%, transparent);
   }
   h3 {
     font-size: 1.25em;
-    font-weight: 650;
-    line-height: 1.4;
+    font-weight: 600;
+    line-height: 1.35;
     color: #e9eaee;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
   h4 {
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #e9eaee;
-    margin: 20px 0 10px;
-  }
-  h5 {
     font-size: 1.0em;
     font-weight: 600;
+    color: #e9eaee;
+    margin: 22px 0 10px;
+  }
+  h5 {
+    font-size: 0.875em;
+    font-weight: 600;
     color: #5c6068;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
   h6 {
-    font-size: 0.9em;
+    font-size: 0.8125em;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: #5c6068;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
 
   /* 段落：单侧 margin，对标段间距规范 */
   p { margin: 0 0 16px; }
 
   /* 行内强调 */
-  strong, b { font-weight: 700; }
+  strong, b { font-weight: 600; }
   em { font-style: italic; }
   del { text-decoration: line-through; color: #5c6068; }
   /* ==高亮== 荧光标记（校对样张高亮黄） */
@@ -113,7 +114,7 @@ exports[`preview snapshot > dark theme 1`] = `
     vertical-align: baseline;
   }
   abbr { text-decoration: underline dotted; cursor: help; }
-  /* 链接：校对样张——墨字 + 校对红下划线 */
+  /* 链接：墨字 + 强调色发丝下划线 */
   a {
     color: #e9eaee;
     text-decoration: underline;
@@ -122,17 +123,16 @@ exports[`preview snapshot > dark theme 1`] = `
   }
   a:hover { color: #4a52a3; }
 
-  /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
+  /* 行内 code：无边框淡灰胶囊（Typora 风格） */
   code {
     font-family: monospace;
-    font-size: 0.88em;
+    font-size: 0.85em;
     padding: 2px 5px;
     background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
-    border: 1px solid #e4e5e8;
-    border-radius: 4px;
+    border-radius: 3px;
   }
 
-  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
+  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker */
   ul, ol { padding-left: 24px; margin: 0 0 16px; }
   li { margin: 0 0 4px; }
   li > p { margin: 0 0 4px; }
@@ -195,13 +195,13 @@ exports[`preview snapshot > dark theme 1`] = `
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、8px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
   pre {
     position: relative;
-    padding: 14px 18px;
+    padding: 14px 16px;
     background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
     border: 1px solid #e4e5e8;
-    border-radius: 8px;
+    border-radius: 6px;
     margin: 18px 0;
   }
   pre[data-lang]::after {
@@ -309,7 +309,7 @@ exports[`preview snapshot > dark theme 1`] = `
     position: relative;
     height: 1px;
     background: #e4e5e8;
-    margin: 22px 0;
+    margin: 24px 0;
   }
   hr::after {
     content: "";
@@ -511,7 +511,7 @@ exports[`preview snapshot > light theme 1`] = `
     color: #1a1b1f;
     font-family: sans-serif;
     font-size: 16px;
-    line-height: 1.65;
+    line-height: 1.625;
     /* 中英文混排：trim 中文标点旁的西文空白，等宽数字 */
     text-spacing-trim: space-first;
     font-variant-numeric: tabular-nums;
@@ -532,57 +532,58 @@ exports[`preview snapshot > light theme 1`] = `
   /* 导出限宽变体：正文 960px 居中 */
   article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
-  /* 标题：对标 Typora 黄金比例层级——h1 丝线、h2 无线、层级紧凑；间距走 typography 单一来源 */
+  /* 标题：对标 Typora 黄金比例层级——h1/h2 发丝底线、层级紧凑透气；间距走 typography 单一来源 */
   h1, h2, h3, h4, h5, h6 { line-height: 1.35; }
   h1 {
-    font-size: 2.1em;
-    font-weight: 700;
+    font-size: 2.0em;
+    font-weight: 650;
     line-height: 1.25;
     color: #1a1b1f;
-    margin: 28px 0 14px;
+    margin: 26px 0 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid #e4e5e8;
   }
   h2 {
     font-size: 1.5em;
-    font-weight: 650;
-    line-height: 1.35;
+    font-weight: 600;
+    line-height: 1.3;
     color: #1a1b1f;
-    margin: 28px 0 14px;
-    padding-bottom: 4px;
+    margin: 26px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid color-mix(in srgb, #e4e5e8 70%, transparent);
   }
   h3 {
     font-size: 1.25em;
-    font-weight: 650;
-    line-height: 1.4;
+    font-weight: 600;
+    line-height: 1.35;
     color: #1a1b1f;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
   h4 {
-    font-size: 1.1em;
-    font-weight: 700;
-    color: #1a1b1f;
-    margin: 20px 0 10px;
-  }
-  h5 {
     font-size: 1.0em;
     font-weight: 600;
+    color: #1a1b1f;
+    margin: 22px 0 10px;
+  }
+  h5 {
+    font-size: 0.875em;
+    font-weight: 600;
     color: #5c6068;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
   h6 {
-    font-size: 0.9em;
+    font-size: 0.8125em;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: #5c6068;
-    margin: 20px 0 10px;
+    margin: 22px 0 10px;
   }
 
   /* 段落：单侧 margin，对标段间距规范 */
   p { margin: 0 0 16px; }
 
   /* 行内强调 */
-  strong, b { font-weight: 700; }
+  strong, b { font-weight: 600; }
   em { font-style: italic; }
   del { text-decoration: line-through; color: #5c6068; }
   /* ==高亮== 荧光标记（校对样张高亮黄） */
@@ -610,7 +611,7 @@ exports[`preview snapshot > light theme 1`] = `
     vertical-align: baseline;
   }
   abbr { text-decoration: underline dotted; cursor: help; }
-  /* 链接：校对样张——墨字 + 校对红下划线 */
+  /* 链接：墨字 + 强调色发丝下划线 */
   a {
     color: #1a1b1f;
     text-decoration: underline;
@@ -619,17 +620,16 @@ exports[`preview snapshot > light theme 1`] = `
   }
   a:hover { color: #4a52a3; }
 
-  /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
+  /* 行内 code：无边框淡灰胶囊（Typora 风格） */
   code {
     font-family: monospace;
-    font-size: 0.88em;
+    font-size: 0.85em;
     padding: 2px 5px;
     background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
-    border: 1px solid #e4e5e8;
-    border-radius: 4px;
+    border-radius: 3px;
   }
 
-  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker（TizuMark 复刻） */
+  /* 列表：24px 缩进 / 4px 项距 / 嵌套 4px；多级 marker */
   ul, ol { padding-left: 24px; margin: 0 0 16px; }
   li { margin: 0 0 4px; }
   li > p { margin: 0 0 4px; }
@@ -692,13 +692,13 @@ exports[`preview snapshot > light theme 1`] = `
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、8px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
   pre {
     position: relative;
-    padding: 14px 18px;
+    padding: 14px 16px;
     background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
     border: 1px solid #e4e5e8;
-    border-radius: 8px;
+    border-radius: 6px;
     margin: 18px 0;
   }
   pre[data-lang]::after {
@@ -806,7 +806,7 @@ exports[`preview snapshot > light theme 1`] = `
     position: relative;
     height: 1px;
     background: #e4e5e8;
-    margin: 22px 0;
+    margin: 24px 0;
   }
   hr::after {
     content: "";
