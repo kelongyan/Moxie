@@ -104,34 +104,35 @@ describe("renderMarkdown", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("max-width: 100%");
     expect(html).toContain("padding: 24px 24px 40px");
-    expect(html).toContain("padding-bottom: 10px");
+    expect(html).toContain("padding-bottom: 16px");
   });
 
-  it("uses 16px/1.7 content typography with the TizuMark heading scale", () => {
-    // TizuMark 复刻：正文 16px/1.7，H1 2em / H2 1.5em，标题字重 700
+  it("uses 16px/1.75 content typography with the proof-sheet heading scale", () => {
+    // 校样样张：正文 16px/1.75，H1 2.4em 丝线 / H2 1.6em 无线
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("font-size: 16px;");
-    expect(html).toContain("line-height: 1.7;");
-    expect(html).toContain("font-size: 2em;");
-    expect(html).toContain("font-size: 1.5em;");
+    expect(html).toContain("line-height: 1.75;");
+    expect(html).toContain("font-size: 2.4em;");
+    expect(html).toContain("font-size: 1.6em;");
     expect(html).toContain("font-weight: 700;");
   });
 
-  it("uses GitHub-style solid underlines for h1/h2", () => {
+  it("gives h1 the hairline underline and drops the h2 border", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toMatch(/h1 \{[^}]*border-bottom: 2px solid/);
-    expect(html).toMatch(/h2 \{[^}]*border-bottom: 1px solid/);
+    expect(html).toMatch(/h1 \{[^}]*border-bottom: 1px solid/);
+    expect(html).not.toMatch(/h2 \{[^}]*border-bottom/);
   });
 
-  it("uses a full-width gradient hr", () => {
+  it("uses a hairline hr with a centered accent dot", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain("background: linear-gradient(90deg, transparent,");
+    expect(html).toContain("hr::after");
+    expect(html).toContain("border-radius: 50%");
     expect(html).toContain("margin: 32px 0;");
   });
 
   it("renders blockquote with an accent left bar", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toMatch(/border-left: 4px solid #4a52a3/);
+    expect(html).toMatch(/border-left: 3px solid #4a52a3/);
   });
 
   it("renders code with TizuMark borders and line scaffolding", () => {
@@ -521,9 +522,11 @@ describe("TizuMark replica", () => {
     expect(html).toContain("circled-decimal");
   });
 
-  it("adds external-link arrows", () => {
-    const html = renderMarkdown("x", LIGHT, "t.md");
-    expect(html).toContain('a[href^="http"]::after');
+  it("renders ==mark== as a highlighted element", () => {
+    const html = renderBody("带 ==高亮== 的句子", {
+      baseDir: null,
+    });
+    expect(html).toContain("<mark>高亮</mark>");
   });
 
   it("carries callout color variables from tokens", () => {

@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { flushDocument } from "../editor/registry";
 import { EditorDocument, useDocuments } from "./documents";
-import { EditorLanguage } from "../models/language";
 
 export interface RecoveryEntryDto {
   docId: string;
@@ -18,13 +17,11 @@ export interface RestoredDocMeta {
   docId?: string;
   name?: string;
   path?: string | null;
-  language?: EditorLanguage;
   encoding?: string;
   lineEnding?: "lf" | "crlf" | "cr";
   isDirty?: boolean;
   cursorLine?: number;
   cursorColumn?: number;
-  previewVisible?: boolean;
   perfTier?: "standard" | "large" | "extreme";
   perfBytes?: number;
 }
@@ -94,13 +91,11 @@ function docRecoveryMeta(doc: EditorDocument): string {
     docId: doc.id,
     name: doc.name,
     path: doc.path,
-    language: doc.language,
     encoding: doc.encoding,
     lineEnding: doc.lineEnding,
     isDirty: doc.isDirty,
     cursorLine: doc.cursorLine,
     cursorColumn: doc.cursorColumn,
-    previewVisible: doc.previewVisible,
     perfTier: doc.perfTier,
     perfBytes: doc.perfBytes,
   });
@@ -204,12 +199,10 @@ function addRestoredDoc(item: RestorePlanItem): string {
   const id = store.addRestored({
     name: meta.name ?? "未命名",
     path: meta.path ?? null,
-    language: meta.language ?? "plaintext",
     encoding: meta.encoding ?? "utf-8",
     lineEnding: meta.lineEnding ?? "lf",
     cursorLine: meta.cursorLine ?? 1,
     cursorColumn: meta.cursorColumn ?? 1,
-    previewVisible: meta.previewVisible ?? true,
     perfTier: meta.perfTier ?? "standard",
     perfBytes: meta.perfBytes ?? 0,
     text: item.content,
@@ -323,13 +316,11 @@ export async function saveWorkspaceAndFinish(): Promise<boolean> {
       docId: doc.id,
       name: doc.name,
       path: doc.path,
-      language: doc.language,
       encoding: doc.encoding,
       lineEnding: doc.lineEnding,
       isDirty: doc.isDirty,
       cursorLine: doc.cursorLine,
       cursorColumn: doc.cursorColumn,
-      previewVisible: doc.previewVisible,
       perfTier: doc.perfTier,
       perfBytes: doc.perfBytes,
     })),

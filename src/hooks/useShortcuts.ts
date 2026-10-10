@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import {
   closeTabAction,
-  jsonFormatActive,
   newTabAction,
   openFileAction,
   saveActiveAction,
@@ -17,22 +16,34 @@ import { openSettingsWindow } from "../state/settingsWindow";
 export function useShortcuts() {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "F11") {
+        e.preventDefault();
+        void (async () => {
+          const win = await import("@tauri-apps/api/window").then((m) =>
+            m.getCurrentWindow()
+          );
+          await win.setFullscreen(!(await win.isFullscreen()));
+        })();
+        return;
+      }
       if (!e.ctrlKey) return;
       const key = e.key.toLowerCase();
 
       if (e.altKey) {
         if (key === "f") {
           e.preventDefault();
-          void openFindWindow("replace");
-        } else if (key === "l" && !e.shiftKey) {
-          e.preventDefault();
-          void jsonFormatActive("pretty");
-        } else if (key === "l" && e.shiftKey) {
-          e.preventDefault();
-          void jsonFormatActive("minify");
+          if (usePreferences.getState().findStyle === "inline") {
+            void import("../state/findBar").then((m) => m.openFindBar("replace"));
+          } else {
+            void openFindWindow("replace");
+          }
         } else if (key === "d") {
           e.preventDefault();
           void openCodecWindow("smart-decode");
+        } else if (key === "0") {
+          // Ctrl+Alt+0 重置字号；Ctrl+0 留给编辑器的"标题转正文"
+          e.preventDefault();
+          usePreferences.getState().set({ fontSizePt: 12 });
         }
         return;
       }
@@ -54,23 +65,33 @@ export function useShortcuts() {
       } else if (e.shiftKey && key === "s") {
         e.preventDefault();
         void saveAsAction();
+      } else if (e.shiftKey && key === "t") {
+        // 插入表格：行列选择浮层（确认后由编辑器写入光标处）
+        e.preventDefault();
+        void import("../state/tableInsert").then((m) => m.openTableInsert());
+      } else if (e.shiftKey && key === "c") {
+        e.preventDefault();
+        void import("../state/actions").then((m) => m.copyRichTextAction());
+      } else if (key === "l") {
+        e.preventDefault();
+        void import("../state/actions").then((m) => m.gotoLineAction());
+      } else if (key === "p") {
+        e.preventDefault();
+        void import("../state/quickOpen").then((m) => m.openQuickOpen());
       } else if (!e.shiftKey && key === "w") {
         e.preventDefault();
         if (state.activeId) void closeTabAction(state.activeId);
       } else if (!e.shiftKey && key === "f") {
         e.preventDefault();
-        void openFindWindow("find");
+        if (usePreferences.getState().findStyle === "inline") {
+          void import("../state/findBar").then((m) => m.openFindBar("find"));
+        } else {
+          void openFindWindow("find");
+        }
       } else if (e.shiftKey && key === "b") {
         e.preventDefault();
         const prefs = usePreferences.getState();
         prefs.set({ sidebarPinned: !prefs.sidebarPinned });
-      } else if (e.shiftKey && key === "p") {
-        e.preventDefault();
-        const docs = useDocuments.getState();
-        const doc = docs.documents.find((d) => d.id === docs.activeId);
-        if (doc && doc.language === "markdown") {
-          docs.patchDocument(doc.id, { previewVisible: !doc.previewVisible });
-        }
       } else if (!e.shiftKey && e.key === ",") {
         e.preventDefault();
         void openSettingsWindow();
@@ -82,6 +103,14 @@ export function useShortcuts() {
         e.preventDefault();
         if (hasActiveFindQuery()) forwardFindNavigation(-1);
         else void openFindWindow("find");
+      } else if (key === "=" || key === "+") {
+        e.preventDefault();
+        const prefs = usePreferences.getState();
+        prefs.set({ fontSizePt: Math.min(32, prefs.fontSizePt + 1) });
+      } else if (key === "-") {
+        e.preventDefault();
+        const prefs = usePreferences.getState();
+        prefs.set({ fontSizePt: Math.max(9, prefs.fontSizePt - 1) });
       } else if (key === "tab") {
         e.preventDefault();
         state.cycleTab(e.shiftKey ? -1 : 1);

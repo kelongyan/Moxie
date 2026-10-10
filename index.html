@@ -24,6 +24,182 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="module">
+      // 浏览器预览 mock：仅在 dev 且不在 Tauri webview 内生效（生产构建被摇树），
+      // 用于无 Tauri 环境时渲染真实 UI 做视觉验证。
+      if (import.meta.env.DEV && !window.__TAURI_INTERNALS__) {
+        let cbId = 0;
+        const listeners = new Map();
+        window.__TAURI_EVENT_PLUGIN_INTERNALS__ = {
+          registerListener() {},
+          unregisterListener() {},
+        };
+        window.__TAURI_INTERNALS__ = {
+          transformCallback(callback) {
+            const id = ++cbId;
+            listeners.set(id, callback);
+            return id;
+          },
+          transformers: {
+            unregisterListener() {},
+            registerListener() {},
+          },
+          metadata: {
+            currentWindow: { label: "main" },
+            currentWebview: { label: "main", windowLabel: "main" },
+          },
+          plugins: {},
+          invoke(cmd, args) {
+            const empty = () => Promise.resolve(null);
+            // 默认打开演示文档，供大纲与编辑区做视觉验证
+            const launchArgs = () => {
+              const doc = new URLSearchParams(location.search).get("doc");
+              if (doc) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
+              return ["C:\\Workspace\\我的笔记\\设计方案.md"];
+            };
+            const mockDocText = `# Moxie 样张演示
+
+一款安静、快速、真正属于 Windows 的 Markdown 编辑器。
+
+## 1. 核心设计理念
+
+### 1.1 校样样张
+墨 / 校对红 / 高亮黄 三色基因，纸灰画布与面白 chrome，营造干净专注的书写体验。
+
+### 1.2 所见即所得
+- **实时渲染**：行内标记按需显示与隐藏
+- **表格原位编辑**：支持按 Tab 键流式录入单元格
+- **数学公式**：KaTeX 即时预览 $E = mc^2$
+
+## 2. 工作区与侧栏
+
+左侧栏已重构为三合一现代化工作台：
+1. **工作区文件树**：支持多层级文件夹折叠/展开、新建与右键菜单
+2. **文档大纲**：H1~H6 层级标题导航，跟随光标实时高亮追踪
+3. **最近文件**：快速切换历史记录与相对时间戳
+
+### 2.1 交互体验
+- 鼠标放置于侧栏右边缘，可按住拖拽自由调节侧栏宽度（180px ~ 480px）。
+- 顶部支持一键在【文件】、【大纲】、【最近】之间平滑切换。`;
+
+            const table = {
+              launch_args: launchArgs,
+              read_text_file: (a) => {
+                if (a && a.path.endsWith("对照样张.md")) {
+                  return fetch(
+                    "/work/ui-baseline/%E5%AF%B9%E7%85%A7%E6%A0%B7%E5%BC%A0.md"
+                  ).then((res) =>
+                    res.text().then((text) => ({
+                      text,
+                      encoding: "utf-8",
+                      lineEnding: "lf",
+                    }))
+                  );
+                }
+                const name = a?.path?.split(/[\\/]/).pop() || "文档.md";
+                const text = mockDocText.replace("Moxie 样张演示", name.replace(/\.md$/, ""));
+                return Promise.resolve({
+                  text,
+                  encoding: "utf-8",
+                  lineEnding: "lf",
+                });
+              },
+              read_text_file_with_encoding: (a) =>
+                Promise.resolve({
+                  text: mockDocText,
+                  encoding: a?.encoding || "utf-8",
+                  lineEnding: "lf",
+                }),
+              sidebar_load: () =>
+                Promise.resolve({
+                  workspacePath: "C:\\Workspace\\我的笔记",
+                  activeTab: "files",
+                  expandedDirs: {
+                    "C:\\Workspace\\我的笔记": true,
+                    "C:\\Workspace\\我的笔记\\项目规划": true,
+                  },
+                }),
+              list_dir: (a) => {
+                const p = a?.path || "";
+                if (p === "C:\\Workspace\\我的笔记") {
+                  return Promise.resolve([
+                    { name: "项目规划", path: "C:\\Workspace\\我的笔记\\项目规划", isDir: true, isMarkdown: false, size: 0, modifiedMs: Date.now() },
+                    { name: "灵感随笔", path: "C:\\Workspace\\我的笔记\\灵感随笔", isDir: true, isMarkdown: false, size: 0, modifiedMs: Date.now() },
+                    { name: "设计方案.md", path: "C:\\Workspace\\我的笔记\\设计方案.md", isDir: false, isMarkdown: true, size: 4096, modifiedMs: Date.now() },
+                    { name: "工作周报.md", path: "C:\\Workspace\\我的笔记\\工作周报.md", isDir: false, isMarkdown: true, size: 2048, modifiedMs: Date.now() },
+                    { name: "架构图.png", path: "C:\\Workspace\\我的笔记\\架构图.png", isDir: false, isMarkdown: false, size: 512000, modifiedMs: Date.now() },
+                  ]);
+                }
+                if (p === "C:\\Workspace\\我的笔记\\项目规划") {
+                  return Promise.resolve([
+                    { name: "产品迭代排期.md", path: "C:\\Workspace\\我的笔记\\项目规划\\产品迭代排期.md", isDir: false, isMarkdown: true, size: 1024, modifiedMs: Date.now() },
+                    { name: "需求清单.md", path: "C:\\Workspace\\我的笔记\\项目规划\\需求清单.md", isDir: false, isMarkdown: true, size: 3072, modifiedMs: Date.now() },
+                  ]);
+                }
+                if (p === "C:\\Workspace\\我的笔记\\灵感随笔") {
+                  return Promise.resolve([
+                    { name: "读书笔记.md", path: "C:\\Workspace\\我的笔记\\灵感随笔\\读书笔记.md", isDir: false, isMarkdown: true, size: 1536, modifiedMs: Date.now() },
+                  ]);
+                }
+                return Promise.resolve([]);
+              },
+              recent_list: () =>
+                Promise.resolve([
+                  { path: "C:\\Workspace\\我的笔记\\设计方案.md", lastOpenedMs: Date.now() - 1000 * 60 * 5 },
+                  { path: "C:\\Workspace\\我的笔记\\项目规划\\产品迭代排期.md", lastOpenedMs: Date.now() - 1000 * 60 * 45 },
+                  { path: "C:\\Workspace\\我的笔记\\工作周报.md", lastOpenedMs: Date.now() - 1000 * 60 * 60 * 3 },
+                  { path: "D:\\Docs\\历史备忘录.md", lastOpenedMs: Date.now() - 1000 * 60 * 60 * 24 * 2 },
+                ]),
+              "plugin:dialog|open": () => Promise.resolve("C:\\Workspace\\我的笔记"),
+              create_file: empty,
+              create_dir: empty,
+              delete_path: empty,
+              rename_file: empty,
+              explorer_select: empty,
+              write_text_file: empty,
+              recovery_load: empty,
+              recovery_read_marker: empty,
+              settings_load: () => Promise.resolve({}),
+              settings_save: empty,
+              sidebar_save: empty,
+              workspace_save: empty,
+              workspace_load_and_consume: empty,
+              fs_watch: empty,
+              timeline_save: empty,
+              timeline_list: () => Promise.resolve([]),
+              recovery_cleanup: empty,
+              recovery_finish_cleanly: empty,
+              recovery_write_marker: empty,
+              recovery_save_doc: empty,
+              recovery_remove_doc: empty,
+              recent_add: empty,
+              recent_remove: empty,
+              recent_replace: empty,
+              recent_clear: empty,
+              get_file_revision: (a) =>
+                Promise.resolve({
+                  identity: a?.path || "id-1",
+                  modifiedMs: Date.now(),
+                  size: 2048,
+                }),
+            };
+            if (table[cmd]) {
+              return table[cmd](args);
+            }
+            // 兜底支持 Tauri 插件事件、窗口管理与未特化指令
+            if (
+              cmd.startsWith("plugin:event|") ||
+              cmd.startsWith("plugin:window|") ||
+              cmd.startsWith("plugin:webview|") ||
+              cmd.startsWith("plugin:dialog|")
+            ) {
+              return Promise.resolve(null);
+            }
+            return Promise.resolve(null);
+          },
+        };
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

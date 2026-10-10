@@ -1,7 +1,9 @@
 import MarkdownIt from "markdown-it";
+import abbr from "markdown-it-abbr";
 import deflist from "markdown-it-deflist";
 import { full as emoji } from "markdown-it-emoji";
 import footnote from "markdown-it-footnote";
+import mark from "markdown-it-mark";
 import sub from "markdown-it-sub";
 import sup from "markdown-it-sup";
 import taskLists from "markdown-it-task-lists";
@@ -16,10 +18,22 @@ const md = new MarkdownIt({ html: false, linkify: true, breaks: false });
 md.use(taskLists, { enabled: true });
 md.use(footnote);
 md.use(deflist);
+md.use(abbr);
+md.use(mark);
 md.use(sub);
 md.use(sup);
 md.use(emoji);
 md.use(mathPlugin);
+
+// 上游补丁：markdown-it-task-lists 拼串漏空格（输出 `checked=""type="checkbox"`、
+// `class="…"type="checkbox"`），在 html_inline 输出处补空格，保证导出 HTML 符合规范
+const renderHtmlInline = md.renderer.rules.html_inline;
+md.renderer.rules.html_inline = (tokens, idx, options, env, self) => {
+  const html =
+    renderHtmlInline?.(tokens, idx, options, env, self) ??
+    self.renderToken(tokens, idx, options);
+  return html.replace(/"(?=(?:type|disabled|checked)=)/g, '" ');
+};
 
 export interface RenderEnv {
   baseDir?: string | null;
@@ -96,7 +110,8 @@ const CALLOUT_LABELS: Record<string, string> = {
   caution: "Caution",
 };
 
-const CALLOUT_RE = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*(.*)$/i;
+/** 书写面与导出共用的 callout 首行判定（[!NOTE] / [!TIP] / …） */
+export const CALLOUT_RE = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*(.*)$/i;
 
 function calloutTitleHtml(
   kind: string,
@@ -459,9 +474,10 @@ md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   const dataLine = token.map ? ` data-line="${token.map[0] + offset}"` : "";
   const key = languageKeyOf(info);
   const langClass = key ? ` class="language-${escapeAttribute(key)}"` : "";
+  const langAttr = key ? ` data-lang="${escapeAttribute(key)}"` : "";
   // TizuMark 同构：code > .code-scroll > .code-line（行号 span 常驻，CSS 控制显隐）
   const { html: body } = highlightToLines(token.content, info);
-  return `<pre${dataLine}><code${langClass}><span class="code-scroll">${body}</span></code></pre>\n`;
+  return `<pre${dataLine}${langAttr}><code${langClass}><span class="code-scroll">${body}</span></code></pre>\n`;
 };
 
 const renderHeadingOpen = md.renderer.rules.heading_open;
@@ -484,6 +500,32 @@ export interface CoreRenderOptions {
   breaks?: boolean;
   typographer?: boolean;
   allowHtml?: boolean;
+}
+
+/** 行内 markdown → HTML（书写面表格单元格渲染；html 恒关，转义安全）。
+ *  resolveImageSrc：把 markdown-it 规范化后的图片 src 解析为最终 URL，可选 */
+export function renderInlineMarkdown(
+  text: string,
+  resolveImageSrc?: ((rawSrc: string) => string | null) | null
+): string {
+  try {
+    let html = md.renderInline(text, {});
+    if (resolveImageSrc) {
+      html = html.replace(/src="([^"]*)"/g, (whole, src: string) => {
+        let raw = src;
+        try {
+          raw = decodeURIComponent(src);
+        } catch {
+          // 未编码的 src 按原样解析
+        }
+        const resolved = resolveImageSrc(raw);
+        return resolved ? `src="${resolved}"` : whole;
+      });
+    }
+    return html;
+  } catch {
+    return "";
+  }
 }
 
 /** 纯渲染：markdown-it + 插件，返回 HTML 与被剥离的 frontmatter 行数 */

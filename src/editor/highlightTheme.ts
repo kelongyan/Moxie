@@ -2,7 +2,13 @@ import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags } from "@lezer/highlight";
 import { Extension } from "@codemirror/state";
 
+/**
+ * 书写面配色：正文语法走"纸墨"色板（对齐 TizuMark 渲染规格——
+ * 标题近黑分级、列表符号中性灰、链接 accent 无下划线），
+ * 代码编辑器色板（--syn-*）只服务于围栏代码与降级源码模式。
+ */
 const lacHighlightStyle = HighlightStyle.define([
+  // —— 代码（围栏内嵌语言 / 降级源码模式） ——
   {
     tag: [tags.keyword, tags.controlKeyword, tags.moduleKeyword, tags.operatorKeyword],
     color: "var(--syn-keyword)",
@@ -33,18 +39,6 @@ const lacHighlightStyle = HighlightStyle.define([
     color: "var(--syn-property)",
   },
   {
-    tag: [tags.heading, tags.heading1, tags.heading2, tags.heading3, tags.heading4, tags.heading5, tags.heading6],
-    color: "var(--syn-heading)",
-    fontWeight: "600",
-  },
-  { tag: tags.emphasis, fontStyle: "italic" },
-  { tag: tags.strong, fontWeight: "700" },
-  {
-    tag: tags.link,
-    color: "var(--syn-link)",
-    textDecoration: "underline",
-  },
-  {
     tag: [tags.processingInstruction, tags.meta, tags.annotation],
     color: "var(--syn-meta)",
   },
@@ -52,13 +46,89 @@ const lacHighlightStyle = HighlightStyle.define([
     tag: [tags.operator, tags.punctuation, tags.bracket, tags.separator],
     color: "var(--syn-punct)",
   },
+
+  // —— Markdown 书写排版（校样样张分级：h1 2.4 丝线 / h2 1.6 / h3 1.25 / h4 1.0 /
+  //    h5 0.875 / h6 0.8125 转灰；行级留白与边框在 app.css 的 md-h* 行装饰） ——
   {
-    tag: [tags.list],
-    color: "var(--syn-keyword)",
+    tag: tags.heading1,
+    color: "var(--lac-text)",
+    fontWeight: "700",
+    fontSize: "2.4em",
   },
   {
-    tag: [tags.quote],
-    color: "var(--syn-comment)",
+    tag: tags.heading2,
+    color: "var(--lac-text)",
+    fontWeight: "650",
+    fontSize: "1.6em",
+  },
+  {
+    tag: tags.heading3,
+    color: "var(--lac-text)",
+    fontWeight: "650",
+    fontSize: "1.25em",
+  },
+  {
+    tag: tags.heading4,
+    color: "var(--lac-text)",
+    fontWeight: "700",
+    fontSize: "1em",
+  },
+  {
+    tag: tags.heading5,
+    color: "var(--lac-text-secondary)",
+    fontWeight: "600",
+    fontSize: "0.875em",
+  },
+  {
+    tag: tags.heading6,
+    color: "var(--lac-text-secondary)",
+    fontWeight: "600",
+    fontSize: "0.8125em",
+  },
+  {
+    tag: tags.heading,
+    color: "var(--lac-text)",
+    fontWeight: "700",
+  },
+  { tag: tags.emphasis, fontStyle: "italic" },
+  { tag: tags.strong, fontWeight: "700" },
+  {
+    tag: tags.strikethrough,
+    textDecoration: "line-through",
+    color: "var(--lac-text-secondary)",
+  },
+  {
+    // 校样样张链接：墨字 + 校对红下划线（hover 语义交给渲染视图）
+    tag: tags.link,
+    color: "var(--lac-text)",
+    textDecoration: "underline",
+    textDecorationColor: "var(--lac-accent)",
+    textUnderlineOffset: "3px",
+  },
+  {
+    tag: tags.url,
+    color: "var(--lac-text)",
+    textDecoration: "underline",
+    textDecorationColor: "var(--lac-accent)",
+    textUnderlineOffset: "3px",
+  },
+  // 注意：不要给 tags.list 上色——@lezer/markdown 把该 tag 打在整个列表子树
+  // （"OrderedList/... BulletList/..."），映射成灰色会把列表正文全部染灰；
+  // 列表符号的中性灰由 livePreview 的 .md-bullet widget 自己负责。
+  {
+    tag: tags.quote,
+    color: "var(--lac-text-secondary)",
+  },
+  // 行内代码：等宽 0.88em + 内嵌底色圆角片（TizuMark code 规格）
+  {
+    tag: tags.monospace,
+    fontFamily: "var(--font-mono)",
+    fontSize: "0.88em",
+    color: "var(--lac-text)",
+    backgroundColor: "var(--lac-bg-inset)",
+    border: "1px solid var(--lac-border)",
+    borderRadius: "4px",
+    padding: "0 5px",
   },
 ]);
 

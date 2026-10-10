@@ -66,13 +66,14 @@
   cursor: default;
 }
 
-/* 操作按钮：弹窗 / 查找 / 编解码共用一套。
+/* 操作按钮：弹窗 / 查找 / 编解码共用一套——校样样张描边风：
+   透明底 + line-strong 描边，悬停转校对红（描边/文字/淡红底）。
    弹窗内按钮走"强调档"（32px），与主窗口的 28px 档控件形成层级 */
 .modal-button,
 .modal-choice-button,
 .find-button {
-  border: 1px solid var(--lac-border);
-  background: var(--lac-button-bg);
+  border: 1px solid var(--lac-border-strong);
+  background: transparent;
   color: var(--lac-text);
   font-family: inherit;
   font-size: var(--fs-ui);
@@ -81,7 +82,8 @@
   padding: 0 14px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--anim-hover), filter var(--anim-hover);
+  transition: background var(--anim-hover), color var(--anim-hover),
+    border-color var(--anim-hover);
 }
 
 .modal-button,
@@ -92,7 +94,9 @@
 .modal-button:hover:not(:disabled),
 .modal-choice-button:hover:not(:disabled),
 .find-button:hover:not(:disabled) {
-  background: var(--lac-button-bg-hover);
+  border-color: var(--lac-accent);
+  color: var(--lac-accent);
+  background: var(--lac-accent-soft);
 }
 
 .modal-button:disabled,
@@ -102,21 +106,25 @@
   cursor: default;
 }
 
+/* 主按钮：墨底纸字（设计稿 .btn.primary），悬停转校对红 */
 .modal-button.prominent,
 .find-button.prominent {
-  background: var(--lac-accent);
-  border-color: transparent;
-  color: var(--lac-accent-contrast);
+  background: var(--lac-text);
+  border-color: var(--lac-text);
+  color: var(--lac-bg);
 }
 
 .modal-button.prominent:hover:not(:disabled),
 .find-button.prominent:hover:not(:disabled) {
-  background: var(--lac-accent-hover);
+  background: var(--lac-accent);
+  border-color: var(--lac-accent);
+  color: var(--lac-accent-contrast);
 }
 
 .modal-button.prominent:active:not(:disabled),
 .find-button.prominent:active:not(:disabled) {
   background: var(--lac-accent-active);
+  border-color: var(--lac-accent-active);
 }
 
 .modal-button.danger {
@@ -129,10 +137,11 @@
   filter: brightness(1.08);
 }
 
-/* 输入域：查找 / 提示框 / 下拉 / 编码文本域 */
+/* 输入域：查找 / 提示框 / 下拉 / 编码文本域 / 设置输入框 */
 .find-grid input,
 .prompt-input,
 .settings-select,
+.settings-input,
 .codec-text {
   border: 1px solid var(--lac-border);
   background: var(--lac-bg);
@@ -144,6 +153,7 @@
 .find-grid input:focus-visible,
 .prompt-input:focus-visible,
 .settings-select:focus-visible,
+.settings-input:focus-visible,
 .codec-text:focus-visible {
   outline: 2px solid var(--lac-accent);
   outline-offset: -1px;

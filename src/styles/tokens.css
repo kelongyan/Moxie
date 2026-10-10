@@ -1,63 +1,68 @@
-/* 设计令牌 v3：层次靠明度（chrome < canvas < surface），分隔靠留白与发丝线，尺度对齐 Windows px */
+/* 设计令牌 v5：「校样样张」白蓝配色（docs/UI重构方案书.md 变更记录 v10）。
+   蓝墨 / 纸白 / 高亮黄三色基因；纸面层次（chrome=面白、画布=冷纸灰）不变；
+   令牌名保持 --lac-* 体系不变，仅换值——书写面、chrome、导出（collectPreviewTokens）
+   三侧自动跟随。语法高亮 --syn-* 以蓝墨为锚降饱和；danger 与 callout 语义色保持不变。 */
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  /* 表面：chrome（顶栏/状态栏）/ 内容面 / 侧栏与画布 / 浮层 / 内嵌 / 遮罩 */
-  --lac-bg-chrome: #ececee;
-  --lac-bg: #ffffff;
-  --lac-bg-sidebar: #f4f4f5;
+  /* 表面：顶栏/状态栏=面白，画布=冷纸灰（蓝调），侧栏与画布同纸（发丝线分隔），浮层=白卡片 */
+  --lac-bg-chrome: #ffffff;
+  --lac-bg: #f4f6f9;
+  --lac-bg-sidebar: #f4f6f9;
   --lac-bg-elevated: #ffffff;
-  --lac-bg-inset: #f3f3f5;
-  --lac-overlay: rgba(20, 22, 28, 0.32);
+  --lac-bg-inset: #eceff4;
+  --lac-overlay: rgba(0, 0, 0, 0.32);
 
-  /* 文本三级（三级灰在浅底 ≥ 4.5:1，承担副标题/区块标题/状态栏） */
-  --lac-text: #1a1b1f;
-  --lac-text-secondary: #5c6068;
-  --lac-text-tertiary: #6b6e76;
+  /* 文本三级：纯黑 / mute / 辅助灰（蓝灰调，三级在浅底 ≥ 4:1） */
+  --lac-text: #000000;
+  --lac-text-secondary: #64748b;
+  --lac-text-tertiary: #5d7089;
 
-  /* 分隔（发丝线，只在必要时出现） */
-  --lac-border: #e4e5e8;
-  --lac-border-strong: #d2d4d9;
+  /* 分隔（发丝线） */
+  --lac-border: #d6dce4;
+  --lac-border-strong: #bfc9d6;
 
-  /* 交互明度三态 */
-  --lac-hover: rgba(23, 24, 28, 0.05);
-  --lac-pressed: rgba(23, 24, 28, 0.1);
-  --lac-selected: rgba(23, 24, 28, 0.12);
-  --lac-button-bg: rgba(23, 24, 28, 0.04);
-  --lac-button-bg-hover: rgba(23, 24, 28, 0.08);
+  /* 交互明度三态（中性，锚定纯黑） */
+  --lac-hover: rgba(0, 0, 0, 0.05);
+  --lac-pressed: rgba(0, 0, 0, 0.1);
+  --lac-selected: rgba(0, 0, 0, 0.12);
+  --lac-button-bg: rgba(0, 0, 0, 0.04);
+  --lac-button-bg-hover: rgba(0, 0, 0, 0.08);
 
-  --lac-accent: #4a52a3;
-  --lac-accent-hover: #565eb5;
-  --lac-accent-active: #3f4691;
-  --lac-accent-soft: rgba(74, 82, 163, 0.1);
-  --lac-accent-softer: rgba(74, 82, 163, 0.055);
+  /* 蓝墨（品牌强调，白底对比 5.0:1） */
+  --lac-accent: #2b6cb0;
+  --lac-accent-hover: #3182ce;
+  --lac-accent-active: #2c5282;
+  --lac-accent-soft: rgba(43, 108, 176, 0.08);
+  --lac-accent-softer: rgba(43, 108, 176, 0.05);
   --lac-accent-contrast: #ffffff;
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
-  /* 编辑器状态色 */
-  --lac-current-line: rgba(23, 24, 28, 0.035);
-  --lac-delimiter-match: rgba(74, 82, 163, 0.14);
-  --lac-selection: rgba(74, 82, 163, 0.18);
+  /* 编辑器状态色：选区淡蓝（钢笔墨水感），查找命中保留琥珀与 mark 黄区分 */
+  --lac-current-line: rgba(0, 0, 0, 0.035);
+  --lac-delimiter-match: rgba(43, 108, 176, 0.14);
+  --lac-selection: rgba(43, 108, 176, 0.16);
   --lac-find-match: rgba(255, 166, 87, 0.28);
 
   --lac-tab-selected-bg: #ffffff;
-  --lac-preview-shadow: rgba(16, 18, 24, 0.1);
+  --lac-preview-shadow: rgba(0, 0, 0, 0.1);
 
-  --syn-keyword: #6d5bd0;
-  --syn-string: #1a7f37;
-  --syn-number: #b25e09;
-  --syn-comment: #6e7781;
-  --syn-function: #0550ae;
-  --syn-type: #953800;
-  --syn-property: #0550ae;
-  --syn-heading: #4a52a3;
-  --syn-meta: #6d5bd0;
-  --syn-punct: #6b7078;
-  --syn-link: #0969da;
+  /* 语法高亮（以蓝墨为锚降饱和：keyword 深一档、type 转深青、meta 转雾紫；heading 随 accent 蓝） */
+  --syn-keyword: #2e629e;
+  --syn-string: #4a7a52;
+  --syn-number: #a8722c;
+  --syn-comment: #78859a;
+  --syn-function: #46688c;
+  --syn-type: #1a6e7e;
+  --syn-property: #46688c;
+  --syn-heading: #2b6cb0;
+  --syn-meta: #825a9e;
+  --syn-punct: #6e7681;
+  --syn-link: #46688c;
 
-  /* 语义色（≥4.5:1，小号文字可读） */
+  /* 语义色（≥4.5:1，小号文字可读；success/warning/danger 不变，danger 红与蓝 accent 语义分离） */
   --lac-success: #177a3d;
   --lac-warning: #96590a;
   --lac-danger: #c0392c;
@@ -66,39 +71,43 @@
   --lac-warning-soft: rgba(150, 89, 10, 0.12);
   --lac-danger-soft: rgba(192, 57, 44, 0.1);
 
-  /* Callout 五色（RGB 三元组，供预览 callout 渐变/描边 color-mix 使用；TizuMark 复刻） */
+  /* Callout 五色（RGB 三元组，供预览 callout 渐变/描边 color-mix 使用；独立于 accent） */
   --lac-alert-note: 74, 82, 163;
   --lac-alert-tip: 23, 122, 61;
   --lac-alert-important: 124, 58, 237;
   --lac-alert-warning: 150, 89, 10;
   --lac-alert-caution: 192, 57, 44;
 
-  /* 标题色（h2 专用略柔主色，TizuMark heading-h2-color 对应） */
-  --lac-heading-2: #26262a;
+  /* 标题色（h2 与墨同色，TizuMark heading-h2-color 对应） */
+  --lac-heading-2: #000000;
+
+  /* 荧光标记（==mark==，荧光黄与蓝墨互补；阶段 3 启用书写面装饰） */
+  --lac-mark-bg: #ffe08a;
+  --lac-mark-fg: #000000;
 
   /* 阴影：发丝线 + 柔和投影（不用实色描边，避免"到处是框"） */
-  --sh-1: 0 0 0 1px rgba(16, 18, 24, 0.05), 0 1px 2px rgba(16, 18, 24, 0.05);
-  --sh-2: 0 0 0 1px rgba(16, 18, 24, 0.06), 0 2px 6px rgba(16, 18, 24, 0.06),
-    0 10px 28px rgba(16, 18, 24, 0.12);
-  --sh-3: 0 0 0 1px rgba(16, 18, 24, 0.07), 0 20px 48px rgba(16, 18, 24, 0.2);
+  --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.12);
+  --sh-3: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 20px 48px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --lac-bg-chrome: #141416;
-  --lac-bg: #1c1c1f;
-  --lac-bg-sidebar: #171719;
-  --lac-bg-elevated: #242428;
-  --lac-bg-inset: #17181c;
+  --lac-bg-chrome: #1b2027;
+  --lac-bg: #14181e;
+  --lac-bg-sidebar: #14181e;
+  --lac-bg-elevated: #212831;
+  --lac-bg-inset: rgba(255, 255, 255, 0.07);
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
-  --lac-text: #e9eaee;
-  --lac-text-secondary: #a4a8b2;
-  --lac-text-tertiary: #83878f;
+  --lac-text: #e2e8f0;
+  --lac-text-secondary: #94a3b8;
+  --lac-text-tertiary: #7c8aa0;
 
-  --lac-border: #2e3037;
-  --lac-border-strong: #3d3f47;
+  --lac-border: #2a3542;
+  --lac-border-strong: #3c4a5c;
 
   --lac-hover: rgba(255, 255, 255, 0.06);
   --lac-pressed: rgba(255, 255, 255, 0.11);
@@ -106,32 +115,34 @@
   --lac-button-bg: rgba(255, 255, 255, 0.05);
   --lac-button-bg-hover: rgba(255, 255, 255, 0.1);
 
-  --lac-accent: #96a0f5;
-  --lac-accent-hover: #a8b1f7;
-  --lac-accent-active: #8790ee;
-  --lac-accent-soft: rgba(150, 160, 245, 0.16);
-  --lac-accent-softer: rgba(150, 160, 245, 0.09);
-  --lac-accent-contrast: #14151d;
+  /* 蓝墨（暗色成对，对暗底对比 7.8:1） */
+  --lac-accent: #63b3ed;
+  --lac-accent-hover: #90cdf4;
+  --lac-accent-active: #4299e1;
+  --lac-accent-soft: rgba(99, 179, 237, 0.16);
+  --lac-accent-softer: rgba(99, 179, 237, 0.09);
+  --lac-accent-contrast: #0f1d30;
+  --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
   --lac-current-line: rgba(255, 255, 255, 0.045);
-  --lac-delimiter-match: rgba(150, 160, 245, 0.24);
-  --lac-selection: rgba(150, 160, 245, 0.24);
+  --lac-delimiter-match: rgba(99, 179, 237, 0.24);
+  --lac-selection: rgba(99, 179, 237, 0.22);
   --lac-find-match: rgba(255, 166, 87, 0.22);
 
-  --lac-tab-selected-bg: #242428;
+  --lac-tab-selected-bg: #1b2027;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
-  --syn-keyword: #a5b4fc;
-  --syn-string: #8fd6a0;
-  --syn-number: #ffa657;
-  --syn-comment: #7d838d;
-  --syn-function: #79c0ff;
-  --syn-type: #ffa657;
-  --syn-property: #79c0ff;
-  --syn-heading: #a5b4fc;
-  --syn-meta: #a5b4fc;
-  --syn-punct: #9aa0ab;
-  --syn-link: #58a6ff;
+  --syn-keyword: #8db5e3;
+  --syn-string: #8fc49e;
+  --syn-number: #d6a65e;
+  --syn-comment: #8494aa;
+  --syn-function: #85a8c8;
+  --syn-type: #74c7d8;
+  --syn-property: #85a8c8;
+  --syn-heading: #63b3ed;
+  --syn-meta: #c4a5e0;
+  --syn-punct: #9aa8ba;
+  --syn-link: #85a8c8;
 
   --lac-success: #5cd68a;
   --lac-warning: #e3b341;
@@ -141,7 +152,7 @@
   --lac-warning-soft: rgba(227, 179, 65, 0.12);
   --lac-danger-soft: rgba(255, 123, 114, 0.12);
 
-  /* Callout 五色（深色成对） */
+  /* Callout 五色（深色成对，独立于 accent） */
   --lac-alert-note: 150, 160, 245;
   --lac-alert-tip: 92, 214, 138;
   --lac-alert-important: 167, 139, 250;
@@ -149,7 +160,11 @@
   --lac-alert-caution: 255, 123, 114;
 
   /* 标题色（深色成对） */
-  --lac-heading-2: #c6c8d2;
+  --lac-heading-2: #e2e8f0;
+
+  /* 荧光标记（深色成对） */
+  --lac-mark-bg: #ffd874;
+  --lac-mark-fg: #2a2410;
 
   --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
   --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35),
@@ -161,8 +176,8 @@
   /* 结构尺寸：顶栏与标签合并为一行，状态栏减薄 */
   --lac-window-min-w: 900px;
   --lac-window-min-h: 560px;
-  --lac-header-height: 44px;
-  --lac-statusbar-height: 22px;
+  --lac-header-height: 38px;
+  --lac-statusbar-height: 26px;
   --lac-sidebar-width: 232px;
   --lac-sidebar-row-height: 32px;
   --lac-section-header-height: 28px;
@@ -207,9 +222,11 @@
 
   /* 字号 · 内容轨道（16px 基准，阶段 3 起接管编辑器与预览） */
   --fs-content: 16px;
-  --fs-content-line: 1.75;
+  --fs-content-line: 1.7;
   --fs-mono: 13.5px;
   --measure: min(74ch, 100%);
+  /* 书写面（所见即所得）正文区限宽：居中显示，两端留白（上限 960px，窄窗口收缩到 94%） */
+  --measure-writing: min(960px, 94%);
 
   /* 旧名兼容（逐阶段迁移完成后删除） */
   --fs-11: var(--fs-meta);
@@ -220,7 +237,6 @@
   --fs-editor: 16px; /* 与 --fs-content 同号，由设置页字号 pt 换算覆盖，此值仅兜底 */
   --fs-window-title: var(--fs-ui);
   --fs-dialog-title: var(--fs-title);
-  --fs-settings-title: 16px; /* 设置页标题（独立窗口，比主窗口 UI 大一档） */
   --fs-body: var(--fs-ui);
   --fs-small: var(--fs-caption);
   --fs-badge: var(--fs-meta);

@@ -5,6 +5,7 @@ export interface MenuItem {
   label: string;
   danger?: boolean;
   checked?: boolean;
+  disabled?: boolean;
   shortcut?: string;
   separatorBefore?: boolean;
   onClick: () => void;
@@ -75,6 +76,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
               itemRefs.current[index] = el;
             }}
             className={item.danger ? "danger" : undefined}
+            disabled={item.disabled}
             onClick={() => {
               onClose();
               item.onClick();

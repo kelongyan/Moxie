@@ -12,6 +12,8 @@ interface FindState {
   replaceText: string;
   caseSensitive: boolean;
   interpretEscapes: boolean;
+  useRegex: boolean;
+  wholeWord: boolean;
   status: string;
   hasDocument: boolean;
 }
@@ -26,6 +28,8 @@ export function FindReplaceWindow() {
       replaceText: "",
       caseSensitive: false,
       interpretEscapes: true,
+      useRegex: false,
+      wholeWord: false,
       status: "",
       hasDocument: true,
     };
@@ -64,6 +68,8 @@ export function FindReplaceWindow() {
       replaceText: merged.replaceText,
       caseSensitive: merged.caseSensitive,
       interpretEscapes: merged.interpretEscapes,
+      useRegex: merged.useRegex,
+      wholeWord: merged.wholeWord,
     });
   }, []);
 
@@ -84,6 +90,8 @@ export function FindReplaceWindow() {
     replaceText: stateRef.current.replaceText,
     caseSensitive: stateRef.current.caseSensitive,
     interpretEscapes: stateRef.current.interpretEscapes,
+    useRegex: stateRef.current.useRegex,
+    wholeWord: stateRef.current.wholeWord,
     mode,
   });
 
@@ -176,6 +184,22 @@ export function FindReplaceWindow() {
             onChange={(e) => update({ caseSensitive: e.target.checked })}
           />
           区分大小写
+        </label>
+        <label className="check-label">
+          <input
+            type="checkbox"
+            checked={state.useRegex}
+            onChange={(e) => update({ useRegex: e.target.checked })}
+          />
+          正则表达式
+        </label>
+        <label className="check-label">
+          <input
+            type="checkbox"
+            checked={state.wholeWord}
+            onChange={(e) => update({ wholeWord: e.target.checked })}
+          />
+          全词匹配
         </label>
       </div>
 

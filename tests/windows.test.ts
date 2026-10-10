@@ -21,7 +21,6 @@ function makeDoc(partial: Partial<EditorDocument>): EditorDocument {
     id: "doc-1",
     name: "未命名",
     path: null,
-    language: "plaintext",
     text: "",
     savedText: "",
     isDirty: false,
@@ -33,7 +32,6 @@ function makeDoc(partial: Partial<EditorDocument>): EditorDocument {
     fileIdentity: null,
     fileRevision: null,
     ioState: "idle",
-    previewVisible: false,
     perfTier: "standard",
     perfBytes: 0,
     featureOverrides: {},
@@ -44,23 +42,19 @@ function makeDoc(partial: Partial<EditorDocument>): EditorDocument {
 describe("snapshotDocument", () => {
   it("captures content and metadata for transfer", () => {
     const doc = makeDoc({
-      name: "a.txt",
-      path: "C:\\a.txt",
-      language: "markdown",
+      name: "a.md",
+      path: "C:\\a.md",
       isDirty: true,
       cursorLine: 3,
       cursorColumn: 5,
-      previewVisible: true,
     });
     const payload = snapshotDocument(doc, "hello");
     expect(payload.content).toBe("hello");
-    expect(payload.meta.name).toBe("a.txt");
-    expect(payload.meta.path).toBe("C:\\a.txt");
-    expect(payload.meta.language).toBe("markdown");
+    expect(payload.meta.name).toBe("a.md");
+    expect(payload.meta.path).toBe("C:\\a.md");
     expect(payload.meta.isDirty).toBe(true);
     expect(payload.meta.cursorLine).toBe(3);
     expect(payload.meta.cursorColumn).toBe(5);
-    expect(payload.meta.previewVisible).toBe(true);
   });
 
   it("preserves dirty flag so target keeps unsaved state", () => {

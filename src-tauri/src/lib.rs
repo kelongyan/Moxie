@@ -3,10 +3,12 @@ pub mod encodings;
 mod external;
 pub mod file_io;
 mod file_meta;
-pub mod json_format;
 mod recent;
 mod recovery;
 mod sidebar;
+mod timeline;
+mod tray;
+mod watcher;
 
 #[cfg(test)]
 pub(crate) mod testutil {
@@ -115,11 +117,21 @@ fn write_text_file(
         "crlf" => LineEnding::Crlf,
         _ => LineEnding::Lf,
     };
-    let converted = apply_line_ending(&text, ending);
+    let converted = apply_line_ending(&normalize_to_lf(&text), ending);
     let bytes = encodings::encode_strict(id, &converted).map_err(|e| match e {
         encodings::CodecError::Unrepresentable => "unrepresentable".to_string(),
         encodings::CodecError::DecodeFailed => "decode-failed".to_string(),
     })?;
+    file_io::write_bytes_atomic(&path, &bytes).map_err(|e| e.to_string())
+}
+
+/// base64 → 字节落盘（图片粘贴/拖拽），复用原子写并自动创建父目录
+#[command]
+fn write_file_base64(path: PathBuf, data_base64: String) -> Result<(), String> {
+    use base64::Engine;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64)
+        .map_err(|e| format!("invalid-base64: {e}"))?;
     file_io::write_bytes_atomic(&path, &bytes).map_err(|e| e.to_string())
 }
 
@@ -144,15 +156,6 @@ fn read_file_base64(path: PathBuf) -> Result<String, String> {
     use base64::Engine;
     let bytes = file_io::read_bytes(&path).map_err(|e| e.to_string())?;
     Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
-}
-
-#[command]
-fn json_format(text: String, mode: String) -> Result<String, String> {
-    let parsed_mode = match mode.as_str() {
-        "minify" => json_format::JsonMode::Minify,
-        _ => json_format::JsonMode::Pretty,
-    };
-    json_format::format_json(&text, parsed_mode)
 }
 
 #[command]
@@ -217,6 +220,26 @@ fn rename_file(from: PathBuf, to: PathBuf) -> Result<(), String> {
 }
 
 #[command]
+fn list_dir(path: PathBuf) -> Result<Vec<sidebar::DirEntryDto>, String> {
+    sidebar::list_dir(&path)
+}
+
+#[command]
+fn create_file(path: PathBuf) -> Result<(), String> {
+    sidebar::create_file(&path)
+}
+
+#[command]
+fn create_dir(path: PathBuf) -> Result<(), String> {
+    sidebar::create_dir(&path)
+}
+
+#[command]
+fn delete_path(path: PathBuf) -> Result<(), String> {
+    sidebar::delete_path(&path)
+}
+
+#[command]
 fn explorer_select(path: PathBuf) -> Result<(), String> {
     sidebar::reveal_in_explorer(&path)
 }
@@ -232,6 +255,57 @@ fn allow_asset_directory(app: tauri::AppHandle, path: PathBuf) -> Result<(), Str
     app.asset_protocol_scope()
         .allow_directory(&path, true)
         .map_err(|e| e.to_string())
+}
+
+/// 打开文档目录的外部修改监听（幂等，集合不变时不重建）
+#[command]
+fn fs_watch(app: tauri::AppHandle, dirs: Vec<String>) {
+    watcher::update_dirs(&app, dirs);
+}
+
+/// 托盘开关（设置页"关闭到托盘"切换；启动时按偏好恢复）
+#[command]
+fn tray_set_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    if enabled {
+        tray::build_tray(&app)
+    } else {
+        tray::destroy_tray();
+        Ok(())
+    }
+}
+
+/// 托盘"退出"：前端先保存工作区，再调本命令退出
+#[command]
+fn app_exit(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimelineEntryDto {
+    pub timestamp_ms: u64,
+    pub size: u64,
+}
+
+#[command]
+fn timeline_save(path: String, content: String) -> Result<(), String> {
+    timeline::save_snapshot(&path, &content)
+}
+
+#[command]
+fn timeline_list(path: String) -> Vec<TimelineEntryDto> {
+    timeline::list_snapshots(&path)
+        .into_iter()
+        .map(|e| TimelineEntryDto {
+            timestamp_ms: e.timestamp_ms,
+            size: e.size,
+        })
+        .collect()
+}
+
+#[command]
+fn timeline_read(path: String, timestamp_ms: u64) -> Result<String, String> {
+    timeline::read_snapshot(&path, timestamp_ms)
 }
 
 #[derive(serde::Serialize)]
@@ -296,6 +370,27 @@ pub struct WorkspaceSnapshotDto {
     pub docs: Vec<(String, String)>,
 }
 
+/// 从命令行参数筛出存在的 Markdown 文件（单实例二次启动 / 首次启动共用）
+fn markdown_paths_from_args(argv: &[String]) -> Vec<String> {
+    argv.iter()
+        .skip(1)
+        .filter(|arg| {
+            let lower = arg.to_lowercase();
+            ["md", "markdown", "mdown", "mkd", "mkdown"]
+                .iter()
+                .any(|ext| lower.rsplit('.').next() == Some(*ext))
+                && std::path::Path::new(arg).is_file()
+        })
+        .cloned()
+        .collect()
+}
+
+/// 首次启动的命令行文件参数（双击 .md 打开）
+#[command]
+fn launch_args() -> Vec<String> {
+    markdown_paths_from_args(&std::env::args().collect::<Vec<String>>())
+}
+
 #[command]
 fn workspace_load_and_consume() -> Option<WorkspaceSnapshotDto> {
     recovery::workspace_load_and_consume().map(|s| WorkspaceSnapshotDto {
@@ -306,15 +401,38 @@ fn workspace_load_and_consume() -> Option<WorkspaceSnapshotDto> {
 
 pub fn run() {
     tauri::Builder::default()
+        // 单实例必须最先注册：二次启动把文件参数转发给主窗口
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let paths = markdown_paths_from_args(&argv);
+            if !paths.is_empty() {
+                use tauri::Emitter;
+                let _ = app.emit_to("main", "open-files-request", paths);
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_autostart::init(
+            tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+            None,
+        ))
+        .setup(|app| {
+            // 上次开启过"关闭到托盘"则恢复托盘图标
+            if recent::load_preferences()
+                .get("isCloseToTray")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false)
+            {
+                let _ = tray::build_tray(app.handle());
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             read_text_file,
             read_text_file_with_encoding,
             write_text_file,
+            write_file_base64,
             get_file_identity,
             get_file_revision,
             read_file_base64,
-            json_format,
             codec_op,
             recent_list,
             recent_add,
@@ -326,6 +444,10 @@ pub fn run() {
             sidebar_load,
             sidebar_save,
             rename_file,
+            list_dir,
+            create_file,
+            create_dir,
+            delete_path,
             explorer_select,
             open_external,
             allow_asset_directory,
@@ -337,7 +459,14 @@ pub fn run() {
             recovery_cleanup,
             recovery_finish_cleanly,
             workspace_save,
-            workspace_load_and_consume
+            workspace_load_and_consume,
+            launch_args,
+            fs_watch,
+            tray_set_enabled,
+            app_exit,
+            timeline_save,
+            timeline_list,
+            timeline_read
         ])
         .run(tauri::generate_context!())
         .expect("error while running Moxie");

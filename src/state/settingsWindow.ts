@@ -10,8 +10,8 @@ export async function openSettingsWindow() {
   const win = new WebviewWindow("settings", {
     url,
     title: "设置",
-    width: 540,
-    height: 560,
+    width: 840,
+    height: 600,
     resizable: false,
     maximizable: false,
     minimizable: false,

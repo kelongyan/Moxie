@@ -34,13 +34,11 @@ export function snapshotDocument(doc: EditorDocument, text: string): DocTransfer
       docId: doc.id,
       name: doc.name,
       path: doc.path,
-      language: doc.language,
       encoding: doc.encoding,
       lineEnding: doc.lineEnding,
       isDirty: doc.isDirty,
       cursorLine: doc.cursorLine,
       cursorColumn: doc.cursorColumn,
-      previewVisible: doc.previewVisible,
       perfTier: doc.perfTier,
       perfBytes: doc.perfBytes,
     },
@@ -54,12 +52,10 @@ function importPayload(payload: DocTransferPayload) {
   const id = store.addRestored({
     name: meta.name ?? "未命名",
     path: meta.path ?? null,
-    language: meta.language ?? "plaintext",
     encoding: meta.encoding ?? "utf-8",
     lineEnding: meta.lineEnding ?? "lf",
     cursorLine: meta.cursorLine ?? 1,
     cursorColumn: meta.cursorColumn ?? 1,
-    previewVisible: meta.previewVisible ?? true,
     perfTier: meta.perfTier ?? "standard",
     perfBytes: meta.perfBytes ?? 0,
     text: payload.content,
@@ -111,6 +107,31 @@ export async function moveDocToNewWindow(docId: string): Promise<void> {
   useDocuments.getState().close(docId);
   if (useDocuments.getState().documents.length === 0) {
     useDocuments.getState().createUntitled();
+  }
+}
+
+/** 新建空白窗口（无文档，进欢迎页）；empty=1 跳过 spawn 握手立即渲染 */
+export async function createEmptyWindow(): Promise<void> {
+  const label = `${EDITOR_PREFIX}${Date.now().toString(36)}${Math.random()
+    .toString(36)
+    .slice(2, 6)}`;
+  const url = `${location.origin}${location.pathname}?view=main&empty=1`;
+  try {
+    const win = new WebviewWindow(label, {
+      url,
+      title: "Moxie",
+      width: 1120,
+      height: 720,
+      minWidth: 900,
+      minHeight: 560,
+      center: true,
+      decorations: false,
+    });
+    win.once("tauri://error", (event) => {
+      console.error("[empty-window] error:", label, event);
+    });
+  } catch (error) {
+    console.error("[empty-window] create threw:", label, error);
   }
 }
 
