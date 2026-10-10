@@ -210,13 +210,10 @@ function OutlineView({ activeId }: { activeId: string | null }) {
                 key={`${item.from}-${idx}`}
                 role="listitem"
                 className={`outline-node lvl-${item.level}` + (isActive ? " is-active" : "")}
-                style={{ paddingLeft: `${indentLevel * 14 + 10}px` }}
+                style={{ paddingLeft: `${indentLevel * 12 + 12}px` }}
                 onClick={() => jump(item)}
                 title={item.text}
               >
-                {/* 阶梯导引线指示 */}
-                {indentLevel > 0 && <span className="outline-guide" />}
-                <span className={`outline-tag lvl-${item.level}`}>H{item.level}</span>
                 <span className="outline-text">{item.text || "(空标题)"}</span>
               </button>
             );

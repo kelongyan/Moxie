@@ -176,7 +176,7 @@
   /* 结构尺寸：顶栏与标签合并为一行，状态栏减薄 */
   --lac-window-min-w: 900px;
   --lac-window-min-h: 560px;
-  --lac-header-height: 44px;
+  --lac-header-height: 38px;
   --lac-statusbar-height: 26px;
   --lac-sidebar-width: 232px;
   --lac-sidebar-row-height: 32px;

@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
-  ChevronDown,
   Copy,
   Download,
   Minus,
@@ -74,20 +73,20 @@ function WindowControls() {
   return (
     <div className="window-controls">
       <button aria-label="最小化" onClick={() => call("最小化", () => appWindow.minimize())}>
-        <Minus size={14} />
+        <Minus size={13} />
       </button>
       <button
         aria-label={maximized ? "向下还原" : "最大化"}
         onClick={() => call("最大化", () => appWindow.toggleMaximize())}
       >
-        {maximized ? <Copy size={12} /> : <Square size={12} />}
+        {maximized ? <Copy size={11} /> : <Square size={11} />}
       </button>
       <button
         className="close"
         aria-label="关闭"
         onClick={() => call("关闭", () => appWindow.close())}
       >
-        <X size={15} />
+        <X size={14} />
       </button>
     </div>
   );
@@ -252,57 +251,54 @@ export function TitleToolbar({
 
   return (
     <header className="title-toolbar" data-tauri-drag-region>
-      {/* 1. 左侧品牌标牌与侧栏折叠开关 */}
+      {/* 1. 左侧：极简侧栏折叠开关，紧凑自然 */}
       <div className="title-left-group" data-tauri-drag-region>
-        <div className="wordmark" data-tauri-drag-region aria-hidden="true" title="Moxie">
-          M
-        </div>
         <Tooltip label={sidebarPinned ? "收起侧栏" : "展开侧栏"} shortcut="Ctrl+Shift+B">
           <button
-            className={"tool-button sidebar-toggle-btn" + (sidebarPinned ? " active" : "")}
+            className={"tool-icon-btn" + (sidebarPinned ? " active" : "")}
             aria-label="显示/隐藏侧边栏"
             onClick={onSidebarToggle}
             onMouseEnter={onSidebarHoverStart}
             onMouseLeave={onSidebarHoverEnd}
           >
-            <PanelLeft size={15} />
+            <PanelLeft size={14} />
           </button>
         </Tooltip>
       </div>
 
-      {/* 2. 标签栏并入顶栏中段：占满中段弹性宽度 */}
+      {/* 2. 中段：标签栏弹性贯穿 */}
       {children}
 
-      {/* 3. 右侧操作集合：整合为现代「导出」下拉与「更多」菜单 */}
-      <div className="title-actions-group">
-        <button
-          className="header-action-pill export-pill"
-          aria-label="导出"
-          aria-haspopup="menu"
-          title="导出文档选项"
-          disabled={!hasDocument}
-          onClick={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setExportMenu({ x: rect.left, y: rect.bottom + 4 });
-          }}
-        >
-          <Download size={13} />
-          <span>导出</span>
-          <ChevronDown size={11} className="pill-chevron" />
-        </button>
+      {/* 3. 右侧：轻量图标操作组（导出 + 更多），对齐 Typora/Obsidian 极简范式 */}
+      <div className="title-actions-group" data-tauri-drag-region>
+        <Tooltip label="导出文档…">
+          <button
+            className="tool-icon-btn"
+            aria-label="导出"
+            aria-haspopup="menu"
+            disabled={!hasDocument}
+            onClick={(e) => {
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              setExportMenu({ x: rect.left, y: rect.bottom + 4 });
+            }}
+          >
+            <Download size={14} />
+          </button>
+        </Tooltip>
 
-        <button
-          className="tool-button more-btn"
-          aria-label="更多操作"
-          aria-haspopup="menu"
-          title="更多操作"
-          onClick={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setMoreMenu({ x: rect.left, y: rect.bottom + 4 });
-          }}
-        >
-          <MoreHorizontal size={15} />
-        </button>
+        <Tooltip label="更多选项">
+          <button
+            className="tool-icon-btn"
+            aria-label="更多操作"
+            aria-haspopup="menu"
+            onClick={(e) => {
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              setMoreMenu({ x: rect.left, y: rect.bottom + 4 });
+            }}
+          >
+            <MoreHorizontal size={14} />
+          </button>
+        </Tooltip>
       </div>
 
       {/* 4. 原生窗口控制按钮 */}
