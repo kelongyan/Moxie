@@ -633,6 +633,25 @@ class EmojiWidget extends WidgetType {
   }
 }
 
+/** ==高亮== → 荧光标记（mark 元素，光标进入回显原文） */
+class MarkWidget extends WidgetType {
+  constructor(readonly text: string) {
+    super();
+  }
+  eq(other: MarkWidget) {
+    return other.text === this.text;
+  }
+  toDOM() {
+    const el = document.createElement("mark");
+    el.className = "md-mark";
+    el.textContent = this.text;
+    return el;
+  }
+  ignoreEvent() {
+    return true;
+  }
+}
+
 class TaskWidget extends WidgetType {
   constructor(readonly checked: boolean) {
     super();
@@ -776,7 +795,9 @@ export function computeLiveRanges(
   /** 待渲染的顶层表格（光标不在其内），折叠间距算好后替换为 widget */
   const tables: TableModel[] = [];
   const blockKindOf = (name: string): BlockKind | null => {
-    if (/^(ATXHeading[1-6]|SetextHeading[12])$/.test(name)) return "heading";
+    // h1/h2 是大节标题（节间呼吸 48px），h3~h6 走普通小标题节奏
+    if (/^(ATXHeading[12]|SetextHeading[12])$/.test(name)) return "headingMajor";
+    if (/^ATXHeading[3-6]$/.test(name)) return "heading";
     if (name === "Paragraph") return "paragraph";
     if (name === "BulletList" || name === "OrderedList") return "list";
     if (name === "Blockquote") return "blockquote";
@@ -1170,8 +1191,28 @@ export function computeLiveRanges(
       }
     }
   }
+  // —— ==高亮==:荧光标记（语法树不认识,单独扫描,与公式/emoji 同一禁区） ——
+  const markRanges: Range<Decoration>[] = [];
+  for (let ln = 1; ln <= doc.lines; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    const text = line.text;
+    // 内容两端不留空白、不含 =（==a==b== 场景放弃）、不跨行
+    const re = /(^|[^\\])==([^=\s](?:[^=\n]*[^=\s])?)==/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      const absFrom = line.from + m.index + m[1].length;
+      const absTo = absFrom + m[0].length - m[1].length;
+      if (inExcluded(absFrom)) continue;
+      if (!selectionTouches(state, absFrom, absTo)) {
+        markRanges.push(
+          Decoration.replace({ widget: new MarkWidget(m[2]) }).range(absFrom, absTo)
+        );
+      }
+    }
+  }
   // 与其他替换/隐藏区间（强调标记、图片、fence 标签等）重叠的公式放弃渲染
-  if (mathRanges.length > 0 || emojiRanges.length > 0) {
+  if (mathRanges.length > 0 || emojiRanges.length > 0 || markRanges.length > 0) {
     const taken = [...ranges].sort((a, b) => a.from - b.from);
     const overlaps = (from: number, to: number): boolean => {
       for (const r of taken) {
@@ -1181,7 +1222,7 @@ export function computeLiveRanges(
       }
       return false;
     };
-    for (const r of [...mathRanges, ...emojiRanges]) {
+    for (const r of [...mathRanges, ...emojiRanges, ...markRanges]) {
       if (!overlaps(r.from, r.to)) ranges.push(r);
     }
   }

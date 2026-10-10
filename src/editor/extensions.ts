@@ -3,6 +3,7 @@ import {
   Extension,
   Prec,
 } from "@codemirror/state";
+import { CONTENT_LINE_HEIGHT } from "../preview/typography";
 import {
   EditorView,
   drawSelection,
@@ -183,7 +184,7 @@ function linkClickExtension(onOpenLink: (url: string) => void): Extension {
 
 export function buildEditorState(options: EditorOptions): EditorState {
   const fontSizePx = options.fontSizePt * PT_TO_PX;
-  // 行距偏好以默认 4pt（= TizuMark 1.7 行高）为零点，仅把偏离量叠加到基准 1.7em
+  // 行距偏好以默认 4pt（= 校样样张 1.75 行高）为零点，仅把偏离量叠加到基准行高上
   const lineSpacingPx = (options.lineSpacingPt - 4) * PT_TO_PX;
   const tabWidth = options.indentUnitText === "\t" ? 4 : options.indentUnitText.length;
   // 书写面 vs 源码视图（大文件降级即时渲染时回到源码形态）
@@ -199,8 +200,9 @@ export function buildEditorState(options: EditorOptions): EditorState {
       },
       ".cm-scroller": {
         fontFamily: editable ? "var(--font-ui)" : "var(--font-mono)",
-        // 基准 1.7em（TizuMark 正文行高）+ 行距偏离量；默认 lineSpacingPt=4 → 恰好 1.7
-        lineHeight: `calc(1.7em + ${lineSpacingPx}px)`,
+        // 基准行高（typography.CONTENT_LINE_HEIGHT，与导出 renderShell 同源）+ 行距偏离量；
+        // 默认 lineSpacingPt=4 → 恰好 1.75em（16px 正文 = 28px 行盒）
+        lineHeight: `calc(${CONTENT_LINE_HEIGHT}em + ${lineSpacingPx}px)`,
         // 中文排版增强，与导出 renderShell 对齐（markdown.ts）：全角标点挤压、
         // 等宽数字、kern/liga；旧 WebView2 不识别时无害回落
         textSpacingTrim: "space-first",

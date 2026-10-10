@@ -42,7 +42,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--lac-border-strong) 55%, var(--lac-text));
+  background: var(--lac-accent);
   background-clip: content-box;
 }
 
@@ -99,10 +99,18 @@ body {
   animation: lac-fade-in var(--dur-3) var(--ease-out);
 }
 
+/* 欢迎屏 wordmark：顶栏 .wordmark 的放大版（描边方块 + 校对红等宽 M） */
 .editor-empty-brand {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
+  width: 64px;
+  height: 64px;
+  border: 1.5px solid var(--lac-border-strong);
+  border-radius: 14px;
+  color: var(--lac-accent);
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
   user-select: none;
 }
 
@@ -228,6 +236,22 @@ body {
   padding: 0 0 0 10px;
   background: var(--lac-bg-chrome);
   border-bottom: 1px solid var(--lac-border);
+}
+
+/* 版权页式 wordmark：描边方块 + 校对红等宽字符（设计稿 .wordmark 形态） */
+.wordmark {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--lac-border-strong);
+  border-radius: 7px;
+  color: var(--lac-accent);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  user-select: none;
 }
 
 .title-toolbar .spacer {
@@ -1519,28 +1543,27 @@ body {
 }
 
 .cm-host .cm-line.md-h1 {
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--lac-border-strong);
-  line-height: 1.3;
-}
-.cm-host .cm-line.md-h2 {
-  padding-bottom: 8px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--lac-border);
+  line-height: 1.2;
+}
+/* h2 无边框（校样样张：丝线是 h1 专属），下间距由折叠间距（headingMajor.bottom 16）承载 */
+.cm-host .cm-line.md-h2 {
   line-height: 1.3;
 }
+/* h3~h6 行高继承正文基准（1.75em），与导出侧规格一致 */
 .cm-host .cm-line.md-h3,
 .cm-host .cm-line.md-h4,
 .cm-host .cm-line.md-h5,
 .cm-host .cm-line.md-h6 {
-  line-height: 1.3;
+  line-height: inherit;
 }
 
 .cm-host .cm-line.md-quote {
   color: var(--lac-text-secondary);
-  border-left: 4px solid var(--lac-accent);
-  background: var(--lac-accent-softer);
-  padding-left: 20px;
-  padding-right: 20px;
+  border-left: 3px solid var(--lac-accent);
+  padding-left: 16px;
+  padding-right: 16px;
 }
 /* 引用首/末行补内部 12px（对齐 TizuMark blockquote padding:12px 20px）；外部间距读 var */
 .cm-host .cm-line.md-quote-first {
@@ -1572,13 +1595,16 @@ body {
   background: color-mix(in srgb, rgb(var(--lac-alert-caution)) 8%, transparent);
 }
 
+/* 代码块「打纸稿」：与行内代码同底融入纸面，整块 1px 边框圆角 8（边框逐行相接） */
 .cm-host .cm-line.md-code-block {
   font-family: var(--font-mono);
   font-size: 0.9em;
   line-height: 1.6;
   background: var(--lac-bg-inset);
-  padding-left: 16px;
-  padding-right: 16px;
+  border-left: 1px solid var(--lac-border);
+  border-right: 1px solid var(--lac-border);
+  padding-left: 32px;
+  padding-right: 32px;
 }
 
 /* fence 行充当代码块卡片的头部/尾部；光标进入代码块时类被移除，还原完整高度 */
@@ -1587,16 +1613,21 @@ body {
   font-size: 11px;
   line-height: 1.4;
   background: var(--lac-bg-inset);
-  padding-left: 16px;
-  padding-right: 16px;
+  border-left: 1px solid var(--lac-border);
+  border-right: 1px solid var(--lac-border);
+  position: relative;
+  padding-left: 32px;
+  padding-right: 32px;
 }
 .cm-host .cm-line.md-code-fence-open {
-  padding-top: calc(var(--md-space-before, 0px) + 16px);
-  border-radius: 6px 6px 0 0;
+  padding-top: calc(var(--md-space-before, 0px) + 24px);
+  border-top: 1px solid var(--lac-border);
+  border-radius: 8px 8px 0 0;
 }
 .cm-host .cm-line.md-code-fence-close {
-  padding-bottom: 16px;
-  border-radius: 0 0 6px 6px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--lac-border);
+  border-radius: 0 0 8px 8px;
 }
 
 /* 列表项间距：项间 4px（列表末项除外，末项下方交给列表块间距） */
@@ -1619,35 +1650,50 @@ body {
   min-width: 0.9em;
 }
 
+/* 语言标签：fence 行右上角的等宽小字标注（设计稿 pre[data-lang] 形态） */
 .md-lang-tag {
-  display: inline-block;
-  padding: 0 6px;
-  border-radius: var(--radius-xs);
+  position: absolute;
+  top: 12px;
+  right: 16px;
   color: var(--lac-text-tertiary);
   font-family: var(--font-mono);
   font-size: 10px;
-  line-height: 16px;
-  letter-spacing: 0.02em;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+/* ==高亮== 荧光标记（MarkWidget 的渲染态；光标进入回显 ==原文==） */
+.md-mark {
+  background: var(--lac-mark-bg);
+  color: var(--lac-mark-fg);
+  padding: 1px 4px;
+  border-radius: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* ---------- 渲染态表格 widget（livePreview） ----------
-   GitHub 风全边框 + 斑马纹，对齐导出侧；单元格内是行内 markdown 渲染结果。
-   点击单元格 → 光标落到对应源码位置（整表还原源码编辑） */
+   校样样张「简约灰」：圆角外框容器、无竖线、灰表头、斑马纹、发丝行线；
+   单元格内是行内 markdown 渲染结果。点击单元格 → 光标落到对应源码位置
+   （整表还原源码编辑） */
 .md-table-wrap {
   display: block;
   max-width: 100%;
   overflow-x: auto;
+  border: 1px solid var(--lac-border);
+  border-radius: 10px;
 }
 
 .md-table {
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
 }
 
 .md-table th,
 .md-table td {
-  border: 1px solid var(--lac-border);
-  padding: 5px 12px;
+  padding: 12px 16px;
   text-align: left;
   vertical-align: top;
   position: relative;
@@ -1664,14 +1710,43 @@ body {
   margin-bottom: 0;
 }
 
-.md-table th {
-  font-weight: 700;
-  border-bottom: 2px solid var(--lac-border-strong);
-  background: var(--lac-bg-inset);
+.md-table td {
+  border-bottom: 1px solid var(--lac-border);
+  line-height: 1.65;
+}
+
+.md-table tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .md-table tbody tr:nth-child(2n) {
+  background: color-mix(in srgb, var(--lac-text) 3%, transparent);
+}
+
+.md-table tbody tr:hover {
+  background: var(--lac-hover);
+}
+
+.md-table th {
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: var(--lac-text-secondary);
   background: var(--lac-bg-inset);
+  border-bottom: 1px solid var(--lac-border-strong);
+}
+
+.md-table th:first-child {
+  border-top-left-radius: 9px;
+}
+.md-table th:last-child {
+  border-top-right-radius: 9px;
+}
+.md-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 9px;
+}
+.md-table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 9px;
 }
 
 /* 列头手柄：悬停列头出现，点击弹列操作菜单 */
@@ -1726,7 +1801,7 @@ body {
   border: none;
   outline: none;
   resize: none;
-  padding: 5px 12px;
+  padding: 12px 16px;
   font: inherit;
   line-height: inherit;
   color: var(--lac-text);
@@ -1775,7 +1850,8 @@ body {
   max-width: 100%;
   height: auto;
   max-height: 480px;
-  border-radius: 4px;
+  border: 1px solid var(--lac-border);
+  border-radius: 8px;
 }
 
 .md-image.broken {
@@ -1787,15 +1863,24 @@ body {
   white-space: nowrap;
 }
 
-/* TizuMark hr：透明渐入渐出的发丝线；上下 24px 留白由相邻块折叠间距提供 */
+/* 校样样张 hr：发丝线 + 中心校对红圆点；上下留白由相邻块折叠间距提供 */
 .md-hr {
   display: block;
+  position: relative;
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--lac-border-strong), transparent);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 1px;
+  background: var(--lac-border);
+}
+.md-hr::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--lac-accent);
 }
 
 /* hr 行行高归零，使发丝线的上下间距完全由 --md-space-before / 下一块决定 */

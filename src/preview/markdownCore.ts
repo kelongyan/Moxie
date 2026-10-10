@@ -3,6 +3,7 @@ import abbr from "markdown-it-abbr";
 import deflist from "markdown-it-deflist";
 import { full as emoji } from "markdown-it-emoji";
 import footnote from "markdown-it-footnote";
+import mark from "markdown-it-mark";
 import sub from "markdown-it-sub";
 import sup from "markdown-it-sup";
 import taskLists from "markdown-it-task-lists";
@@ -18,10 +19,21 @@ md.use(taskLists, { enabled: true });
 md.use(footnote);
 md.use(deflist);
 md.use(abbr);
+md.use(mark);
 md.use(sub);
 md.use(sup);
 md.use(emoji);
 md.use(mathPlugin);
+
+// 上游补丁：markdown-it-task-lists 拼串漏空格（输出 `checked=""type="checkbox"`、
+// `class="…"type="checkbox"`），在 html_inline 输出处补空格，保证导出 HTML 符合规范
+const renderHtmlInline = md.renderer.rules.html_inline;
+md.renderer.rules.html_inline = (tokens, idx, options, env, self) => {
+  const html =
+    renderHtmlInline?.(tokens, idx, options, env, self) ??
+    self.renderToken(tokens, idx, options);
+  return html.replace(/"(?=(?:type|disabled|checked)=)/g, '" ');
+};
 
 export interface RenderEnv {
   baseDir?: string | null;
@@ -462,9 +474,10 @@ md.renderer.rules.fence = (tokens, idx, options, env, self) => {
   const dataLine = token.map ? ` data-line="${token.map[0] + offset}"` : "";
   const key = languageKeyOf(info);
   const langClass = key ? ` class="language-${escapeAttribute(key)}"` : "";
+  const langAttr = key ? ` data-lang="${escapeAttribute(key)}"` : "";
   // TizuMark 同构：code > .code-scroll > .code-line（行号 span 常驻，CSS 控制显隐）
   const { html: body } = highlightToLines(token.content, info);
-  return `<pre${dataLine}><code${langClass}><span class="code-scroll">${body}</span></code></pre>\n`;
+  return `<pre${dataLine}${langAttr}><code${langClass}><span class="code-scroll">${body}</span></code></pre>\n`;
 };
 
 const renderHeadingOpen = md.renderer.rules.heading_open;

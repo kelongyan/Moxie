@@ -50,7 +50,7 @@ function widgets(ranges: Range<Decoration>[]) {
     }));
 }
 
-type WidgetLike = { src?: string; checked?: boolean; lang?: string; level?: number };
+type WidgetLike = { src?: string; checked?: boolean; lang?: string; level?: number; text?: string };
 function spec2widget(spec: unknown): WidgetLike {
   return (spec as { widget: WidgetLike }).widget;
 }
@@ -244,55 +244,55 @@ describe("livePreview · 引用 / 分割线 / 任务清单", () => {
   });
 });
 
-describe("livePreview · 折叠间距（对齐 TizuMark）", () => {
+describe("livePreview · 折叠间距（校样样张）", () => {
   it("首块不加外部间距", () => {
     const ranges = rangesOf("正文\n", 0);
     expect(lineAttrs(ranges)).toEqual([]);
     expect(hasClass(ranges, 0, "md-block")).toBe(true);
   });
 
-  it("段→段：折叠 14px = 压缩空行(8) + padding(6)", () => {
+  it("段→段：折叠 16px = 压缩空行(8) + padding(8)", () => {
     // "第一段\n\n第二段\n"：line1 from0、line2(空) from4、line3 from5、line4(空) from9
     const ranges = rangesOf("第一段\n\n第二段\n", 0);
     expect(hasClass(ranges, 4, "md-blank")).toBe(true);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 5, style: "--md-space-before:6px" },
+      { from: 5, style: "--md-space-before:8px" },
     ]);
   });
 
-  it("段→标题：折叠 24px = 空行(8) + padding(16)", () => {
+  it("段→h1/h2 大节标题：折叠 48px = 空行(8) + padding(40)", () => {
     // "正文\n\n# 标题\n"：line3(from4) 是标题行
     const ranges = rangesOf("正文\n\n# 标题\n", 8);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 4, style: "--md-space-before:16px" },
+      { from: 4, style: "--md-space-before:40px" },
     ]);
   });
 
-  it("标题→段：折叠 12px = 空行(8) + padding(4)", () => {
+  it("大节标题→段：折叠 16px = 空行(8) + padding(8)", () => {
     // "# 标题\n\n正文\n"：line3(from6) 是正文行
     const ranges = rangesOf("# 标题\n\n正文\n", 8);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 6, style: "--md-space-before:4px" },
+      { from: 6, style: "--md-space-before:8px" },
     ]);
   });
 
-  it("段→代码块：折叠 16px，代码块用 fence 类承载而非 md-block", () => {
+  it("段→代码块：折叠 24px，代码块用 fence 类承载而非 md-block", () => {
     // "正文\n\n```js\nx\n```\n"：开 fence 行 from4
     const ranges = rangesOf("正文\n\n```js\nx\n```\n", 0);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 4, style: "--md-space-before:8px" },
+      { from: 4, style: "--md-space-before:16px" },
     ]);
     expect(hasClass(ranges, 4, "md-code-fence-open")).toBe(true);
     expect(hasClass(ranges, 4, "md-block")).toBe(false);
   });
 
-  it("分割线→段：折叠 24px = 空行(8) + padding(16)", () => {
+  it("分割线→段：折叠 32px = 空行(8) + padding(24)", () => {
     // "---\n\n后文\n"：line1 hr、line3(from5) 正文
     const ranges = rangesOf("---\n\n后文\n", 7);
     expect(hasClass(ranges, 0, "md-hr-line")).toBe(true);
     expect(hasClass(ranges, 4, "md-blank")).toBe(true);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 5, style: "--md-space-before:16px" },
+      { from: 5, style: "--md-space-before:24px" },
     ]);
   });
 
@@ -300,7 +300,7 @@ describe("livePreview · 折叠间距（对齐 TizuMark）", () => {
     // "第一行\n第二行\n\n第三段\n"：line1 from0、line2 from4、line3(空) from8、line4 from9
     const ranges = rangesOf("第一行\n第二行\n\n第三段\n", 0);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 9, style: "--md-space-before:6px" },
+      { from: 9, style: "--md-space-before:8px" },
     ]);
     expect(hasClass(ranges, 4, "md-block")).toBe(false);
   });
@@ -391,11 +391,11 @@ describe("livePreview · 无序列表符号 widget", () => {
 });
 
 describe("livePreview · 块间距缩放贯通", () => {
-  it("scale=1.5 时段间距按比例注入（14×1.5-8=13）", () => {
+  it("scale=1.5 时段间距按比例注入（16×1.5-8=16）", () => {
     const state = stateOf("第一段\n\n第二段\n", 0);
     const ranges = computeLiveRanges(state, state.doc.length, RESOLVE_ALL, 1.5);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 5, style: "--md-space-before:13px" },
+      { from: 5, style: "--md-space-before:16px" },
     ]);
   });
 });
@@ -430,8 +430,8 @@ describe("livePreview · 表格渲染与源码切换", () => {
       ["a", "b"],
       ["c", "d"],
     ]);
-    // 前文段落(底14) → 表格(上0) 折叠 14，扣除 1 个压缩空行(8) = 6
-    expect(gap).toBe(6);
+    // 前文段落(底16) → 表格(上0) 折叠 16，扣除 1 个压缩空行(8) = 8
+    expect(gap).toBe(8);
     // 替换范围覆盖表格全部 4 行（"前文\n\n" = 4 起，到 | c | d | 行尾）
     expect(tables[0].from).toBe(4);
     expect(tables[0].to).toBe(4 + "| 列一 | 列二 |\n| --- | --- |\n| a | b |\n| c | d |".length);
@@ -464,10 +464,10 @@ describe("livePreview · 表格渲染与源码切换", () => {
   });
 
   it("表格作为独立块参与空行压缩，后文块从表格底边距折叠", () => {
-    // 表格(底16) → 后文段落(上0) 折叠 16，扣除 1 个压缩空行(8) = 8
+    // 表格(底24) → 后文段落(上0) 折叠 24，扣除 1 个压缩空行(8) = 16
     const ranges = rangesOf(TABLE_DOC, TABLE_DOC.length - 3);
     const after = lineAttrs(ranges).find((l) => l.from > 40);
-    expect(after?.style).toBe("--md-space-before:8px");
+    expect(after?.style).toBe("--md-space-before:16px");
   });
 
   it("文档首个块是表格时 gap 为 0", () => {
@@ -546,5 +546,56 @@ describe("livePreview · 数学公式（KaTeX）", () => {
   it("未闭合的 $$ 不渲染", () => {
     const ranges = rangesOf("$$\nx = 1\n", 0);
     expect(mathWidgets(ranges)).toHaveLength(0);
+  });
+});
+
+describe("livePreview · ==高亮== 荧光标记", () => {
+  type MarkWidgetLike = { text?: string };
+  const markWidgets = (ranges: Range<Decoration>[]) =>
+    widgets(ranges)
+      .filter((w) => "text" in (w.widget as object))
+      .map((w) => ({ ...w, widget: w.widget as MarkWidgetLike }));
+
+  it("光标不在时 ==文本== 整段替换为荧光标记 widget", () => {
+    const doc = "带 ==高亮== 的句子\n";
+    const ranges = rangesOf(doc, doc.length - 1);
+    const marks = markWidgets(ranges);
+    expect(marks).toHaveLength(1);
+    expect(marks[0].widget.text).toBe("高亮");
+    // "带 " 之后：==高亮== 占 [2, 8)
+    expect(marks[0].from).toBe(2);
+    expect(marks[0].to).toBe(8);
+  });
+
+  it("光标进入标记区间时回显原文", () => {
+    const ranges = rangesOf("带 ==高亮== 的句子\n", 4);
+    expect(markWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("行内代码与代码围栏内不渲染（禁区）", () => {
+    const ranges = rangesOf("文本 `==a==` 结尾\n\n```\n==b==\n```\n", 0);
+    expect(markWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("未闭合的 == 不渲染", () => {
+    const ranges = rangesOf("只有 == 一处\n", 0);
+    expect(markWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("内容两端带空白视为普通文本不渲染", () => {
+    const ranges = rangesOf("等号 == 测试 == 用例\n", 0);
+    expect(markWidgets(ranges)).toHaveLength(0);
+  });
+
+  it("同一行多处标记各自渲染", () => {
+    // 锚点放在两标记之间的"与"字上（不与任一区间相接）
+    const ranges = rangesOf("==甲== 与 ==乙==\n", 6);
+    const marks = markWidgets(ranges);
+    expect(marks.map((m) => m.widget.text)).toEqual(["甲", "乙"]);
+  });
+
+  it("转义的 \\== 不渲染", () => {
+    const ranges = rangesOf("字面 \\==标记== 文本\n", 0);
+    expect(markWidgets(ranges)).toHaveLength(0);
   });
 });

@@ -176,6 +176,10 @@ export function TitleToolbar({
 
   return (
     <header className="title-toolbar" data-tauri-drag-region>
+      {/* 版权页式 wordmark：非交互标牌（可拖拽），对齐校样样张 .wordmark */}
+      <div className="wordmark" data-tauri-drag-region aria-hidden="true">
+        M
+      </div>
       <Tooltip label="显示/隐藏侧边栏" shortcut="Ctrl+Shift+B">
         <button
           className={"tool-button" + (sidebarPinned ? " active" : "")}

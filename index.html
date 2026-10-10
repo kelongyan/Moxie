@@ -47,8 +47,27 @@
           plugins: {},
           invoke(cmd, args) {
             const empty = () => Promise.resolve(null);
+            // ?doc=1 时经真实链路（openPathAction）打开 UI 重构对照样张，供截图比对
+            const launchArgs = () => {
+              const doc = new URLSearchParams(location.search).get("doc");
+              return doc ? ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"] : [];
+            };
             const table = {
-              launch_args: () => [],
+              launch_args: launchArgs,
+              read_text_file: (a) => {
+                if (a && a.path.endsWith("对照样张.md")) {
+                  return fetch(
+                    "/work/ui-baseline/%E5%AF%B9%E7%85%A7%E6%A0%B7%E5%BC%A0.md"
+                  ).then((res) =>
+                    res.text().then((text) => ({
+                      text,
+                      encoding: "utf-8",
+                      lineEnding: "lf",
+                    }))
+                  );
+                }
+                return Promise.reject(new Error("mock: no content"));
+              },
               recent_list: () => [],
               recovery_load: empty,
               recovery_read_marker: empty,

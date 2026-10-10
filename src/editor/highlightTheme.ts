@@ -47,42 +47,43 @@ const lacHighlightStyle = HighlightStyle.define([
     color: "var(--syn-punct)",
   },
 
-  // —— Markdown 书写排版（TizuMark 字号分级；行级留白与边框在 app.css 的 md-h* 行装饰） ——
+  // —— Markdown 书写排版（校样样张分级：h1 2.4 丝线 / h2 1.6 / h3 1.25 / h4 1.0 /
+  //    h5 0.875 / h6 0.8125 转灰；行级留白与边框在 app.css 的 md-h* 行装饰） ——
   {
     tag: tags.heading1,
     color: "var(--lac-text)",
     fontWeight: "700",
-    fontSize: "2em",
+    fontSize: "2.4em",
   },
   {
     tag: tags.heading2,
     color: "var(--lac-text)",
-    fontWeight: "700",
-    fontSize: "1.5em",
+    fontWeight: "650",
+    fontSize: "1.6em",
   },
   {
     tag: tags.heading3,
     color: "var(--lac-text)",
-    fontWeight: "700",
+    fontWeight: "650",
     fontSize: "1.25em",
   },
   {
     tag: tags.heading4,
     color: "var(--lac-text)",
     fontWeight: "700",
-    fontSize: "1.1em",
+    fontSize: "1em",
   },
   {
     tag: tags.heading5,
     color: "var(--lac-text-secondary)",
-    fontWeight: "700",
-    fontSize: "1em",
+    fontWeight: "600",
+    fontSize: "0.875em",
   },
   {
     tag: tags.heading6,
     color: "var(--lac-text-secondary)",
-    fontWeight: "700",
-    fontSize: "0.9em",
+    fontWeight: "600",
+    fontSize: "0.8125em",
   },
   {
     tag: tags.heading,
@@ -97,13 +98,19 @@ const lacHighlightStyle = HighlightStyle.define([
     color: "var(--lac-text-secondary)",
   },
   {
-    // TizuMark：链接只着色，不画下划线（hover 语义交给渲染视图）
+    // 校样样张链接：墨字 + 校对红下划线（hover 语义交给渲染视图）
     tag: tags.link,
-    color: "var(--lac-accent)",
+    color: "var(--lac-text)",
+    textDecoration: "underline",
+    textDecorationColor: "var(--lac-accent)",
+    textUnderlineOffset: "3px",
   },
   {
     tag: tags.url,
-    color: "var(--lac-accent)",
+    color: "var(--lac-text)",
+    textDecoration: "underline",
+    textDecorationColor: "var(--lac-accent)",
+    textUnderlineOffset: "3px",
   },
   {
     // 列表符号中性灰（代码编辑器的 keyword 紫在书写面上是噪音）

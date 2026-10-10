@@ -42,6 +42,9 @@ export interface PreviewTokens {
   alertVars?: string;
   /** h2 标题专用色（略柔主色），缺省用 fg */
   heading2?: string;
+  /** 荧光标记（==mark==）底/字色，缺省回落 warning 淡化 */
+  markBg?: string;
+  markFg?: string;
   /** 导出时代码块显示行号（写入 article.code-line-numbers） */
   codeLineNumbers?: boolean;
   /** 导出正文限宽（960px 居中） */
@@ -105,6 +108,8 @@ export function collectPreviewTokens(opts?: {
     synVars,
     alertVars,
     heading2: v("--lac-heading-2"),
+    markBg: v("--lac-mark-bg") || undefined,
+    markFg: v("--lac-mark-fg") || undefined,
     codeLineNumbers: opts?.codeLineNumbers,
     narrow: opts?.narrow,
   };
@@ -203,28 +208,48 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   /* 导出限宽变体：正文 960px 居中 */
   article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
-  /* 标题：统一 24/12 节奏 + h1/h2 底边线（GitHub 风） */
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.3;
-    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
-  }
+  /* 标题：校样样张层级——h1 丝线、h2 无线、h5/h6 缩小转灰；间距走 typography 单一来源 */
+  h1, h2, h3, h4, h5, h6 { line-height: 1.3; }
   h1 {
-    font-size: 2em;
+    font-size: 2.4em;
+    font-weight: 700;
+    line-height: 1.2;
     color: ${tokens.fg};
-    border-bottom: 2px solid ${tokens.borderStrong};
-    padding-bottom: 10px;
+    margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid ${tokens.border};
   }
   h2 {
-    font-size: 1.5em;
+    font-size: 1.6em;
+    font-weight: 650;
     color: ${tokens.heading2 || tokens.fg};
-    border-bottom: 1px solid ${tokens.border};
-    padding-bottom: 8px;
+    margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
   }
-  h3 { font-size: 1.25em; }
-  h4 { font-size: 1.1em; }
-  h5 { font-size: 1em; color: ${tokens.secondary}; }
-  h6 { font-size: 0.9em; color: ${tokens.secondary}; }
+  h3 {
+    font-size: 1.25em;
+    font-weight: 650;
+    color: ${tokens.fg};
+    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
+  }
+  h4 {
+    font-size: 1em;
+    font-weight: 700;
+    color: ${tokens.fg};
+    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
+  }
+  h5 {
+    font-size: 0.875em;
+    font-weight: 600;
+    color: ${tokens.secondary};
+    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
+  }
+  h6 {
+    font-size: 0.8125em;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: ${tokens.secondary};
+    margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
+  }
 
   /* 段落：单侧 margin，14px 段距（TizuMark 节奏） */
   p { margin: 0 0 ${MD_MARGIN.paragraph.bottom}px; }
@@ -233,12 +258,15 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   strong, b { font-weight: 700; }
   em { font-style: italic; }
   del { text-decoration: line-through; color: ${tokens.secondary}; }
+  /* ==高亮== 荧光标记（校对样张高亮黄） */
   mark {
     display: inline-block;
-    background: ${tokens.warning};
-    color: ${tokens.scheme === "dark" ? "#14151d" : tokens.fg};
+    background: ${tokens.markBg ?? tokens.warning};
+    color: ${tokens.markFg ?? (tokens.scheme === "dark" ? "#14151d" : tokens.fg)};
     padding: 1px 4px;
     border-radius: 3px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
   }
   kbd {
     display: inline-block;
@@ -255,18 +283,14 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     vertical-align: baseline;
   }
   abbr { text-decoration: underline dotted; cursor: help; }
+  /* 链接：校对样张——墨字 + 校对红下划线 */
   a {
-    color: ${tokens.accent};
-    text-decoration: none;
+    color: ${tokens.fg};
+    text-decoration: underline;
+    text-decoration-color: ${tokens.accent};
     text-underline-offset: 3px;
   }
-  a:hover { text-decoration: underline; }
-  a[href^="http"]::after {
-    content: " \\2197";
-    font-size: 0.75em;
-    vertical-align: super;
-    opacity: 0.75;
-  }
+  a:hover { color: ${tokens.accent}; }
 
   /* 行内 code：底色 + 1px 边框（TizuMark）；padding 2px 5px 保证盒高 ≤ 行高 */
   code {
@@ -283,6 +307,11 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   li { margin: 0 0 4px; }
   li > p { margin: 0 0 4px; }
   ul ul, ol ol, ul ol, ol ul { margin-top: 4px; margin-bottom: 4px; }
+  /* 嵌套列表引导线（校对样张）：发丝线沿层级收进 */
+  li > ul, li > ol {
+    padding-left: 16px;
+    border-left: 1px solid ${tokens.border};
+  }
   :where(article) ul { list-style-type: disc; }
   :where(article) ul ul { list-style-type: circle; }
   :where(article) ul ul ul { list-style-type: square; }
@@ -336,13 +365,23 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     transform: rotate(45deg);
   }
 
-  /* 代码块：底色 + 1px 边框 + 6px 圆角 + 300px 按需滚动；行号结构常驻（CSS 默认隐藏） */
+  /* 代码块：打纸稿——与行内代码同底、1px 边框、8px 圆角、右上语言标签；300px 按需滚动 */
   pre {
-    padding: 16px;
+    position: relative;
+    padding: 24px 32px;
     background: ${codeBg};
     border: 1px solid ${tokens.border};
-    border-radius: 6px;
+    border-radius: 8px;
     margin: ${MD_MARGIN.pre.top}px 0;
+  }
+  pre[data-lang]::after {
+    content: attr(data-lang);
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font: 10px ${tokens.fontMono};
+    letter-spacing: 0.14em;
+    color: ${tokens.secondary};
   }
   pre code {
     background: transparent;
@@ -380,47 +419,81 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   .tok-link, .tok-url { color: var(--syn-link); }
   .tok-heading { color: var(--syn-heading); font-weight: 600; }
 
-  /* 表格：GitHub 风全边框 + 斑马纹 + 悬停（TizuMark 复刻） */
-  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  /* 表格：校样样张「简约灰」——圆角外框、无竖线、灰表头、斑马纹、发丝行线、粘性表头 */
+  .table-wrap {
+    overflow-x: auto;
+    margin: ${MD_MARGIN.table.bottom}px 0;
+    border: 1px solid ${tokens.border};
+    border-radius: 10px;
+  }
   table {
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
     font-variant-numeric: tabular-nums;
   }
-  thead { border-bottom: 2px solid ${tokens.border}; }
   th, td {
-    border: 1px solid ${tokens.border};
-    padding: 8px 12px;
+    padding: 12px 16px;
     text-align: left;
+    vertical-align: top;
+    line-height: 1.65;
   }
   th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    color: ${tokens.secondary};
     background: ${thBg};
+    border-bottom: 1px solid ${tokens.borderStrong};
   }
-  tbody tr:nth-child(even) { background: ${thBg}; }
+  th:first-child { border-top-left-radius: 9px; }
+  th:last-child { border-top-right-radius: 9px; }
+  td { border-bottom: 1px solid ${tokens.border}; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:last-child td:first-child { border-bottom-left-radius: 9px; }
+  tbody tr:last-child td:last-child { border-bottom-right-radius: 9px; }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, ${tokens.fg} 3%, transparent); }
   tbody tr:hover { background: color-mix(in srgb, ${tokens.accent} 6%, transparent); }
 
-  /* 引用：accent 左条 + soft 底；首元素为 strong 时左条转 warning（TizuMark） */
+  /* 引用：校对样张——3px 校对红边条、无底色、灰字；嵌套收敛为发丝线 */
   blockquote {
     margin: 0 0 ${MD_MARGIN.blockquote.bottom}px;
-    padding: 12px 20px;
-    border-left: 4px solid ${tokens.accent};
-    background: color-mix(in srgb, ${tokens.accent} 7%, transparent);
-    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    border-left: 3px solid ${tokens.accent};
     color: ${tokens.secondary};
   }
   blockquote > :last-child { margin-bottom: 0; }
+  blockquote > blockquote {
+    margin: 8px 0;
+    border-left: 1px solid ${tokens.borderStrong};
+    color: inherit;
+  }
   blockquote:has(strong:first-child) { border-left-color: ${tokens.warning}; }
 
-  /* hr：横向渐变分节线 */
+  /* hr：发丝线 + 中心校对红圆点（校对样张） */
   hr {
     border: none;
+    position: relative;
     height: 1px;
-    background: linear-gradient(90deg, transparent, ${tokens.border}, transparent);
+    background: ${tokens.border};
     margin: ${MD_MARGIN.hr.top}px 0;
   }
+  hr::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: ${tokens.accent};
+  }
 
-  img { max-width: 100%; height: auto; border-radius: 4px; }
+  img { max-width: 100%; height: auto; border: 1px solid ${tokens.border}; border-radius: 8px; }
   .img-broken {
     display: inline-block;
     max-width: 100%;

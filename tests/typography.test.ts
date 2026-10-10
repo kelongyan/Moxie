@@ -11,6 +11,7 @@ import {
 
 const KINDS: BlockKind[] = [
   "paragraph",
+  "headingMajor",
   "heading",
   "list",
   "blockquote",
@@ -19,15 +20,16 @@ const KINDS: BlockKind[] = [
   "table",
 ];
 
-/** 与 docs/TizuMark渲染复刻方案.md 的折叠间距矩阵一致（hr 24、table 下 16） */
+/** 校样样张折叠间距矩阵（docs/UI重构方案书.md 阶段 2：4 的倍数体系，h1/h2 走 headingMajor） */
 const MATRIX: Record<BlockKind, Record<BlockKind, number>> = {
-  paragraph: { paragraph: 14, heading: 24, list: 14, blockquote: 14, pre: 16, hr: 24, table: 14 },
-  heading: { paragraph: 12, heading: 24, list: 12, blockquote: 12, pre: 16, hr: 24, table: 12 },
-  list: { paragraph: 14, heading: 24, list: 14, blockquote: 14, pre: 16, hr: 24, table: 14 },
-  blockquote: { paragraph: 16, heading: 24, list: 16, blockquote: 16, pre: 16, hr: 24, table: 16 },
-  pre: { paragraph: 16, heading: 24, list: 16, blockquote: 16, pre: 16, hr: 24, table: 16 },
-  hr: { paragraph: 24, heading: 24, list: 24, blockquote: 24, pre: 24, hr: 24, table: 24 },
-  table: { paragraph: 16, heading: 24, list: 16, blockquote: 16, pre: 16, hr: 24, table: 16 },
+  paragraph:    { paragraph: 16, headingMajor: 48, heading: 24, list: 16, blockquote: 16, pre: 24, hr: 32, table: 16 },
+  headingMajor: { paragraph: 16, headingMajor: 48, heading: 24, list: 16, blockquote: 16, pre: 24, hr: 32, table: 16 },
+  heading:      { paragraph: 12, headingMajor: 48, heading: 24, list: 12, blockquote: 12, pre: 24, hr: 32, table: 12 },
+  list:         { paragraph: 16, headingMajor: 48, heading: 24, list: 16, blockquote: 16, pre: 24, hr: 32, table: 16 },
+  blockquote:   { paragraph: 24, headingMajor: 48, heading: 24, list: 24, blockquote: 24, pre: 24, hr: 32, table: 24 },
+  pre:          { paragraph: 24, headingMajor: 48, heading: 24, list: 24, blockquote: 24, pre: 24, hr: 32, table: 24 },
+  hr:           { paragraph: 32, headingMajor: 48, heading: 32, list: 32, blockquote: 32, pre: 32, hr: 32, table: 32 },
+  table:        { paragraph: 24, headingMajor: 48, heading: 24, list: 24, blockquote: 24, pre: 24, hr: 32, table: 24 },
 };
 
 describe("typography · collapsedGap 折叠矩阵", () => {
@@ -40,6 +42,7 @@ describe("typography · collapsedGap 折叠矩阵", () => {
   }
 
   it("首块无上方间距", () => {
+    expect(collapsedGap(null, "headingMajor")).toBe(0);
     expect(collapsedGap(null, "heading")).toBe(0);
     expect(collapsedGap(null, "paragraph")).toBe(0);
   });
@@ -47,14 +50,15 @@ describe("typography · collapsedGap 折叠矩阵", () => {
 
 describe("typography · spaceBefore 空行扣减", () => {
   it("无空行时等于折叠值", () => {
-    expect(spaceBefore("paragraph", "paragraph", 0)).toBe(14);
+    expect(spaceBefore("paragraph", "paragraph", 0)).toBe(16);
     expect(spaceBefore("paragraph", "heading", 0)).toBe(24);
+    expect(spaceBefore("paragraph", "headingMajor", 0)).toBe(48);
   });
 
   it("一个空行扣掉空行高度（间距 = 空行 + padding 合计仍为折叠值）", () => {
-    expect(spaceBefore("paragraph", "paragraph", 1)).toBe(14 - BLANK_LINE_HEIGHT);
-    expect(spaceBefore("paragraph", "heading", 1)).toBe(24 - BLANK_LINE_HEIGHT);
-    expect(BLANK_LINE_HEIGHT + spaceBefore("paragraph", "heading", 1)).toBe(24);
+    expect(spaceBefore("paragraph", "paragraph", 1)).toBe(16 - BLANK_LINE_HEIGHT);
+    expect(spaceBefore("paragraph", "headingMajor", 1)).toBe(48 - BLANK_LINE_HEIGHT);
+    expect(BLANK_LINE_HEIGHT + spaceBefore("paragraph", "headingMajor", 1)).toBe(48);
   });
 
   it("空行过多时夹取到 0（保留用户显式留白）", () => {
@@ -63,15 +67,17 @@ describe("typography · spaceBefore 空行扣减", () => {
   });
 
   it("负数空行按 0 处理", () => {
-    expect(spaceBefore("paragraph", "paragraph", -1)).toBe(14);
+    expect(spaceBefore("paragraph", "paragraph", -1)).toBe(16);
   });
 });
 
 describe("typography · 常量", () => {
   it("行高与空行高度", () => {
-    expect(CONTENT_LINE_HEIGHT).toBe(1.7);
+    expect(CONTENT_LINE_HEIGHT).toBe(1.75);
     expect(BLANK_LINE_HEIGHT).toBe(8);
-    expect(MD_MARGIN.paragraph.bottom).toBe(14);
+    expect(MD_MARGIN.paragraph.bottom).toBe(16);
+    expect(MD_MARGIN.headingMajor.top).toBe(48);
+    expect(MD_MARGIN.headingMajor.bottom).toBe(16);
     expect(MD_MARGIN.heading.top).toBe(24);
     expect(MD_MARGIN.heading.bottom).toBe(12);
   });
@@ -89,13 +95,13 @@ describe("typography · 块间距缩放（em 化）", () => {
   });
 
   it("collapsedGap/spaceBefore 按 scale 缩放并取整", () => {
-    expect(collapsedGap("paragraph", "paragraph", 1.5)).toBe(21);
+    expect(collapsedGap("paragraph", "paragraph", 1.5)).toBe(24);
     expect(collapsedGap("paragraph", "heading", 1.5)).toBe(36);
-    expect(spaceBefore("paragraph", "paragraph", 0, 1.5)).toBe(21);
+    expect(spaceBefore("paragraph", "paragraph", 0, 1.5)).toBe(24);
     // 空行扣减仍为固定 8px
-    expect(spaceBefore("paragraph", "paragraph", 1, 1.5)).toBe(13);
+    expect(spaceBefore("paragraph", "paragraph", 1, 1.5)).toBe(16);
     // 缩小字号时同步收紧，且不低于 0
-    expect(collapsedGap("paragraph", "paragraph", 0.75)).toBe(11);
+    expect(collapsedGap("paragraph", "paragraph", 0.75)).toBe(12);
     expect(spaceBefore("paragraph", "paragraph", 2, 0.75)).toBe(0);
   });
 
