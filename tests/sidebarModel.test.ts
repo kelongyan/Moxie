@@ -1,5 +1,16 @@
-import { describe, expect, it } from "vitest";
-import { dirName, formatRelativeTime } from "../src/state/sidebar";
+import { describe, expect, it, vi } from "vitest";
+import {
+  dirName,
+  formatRelativeTime,
+  joinPath,
+  parentDirPath,
+  useSidebar,
+} from "../src/state/sidebar";
+
+vi.mock("@tauri-apps/api/core", () => ({
+  invoke: vi.fn(async () => null),
+  isTauri: () => false,
+}));
 
 describe("formatRelativeTime", () => {
   const NOW = Date.parse("2026-09-11T18:00:00+08:00");
@@ -44,5 +55,46 @@ describe("dirName", () => {
   it("returns empty string near the root", () => {
     expect(dirName("D:\\a.md")).toBe("D:");
     expect(dirName("a.md")).toBe("");
+  });
+});
+
+describe("joinPath and parentDirPath", () => {
+  it("joinPath handles backslashes on Windows", () => {
+    expect(joinPath("C:\\notes", "doc.md")).toBe("C:\\notes\\doc.md");
+    expect(joinPath("C:\\notes\\", "doc.md")).toBe("C:\\notes\\doc.md");
+  });
+
+  it("joinPath handles forward slashes", () => {
+    expect(joinPath("/home/user/notes", "doc.md")).toBe("/home/user/notes/doc.md");
+    expect(joinPath("/home/user/notes/", "doc.md")).toBe("/home/user/notes/doc.md");
+  });
+
+  it("parentDirPath returns directory without filename", () => {
+    expect(parentDirPath("C:\\notes\\doc.md")).toBe("C:\\notes");
+    expect(parentDirPath("/home/user/notes/doc.md")).toBe("/home/user/notes");
+    expect(parentDirPath("standalone.md")).toBe("");
+  });
+});
+
+describe("sidebar workspace and tabs", () => {
+  it("switches active tab cleanly", () => {
+    useSidebar.getState().setActiveTab("outline");
+    expect(useSidebar.getState().activeTab).toBe("outline");
+    useSidebar.getState().setActiveTab("recent");
+    expect(useSidebar.getState().activeTab).toBe("recent");
+    useSidebar.getState().setActiveTab("files");
+    expect(useSidebar.getState().activeTab).toBe("files");
+  });
+
+  it("closes workspace and clears state", () => {
+    useSidebar.setState({
+      workspacePath: "C:\\my-notes",
+      dirChildren: { "C:\\my-notes": [] },
+      expandedDirs: { "C:\\my-notes": true },
+    });
+    useSidebar.getState().closeWorkspace();
+    expect(useSidebar.getState().workspacePath).toBeNull();
+    expect(useSidebar.getState().dirChildren).toEqual({});
+    expect(useSidebar.getState().expandedDirs).toEqual({});
   });
 });

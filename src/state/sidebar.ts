@@ -1,6 +1,15 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 
+export interface DirEntry {
+  name: string;
+  path: string;
+  isDir: boolean;
+  isMarkdown: boolean;
+  size: number;
+  modifiedMs: number;
+}
+
 export interface SidebarGroup {
   id: string;
   name: string;
@@ -20,12 +29,29 @@ export interface SectionsExpanded {
   outline: boolean;
 }
 
+export type SidebarTab = "files" | "outline" | "recent";
+
 interface SidebarState {
+  activeTab: SidebarTab;
+  workspacePath: string | null;
+  dirChildren: Record<string, DirEntry[]>;
+  expandedDirs: Record<string, boolean>;
+  workspaceLoading: boolean;
   groups: SidebarGroup[];
   sectionsExpanded: SectionsExpanded;
   recent: RecentEntry[];
   missing: Record<string, boolean>;
   loaded: boolean;
+  setActiveTab: (tab: SidebarTab) => void;
+  openWorkspace: (path: string) => Promise<void>;
+  closeWorkspace: () => void;
+  toggleDirExpanded: (dirPath: string) => Promise<void>;
+  refreshDir: (dirPath: string) => Promise<void>;
+  refreshWorkspace: () => Promise<void>;
+  createWorkspaceFile: (parentDir: string, name: string) => Promise<string | null>;
+  createWorkspaceDir: (parentDir: string, name: string) => Promise<boolean>;
+  deleteWorkspaceItem: (path: string) => Promise<boolean>;
+  renameWorkspaceItem: (oldPath: string, newPath: string) => Promise<boolean>;
   refresh: () => Promise<void>;
   refreshRecent: () => Promise<void>;
   refreshMissing: () => Promise<void>;
@@ -47,11 +73,33 @@ function newGroupId(): string {
   return `g-${Date.now().toString(36)}-${groupSeq}`;
 }
 
+export function joinPath(parent: string, child: string): string {
+  const isBackslash = parent.includes("\\");
+  const sep = isBackslash ? "\\" : "/";
+  if (parent.endsWith("\\") || parent.endsWith("/")) {
+    return `${parent}${child}`;
+  }
+  return `${parent}${sep}${child}`;
+}
+
+export function parentDirPath(path: string): string {
+  const normalized = path.replace(/\\/g, "/");
+  const idx = normalized.lastIndexOf("/");
+  if (idx <= 0) return "";
+  return path.slice(0, idx);
+}
+
 async function persist(get: () => SidebarState) {
-  const { groups, sectionsExpanded } = get();
+  const { groups, sectionsExpanded, workspacePath, expandedDirs, activeTab } = get();
   try {
     await invoke("sidebar_save", {
-      value: { groups, sections: sectionsExpanded },
+      value: {
+        groups,
+        sections: sectionsExpanded,
+        workspacePath,
+        expandedDirs,
+        activeTab,
+      },
     });
   } catch {
     // 存储失败不阻断交互
@@ -78,11 +126,135 @@ export function formatRelativeTime(ms: number, now = Date.now()): string {
 }
 
 export const useSidebar = create<SidebarState>((set, get) => ({
+  activeTab: "files",
+  workspacePath: null,
+  dirChildren: {},
+  expandedDirs: {},
+  workspaceLoading: false,
   groups: [],
   sectionsExpanded: { groups: true, recent: true, outline: true },
   recent: [],
   missing: {},
   loaded: false,
+
+  setActiveTab: (tab) => {
+    set({ activeTab: tab });
+    void persist(get);
+  },
+
+  openWorkspace: async (path: string) => {
+    set({ workspacePath: path, workspaceLoading: true });
+    try {
+      const entries = await invoke<DirEntry[]>("list_dir", { path });
+      set((s) => ({
+        dirChildren: { ...s.dirChildren, [path]: entries },
+        expandedDirs: { ...s.expandedDirs, [path]: true },
+        workspaceLoading: false,
+      }));
+    } catch {
+      set({ workspaceLoading: false });
+    }
+    void persist(get);
+  },
+
+  closeWorkspace: () => {
+    set({ workspacePath: null, dirChildren: {}, expandedDirs: {} });
+    void persist(get);
+  },
+
+  toggleDirExpanded: async (dirPath: string) => {
+    const isExpanded = get().expandedDirs[dirPath] === true;
+    if (!isExpanded) {
+      set((s) => ({
+        expandedDirs: { ...s.expandedDirs, [dirPath]: true },
+      }));
+      await get().refreshDir(dirPath);
+    } else {
+      set((s) => ({
+        expandedDirs: { ...s.expandedDirs, [dirPath]: false },
+      }));
+    }
+    void persist(get);
+  },
+
+  refreshDir: async (dirPath: string) => {
+    try {
+      const entries = await invoke<DirEntry[]>("list_dir", { path: dirPath });
+      set((s) => ({
+        dirChildren: { ...s.dirChildren, [dirPath]: entries },
+      }));
+    } catch {
+      set((s) => {
+        const next = { ...s.dirChildren };
+        delete next[dirPath];
+        return { dirChildren: next };
+      });
+    }
+  },
+
+  refreshWorkspace: async () => {
+    const { workspacePath, expandedDirs } = get();
+    if (!workspacePath) return;
+    set({ workspaceLoading: true });
+    try {
+      await get().refreshDir(workspacePath);
+      const subDirs = Object.keys(expandedDirs).filter(
+        (p) => p !== workspacePath && expandedDirs[p]
+      );
+      await Promise.all(subDirs.map((dir) => get().refreshDir(dir)));
+    } finally {
+      set({ workspaceLoading: false });
+    }
+  },
+
+  createWorkspaceFile: async (parentDir: string, name: string) => {
+    const fileName = name.endsWith(".md") || name.endsWith(".markdown") ? name : `${name}.md`;
+    const fullPath = joinPath(parentDir, fileName);
+    try {
+      await invoke("create_file", { path: fullPath });
+      await get().refreshDir(parentDir);
+      return fullPath;
+    } catch {
+      return null;
+    }
+  },
+
+  createWorkspaceDir: async (parentDir: string, name: string) => {
+    const fullPath = joinPath(parentDir, name);
+    try {
+      await invoke("create_dir", { path: fullPath });
+      await get().refreshDir(parentDir);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  deleteWorkspaceItem: async (path: string) => {
+    try {
+      await invoke("delete_path", { path });
+      const parent = parentDirPath(path);
+      if (parent) {
+        await get().refreshDir(parent);
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  renameWorkspaceItem: async (oldPath: string, newPath: string) => {
+    try {
+      await invoke("rename_file", { from: oldPath, to: newPath });
+      const parentOld = parentDirPath(oldPath);
+      const parentNew = parentDirPath(newPath);
+      if (parentOld) await get().refreshDir(parentOld);
+      if (parentNew && parentNew !== parentOld) await get().refreshDir(parentNew);
+      return true;
+    } catch {
+      return false;
+    }
+  },
 
   refresh: async () => {
     try {
@@ -96,6 +268,14 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           }))
         : [];
       const sections = (value.sections ?? {}) as Partial<SectionsExpanded>;
+      const workspacePath = typeof value.workspacePath === "string" ? value.workspacePath : null;
+      const activeTab = (value.activeTab === "files" || value.activeTab === "outline" || value.activeTab === "recent")
+        ? value.activeTab
+        : "files";
+      const expandedDirs = (typeof value.expandedDirs === "object" && value.expandedDirs !== null)
+        ? (value.expandedDirs as Record<string, boolean>)
+        : {};
+
       set({
         groups,
         sectionsExpanded: {
@@ -103,8 +283,15 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           recent: sections.recent !== false,
           outline: sections.outline !== false,
         },
+        workspacePath,
+        activeTab,
+        expandedDirs,
         loaded: true,
       });
+
+      if (workspacePath) {
+        void get().refreshWorkspace();
+      }
     } catch {
       set({ loaded: true });
     }

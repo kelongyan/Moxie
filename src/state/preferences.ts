@@ -21,6 +21,7 @@ interface PreferencesState {
   tabWidth: 2 | 4 | 8;
   exitBehavior: ExitBehavior;
   sidebarPinned: boolean;
+  sidebarWidth: number;
   markdownBreaks: boolean;
   markdownTypographer: boolean;
   markdownAllowHtml: boolean;
@@ -80,6 +81,7 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     appTheme: useThemeStore.getState().mode,
     workspaceExitBehavior: state.exitBehavior,
     sidebarPinned: state.sidebarPinned,
+    sidebarWidth: state.sidebarWidth,
     markdownBreaks: state.markdownBreaks,
     markdownTypographer: state.markdownTypographer,
     markdownAllowHtml: state.markdownAllowHtml,
@@ -128,6 +130,7 @@ export const usePreferences = create<PreferencesState>((set) => ({
   tabWidth: 4,
   exitBehavior: "preserveWorkspace",
   sidebarPinned: true,
+  sidebarWidth: 240,
   markdownBreaks: false,
   // Typora 风格的灵魂：直引号 → 弯引号、-- → —、... → …
   // 默认开启：新装用户的预览就带"出版物感"，老用户的偏好不受影响
@@ -185,6 +188,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
       patch.exitBehavior = disk.workspaceExitBehavior;
     }
     if (typeof disk.sidebarPinned === "boolean") patch.sidebarPinned = disk.sidebarPinned;
+    if (typeof disk.sidebarWidth === "number") {
+      patch.sidebarWidth = Math.min(480, Math.max(180, disk.sidebarWidth));
+    }
     if (typeof disk.markdownBreaks === "boolean") patch.markdownBreaks = disk.markdownBreaks;
     if (typeof disk.markdownTypographer === "boolean") {
       patch.markdownTypographer = disk.markdownTypographer;

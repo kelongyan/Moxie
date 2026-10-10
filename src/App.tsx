@@ -40,11 +40,13 @@ export default function App() {
   const activeDoc = documents.find((d) => d.id === activeId) ?? null;
   const dragActive = useFileDrop();
   const sidebarPinned = usePreferences((s) => s.sidebarPinned);
+  const sidebarWidth = usePreferences((s) => s.sidebarWidth ?? 240);
   const quickOpenOpen = useQuickOpen((s) => s.open);
   const findBarOpen = useFindBar((s) => s.open);
   const historyOpen = useHistoryOverlay((s) => s.open);
   const tableInsertOpen = useTableInsert((s) => s.open);
   const [sidebarPeek, setSidebarPeek] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const showTimer = useRef<number | null>(null);
   const hideTimer = useRef<number | null>(null);
 
@@ -151,6 +153,22 @@ export default function App() {
     usePreferences.getState().set({ sidebarPinned: !sidebarPinned });
   };
 
+  const startResizing = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    const onMouseMove = (ev: MouseEvent) => {
+      const clamped = Math.max(180, Math.min(480, ev.clientX));
+      usePreferences.getState().set({ sidebarWidth: clamped });
+    };
+    const onMouseUp = () => {
+      setIsResizing(false);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
+
   return (
     <div className="lac-window">
       <TitleToolbar
@@ -162,9 +180,21 @@ export default function App() {
       >
         <TabBar />
       </TitleToolbar>
-      <div className={"lac-main" + (sidebarMode === "pinned" ? " sidebar-pinned" : "")}>
+      <div
+        className={
+          "lac-main" +
+          (sidebarMode === "pinned" ? " sidebar-pinned" : "") +
+          (isResizing ? " is-resizing" : "")
+        }
+        style={
+          {
+            "--lac-sidebar-width": `${sidebarWidth}px`,
+          } as React.CSSProperties
+        }
+      >
         <aside
           className={`sidebar mode-${sidebarMode}`}
+          style={{ width: `${sidebarWidth}px` }}
           onMouseEnter={() => {
             if (hideTimer.current !== null) {
               window.clearTimeout(hideTimer.current);
@@ -174,6 +204,11 @@ export default function App() {
           onMouseLeave={onSidebarHoverEnd}
         >
           <SidebarView />
+          <div
+            className="sidebar-resize-handle"
+            onMouseDown={startResizing}
+            title="拖拽调节侧栏宽度"
+          />
         </aside>
         <EditorPane />
       </div>

@@ -220,6 +220,26 @@ fn rename_file(from: PathBuf, to: PathBuf) -> Result<(), String> {
 }
 
 #[command]
+fn list_dir(path: PathBuf) -> Result<Vec<sidebar::DirEntryDto>, String> {
+    sidebar::list_dir(&path)
+}
+
+#[command]
+fn create_file(path: PathBuf) -> Result<(), String> {
+    sidebar::create_file(&path)
+}
+
+#[command]
+fn create_dir(path: PathBuf) -> Result<(), String> {
+    sidebar::create_dir(&path)
+}
+
+#[command]
+fn delete_path(path: PathBuf) -> Result<(), String> {
+    sidebar::delete_path(&path)
+}
+
+#[command]
 fn explorer_select(path: PathBuf) -> Result<(), String> {
     sidebar::reveal_in_explorer(&path)
 }
@@ -424,6 +444,10 @@ pub fn run() {
             sidebar_load,
             sidebar_save,
             rename_file,
+            list_dir,
+            create_file,
+            create_dir,
+            delete_path,
             explorer_select,
             open_external,
             allow_asset_directory,
