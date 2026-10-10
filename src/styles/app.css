@@ -2236,7 +2236,14 @@ body {
   padding-bottom: 6px;
 }
 
-/* callout（> [!NOTE] 等）：覆盖引用的中性配色，五色对齐导出侧 */
+/* callout（> [!NOTE] 等）：整块五色边条与淡底色，圆角卡片体验 */
+.cm-host .cm-line.md-callout {
+  color: var(--lac-text);
+  border-left-width: 3.5px;
+  border-left-style: solid;
+  padding-left: 14px;
+  padding-right: 14px;
+}
 .cm-host .cm-line.md-callout-note {
   border-left-color: rgb(var(--lac-alert-note));
   background: color-mix(in srgb, rgb(var(--lac-alert-note)) 8%, transparent);
@@ -2256,6 +2263,97 @@ body {
 .cm-host .cm-line.md-callout-caution {
   border-left-color: rgb(var(--lac-alert-caution));
   background: color-mix(in srgb, rgb(var(--lac-alert-caution)) 8%, transparent);
+}
+
+.cm-host .cm-line.md-callout-first {
+  padding-top: calc(var(--md-space-before, 0px) + 8px);
+  border-top-right-radius: 6px;
+}
+.cm-host .cm-line.md-callout-last {
+  padding-bottom: 8px;
+  border-bottom-right-radius: 6px;
+}
+.cm-host .cm-line.md-callout-header-line {
+  line-height: 1.45;
+  padding-bottom: 3px;
+}
+
+.md-callout-header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+  user-select: none;
+  border-radius: var(--radius-xs);
+  padding: 1px 4px 1px 0;
+  margin-right: 4px;
+  transition: opacity var(--anim-hover);
+}
+.md-callout-header-tag:hover {
+  opacity: 0.82;
+}
+.md-callout-icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.md-callout-caret {
+  width: 10px;
+  height: 10px;
+  opacity: 0.55;
+  transition: transform var(--anim-hover);
+}
+.md-callout-header-tag:hover .md-callout-caret {
+  opacity: 0.9;
+}
+
+.md-callout-header-note { color: rgb(var(--lac-alert-note)); }
+.md-callout-header-tip { color: rgb(var(--lac-alert-tip)); }
+.md-callout-header-important { color: rgb(var(--lac-alert-important)); }
+.md-callout-header-warning { color: rgb(var(--lac-alert-warning)); }
+.md-callout-header-caution { color: rgb(var(--lac-alert-caution)); }
+
+.md-callout-menu {
+  position: fixed;
+  z-index: var(--z-popover);
+  min-width: 130px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--lac-bg-elevated);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--sh-2);
+  animation: lac-pop-in var(--dur-1) var(--ease-out);
+}
+.md-callout-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--lac-text);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+.md-callout-menu button svg {
+  flex: none;
+}
+.md-callout-menu button:hover {
+  background: var(--lac-hover);
+}
+.md-callout-menu button.current {
+  font-weight: 600;
+  background: var(--lac-selected);
 }
 
 /* 代码块「打纸稿」：与行内代码同底融入纸面，整块 1px 边框圆角 6（对标 Typora 紧凑代码卡片） */

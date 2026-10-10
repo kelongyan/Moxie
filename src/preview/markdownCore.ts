@@ -91,7 +91,7 @@ md.core.ruler.push("moxie_heading_ids", (state) => {
 
 // ---------- Callout（GitHub 风提示块，TizuMark 复刻） ----------
 
-const CALLOUT_ICON_PATHS: Record<string, string> = {
+export const CALLOUT_ICON_PATHS: Record<string, string> = {
   note: '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
   tip: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
   important:
@@ -102,7 +102,7 @@ const CALLOUT_ICON_PATHS: Record<string, string> = {
     '<path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86L7.86 2Z"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
 };
 
-const CALLOUT_LABELS: Record<string, string> = {
+export const CALLOUT_LABELS: Record<string, string> = {
   note: "Note",
   tip: "Tip",
   important: "Important",

@@ -603,3 +603,25 @@ describe("livePreview · ==高亮== 荧光标记", () => {
     expect(markWidgets(ranges)).toHaveLength(0);
   });
 });
+
+describe("livePreview · 标注块（Callout）", () => {
+  it("首行 [!NOTE] 替换为 CalloutHeaderWidget，全块带 md-callout-note 类", () => {
+    const doc = "> [!NOTE]\n> 提示内容\n";
+    const ranges = rangesOf(doc, 0);
+    expect(hasClass(ranges, 0, "md-callout-note")).toBe(true);
+    expect(hasClass(ranges, 0, "md-callout-header-line")).toBe(true);
+    expect(hasClass(ranges, 10, "md-callout-note")).toBe(true);
+    const ws = widgets(ranges).filter((w) => "kind" in (w.widget as object));
+    expect(ws).toHaveLength(1);
+    expect((ws[0].widget as { kind: string }).kind).toBe("note");
+  });
+
+  it("光标在标注块首行时依然常驻渲染 HeaderWidget", () => {
+    const doc = "> [!TIP]\n> 建议内容\n";
+    const ranges = rangesOf(doc, 4);
+    const ws = widgets(ranges).filter((w) => "kind" in (w.widget as object));
+    expect(ws).toHaveLength(1);
+    expect((ws[0].widget as { kind: string }).kind).toBe("tip");
+  });
+});
+
