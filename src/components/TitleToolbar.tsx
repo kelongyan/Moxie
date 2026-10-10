@@ -68,20 +68,20 @@ function WindowControls() {
   return (
     <div className="window-controls">
       <button aria-label="最小化" onClick={() => call("最小化", () => appWindow.minimize())}>
-        <Minus size={13} />
+        <Minus size={12} />
       </button>
       <button
         aria-label={maximized ? "向下还原" : "最大化"}
         onClick={() => call("最大化", () => appWindow.toggleMaximize())}
       >
-        {maximized ? <Copy size={11} /> : <Square size={11} />}
+        {maximized ? <Copy size={12} /> : <Square size={12} />}
       </button>
       <button
         className="close"
         aria-label="关闭"
         onClick={() => call("关闭", () => appWindow.close())}
       >
-        <X size={14} />
+        <X size={12} />
       </button>
     </div>
   );

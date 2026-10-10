@@ -194,7 +194,7 @@ export function TabBar() {
                   void closeTabAction(doc.id);
                 }}
               >
-                <X size={11} strokeWidth={2} />
+                <X size={12} />
               </button>
             ) : null}
           </span>

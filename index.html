@@ -51,10 +51,12 @@
           plugins: {},
           invoke(cmd, args) {
             const empty = () => Promise.resolve(null);
-            // 默认打开全功能语法与排版样张文档，供排版、间距与组件效果视觉检验
+            // 默认打开全功能语法与排版样张文档，供排版、间距与组件效果视觉检验；
+            // ?welcome=1 模拟"图标启动零文件"进入欢迎页
             const launchArgs = () => {
-              const doc = new URLSearchParams(location.search).get("doc");
-              if (doc) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
+              const params = new URLSearchParams(location.search);
+              if (params.get("welcome")) return [];
+              if (params.get("doc")) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
               return ["C:\\Workspace\\我的笔记\\Markdown语法与排版样张.md"];
             };
             const mockDocText = `# Moxie 排版与全语法渲染样张

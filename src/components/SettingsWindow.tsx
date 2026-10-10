@@ -247,7 +247,7 @@ export function SettingsWindow() {
             className={"settings-nav-item" + (section === item.id ? " active" : "")}
             onClick={() => setSection(item.id)}
           >
-            <item.icon size={15} strokeWidth={1.8} />
+            <item.icon size={14} />
             <span>{item.label}</span>
           </button>
         ))}

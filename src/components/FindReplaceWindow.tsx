@@ -173,7 +173,7 @@ export function FindReplaceWindow() {
           解释转义字符
           <Tooltip label="\n 换行、\r 回车、\t 制表符、\s 空格、\\ 反斜杠">
             <span className="help-icon">
-              <HelpCircle size={13} />
+              <HelpCircle size={14} />
             </span>
           </Tooltip>
         </label>

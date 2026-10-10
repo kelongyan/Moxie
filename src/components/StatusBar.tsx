@@ -114,7 +114,7 @@ function LargeFileMenu({ doc }: { doc: EditorDocument }) {
         onClick={() => setOpen((v) => !v)}
         aria-label="大文件模式选项"
       >
-        <Gauge size={13} />
+        <Gauge size={12} />
         大文件模式
       </button>
       {open && (
@@ -123,7 +123,7 @@ function LargeFileMenu({ doc }: { doc: EditorDocument }) {
             const on = featureEnabled(item.key, doc.perfTier, doc.featureOverrides);
             return (
               <button key={item.key} onClick={() => toggle(item.key)}>
-                <span className="check">{on && <Check size={13} strokeWidth={2.5} />}</span>
+                <span className="check">{on && <Check size={12} />}</span>
                 {item.label}
               </button>
             );
@@ -177,7 +177,7 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
           onClick={() => void openSettingsWindow()}
           title="打开偏好设置"
         >
-          <Settings size={13} />
+          <Settings size={12} />
           {sidebarPinned && <span className="btn-text">设置</span>}
         </button>
         <button
@@ -185,7 +185,7 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
           onClick={toggleSidebar}
           title={sidebarPinned ? "收起侧栏" : "展开侧栏"}
         >
-          {sidebarPinned ? <PanelLeftClose size={13} /> : <PanelLeft size={13} />}
+          {sidebarPinned ? <PanelLeftClose size={12} /> : <PanelLeft size={12} />}
         </button>
       </div>
 

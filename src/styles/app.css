@@ -1580,14 +1580,14 @@ body {
 }
 
 .action-btn {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   border: none;
   background: transparent;
   color: var(--lac-text-secondary);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background var(--anim-hover), color var(--anim-hover);
 }
@@ -1598,14 +1598,14 @@ body {
 }
 
 .action-btn-danger {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   border: none;
   background: transparent;
   color: var(--lac-text-tertiary);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background var(--anim-hover), color var(--anim-hover);
 }
@@ -1699,7 +1699,7 @@ body {
 }
 
 .node-icon.file-md {
-  color: var(--lac-accent);
+  color: var(--lac-text-secondary);
 }
 
 .node-icon.file-plain {
@@ -1723,14 +1723,14 @@ body {
 
 .node-hover-action {
   opacity: 0;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   border: none;
   background: transparent;
   color: var(--lac-text-secondary);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   transition: opacity var(--anim-hover), background var(--anim-hover);
 }
@@ -1767,7 +1767,6 @@ body {
 
 .empty-icon {
   color: var(--lac-text-tertiary);
-  opacity: 0.6;
   margin-bottom: 4px;
 }
 

@@ -151,7 +151,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
   if (!activeId) {
     return (
       <div className="sidebar-empty-state">
-        <ListTree size={28} className="empty-icon" />
+        <ListTree size={24} className="empty-icon" />
         <div className="empty-title">暂无活动文档</div>
         <div className="empty-desc">在编辑器中打开或新建文档后，此处将自动呈现层级大纲。</div>
       </div>
@@ -181,7 +181,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
               onClick={() => setFilterQuery("")}
               title="清除过滤"
             >
-              <X size={11} />
+              <X size={12} />
             </button>
           )}
         </div>
@@ -508,7 +508,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
     return (
       <div className="workspace-empty-container">
         <div className="sidebar-empty-state">
-          <FolderOpen size={32} className="empty-icon" />
+          <FolderOpen size={24} className="empty-icon" />
           <div className="empty-title">工作区未开启</div>
           <div className="empty-desc">
             打开本地文件夹作为工作区，可快速浏览、组织与创建 Markdown 笔记。
@@ -557,28 +557,28 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
             title="新建文件"
             onClick={handleCreateRootFile}
           >
-            <FilePlus size={13} />
+            <FilePlus size={14} />
           </button>
           <button
             className="action-btn"
             title="新建文件夹"
             onClick={handleCreateRootDir}
           >
-            <FolderPlus size={13} />
+            <FolderPlus size={14} />
           </button>
           <button
             className="action-btn"
             title="刷新目录"
             onClick={() => void sidebar.refreshWorkspace()}
           >
-            <RotateCw size={13} className={sidebar.workspaceLoading ? "spin" : ""} />
+            <RotateCw size={14} className={sidebar.workspaceLoading ? "spin" : ""} />
           </button>
           <button
             className="action-btn"
             title="关闭工作区"
             onClick={() => sidebar.closeWorkspace()}
           >
-            <X size={13} />
+            <X size={14} />
           </button>
         </div>
       </div>
@@ -599,7 +599,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
               onClick={() => setFilterQuery("")}
               title="清除过滤"
             >
-              <X size={11} />
+              <X size={12} />
             </button>
           )}
         </div>
@@ -657,7 +657,7 @@ export function SidebarView() {
           onClick={() => setActiveTab("files")}
           title="工作区文件树"
         >
-          <Folder size={13} />
+          <Folder size={14} />
           <span>文件</span>
         </button>
 
@@ -668,7 +668,7 @@ export function SidebarView() {
           onClick={() => setActiveTab("outline")}
           title="当前文档大纲"
         >
-          <ListTree size={13} />
+          <ListTree size={14} />
           <span>大纲</span>
         </button>
       </div>

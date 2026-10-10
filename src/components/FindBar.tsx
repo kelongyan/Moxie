@@ -142,7 +142,7 @@ export function FindBar() {
         </>
       )}
       <button className="find-inline-btn" title="关闭" onClick={close}>
-        <X size={14} />
+        <X size={12} />
       </button>
     </div>
   );
