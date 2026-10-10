@@ -47,19 +47,18 @@ const lacHighlightStyle = HighlightStyle.define([
     color: "var(--syn-punct)",
   },
 
-  // —— Markdown 书写排版（校样样张分级：h1 2.4 丝线 / h2 1.6 / h3 1.25 / h4 1.0 /
-  //    h5 0.875 / h6 0.8125 转灰；行级留白与边框在 app.css 的 md-h* 行装饰） ——
+  // —— Markdown 书写排版（对标 Typora 黄金比例字号梯队：h1 2.1 / h2 1.5 / h3 1.25 / h4 1.1 / h5 1.0 / h6 0.9） ——
   {
     tag: tags.heading1,
     color: "var(--lac-text)",
     fontWeight: "700",
-    fontSize: "2.4em",
+    fontSize: "2.1em",
   },
   {
     tag: tags.heading2,
     color: "var(--lac-text)",
     fontWeight: "650",
-    fontSize: "1.6em",
+    fontSize: "1.5em",
   },
   {
     tag: tags.heading3,
@@ -71,19 +70,19 @@ const lacHighlightStyle = HighlightStyle.define([
     tag: tags.heading4,
     color: "var(--lac-text)",
     fontWeight: "700",
-    fontSize: "1em",
+    fontSize: "1.1em",
   },
   {
     tag: tags.heading5,
     color: "var(--lac-text-secondary)",
     fontWeight: "600",
-    fontSize: "0.875em",
+    fontSize: "1.0em",
   },
   {
     tag: tags.heading6,
     color: "var(--lac-text-secondary)",
     fontWeight: "600",
-    fontSize: "0.8125em",
+    fontSize: "0.9em",
   },
   {
     tag: tags.heading,

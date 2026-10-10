@@ -116,9 +116,12 @@ describe("livePreview · 强调与行内代码", () => {
     expect(visibleText(doc, ranges)).toBe("a b c");
   });
 
-  it("光标进入粗体时显示原始标记", () => {
+  it("光标进入粗体时保持隐藏 **（Typora 式常驻所见即所得，不跳变露出原始标记）", () => {
     const ranges = rangesOf("a **b** c", 4);
-    expect(plainHides(ranges)).toEqual([]);
+    expect(plainHides(ranges)).toEqual([
+      [2, 4],
+      [5, 7],
+    ]);
   });
 
   it("隐藏行内代码的反引号", () => {
@@ -140,9 +143,9 @@ describe("livePreview · 链接", () => {
     expect(visibleText(doc, ranges)).toBe("看 文本 尾");
   });
 
-  it("光标进入链接时显示完整语法", () => {
+  it("光标进入链接时保持仅剩链接文字（Typora 式常驻所见即所得）", () => {
     const ranges = rangesOf(doc, 3);
-    expect(plainHides(ranges)).toEqual([]);
+    expect(visibleText(doc, ranges)).toBe("看 文本 尾");
   });
 });
 
@@ -163,10 +166,11 @@ describe("livePreview · 代码围栏", () => {
     expect(hasClass(ranges, 19, "md-code-fence-close")).toBe(true);
   });
 
-  it("光标进入代码块时：开 fence 显示原文（改语言），闭 fence 保持隐藏", () => {
+  it("光标进入代码块时：开 fence 保持语言标签，闭 fence 保持隐藏（Typora 式常驻代码卡片）", () => {
     const ranges = rangesOf(doc, 8);
     expect(plainHides(ranges)).toContainEqual([19, 22]);
-    expect(widgets(ranges)).toEqual([]);
+    const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
+    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js" } }]);
   });
 });
 
@@ -260,39 +264,39 @@ describe("livePreview · 折叠间距（校样样张）", () => {
     ]);
   });
 
-  it("段→h1/h2 大节标题：折叠 48px = 空行(8) + padding(40)", () => {
+  it("段→h1/h2 大节标题：折叠 28px = 空行(8) + padding(20)", () => {
     // "正文\n\n# 标题\n"：line3(from4) 是标题行
     const ranges = rangesOf("正文\n\n# 标题\n", 8);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 4, style: "--md-space-before:40px" },
+      { from: 4, style: "--md-space-before:20px" },
     ]);
   });
 
-  it("大节标题→段：折叠 16px = 空行(8) + padding(8)", () => {
+  it("大节标题→段：折叠 14px = 空行(8) + padding(6)", () => {
     // "# 标题\n\n正文\n"：line3(from6) 是正文行
     const ranges = rangesOf("# 标题\n\n正文\n", 8);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 6, style: "--md-space-before:8px" },
+      { from: 6, style: "--md-space-before:6px" },
     ]);
   });
 
-  it("段→代码块：折叠 24px，代码块用 fence 类承载而非 md-block", () => {
+  it("段→代码块：折叠 18px，代码块用 fence 类承载而非 md-block", () => {
     // "正文\n\n```js\nx\n```\n"：开 fence 行 from4
     const ranges = rangesOf("正文\n\n```js\nx\n```\n", 0);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 4, style: "--md-space-before:16px" },
+      { from: 4, style: "--md-space-before:10px" },
     ]);
     expect(hasClass(ranges, 4, "md-code-fence-open")).toBe(true);
     expect(hasClass(ranges, 4, "md-block")).toBe(false);
   });
 
-  it("分割线→段：折叠 32px = 空行(8) + padding(24)", () => {
+  it("分割线→段：折叠 22px = 空行(8) + padding(14)", () => {
     // "---\n\n后文\n"：line1 hr、line3(from5) 正文
     const ranges = rangesOf("---\n\n后文\n", 7);
     expect(hasClass(ranges, 0, "md-hr-line")).toBe(true);
     expect(hasClass(ranges, 4, "md-blank")).toBe(true);
     expect(lineAttrs(ranges)).toEqual([
-      { from: 5, style: "--md-space-before:24px" },
+      { from: 5, style: "--md-space-before:14px" },
     ]);
   });
 
@@ -464,10 +468,10 @@ describe("livePreview · 表格渲染与源码切换", () => {
   });
 
   it("表格作为独立块参与空行压缩，后文块从表格底边距折叠", () => {
-    // 表格(底24) → 后文段落(上0) 折叠 24，扣除 1 个压缩空行(8) = 16
+    // 表格(底18) → 后文段落(上0) 折叠 18，扣除 1 个压缩空行(8) = 10
     const ranges = rangesOf(TABLE_DOC, TABLE_DOC.length - 3);
     const after = lineAttrs(ranges).find((l) => l.from > 40);
-    expect(after?.style).toBe("--md-space-before:16px");
+    expect(after?.style).toBe("--md-space-before:10px");
   });
 
   it("文档首个块是表格时 gap 为 0", () => {

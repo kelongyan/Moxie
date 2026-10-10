@@ -51,36 +51,171 @@
           plugins: {},
           invoke(cmd, args) {
             const empty = () => Promise.resolve(null);
-            // 默认打开演示文档，供大纲与编辑区做视觉验证
+            // 默认打开全功能语法与排版样张文档，供排版、间距与组件效果视觉检验
             const launchArgs = () => {
               const doc = new URLSearchParams(location.search).get("doc");
               if (doc) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
-              return ["C:\\Workspace\\我的笔记\\设计方案.md"];
+              return ["C:\\Workspace\\我的笔记\\Markdown语法与排版样张.md"];
             };
-            const mockDocText = `# Moxie 样张演示
+            const mockDocText = `# Moxie 排版与全语法渲染样张
 
-一款安静、快速、真正属于 Windows 的 Markdown 编辑器。
+> **导读说明**：本样张详尽汇集了 Markdown 核心语法、GFM 扩展语法（表格、任务列表、删除线、标注块）、LaTeX 数学公式以及代码块等常用排版元素。用于对标 Typora 检验字体字阶、行高、段间距、留白比例与各类块级组件的视觉呈现。
 
-## 1. 核心设计理念
+---
 
-### 1.1 校样样张
-墨 / 校对红 / 高亮黄 三色基因，纸灰画布与面白 chrome，营造干净专注的书写体验。
+## 1. 标题分级与字体比例 (Headings)
 
-### 1.2 所见即所得
-- **实时渲染**：行内标记按需显示与隐藏
-- **表格原位编辑**：支持按 Tab 键流式录入单元格
-- **数学公式**：KaTeX 即时预览 $E = mc^2$
+### 1.1 三级标题演示 (H3 Heading)
+正文紧跟三级标题，用于检验三级标题（20px，字重 650）与正文之间的紧密亲合度以及段间距。
 
-## 2. 工作区与侧栏
+#### 1.1.1 四级标题演示 (H4 Heading)
+四级标题字号（17.6px / 1.1em，字重 700），可清晰从普通正文中凸显出来。
 
-左侧栏已重构为三合一现代化工作台：
-1. **工作区文件树**：支持多层级文件夹折叠/展开、新建与右键菜单
-2. **文档大纲**：H1~H6 层级标题导航，跟随光标实时高亮追踪
-3. **最近文件**：快速切换历史记录与相对时间戳
+##### 1.1.1.1 五级标题演示 (H5 Heading)
+五级标题字号（16px / 1.0em，字重 600，次级灰色）。
 
-### 2.1 交互体验
-- 鼠标放置于侧栏右边缘，可按住拖拽自由调节侧栏宽度（180px ~ 480px）。
-- 顶部支持一键在【文件】、【大纲】、【最近】之间平滑切换。`;
+###### 1.1.1.1.1 六级标题演示 (H6 Heading)
+六级标题字号（14.4px / 0.9em，字重 600，次级灰色带微小字距）。
+
+---
+
+## 2. 文本格式与行内元素 (Inline Formats)
+
+Markdown 支持多种丰富的行内样式修饰：
+- **粗体强调 (Bold)**：\`**重要提示**\` 渲染为 **重要提示**。
+- *斜体强调 (Italic)*：\`*次要说明*\` 渲染为 *次要说明*。
+- ***粗斜体 (Bold Italic)***：\`***重点着重***\` 渲染为 ***重点着重***。
+- ~~删除线 (Strikethrough)~~：\`~~已废弃方案~~\` 渲染为 ~~已废弃方案~~。
+- ==高亮标记 (Highlight Mark)==：\`==核心关键词==\` 渲染为 ==核心关键词==（醒目柔和荧光标记）。
+- 行内代码 (Inline Code)：\`const moxie = new Editor();\` 渲染为 \`const moxie = new Editor();\`。
+- 键盘快捷键 (Keyboard)：<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> 渲染为标准桌面按键。
+- 超链接 (Links)：[Moxie 官方仓库](https://github.com/moxie-editor) 与自动链接 <https://typora.io>。
+
+---
+
+## 3. 列表体系 (Lists & Hierarchies)
+
+### 3.1 无序列表与三级嵌套
+- 第一级项目符号（经典实心圆点 •）
+  - 第二级嵌套项目（经典空心圆点 ◦）
+    - 第三级嵌套项目（经典实心方块 ▪）
+    - 嵌套列表保持层级引导对齐，缩进适度
+  - 返回第二级嵌套分支
+- 返回第一级主列表项
+
+### 3.2 有序列表
+1. 第一项：初始化编辑器内核与 CodeMirror 6 状态树
+2. 第二项：挂载所见即所得装饰器，实现光标贴近时展开原始标记
+3. 第三项：配置统一排版度量，确保段落呼吸感自然
+
+### 3.3 任务列表 (Task Lists)
+- [x] 完成顶栏 Typora 风格经典菜单栏重构
+- [x] 优化右上角控制区域，仅保留 Windows 原生窗口控制
+- [x] 重构字号梯队、黄金行高（1.65）与段间距
+- [ ] 体验深色与浅色主题下各语法元素的表现
+- [ ] 导出为独立 HTML 与 Word 文档验证排版一致性
+
+---
+
+## 4. 引用与标注块 (Quotes & Callouts)
+
+### 4.1 标准引用与嵌套引用
+> 好的排版如同清澈的溪水，让阅读者专注于文字本身而察觉不到工具的存在。
+>
+> > 嵌套引用：Typora 的经典美学在于其极致的克制与优雅，留白得当，繁简适宜。
+
+### 4.2 GitHub 风格标注块 (Callouts)
+> [!NOTE]
+> 这是一条普通提示信息（Note Callout），用于补充背景知识或辅助说明。
+
+> [!TIP]
+> 这是一个实用建议（Tip Callout）：可以使用快捷键 <kbd>Ctrl</kbd>+<kbd>0</kbd>~<kbd>6</kbd> 极速调整当前标题级别。
+
+> [!IMPORTANT]
+> 这是一条重要通知（Important Callout）：所有文件操作均发生在本地，不联网、不上传。
+
+> [!WARNING]
+> 这是一条警告信息（Warning Callout）：请勿在非受信磁盘随意覆盖已有的关键配置文件。
+
+> [!CAUTION]
+> 这是一条危险警示（Caution Callout）：彻底删除操作将无法从垃圾箱还原。
+
+---
+
+## 5. 表格排版与对齐 (GFM Tables)
+
+| 功能模块 | 核心实现 | 渲染机制 | 当前状态 | 进度追踪 |
+| :--- | :---: | :---: | :---: | :---: |
+| **标题系统** | H1~H6 比例梯度 | CSS 装饰器 + 行盒优化 | [ACTIVE] | [x] 100% |
+| **所见即所得** | CodeMirror 6 扩展 | 光标邻近动态解包 | [ACTIVE] | [x] 100% |
+| **表格工坊** | 浮动工具条 + 原位录入 | Tab 键流式跳格与规模调节 | [HIGH] | [x] 100% |
+| **公式排版** | KaTeX 引擎 | 即时数学公式预览 | [DONE] | [x] 100% |
+| **数据导出** | 独立 HTML / Word | 样式 1:1 像素复刻 | [BETA] | [ ] 80% |
+
+---
+
+## 6. 代码块与语法高亮 (Code Blocks)
+
+\`\`\`typescript
+// Moxie 核心编辑器配置规范示例
+import { EditorState } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
+import { CONTENT_LINE_HEIGHT, MD_MARGIN } from "./typography";
+
+export interface EditorConfig {
+  fontSizePt: number;
+  lineHeight: number;
+  wordWrap: boolean;
+  theme: "light" | "dark";
+}
+
+export function createMoxieEditor(config: EditorConfig): EditorView {
+  const state = EditorState.create({
+    doc: "# 欢迎使用 Moxie 编辑器\\n\\n开始书写您的精彩灵感...",
+    extensions: [
+      EditorView.lineWrapping,
+      EditorView.theme({
+        ".cm-scroller": {
+          lineHeight: \`\${config.lineHeight}em\`,
+        },
+      }),
+    ],
+  });
+
+  return new EditorView({ state });
+}
+\`\`\`
+
+\`\`\`rust
+// Rust 后端安全文件读取
+pub fn read_file_safe(path: &std::path::Path) -> Result<String, std::io::Error> {
+    let content = std::fs::read_to_string(path)?;
+    println!("成功加载文档: {:?}", path.file_name());
+    Ok(content)
+}
+\`\`\`
+
+---
+
+## 7. 数学公式 (LaTeX Math)
+
+### 7.1 行内公式 (Inline Math)
+欧拉恒等式通常被称为数学中最美妙的公式：$e^{i\\pi} + 1 = 0$。质能方程为 $E = mc^2$。
+
+### 7.2 块级公式 (Block Math)
+高斯正态分布积分公式：
+$$\\int_{-\\infty}^{+\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}$$
+
+以及傅里叶变换公式：
+$$\\hat{f}(\\xi) = \\int_{-\\infty}^{\\infty} f(x) e^{-2\\pi i x \\xi} \\, dx$$
+
+---
+
+## 8. 分隔线与注脚 (Footnotes & Divider)
+
+这是一段带有注脚说明的正文文字[^moxie-engine]，可以点击注脚标号跳转到文末查看详细附注。
+
+[^moxie-engine]: Moxie 采用本地原生 Rust 后端与现代 WebView2 架构，专注打造 Windows 上的极致 Markdown 写作体验。`;
 
             const table = {
               launch_args: launchArgs,
@@ -97,7 +232,7 @@
                   );
                 }
                 const name = a?.path?.split(/[\\/]/).pop() || "文档.md";
-                const text = mockDocText.replace("Moxie 样张演示", name.replace(/\.md$/, ""));
+                const text = mockDocText.replace("Moxie 排版与全语法渲染样张", name.replace(/\.md$/, ""));
                 return Promise.resolve({
                   text,
                   encoding: "utf-8",
@@ -123,9 +258,9 @@
                 const p = a?.path || "";
                 if (p === "C:\\Workspace\\我的笔记") {
                   return Promise.resolve([
+                    { name: "Markdown语法与排版样张.md", path: "C:\\Workspace\\我的笔记\\Markdown语法与排版样张.md", isDir: false, isMarkdown: true, size: 8192, modifiedMs: Date.now() },
                     { name: "项目规划", path: "C:\\Workspace\\我的笔记\\项目规划", isDir: true, isMarkdown: false, size: 0, modifiedMs: Date.now() },
                     { name: "灵感随笔", path: "C:\\Workspace\\我的笔记\\灵感随笔", isDir: true, isMarkdown: false, size: 0, modifiedMs: Date.now() },
-                    { name: "设计方案.md", path: "C:\\Workspace\\我的笔记\\设计方案.md", isDir: false, isMarkdown: true, size: 4096, modifiedMs: Date.now() },
                     { name: "工作周报.md", path: "C:\\Workspace\\我的笔记\\工作周报.md", isDir: false, isMarkdown: true, size: 2048, modifiedMs: Date.now() },
                     { name: "架构图.png", path: "C:\\Workspace\\我的笔记\\架构图.png", isDir: false, isMarkdown: false, size: 512000, modifiedMs: Date.now() },
                   ]);
@@ -145,7 +280,7 @@
               },
               recent_list: () =>
                 Promise.resolve([
-                  { path: "C:\\Workspace\\我的笔记\\设计方案.md", lastOpenedMs: Date.now() - 1000 * 60 * 5 },
+                  { path: "C:\\Workspace\\我的笔记\\Markdown语法与排版样张.md", lastOpenedMs: Date.now() - 1000 * 60 * 1 },
                   { path: "C:\\Workspace\\我的笔记\\项目规划\\产品迭代排期.md", lastOpenedMs: Date.now() - 1000 * 60 * 45 },
                   { path: "C:\\Workspace\\我的笔记\\工作周报.md", lastOpenedMs: Date.now() - 1000 * 60 * 60 * 3 },
                   { path: "D:\\Docs\\历史备忘录.md", lastOpenedMs: Date.now() - 1000 * 60 * 60 * 24 * 2 },

@@ -213,6 +213,8 @@
     "Microsoft YaHei UI", system-ui, sans-serif;
   --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Frex Sans GB",
     "Sarasa Mono SC", "Microsoft YaHei UI", monospace;
+  --font-content: -apple-system, BlinkMacSystemFont, "Segoe UI", "Frex Sans GB",
+    "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
 
   /* 字号 · UI 轨道（13px 基准） */
   --fs-meta: 11px; /* 徽标 / kbd */
@@ -222,11 +224,11 @@
 
   /* 字号 · 内容轨道（16px 基准，阶段 3 起接管编辑器与预览） */
   --fs-content: 16px;
-  --fs-content-line: 1.7;
+  --fs-content-line: 1.65;
   --fs-mono: 13.5px;
   --measure: min(74ch, 100%);
-  /* 书写面（所见即所得）正文区限宽：居中显示，两端留白（上限 960px，窄窗口收缩到 94%） */
-  --measure-writing: min(960px, 94%);
+  /* 书写面（所见即所得）正文区限宽：居中显示，两端留白（对标 Typora 最佳阅读宽度 860px） */
+  --measure-writing: min(860px, 92%);
 
   /* 旧名兼容（逐阶段迁移完成后删除） */
   --fs-11: var(--fs-meta);

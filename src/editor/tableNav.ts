@@ -1,7 +1,9 @@
 import { EditorView } from "@codemirror/view";
 import {
+  clearCellEdit,
   deleteColEdit,
   deleteRowEdit,
+  deleteTableEdit,
   emptyTable,
   findTableAt,
   formatTableChange,
@@ -14,7 +16,7 @@ import {
 } from "./table";
 
 /**
- * 表格交互层：结构操作（行/列/对齐/整理）与菜单。渲染态表格 widget 在此注册，
+ * 表格交互层：结构操作（行/列/对齐/整理/删除）与菜单。渲染态表格 widget 在此注册，
  * 菜单动作经由 widget 执行——编辑中未落盘的单元格内容由 widget 合并进模型后
  * 整表重写（单事务、一步撤销）。「活动编辑格」标记供文档变化后恢复编辑位置。
  */
@@ -124,6 +126,8 @@ document.addEventListener("keydown", (e) => {
 interface MenuSpec {
   label: string;
   run: () => void;
+  separatorBefore?: boolean;
+  danger?: boolean;
 }
 
 function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
@@ -132,9 +136,15 @@ function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
   menu.className = "md-table-menu";
   menu.setAttribute("role", "menu");
   for (const item of items) {
+    if (item.separatorBefore) {
+      const divider = document.createElement("div");
+      divider.className = "md-table-menu-divider";
+      menu.appendChild(divider);
+    }
     const btn = document.createElement("button");
     btn.type = "button";
     btn.setAttribute("role", "menuitem");
+    if (item.danger) btn.className = "is-danger";
     btn.textContent = item.label;
     btn.addEventListener("mousedown", (e) => e.stopPropagation());
     btn.addEventListener("click", (e) => {
@@ -144,8 +154,8 @@ function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
     });
     menu.appendChild(btn);
   }
-  menu.style.left = `${Math.max(4, Math.min(x, window.innerWidth - 150))}px`;
-  menu.style.top = `${Math.min(y, window.innerHeight - items.length * 30 - 12)}px`;
+  menu.style.left = `${Math.max(4, Math.min(x, window.innerWidth - 170))}px`;
+  menu.style.top = `${Math.min(y, window.innerHeight - items.length * 30 - 30)}px`;
   document.body.appendChild(menu);
   openMenu = menu;
   view.focus();
@@ -172,7 +182,9 @@ export function openTableMenu(
       col: 0,
     };
   const activeCol = Math.max(0, opts.col ?? at.col);
+  const currentColAlign = model.aligns[activeCol] ?? "left";
   const items: MenuSpec[] = [];
+
   if (opts.col === undefined) {
     items.push(
       {
@@ -190,14 +202,16 @@ export function openTableMenu(
           ),
       },
       {
-        label: "删除行",
+        label: "删除当前行",
         run: () => runTableEdit(view, tableFrom, (m) => deleteRowEdit(m, at.row)),
       }
     );
   }
+
   items.push(
     {
       label: "在左侧插入列",
+      separatorBefore: opts.col === undefined,
       run: () => runTableEdit(view, tableFrom, (m) => insertColEdit(m, activeCol)),
     },
     {
@@ -205,28 +219,44 @@ export function openTableMenu(
       run: () => runTableEdit(view, tableFrom, (m) => insertColEdit(m, activeCol + 1)),
     },
     {
-      label: "左对齐",
+      label: "删除当前列",
+      run: () => runTableEdit(view, tableFrom, (m) => deleteColEdit(m, activeCol)),
+    },
+    {
+      label: `${currentColAlign === "left" ? "✓ " : "   "}左对齐`,
+      separatorBefore: true,
       run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "left")),
     },
     {
-      label: "居中",
+      label: `${currentColAlign === "center" ? "✓ " : "   "}居中对齐`,
       run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "center")),
     },
     {
-      label: "右对齐",
+      label: `${currentColAlign === "right" ? "✓ " : "   "}右对齐`,
       run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "right")),
-    },
-    {
-      label: "删除列",
-      run: () => runTableEdit(view, tableFrom, (m) => deleteColEdit(m, activeCol)),
     }
   );
+
   if (opts.col === undefined) {
-    items.push({
-      label: "整理表格",
-      run: () => runTableEdit(view, tableFrom, (m) => formatTableChange(m)),
-    });
+    items.push(
+      {
+        label: "清空当前格",
+        separatorBefore: true,
+        run: () => runTableEdit(view, tableFrom, (m) => clearCellEdit(m, at.row, activeCol)),
+      },
+      {
+        label: "整理表格",
+        run: () => runTableEdit(view, tableFrom, (m) => formatTableChange(m)),
+      },
+      {
+        label: "删除表格",
+        separatorBefore: true,
+        danger: true,
+        run: () => runTableEdit(view, tableFrom, (m) => deleteTableEdit(m)),
+      }
+    );
   }
+
   showMenu(view, items, x, y);
 }
 

@@ -208,50 +208,53 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   /* 导出限宽变体：正文 960px 居中 */
   article.code-narrow { max-width: min(960px, 94%); margin: 0 auto; }
 
-  /* 标题：校样样张层级——h1 丝线、h2 无线、h5/h6 缩小转灰；间距走 typography 单一来源 */
-  h1, h2, h3, h4, h5, h6 { line-height: 1.3; }
+  /* 标题：对标 Typora 黄金比例层级——h1 丝线、h2 无线、层级紧凑；间距走 typography 单一来源 */
+  h1, h2, h3, h4, h5, h6 { line-height: 1.35; }
   h1 {
-    font-size: 2.4em;
+    font-size: 2.1em;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
-    padding-bottom: 16px;
+    padding-bottom: 8px;
     border-bottom: 1px solid ${tokens.border};
   }
   h2 {
-    font-size: 1.6em;
+    font-size: 1.5em;
     font-weight: 650;
+    line-height: 1.35;
     color: ${tokens.heading2 || tokens.fg};
     margin: ${MD_MARGIN.headingMajor.top}px 0 ${MD_MARGIN.headingMajor.bottom}px;
+    padding-bottom: 4px;
   }
   h3 {
     font-size: 1.25em;
     font-weight: 650;
+    line-height: 1.4;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h4 {
-    font-size: 1em;
+    font-size: 1.1em;
     font-weight: 700;
     color: ${tokens.fg};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h5 {
-    font-size: 0.875em;
+    font-size: 1.0em;
     font-weight: 600;
     color: ${tokens.secondary};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
   h6 {
-    font-size: 0.8125em;
+    font-size: 0.9em;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: ${tokens.secondary};
     margin: ${MD_MARGIN.heading.top}px 0 ${MD_MARGIN.heading.bottom}px;
   }
 
-  /* 段落：单侧 margin，14px 段距（TizuMark 节奏） */
+  /* 段落：单侧 margin，对标段间距规范 */
   p { margin: 0 0 ${MD_MARGIN.paragraph.bottom}px; }
 
   /* 行内强调 */
@@ -368,7 +371,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   /* 代码块：打纸稿——与行内代码同底、1px 边框、8px 圆角、右上语言标签；300px 按需滚动 */
   pre {
     position: relative;
-    padding: 24px 32px;
+    padding: 14px 18px;
     background: ${codeBg};
     border: 1px solid ${tokens.border};
     border-radius: 8px;
@@ -433,7 +436,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     font-variant-numeric: tabular-nums;
   }
   th, td {
-    padding: 12px 16px;
+    padding: 8px 14px;
     text-align: left;
     vertical-align: top;
     line-height: 1.65;
@@ -458,11 +461,11 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   tbody tr:nth-child(even) { background: color-mix(in srgb, ${tokens.fg} 3%, transparent); }
   tbody tr:hover { background: color-mix(in srgb, ${tokens.accent} 6%, transparent); }
 
-  /* 引用：校对样张——3px 校对红边条、无底色、灰字；嵌套收敛为发丝线 */
+  /* 引用：3.5px 强调色边条、无底色、灰字；嵌套收敛为发丝线 */
   blockquote {
     margin: 0 0 ${MD_MARGIN.blockquote.bottom}px;
-    padding: 12px 16px;
-    border-left: 3px solid ${tokens.accent};
+    padding: 8px 16px;
+    border-left: 3.5px solid ${tokens.accent};
     color: ${tokens.secondary};
   }
   blockquote > :last-child { margin-bottom: 0; }
