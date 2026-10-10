@@ -226,24 +226,83 @@ body {
   margin-left: 4px;
 }
 
-/* 顶栏：无框窗口自绘标题区，兼作拖拽区；标签栏中段弹性分布 */
+/* 顶栏：无框窗口自绘标题区（对齐 Typora 菜单栏 + 居中文档名布局） */
 .title-toolbar {
   height: var(--lac-header-height);
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 0 0 6px;
   background: var(--lac-bg-chrome);
   border-bottom: 1px solid var(--lac-border);
   user-select: none;
 }
 
-/* 顶栏左侧：侧栏切换轻量按键 */
-.title-left-group {
+/* 顶栏左侧：侧栏切换 + 仿 Typora 菜单栏（灰色占位按钮） */
+.titlebar-left {
   display: flex;
   align-items: center;
+  gap: 2px;
   flex-shrink: 0;
-  padding-right: 2px;
+  height: 100%;
+}
+
+.typora-menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: 2px;
+}
+
+.typora-menu-placeholder-btn {
+  height: 24px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--lac-text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  border-radius: var(--radius-xs);
+  cursor: default;
+  user-select: none;
+  transition: background var(--anim-hover), color var(--anim-hover);
+  white-space: nowrap;
+}
+
+.typora-menu-placeholder-btn:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+/* 顶栏中段：Typora 风格居中文档标题 */
+.titlebar-center {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.titlebar-doc-name {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--lac-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+/* 顶栏右侧：占位动作 + 窗口控制 */
+.titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  height: 100%;
 }
 
 /* 顶栏极简图标按钮（Typora / Obsidian 级克制） */
@@ -275,13 +334,12 @@ body {
   background: var(--lac-accent-soft);
 }
 
-/* 顶栏右侧动作群组 */
-.title-actions-group {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-  padding: 0 4px;
+.placeholder-action-btn {
+  color: var(--lac-text-tertiary);
+}
+
+.placeholder-action-btn:hover:not(:disabled) {
+  color: var(--lac-text);
 }
 
 /* 窗口控制按钮：46 宽贴右缘，关闭悬停系统红 */
@@ -1814,14 +1872,14 @@ body {
   padding: 4px;
 }
 
-/* ---------- 最近文件视图 ---------- */
-.recent-view {
+/* ---------- 侧栏打开的标签页视图 ---------- */
+.tabs-list-view {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.recent-list {
+.sidebar-tabs-container {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -1831,28 +1889,30 @@ body {
   gap: 2px;
 }
 
-.recent-item {
+.sidebar-tab-row {
   height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 8px;
+  border: 1px solid transparent;
   border-radius: var(--radius-sm);
   cursor: pointer;
   user-select: none;
-  transition: background var(--anim-hover);
+  transition: background var(--anim-hover), border-color var(--anim-hover);
 }
 
-.recent-item:hover {
+.sidebar-tab-row:hover {
   background: var(--lac-hover);
 }
 
-.recent-item.is-open {
-  background: var(--lac-bg-chrome);
+.sidebar-tab-row.is-active {
+  background: var(--lac-tab-selected-bg);
+  border-color: var(--lac-border);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.recent-left {
+.tab-row-left {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1860,24 +1920,23 @@ body {
   flex: 1;
 }
 
-.recent-left .file-icon {
+.tab-row-icon {
+  color: var(--lac-text-secondary);
+  flex-shrink: 0;
+}
+
+.tab-row-icon.is-active {
   color: var(--lac-accent);
-  flex-shrink: 0;
 }
 
-.recent-left .warn-icon {
-  color: var(--lac-warning);
-  flex-shrink: 0;
-}
-
-.recent-info {
+.tab-row-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
   flex: 1;
 }
 
-.recent-name {
+.tab-row-name {
   font-size: var(--fs-caption);
   font-weight: 500;
   color: var(--lac-text);
@@ -1886,7 +1945,11 @@ body {
   text-overflow: ellipsis;
 }
 
-.recent-dir {
+.sidebar-tab-row.is-active .tab-row-name {
+  font-weight: 600;
+}
+
+.tab-row-path {
   font-size: var(--fs-badge);
   color: var(--lac-text-tertiary);
   white-space: nowrap;
@@ -1894,41 +1957,35 @@ body {
   text-overflow: ellipsis;
 }
 
-.recent-right {
+.tab-row-right {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
 
-.recent-time {
-  font-size: var(--fs-badge);
-  color: var(--lac-text-tertiary);
-  font-variant-numeric: tabular-nums;
-}
-
-.recent-remove-btn {
+.tab-row-close-btn {
   opacity: 0;
   border: none;
   background: transparent;
   color: var(--lac-text-tertiary);
   cursor: pointer;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
-  border-radius: 3px;
+  border-radius: 50%;
   padding: 0;
-  transition: opacity var(--anim-hover), color var(--anim-hover);
+  transition: opacity var(--anim-hover), color var(--anim-hover), background var(--anim-hover);
 }
 
-.recent-item:hover .recent-remove-btn {
+.sidebar-tab-row:hover .tab-row-close-btn {
   opacity: 1;
 }
 
-.recent-remove-btn:hover {
-  color: var(--lac-danger);
-  background: var(--lac-danger-soft);
+.tab-row-close-btn:hover {
+  color: var(--lac-text);
+  background: var(--lac-hover);
 }
 
 @keyframes spin {

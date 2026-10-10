@@ -19,7 +19,6 @@ import { SavePromptDialog } from "./components/SavePromptDialog";
 import { SidebarView } from "./components/SidebarView";
 import { StatusBar } from "./components/StatusBar";
 import { TableInsertPicker } from "./components/TableInsertPicker";
-import { TabBar } from "./components/TabBar";
 import { TitleToolbar } from "./components/TitleToolbar";
 import { useCloseGuard } from "./hooks/useCloseGuard";
 import { DropOverlay, useFileDrop } from "./hooks/useFileDrop";
@@ -184,9 +183,7 @@ export default function App() {
         onSidebarToggle={onSidebarToggle}
         onSidebarHoverStart={onSidebarHoverStart}
         onSidebarHoverEnd={onSidebarHoverEnd}
-      >
-        <TabBar />
-      </TitleToolbar>
+      />
       <div className={"lac-main" + (sidebarMode === "pinned" ? " sidebar-pinned" : "")}>
         <aside
           className={`sidebar mode-${sidebarMode}`}

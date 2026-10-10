@@ -80,8 +80,8 @@ describe("sidebar workspace and tabs", () => {
   it("switches active tab cleanly", () => {
     useSidebar.getState().setActiveTab("outline");
     expect(useSidebar.getState().activeTab).toBe("outline");
-    useSidebar.getState().setActiveTab("recent");
-    expect(useSidebar.getState().activeTab).toBe("recent");
+    useSidebar.getState().setActiveTab("tabs");
+    expect(useSidebar.getState().activeTab).toBe("tabs");
     useSidebar.getState().setActiveTab("files");
     expect(useSidebar.getState().activeTab).toBe("files");
   });

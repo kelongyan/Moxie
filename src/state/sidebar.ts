@@ -29,7 +29,7 @@ export interface SectionsExpanded {
   outline: boolean;
 }
 
-export type SidebarTab = "files" | "outline" | "recent";
+export type SidebarTab = "files" | "outline" | "tabs";
 
 interface SidebarState {
   activeTab: SidebarTab;
@@ -269,7 +269,7 @@ export const useSidebar = create<SidebarState>((set, get) => ({
         : [];
       const sections = (value.sections ?? {}) as Partial<SectionsExpanded>;
       const workspacePath = typeof value.workspacePath === "string" ? value.workspacePath : null;
-      const activeTab = (value.activeTab === "files" || value.activeTab === "outline" || value.activeTab === "recent")
+      const activeTab = (value.activeTab === "files" || value.activeTab === "outline" || value.activeTab === "tabs")
         ? value.activeTab
         : "files";
       const expandedDirs = (typeof value.expandedDirs === "object" && value.expandedDirs !== null)
