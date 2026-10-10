@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
+import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   Copy,
-  Download,
   Minus,
-  MoreHorizontal,
   PanelLeft,
   Square,
   X,
@@ -14,11 +13,21 @@ import { ContextMenu, MenuItem } from "./ContextMenu";
 import { Tooltip } from "./Tooltip";
 import { openSettingsWindow } from "../state/settingsWindow";
 import { openFindWindow } from "../state/findWindow";
+import { openCodecWindow } from "../state/codecWindow";
+import { createEmptyWindow } from "../state/windows";
+import { promptConfirm } from "../state/prompts";
+import {
+  copyRichTextAction,
+  newTabAction,
+  openFileAction,
+  saveActiveAction,
+  saveAsAction,
+} from "../state/actions";
+import { redoFor, undoFor, viewFor } from "../editor/registry";
 import { exportPreviewHtml, exportWordDoc } from "../preview/exportHtml";
 import { collectPreviewTokens } from "../preview/markdown";
 import { directoryOf } from "../preview/markdownCore";
 import { usePreferences } from "../state/preferences";
-import { viewFor } from "../editor/registry";
 
 interface TitleToolbarProps {
   activeDoc: EditorDocument | null;
@@ -78,7 +87,7 @@ function WindowControls() {
   );
 }
 
-// Typora 经典菜单项（按需求先使用灰色按钮占位表示，暂不接入业务）
+// Typora 经典菜单项定义
 const TYPORA_MENUS = [
   { key: "file", label: "文件(F)" },
   { key: "edit", label: "编辑(E)" },
@@ -96,8 +105,12 @@ export function TitleToolbar({
   onSidebarHoverStart,
   onSidebarHoverEnd,
 }: TitleToolbarProps) {
-  const [exportMenu, setExportMenu] = useState<{ x: number; y: number } | null>(null);
-  const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
+  const [openMenu, setOpenMenu] = useState<{
+    key: string;
+    x: number;
+    y: number;
+    items: MenuItem[];
+  } | null>(null);
 
   const runExport = async (
     fn: (opts: Parameters<typeof exportPreviewHtml>[0]) => Promise<boolean>,
@@ -131,35 +144,146 @@ export function TitleToolbar({
     }
   };
 
-  const exportMenuItems: MenuItem[] = [
-    {
-      label: "导出为独立 HTML",
-      disabled: !activeDoc,
-      onClick: () => void runExport(exportPreviewHtml, "已导出为 HTML"),
-    },
-    {
-      label: "导出为 Word 文档 (.doc)",
-      disabled: !activeDoc,
-      onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
-    },
-  ];
+  const handleAbout = async () => {
+    let version = "";
+    try {
+      version = await getVersion();
+    } catch {
+      version = "";
+    }
+    await promptConfirm(
+      "关于 Moxie",
+      `Moxie ${version ? `v${version}` : ""}\n一款安静、快速、真正属于 Windows 的本地 Markdown 编辑器。不登录、不联网、不上传内容。`,
+      "关闭"
+    );
+  };
 
-  const moreMenuItems: MenuItem[] = [
-    {
-      label: "查找/替换",
-      shortcut: "Ctrl+F",
-      onClick: () => void openFindWindow("find"),
-    },
-    {
-      label: "偏好设置",
-      shortcut: "Ctrl+,",
-      onClick: () => void openSettingsWindow(),
-    },
-  ];
+  const getMenuItems = (key: string): MenuItem[] => {
+    switch (key) {
+      case "file":
+        return [
+          {
+            label: "新建标签页",
+            shortcut: "Ctrl+T",
+            onClick: () => newTabAction(),
+          },
+          {
+            label: "新建窗口",
+            onClick: () => void createEmptyWindow(),
+          },
+          {
+            label: "打开文件…",
+            shortcut: "Ctrl+O",
+            onClick: () => void openFileAction(),
+          },
+          {
+            label: "保存",
+            shortcut: "Ctrl+S",
+            disabled: !activeDoc,
+            onClick: () => void saveActiveAction(),
+          },
+          {
+            label: "另存为…",
+            shortcut: "Ctrl+Shift+S",
+            disabled: !activeDoc,
+            onClick: () => void saveAsAction(),
+          },
+          {
+            label: "导出为独立 HTML…",
+            separatorBefore: true,
+            disabled: !activeDoc,
+            onClick: () => void runExport(exportPreviewHtml, "已导出为 HTML"),
+          },
+          {
+            label: "导出为 Word 文档 (.doc)…",
+            disabled: !activeDoc,
+            onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
+          },
+          {
+            label: "复制为富文本",
+            shortcut: "Ctrl+Shift+C",
+            disabled: !activeDoc,
+            onClick: () => void copyRichTextAction(),
+          },
+          {
+            label: "偏好设置…",
+            shortcut: "Ctrl+,",
+            separatorBefore: true,
+            onClick: () => void openSettingsWindow(),
+          },
+        ];
+      case "edit":
+        return [
+          {
+            label: "撤销",
+            shortcut: "Ctrl+Z",
+            disabled: !activeDoc,
+            onClick: () => activeDoc && undoFor(activeDoc.id),
+          },
+          {
+            label: "重做",
+            shortcut: "Ctrl+Shift+Z",
+            disabled: !activeDoc,
+            onClick: () => activeDoc && redoFor(activeDoc.id),
+          },
+          {
+            label: "查找/替换",
+            shortcut: "Ctrl+F",
+            separatorBefore: true,
+            onClick: () => void openFindWindow("find"),
+          },
+          {
+            label: "插入表格…",
+            shortcut: "Ctrl+Shift+T",
+            disabled: !activeDoc,
+            onClick: () =>
+              void import("../state/tableInsert").then((m) => m.openTableInsert()),
+          },
+          {
+            label: "编码转换",
+            shortcut: "Alt+D",
+            onClick: () => void openCodecWindow("smart-decode"),
+          },
+        ];
+      case "view":
+        return [
+          {
+            label: sidebarPinned ? "收起侧边栏" : "展开侧边栏",
+            shortcut: "Ctrl+Shift+B",
+            onClick: onSidebarToggle,
+          },
+        ];
+      case "help":
+        return [
+          {
+            label: "关于 Moxie…",
+            onClick: () => void handleAbout(),
+          },
+        ];
+      default:
+        return [
+          {
+            label: "功能占位 (开发中)",
+            disabled: true,
+            onClick: () => {},
+          },
+        ];
+    }
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>, key: string) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setOpenMenu({
+      key,
+      x: rect.left,
+      y: rect.bottom + 2,
+      items: getMenuItems(key),
+    });
+  };
 
   return (
     <header className="title-toolbar typora-header" data-tauri-drag-region>
-      {/* 1. 左侧：侧栏切换按钮 + 仿 Typora 菜单栏（灰色占位按钮） */}
+      {/* 1. 左侧：侧栏切换按钮 + Typora 经典菜单栏（各功能已规范移入对应菜单） */}
       <div className="titlebar-left" data-tauri-drag-region>
         <Tooltip label={sidebarPinned ? "收起侧栏" : "展开侧栏"} shortcut="Ctrl+Shift+B">
           <button
@@ -177,8 +301,11 @@ export function TitleToolbar({
           {TYPORA_MENUS.map((menu) => (
             <button
               key={menu.key}
-              className="typora-menu-placeholder-btn"
-              title={`${menu.label} 菜单 (占位)`}
+              className={
+                "typora-menu-placeholder-btn" +
+                (openMenu?.key === menu.key ? " is-active" : "")
+              }
+              onClick={(e) => handleMenuClick(e, menu.key)}
             >
               {menu.label}
             </button>
@@ -186,54 +313,21 @@ export function TitleToolbar({
         </div>
       </div>
 
-      {/* 2. 中间：纯拖拽留白区 */}
+      {/* 2. 中间：整幅无阻碍拖拽留白区 */}
       <div className="titlebar-center" data-tauri-drag-region />
 
-      {/* 3. 右侧：快速占位操作（导出/更多） + 窗口控制 */}
+      {/* 3. 右侧：彻底清除多余下载与点阵按钮，仅保留 Windows 原生窗口控制 */}
       <div className="titlebar-right" data-tauri-drag-region>
-        <button
-          className="tool-icon-btn placeholder-action-btn"
-          title="导出文档选项"
-          disabled={!activeDoc}
-          onClick={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setExportMenu({ x: rect.left, y: rect.bottom + 4 });
-          }}
-        >
-          <Download size={13} />
-        </button>
-
-        <button
-          className="tool-icon-btn placeholder-action-btn"
-          title="更多选项"
-          onClick={(e) => {
-            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setMoreMenu({ x: rect.left, y: rect.bottom + 4 });
-          }}
-        >
-          <MoreHorizontal size={14} />
-        </button>
-
         <WindowControls />
       </div>
 
-      {/* 导出菜单 */}
-      {exportMenu && (
+      {/* 统一菜单弹出层 */}
+      {openMenu && (
         <ContextMenu
-          x={exportMenu.x}
-          y={exportMenu.y}
-          items={exportMenuItems}
-          onClose={() => setExportMenu(null)}
-        />
-      )}
-
-      {/* 更多菜单 */}
-      {moreMenu && (
-        <ContextMenu
-          x={moreMenu.x}
-          y={moreMenu.y}
-          items={moreMenuItems}
-          onClose={() => setMoreMenu(null)}
+          x={openMenu.x}
+          y={openMenu.y}
+          items={openMenu.items}
+          onClose={() => setOpenMenu(null)}
         />
       )}
     </header>

@@ -270,7 +270,8 @@ body {
   white-space: nowrap;
 }
 
-.typora-menu-placeholder-btn:hover {
+.typora-menu-placeholder-btn:hover,
+.typora-menu-placeholder-btn.is-active {
   background: var(--lac-hover);
   color: var(--lac-text);
 }
@@ -282,11 +283,10 @@ body {
   height: 100%;
 }
 
-/* 顶栏右侧：占位动作 + 窗口控制 */
+/* 顶栏右侧：纯窗口控制 */
 .titlebar-right {
   display: flex;
   align-items: center;
-  gap: 2px;
   flex-shrink: 0;
   height: 100%;
 }
