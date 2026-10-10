@@ -2,14 +2,13 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
+  ChevronDown,
   Copy,
   Download,
   Minus,
   MoreHorizontal,
   PanelLeft,
-  Redo2,
   Square,
-  Undo2,
   X,
 } from "lucide-react";
 import { redoFor, undoFor, viewFor } from "../editor/registry";
@@ -104,7 +103,8 @@ export function TitleToolbar({
 }: TitleToolbarProps) {
   const hasDocument = activeDoc !== null;
   const exportingRef = useRef(false);
-  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [exportMenu, setExportMenu] = useState<{ x: number; y: number } | null>(null);
+  const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
 
   const runExport = async (
     fn: (opts: Parameters<typeof exportPreviewHtml>[0]) => Promise<boolean>,
@@ -141,7 +141,7 @@ export function TitleToolbar({
     }
   };
 
-  const handleExport = () => runExport(exportPreviewHtml, "已导出为 HTML");
+  const handleExportHtml = () => runExport(exportPreviewHtml, "已导出为 HTML");
 
   const handleAbout = async () => {
     let version = "";
@@ -157,100 +157,173 @@ export function TitleToolbar({
     );
   };
 
-  const menuItems: MenuItem[] = [
-    { label: "新建标签", shortcut: "Ctrl+T", onClick: () => newTabAction() },
-    { label: "新建窗口", onClick: () => void createEmptyWindow() },
-    { label: "打开文件", shortcut: "Ctrl+O", onClick: () => void openFileAction() },
-    { label: "保存", shortcut: "Ctrl+S", onClick: () => void saveActiveAction() },
-    { label: "另存为", shortcut: "Ctrl+Shift+S", onClick: () => void saveAsAction() },
-    { label: "复制为富文本", shortcut: "Ctrl+Shift+C", disabled: !hasDocument, onClick: () => void copyRichTextAction() },
-    { label: "插入表格…", shortcut: "Ctrl+Shift+T", disabled: !hasDocument, onClick: () => void import("../state/tableInsert").then((m) => m.openTableInsert()) },
-    { label: "导出为 HTML", disabled: !hasDocument, onClick: () => void handleExport() },
-    { label: "导出为 Word(.doc)", disabled: !hasDocument, onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档") },
-    { label: "历史版本…", disabled: !hasDocument, onClick: () => openHistoryOverlay() },
-    { label: "查找/替换", shortcut: "Ctrl+F", separatorBefore: true, onClick: () => void openFindWindow("find") },
-    { label: "编码转换", shortcut: "Alt+D", onClick: () => void openCodecWindow("smart-decode") },
-    { label: "设置", shortcut: "Ctrl+,", separatorBefore: true, onClick: () => void openSettingsWindow() },
-    { label: "关于 Moxie", onClick: () => void handleAbout() },
+  const exportMenuItems: MenuItem[] = [
+    {
+      label: "导出为独立 HTML",
+      disabled: !hasDocument,
+      onClick: () => void handleExportHtml(),
+    },
+    {
+      label: "导出为 Word 文档 (.doc)",
+      disabled: !hasDocument,
+      onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
+    },
+    {
+      label: "复制为富文本",
+      shortcut: "Ctrl+Shift+C",
+      disabled: !hasDocument,
+      onClick: () => void copyRichTextAction(),
+    },
+  ];
+
+  const moreMenuItems: MenuItem[] = [
+    {
+      label: "撤销",
+      shortcut: "Ctrl+Z",
+      disabled: !hasDocument,
+      onClick: () => activeDoc && undoFor(activeDoc.id),
+    },
+    {
+      label: "重做",
+      shortcut: "Ctrl+Shift+Z",
+      disabled: !hasDocument,
+      onClick: () => activeDoc && redoFor(activeDoc.id),
+    },
+    {
+      label: "新建标签",
+      shortcut: "Ctrl+T",
+      separatorBefore: true,
+      onClick: () => newTabAction(),
+    },
+    {
+      label: "新建窗口",
+      onClick: () => void createEmptyWindow(),
+    },
+    {
+      label: "打开文件…",
+      shortcut: "Ctrl+O",
+      onClick: () => void openFileAction(),
+    },
+    {
+      label: "保存",
+      shortcut: "Ctrl+S",
+      disabled: !hasDocument,
+      onClick: () => void saveActiveAction(),
+    },
+    {
+      label: "另存为…",
+      shortcut: "Ctrl+Shift+S",
+      disabled: !hasDocument,
+      onClick: () => void saveAsAction(),
+    },
+    {
+      label: "查找/替换",
+      shortcut: "Ctrl+F",
+      separatorBefore: true,
+      onClick: () => void openFindWindow("find"),
+    },
+    {
+      label: "插入表格…",
+      shortcut: "Ctrl+Shift+T",
+      disabled: !hasDocument,
+      onClick: () => void import("../state/tableInsert").then((m) => m.openTableInsert()),
+    },
+    {
+      label: "版本时间线…",
+      disabled: !hasDocument,
+      onClick: () => openHistoryOverlay(),
+    },
+    {
+      label: "编码转换",
+      shortcut: "Alt+D",
+      onClick: () => void openCodecWindow("smart-decode"),
+    },
+    {
+      label: "设置",
+      shortcut: "Ctrl+,",
+      separatorBefore: true,
+      onClick: () => void openSettingsWindow(),
+    },
+    {
+      label: "关于 Moxie",
+      onClick: () => void handleAbout(),
+    },
   ];
 
   return (
     <header className="title-toolbar" data-tauri-drag-region>
-      {/* 版权页式 wordmark：非交互标牌（可拖拽），对齐校样样张 .wordmark */}
-      <div className="wordmark" data-tauri-drag-region aria-hidden="true">
-        M
+      {/* 1. 左侧品牌标牌与侧栏折叠开关 */}
+      <div className="title-left-group" data-tauri-drag-region>
+        <div className="wordmark" data-tauri-drag-region aria-hidden="true" title="Moxie">
+          M
+        </div>
+        <Tooltip label={sidebarPinned ? "收起侧栏" : "展开侧栏"} shortcut="Ctrl+Shift+B">
+          <button
+            className={"tool-button sidebar-toggle-btn" + (sidebarPinned ? " active" : "")}
+            aria-label="显示/隐藏侧边栏"
+            onClick={onSidebarToggle}
+            onMouseEnter={onSidebarHoverStart}
+            onMouseLeave={onSidebarHoverEnd}
+          >
+            <PanelLeft size={15} />
+          </button>
+        </Tooltip>
       </div>
-      <Tooltip label="显示/隐藏侧边栏" shortcut="Ctrl+Shift+B">
-        <button
-          className={"tool-button" + (sidebarPinned ? " active" : "")}
-          aria-label="显示/隐藏侧边栏"
-          onClick={onSidebarToggle}
-          onMouseEnter={onSidebarHoverStart}
-          onMouseLeave={onSidebarHoverEnd}
-        >
-          <PanelLeft />
-        </button>
-      </Tooltip>
 
-      {/* 标签栏并入顶栏中段：占满标签开关与右侧动作之间的全部宽度 */}
+      {/* 2. 标签栏并入顶栏中段：占满中段弹性宽度 */}
       {children}
 
-      <Tooltip label="撤销" shortcut="Ctrl+Z">
+      {/* 3. 右侧操作集合：整合为现代「导出」下拉与「更多」菜单 */}
+      <div className="title-actions-group">
         <button
-          className="tool-button"
-          aria-label="撤销"
-          disabled={!hasDocument}
-          onClick={() => activeDoc && undoFor(activeDoc.id)}
-        >
-          <Undo2 />
-        </button>
-      </Tooltip>
-      <Tooltip label="重做" shortcut="Ctrl+Shift+Z">
-        <button
-          className="tool-button"
-          aria-label="重做"
-          disabled={!hasDocument}
-          onClick={() => activeDoc && redoFor(activeDoc.id)}
-        >
-          <Redo2 />
-        </button>
-      </Tooltip>
-
-      <span className="title-divider" />
-
-      <Tooltip label="导出为 HTML">
-        <button
-          className="tool-button"
-          aria-label="导出为 HTML"
-          disabled={!hasDocument}
-          onClick={() => void handleExport()}
-        >
-          <Download />
-        </button>
-      </Tooltip>
-
-      <Tooltip label="更多操作">
-        <button
-          className="tool-button"
-          aria-label="更多操作"
+          className="header-action-pill export-pill"
+          aria-label="导出"
           aria-haspopup="menu"
+          title="导出文档选项"
+          disabled={!hasDocument}
           onClick={(e) => {
             const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-            setMenu({ x: rect.left, y: rect.bottom + 4 });
+            setExportMenu({ x: rect.left, y: rect.bottom + 4 });
           }}
         >
-          <MoreHorizontal />
+          <Download size={13} />
+          <span>导出</span>
+          <ChevronDown size={11} className="pill-chevron" />
         </button>
-      </Tooltip>
 
+        <button
+          className="tool-button more-btn"
+          aria-label="更多操作"
+          aria-haspopup="menu"
+          title="更多操作"
+          onClick={(e) => {
+            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+            setMoreMenu({ x: rect.left, y: rect.bottom + 4 });
+          }}
+        >
+          <MoreHorizontal size={15} />
+        </button>
+      </div>
+
+      {/* 4. 原生窗口控制按钮 */}
       <WindowControls />
 
-      {menu && (
+      {/* 下拉菜单浮层 */}
+      {exportMenu && (
         <ContextMenu
-          x={menu.x}
-          y={menu.y}
-          items={menuItems}
-          onClose={() => setMenu(null)}
+          x={exportMenu.x}
+          y={exportMenu.y}
+          items={exportMenuItems}
+          onClose={() => setExportMenu(null)}
+        />
+      )}
+
+      {moreMenu && (
+        <ContextMenu
+          x={moreMenu.x}
+          y={moreMenu.y}
+          items={moreMenuItems}
+          onClose={() => setMoreMenu(null)}
         />
       )}
     </header>

@@ -182,19 +182,21 @@ export function TabBar() {
             {truncateMiddle(doc.name, nameWidth, tabFont)}
           </span>
           <span className="tab-state">
-            {doc.isDirty && !hovered && <span className="dirty-dot" />}
-            {hovered && (
+            {doc.isDirty && !hovered ? (
+              <span className="dirty-dot" title="有未保存更改" />
+            ) : hovered || selected ? (
               <button
-                className="tab-close"
+                className={"tab-close" + (selected && !hovered ? " on-selected" : "")}
                 aria-label="关闭标签页"
+                title="关闭标签页 (Ctrl+W)"
                 onClick={(e) => {
                   e.stopPropagation();
                   void closeTabAction(doc.id);
                 }}
               >
-                  <X size={11} strokeWidth={2} />
+                <X size={11} strokeWidth={2} />
               </button>
-            )}
+            ) : null}
           </span>
         </span>
       </span>
