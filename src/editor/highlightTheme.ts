@@ -112,11 +112,9 @@ const lacHighlightStyle = HighlightStyle.define([
     textDecorationColor: "var(--lac-accent)",
     textUnderlineOffset: "3px",
   },
-  {
-    // 列表符号中性灰（代码编辑器的 keyword 紫在书写面上是噪音）
-    tag: tags.list,
-    color: "var(--lac-text-secondary)",
-  },
+  // 注意：不要给 tags.list 上色——@lezer/markdown 把该 tag 打在整个列表子树
+  // （"OrderedList/... BulletList/..."），映射成灰色会把列表正文全部染灰；
+  // 列表符号的中性灰由 livePreview 的 .md-bullet widget 自己负责。
   {
     tag: tags.quote,
     color: "var(--lac-text-secondary)",

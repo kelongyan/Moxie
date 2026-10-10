@@ -358,7 +358,7 @@ export function SettingsWindow() {
                   <input
                     type="color"
                     className="settings-color"
-                    value={prefs.accentColor || "#c53a2b"}
+                    value={prefs.accentColor || "#2b6cb0"}
                     onChange={(e) => set({ accentColor: e.target.value })}
                   />
                   <button

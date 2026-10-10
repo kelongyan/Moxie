@@ -1,68 +1,68 @@
-/* 设计令牌 v4：「校样样张」设计语言（docs/UI重构方案书.md 阶段 1）。
-   墨 / 校对红 / 高亮黄三色基因；纸面层次（chrome=面白、画布=纸灰）；
+/* 设计令牌 v5：「校样样张」白蓝配色（docs/UI重构方案书.md 变更记录 v10）。
+   蓝墨 / 纸白 / 高亮黄三色基因；纸面层次（chrome=面白、画布=冷纸灰）不变；
    令牌名保持 --lac-* 体系不变，仅换值——书写面、chrome、导出（collectPreviewTokens）
-   三侧自动跟随。语法高亮 --syn-* 按阶段 1 D4 决议降饱和对齐墨色系。 */
+   三侧自动跟随。语法高亮 --syn-* 以蓝墨为锚降饱和；danger 与 callout 语义色保持不变。 */
 
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  /* 表面：顶栏/状态栏=面白，画布=纸灰，侧栏与画布同纸（发丝线分隔），浮层=白卡片 */
+  /* 表面：顶栏/状态栏=面白，画布=冷纸灰（蓝调），侧栏与画布同纸（发丝线分隔），浮层=白卡片 */
   --lac-bg-chrome: #ffffff;
-  --lac-bg: #f5f6f7;
-  --lac-bg-sidebar: #f5f6f7;
+  --lac-bg: #f4f6f9;
+  --lac-bg-sidebar: #f4f6f9;
   --lac-bg-elevated: #ffffff;
-  --lac-bg-inset: #edeff2;
-  --lac-overlay: rgba(20, 22, 28, 0.32);
+  --lac-bg-inset: #eceff4;
+  --lac-overlay: rgba(0, 0, 0, 0.32);
 
-  /* 文本三级：墨 / mute / 辅助灰（蓝灰调，三级在浅底 ≥ 4:1） */
-  --lac-text: #1f2328;
-  --lac-text-secondary: #6b7280;
-  --lac-text-tertiary: #737a85;
+  /* 文本三级：纯黑 / mute / 辅助灰（蓝灰调，三级在浅底 ≥ 4:1） */
+  --lac-text: #000000;
+  --lac-text-secondary: #64748b;
+  --lac-text-tertiary: #5d7089;
 
   /* 分隔（发丝线） */
-  --lac-border: #d9dde2;
-  --lac-border-strong: #c3c9d2;
+  --lac-border: #d6dce4;
+  --lac-border-strong: #bfc9d6;
 
-  /* 交互明度三态（中性，锚定墨色） */
-  --lac-hover: rgba(31, 35, 40, 0.05);
-  --lac-pressed: rgba(31, 35, 40, 0.1);
-  --lac-selected: rgba(31, 35, 40, 0.12);
-  --lac-button-bg: rgba(31, 35, 40, 0.04);
-  --lac-button-bg-hover: rgba(31, 35, 40, 0.08);
+  /* 交互明度三态（中性，锚定纯黑） */
+  --lac-hover: rgba(0, 0, 0, 0.05);
+  --lac-pressed: rgba(0, 0, 0, 0.1);
+  --lac-selected: rgba(0, 0, 0, 0.12);
+  --lac-button-bg: rgba(0, 0, 0, 0.04);
+  --lac-button-bg-hover: rgba(0, 0, 0, 0.08);
 
-  /* 校对红（品牌强调） */
-  --lac-accent: #c53a2b;
-  --lac-accent-hover: #d14a3b;
-  --lac-accent-active: #a82f21;
-  --lac-accent-soft: rgba(197, 58, 43, 0.08);
-  --lac-accent-softer: rgba(197, 58, 43, 0.05);
+  /* 蓝墨（品牌强调，白底对比 5.0:1） */
+  --lac-accent: #2b6cb0;
+  --lac-accent-hover: #3182ce;
+  --lac-accent-active: #2c5282;
+  --lac-accent-soft: rgba(43, 108, 176, 0.08);
+  --lac-accent-softer: rgba(43, 108, 176, 0.05);
   --lac-accent-contrast: #ffffff;
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
-  /* 编辑器状态色：选区淡红（批注感），查找命中保留琥珀与 mark 黄区分 */
-  --lac-current-line: rgba(31, 35, 40, 0.035);
-  --lac-delimiter-match: rgba(197, 58, 43, 0.14);
-  --lac-selection: rgba(197, 58, 43, 0.16);
+  /* 编辑器状态色：选区淡蓝（钢笔墨水感），查找命中保留琥珀与 mark 黄区分 */
+  --lac-current-line: rgba(0, 0, 0, 0.035);
+  --lac-delimiter-match: rgba(43, 108, 176, 0.14);
+  --lac-selection: rgba(43, 108, 176, 0.16);
   --lac-find-match: rgba(255, 166, 87, 0.28);
 
   --lac-tab-selected-bg: #ffffff;
-  --lac-preview-shadow: rgba(16, 18, 24, 0.1);
+  --lac-preview-shadow: rgba(0, 0, 0, 0.1);
 
-  /* 语法高亮（D4：保留功能，降饱和对齐墨色系；heading 随 accent 红） */
-  --syn-keyword: #a8432e;
+  /* 语法高亮（以蓝墨为锚降饱和：keyword 深一档、type 转深青、meta 转雾紫；heading 随 accent 蓝） */
+  --syn-keyword: #2e629e;
   --syn-string: #4a7a52;
   --syn-number: #a8722c;
-  --syn-comment: #7a828c;
+  --syn-comment: #78859a;
   --syn-function: #46688c;
-  --syn-type: #8a5a2e;
+  --syn-type: #1a6e7e;
   --syn-property: #46688c;
-  --syn-heading: #c53a2b;
-  --syn-meta: #96604f;
+  --syn-heading: #2b6cb0;
+  --syn-meta: #825a9e;
   --syn-punct: #6e7681;
   --syn-link: #46688c;
 
-  /* 语义色（≥4.5:1，小号文字可读） */
+  /* 语义色（≥4.5:1，小号文字可读；success/warning/danger 不变，danger 红与蓝 accent 语义分离） */
   --lac-success: #177a3d;
   --lac-warning: #96590a;
   --lac-danger: #c0392c;
@@ -79,17 +79,17 @@
   --lac-alert-caution: 192, 57, 44;
 
   /* 标题色（h2 与墨同色，TizuMark heading-h2-color 对应） */
-  --lac-heading-2: #1f2328;
+  --lac-heading-2: #000000;
 
-  /* 荧光标记（==mark==，阶段 3 启用书写面装饰） */
+  /* 荧光标记（==mark==，荧光黄与蓝墨互补；阶段 3 启用书写面装饰） */
   --lac-mark-bg: #ffe08a;
-  --lac-mark-fg: #1f2328;
+  --lac-mark-fg: #000000;
 
   /* 阴影：发丝线 + 柔和投影（不用实色描边，避免"到处是框"） */
-  --sh-1: 0 0 0 1px rgba(16, 18, 24, 0.05), 0 1px 2px rgba(16, 18, 24, 0.05);
-  --sh-2: 0 0 0 1px rgba(16, 18, 24, 0.06), 0 2px 6px rgba(16, 18, 24, 0.06),
-    0 10px 28px rgba(16, 18, 24, 0.12);
-  --sh-3: 0 0 0 1px rgba(16, 18, 24, 0.07), 0 20px 48px rgba(16, 18, 24, 0.2);
+  --sh-1: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --sh-2: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.12);
+  --sh-3: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 20px 48px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] {
@@ -102,12 +102,12 @@
   --lac-bg-inset: rgba(255, 255, 255, 0.07);
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
-  --lac-text: #e9eaee;
-  --lac-text-secondary: #98a0ac;
-  --lac-text-tertiary: #79828e;
+  --lac-text: #e2e8f0;
+  --lac-text-secondary: #94a3b8;
+  --lac-text-tertiary: #7c8aa0;
 
-  --lac-border: #2a313b;
-  --lac-border-strong: #3a424e;
+  --lac-border: #2a3542;
+  --lac-border-strong: #3c4a5c;
 
   --lac-hover: rgba(255, 255, 255, 0.06);
   --lac-pressed: rgba(255, 255, 255, 0.11);
@@ -115,33 +115,33 @@
   --lac-button-bg: rgba(255, 255, 255, 0.05);
   --lac-button-bg-hover: rgba(255, 255, 255, 0.1);
 
-  /* 校对红（暗色成对） */
-  --lac-accent: #f0675a;
-  --lac-accent-hover: #f57f73;
-  --lac-accent-active: #e0584c;
-  --lac-accent-soft: rgba(240, 103, 90, 0.14);
-  --lac-accent-softer: rgba(240, 103, 90, 0.08);
-  --lac-accent-contrast: #241110;
+  /* 蓝墨（暗色成对，对暗底对比 7.8:1） */
+  --lac-accent: #63b3ed;
+  --lac-accent-hover: #90cdf4;
+  --lac-accent-active: #4299e1;
+  --lac-accent-soft: rgba(99, 179, 237, 0.16);
+  --lac-accent-softer: rgba(99, 179, 237, 0.09);
+  --lac-accent-contrast: #0f1d30;
   --lac-ring: color-mix(in srgb, var(--lac-accent) 60%, transparent);
 
   --lac-current-line: rgba(255, 255, 255, 0.045);
-  --lac-delimiter-match: rgba(240, 103, 90, 0.24);
-  --lac-selection: rgba(240, 103, 90, 0.22);
+  --lac-delimiter-match: rgba(99, 179, 237, 0.24);
+  --lac-selection: rgba(99, 179, 237, 0.22);
   --lac-find-match: rgba(255, 166, 87, 0.22);
 
   --lac-tab-selected-bg: #1b2027;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
-  --syn-keyword: #e08a75;
+  --syn-keyword: #8db5e3;
   --syn-string: #8fc49e;
   --syn-number: #d6a65e;
-  --syn-comment: #7e8794;
+  --syn-comment: #8494aa;
   --syn-function: #85a8c8;
-  --syn-type: #c08b62;
+  --syn-type: #74c7d8;
   --syn-property: #85a8c8;
-  --syn-heading: #f0675a;
-  --syn-meta: #d69581;
-  --syn-punct: #949ca8;
+  --syn-heading: #63b3ed;
+  --syn-meta: #c4a5e0;
+  --syn-punct: #9aa8ba;
   --syn-link: #85a8c8;
 
   --lac-success: #5cd68a;
@@ -160,7 +160,7 @@
   --lac-alert-caution: 255, 123, 114;
 
   /* 标题色（深色成对） */
-  --lac-heading-2: #e9eaee;
+  --lac-heading-2: #e2e8f0;
 
   /* 荧光标记（深色成对） */
   --lac-mark-bg: #ffd874;
