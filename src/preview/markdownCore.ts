@@ -510,6 +510,25 @@ export function renderInlineMarkdown(
 ): string {
   try {
     let html = md.renderInline(text, {});
+
+    // 参考 marktable_studio：支持单元格内复选框 [x] 与 [ ]
+    html = html.replace(
+      /\[x\]/gi,
+      `<input type="checkbox" checked disabled class="table-task-checkbox">`
+    );
+    html = html.replace(
+      /\[ \]/g,
+      `<input type="checkbox" disabled class="table-task-checkbox">`
+    );
+
+    // 参考 marktable_studio：支持状态徽章 [ACTIVE], [HIGH], [GET], [POST], etc.
+    html = html.replace(
+      /\[(ACTIVE|GET|POST|PUT|DELETE|WS|DONE|HIGH|CRITICAL|MEDIUM|LOW|BETA|DEPRECATED|PENDING|SUCCESS|FAILED)\]/g,
+      (_match, tag) => {
+        return `<span class="md-badge md-badge-${tag.toLowerCase()}">${tag}</span>`;
+      }
+    );
+
     if (resolveImageSrc) {
       html = html.replace(/src="([^"]*)"/g, (whole, src: string) => {
         let raw = src;

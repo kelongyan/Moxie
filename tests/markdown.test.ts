@@ -104,16 +104,16 @@ describe("renderMarkdown", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("max-width: 100%");
     expect(html).toContain("padding: 24px 24px 40px");
-    expect(html).toContain("padding-bottom: 16px");
+    expect(html).toContain("padding-bottom: 8px");
   });
 
-  it("uses 16px/1.75 content typography with the proof-sheet heading scale", () => {
-    // 校样样张：正文 16px/1.75，H1 2.4em 丝线 / H2 1.6em 无线
+  it("uses 16px/1.65 content typography with the proof-sheet heading scale", () => {
+    // 对标 Typora：正文 16px/1.65，H1 2.1em 丝线 / H2 1.5em 无线
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("font-size: 16px;");
-    expect(html).toContain("line-height: 1.75;");
-    expect(html).toContain("font-size: 2.4em;");
-    expect(html).toContain("font-size: 1.6em;");
+    expect(html).toContain("line-height: 1.65;");
+    expect(html).toContain("font-size: 2.1em;");
+    expect(html).toContain("font-size: 1.5em;");
     expect(html).toContain("font-weight: 700;");
   });
 
@@ -127,7 +127,7 @@ describe("renderMarkdown", () => {
     const html = renderMarkdown("x", LIGHT, "t.md");
     expect(html).toContain("hr::after");
     expect(html).toContain("border-radius: 50%");
-    expect(html).toContain("margin: 32px 0;");
+    expect(html).toContain("margin: 22px 0;");
   });
 
   it("renders blockquote with an accent left bar", () => {

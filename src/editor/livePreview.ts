@@ -19,9 +19,16 @@ import {
 import { renderInlineMarkdown, taskToggleInLine } from "../preview/markdownCore";
 import {
   buildTable,
+  deleteColEdit,
+  deleteRowEdit,
+  deleteTableEdit,
   escapeCell,
   findTableAt,
+  formatTableChange,
+  insertColEdit,
   insertRowEdit,
+  resizeTableEdit,
+  setAlignEdit,
   type TableEdit,
   type TableCellRef,
   type TableModel,
@@ -199,23 +206,41 @@ class BulletWidget extends WidgetType {
   }
 }
 
+// —— 表格浮动工具条轻量 SVG 图标定义 ——
+const SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
+const SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+const SVG_ALIGN_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+
+const SVG_ROW_ABOVE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16"/><path d="M4 20h16"/><path d="M12 4v6"/><path d="m8 6 4-4 4 4"/></svg>`;
+const SVG_ROW_BELOW = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 10h16"/><path d="M12 14v6"/><path d="m8 18 4 4 4-4"/></svg>`;
+const SVG_ROW_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="m14 8-4 8"/><path d="m10 8 4 8"/></svg>`;
+
+const SVG_COL_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v16"/><path d="M20 4v16"/><path d="M4 12h6"/><path d="m6 8-4 4 4 4"/></svg>`;
+const SVG_COL_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"/><path d="M10 4v16"/><path d="M14 12h6"/><path d="m18 8 4 4-4 4"/></svg>`;
+const SVG_COL_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="m8 14 8-4"/><path d="m8 10 8 4"/></svg>`;
+
+const SVG_GRID = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`;
+const SVG_FORMAT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
+const SVG_TRASH = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
+
 /**
  * 表格（GFM，Typora 式）：始终渲染为带对齐与行内 markdown 的真实表格。
- * 点击单元格 → 原位内嵌 textarea 编辑（表格保持渲染，其他单元格不动）；
- * Tab/Enter 在格间导航（末行 Enter、末格 Tab 追加行），Escape 结束编辑；
- * 行/列结构操作与对齐走右键菜单与列头手柄，全部经 table.ts 整表重写
- * （单事务、一步撤销），编辑中未落盘的内容由 widget 合并进模型。
+ * - 顶部浮动悬停/编辑工具条：对齐切换、行列增删、规模调整、整理与整表删除；
+ * - 单元格原位编辑：textarea 无缝贴合活动单元格；
+ * - 键盘导航：Tab/Shift+Tab 换格，末格 Tab / 末行 Enter 自动追加行，
+ *   ArrowUp/ArrowDown 纵向导航，ArrowLeft/ArrowRight 首尾边缘跨格平滑流转；
+ * - 列头手柄与右键快捷菜单。
  */
-
-/** 渲染表格 widget：编辑会话（pending + 内嵌 textarea）挂在实例上 */
 class TableWidget extends WidgetType {
-  /** 编辑中未落盘的单元格文本（key = "r,c"，保存显示态原文，未转义） */
   private pending = new Map<string, string>();
   private cellEls: HTMLTableCellElement[][] = [];
   private overlay: HTMLTextAreaElement | null = null;
   private activeRow = -1;
   private activeCol = -1;
   private view: EditorView | null = null;
+  private wrapEl: HTMLElement | null = null;
+  private toolbarEl: HTMLElement | null = null;
+  private sizePopupEl: HTMLElement | null = null;
 
   constructor(readonly data: TableModel, readonly gap: number) {
     super();
@@ -225,7 +250,10 @@ class TableWidget extends WidgetType {
     return this.data.rows.length;
   }
 
-  /** TableSessionHost 接口要求 */
+  private get colCount(): number {
+    return this.data.rows[0]?.length ?? 0;
+  }
+
   get tableFrom(): number {
     return this.data.from;
   }
@@ -238,12 +266,15 @@ class TableWidget extends WidgetType {
     this.view = view;
     const wrap = document.createElement("div");
     wrap.className = "md-table-wrap";
+    this.wrapEl = wrap;
     if (this.gap > 0) wrap.style.paddingTop = `${this.gap}px`;
-    // 单元格内的链接不做导航：点击即进入该格编辑
+
+    // 单元格内的链接不做外部跳转：点击即进入该格编辑
     wrap.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).closest("a")) e.preventDefault();
     });
-    // 右键：结构菜单，目标格取右键所在单元格
+
+    // 右键上下文菜单
     wrap.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -257,9 +288,19 @@ class TableWidget extends WidgetType {
             : undefined,
       });
     });
+
+    // 顶部悬浮工具条（Typora 风格：绝对定位悬浮于表格上方，绝不占用文档流或产生空白带）
+    wrap.appendChild(this.buildToolbar());
+
+    // 内部独立横向滚动卡片
+    const scrollBox = document.createElement("div");
+    scrollBox.className = "md-table-scroll";
+
+    // 实体表格
     const table = document.createElement("table");
     table.className = "md-table";
     const alignOf = (c: number) => this.data.aligns[c] ?? "left";
+
     this.cellEls = this.data.rows.map((row, r) => {
       const tr =
         r === 0 ? table.createTHead().insertRow() : table.createTBody().insertRow();
@@ -270,9 +311,10 @@ class TableWidget extends WidgetType {
         const align = alignOf(c);
         if (align !== "left") el.style.textAlign = align;
         el.innerHTML = renderInlineMarkdown(unescapeCell(cell.text), imageResolver);
+
         el.addEventListener("mousedown", (e) => {
           if ((e.target as HTMLElement).closest(".md-table-handle")) return;
-          if (r === this.activeRow && c === this.activeCol) return; // textarea 自管光标
+          if (r === this.activeRow && c === this.activeCol) return;
           e.preventDefault();
           e.stopPropagation();
           this.openEditor(r, c, {
@@ -280,29 +322,70 @@ class TableWidget extends WidgetType {
             y: e.clientY,
           });
         });
+
         if (r === 0) el.appendChild(this.buildHandle(view, c));
         tr.appendChild(el);
         return el;
       });
     });
-    wrap.appendChild(table);
+
+    // 底部规格与便捷操作条 (参考 marktable_studio.html)
+    const footer = document.createElement("div");
+    footer.className = "md-table-footer";
+
+    const stat = document.createElement("div");
+    stat.className = "md-table-footer-stat";
+    stat.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg><span>表格规格: ${this.rowCount} 行 × ${this.colCount} 列</span>`;
+
+    const actions = document.createElement("div");
+    actions.className = "md-table-footer-actions";
+
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "md-table-footer-btn";
+    copyBtn.title = "复制此表格 Markdown 源码";
+    copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
+    copyBtn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    copyBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const model = this.modelWithPending() ?? this.data;
+      const text = buildTable(model);
+      void navigator.clipboard.writeText(text);
+      copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span style="color:var(--lac-success)">已复制!</span>`;
+      setTimeout(() => {
+        copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
+      }, 1500);
+    });
+
+    actions.appendChild(copyBtn);
+    footer.appendChild(stat);
+    footer.appendChild(actions);
+
+    scrollBox.appendChild(table);
+    scrollBox.appendChild(footer);
+    wrap.appendChild(scrollBox);
     liveTableWidgets.set(this.data.from, this);
     return wrap;
   }
 
   destroy(dom: HTMLElement) {
-    // 重建时新实例先注册、旧实例后销毁；只在仍指向自己时清除
+    this.closeSizePopover();
     if (liveTableWidgets.get(this.data.from) === this) {
       liveTableWidgets.delete(this.data.from);
     }
     this.overlay = null;
+    this.wrapEl = null;
+    this.toolbarEl = null;
     super.destroy(dom);
   }
 
-  /** 结构操作后的编辑位置恢复（ViewPlugin 消费活动编辑标记） */
   restoreCellEdit(row: number, col: number) {
     if (this.wrapConnected() && this.cellEls[row]?.[col]) {
-      this.openEditor(row, col, { selectAll: true });
+      this.openEditor(row, col, { caretMode: "select" });
     }
   }
 
@@ -310,19 +393,256 @@ class TableWidget extends WidgetType {
     return this.cellEls[0]?.[0]?.isConnected ?? false;
   }
 
-  /** 打开（或切换）单元格编辑器；同一 widget 内移动不触发重建 */
+  /** 构建顶部 Typora 风格悬浮快捷工具条 */
+  private buildToolbar(): HTMLElement {
+    const bar = document.createElement("div");
+    bar.className = "md-table-toolbar";
+    this.toolbarEl = bar;
+
+    const makeBtn = (
+      title: string,
+      iconSvg: string,
+      onClick: () => void,
+      extraClass = ""
+    ) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `md-table-tool-btn ${extraClass}`.trim();
+      btn.title = title;
+      btn.innerHTML = iconSvg;
+      btn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      });
+      return btn;
+    };
+
+    const makeDivider = () => {
+      const d = document.createElement("div");
+      d.className = "md-table-tool-divider";
+      return d;
+    };
+
+    // 1. 对齐控制组
+    const alignGroup = document.createElement("div");
+    alignGroup.className = "md-table-tool-group";
+
+    const btnAlignLeft = makeBtn("左对齐 (当前列)", SVG_ALIGN_LEFT, () => {
+      this.applyEdit((m) =>
+        setAlignEdit(m, this.activeCol >= 0 ? this.activeCol : 0, "left")
+      );
+    }, "btn-align-left");
+    btnAlignLeft.dataset.align = "left";
+
+    const btnAlignCenter = makeBtn("居中对齐 (当前列)", SVG_ALIGN_CENTER, () => {
+      this.applyEdit((m) =>
+        setAlignEdit(m, this.activeCol >= 0 ? this.activeCol : 0, "center")
+      );
+    }, "btn-align-center");
+    btnAlignCenter.dataset.align = "center";
+
+    const btnAlignRight = makeBtn("右对齐 (当前列)", SVG_ALIGN_RIGHT, () => {
+      this.applyEdit((m) =>
+        setAlignEdit(m, this.activeCol >= 0 ? this.activeCol : 0, "right")
+      );
+    }, "btn-align-right");
+    btnAlignRight.dataset.align = "right";
+
+    alignGroup.append(btnAlignLeft, btnAlignCenter, btnAlignRight);
+
+    // 2. 行列结构操作组
+    const structGroup = document.createElement("div");
+    structGroup.className = "md-table-tool-group";
+
+    const btnRowAbove = makeBtn("在上方插入行", SVG_ROW_ABOVE, () => {
+      this.applyEdit((m) =>
+        insertRowEdit(
+          m,
+          Math.max(1, this.activeRow >= 0 ? this.activeRow : 1),
+          this.activeCol >= 0 ? this.activeCol : 0
+        )
+      );
+    });
+    const btnRowBelow = makeBtn("在下方插入行", SVG_ROW_BELOW, () => {
+      this.applyEdit((m) =>
+        insertRowEdit(
+          m,
+          Math.max(1, (this.activeRow >= 0 ? this.activeRow : m.rows.length - 1) + 1),
+          this.activeCol >= 0 ? this.activeCol : 0
+        )
+      );
+    });
+    const btnRowDel = makeBtn("删除当前行", SVG_ROW_DELETE, () => {
+      this.applyEdit((m) =>
+        deleteRowEdit(m, this.activeRow >= 0 ? this.activeRow : m.rows.length - 1)
+      );
+    });
+
+    const btnColLeft = makeBtn("在左侧插入列", SVG_COL_LEFT, () => {
+      this.applyEdit((m) =>
+        insertColEdit(m, this.activeCol >= 0 ? this.activeCol : 0)
+      );
+    });
+    const btnColRight = makeBtn("在右侧插入列", SVG_COL_RIGHT, () => {
+      this.applyEdit((m) =>
+        insertColEdit(m, (this.activeCol >= 0 ? this.activeCol : m.rows[0].length - 1) + 1)
+      );
+    });
+    const btnColDel = makeBtn("删除当前列", SVG_COL_DELETE, () => {
+      this.applyEdit((m) =>
+        deleteColEdit(m, this.activeCol >= 0 ? this.activeCol : m.rows[0].length - 1)
+      );
+    });
+
+    structGroup.append(
+      btnRowAbove,
+      btnRowBelow,
+      btnRowDel,
+      btnColLeft,
+      btnColRight,
+      btnColDel
+    );
+
+    // 3. 表格整体操作（规模、整理、删除）
+    const metaGroup = document.createElement("div");
+    metaGroup.className = "md-table-tool-group";
+
+    const btnSize = makeBtn(
+      "调整表格大小",
+      `${SVG_GRID}<span class="table-size-badge">${this.rowCount}×${this.colCount}</span>`,
+      () => {
+        this.toggleSizePopover(btnSize);
+      },
+      "btn-table-size"
+    );
+
+    const btnFormat = makeBtn("整理表格 (对齐管道)", SVG_FORMAT, () => {
+      this.applyEdit((m) => formatTableChange(m));
+    });
+
+    const btnDelete = makeBtn("删除表格", SVG_TRASH, () => {
+      this.applyEdit((m) => deleteTableEdit(m));
+    }, "btn-table-danger");
+
+    metaGroup.append(btnSize, btnFormat, btnDelete);
+
+    bar.append(alignGroup, makeDivider(), structGroup, makeDivider(), metaGroup);
+    return bar;
+  }
+
+  /** 同步工具条上的对齐高亮与规模徽章 */
+  private updateToolbarState(col: number) {
+    if (!this.toolbarEl) return;
+    const align = this.data.aligns[col] ?? "left";
+    const btns = this.toolbarEl.querySelectorAll<HTMLButtonElement>("[data-align]");
+    btns.forEach((btn) => {
+      btn.classList.toggle("is-active", btn.dataset.align === align);
+    });
+    const sizeBadge = this.toolbarEl.querySelector(".table-size-badge");
+    if (sizeBadge) {
+      sizeBadge.textContent = `${this.rowCount}×${this.colCount}`;
+    }
+  }
+
+  /** 弹出调整表格大小浮动气泡 */
+  private toggleSizePopover(anchorBtn: HTMLElement) {
+    if (this.sizePopupEl) {
+      this.closeSizePopover();
+      return;
+    }
+    const pop = document.createElement("div");
+    pop.className = "md-table-size-popover";
+    pop.innerHTML = `
+      <div class="md-table-size-header">调整表格大小</div>
+      <div class="md-table-size-row">
+        <label>行数</label>
+        <input type="number" class="md-table-size-input-rows" min="2" max="60" value="${this.rowCount}">
+      </div>
+      <div class="md-table-size-row">
+        <label>列数</label>
+        <input type="number" class="md-table-size-input-cols" min="1" max="25" value="${this.colCount}">
+      </div>
+      <div class="md-table-size-actions">
+        <button type="button" class="md-table-size-btn-cancel">取消</button>
+        <button type="button" class="md-table-size-btn-ok">应用</button>
+      </div>
+    `;
+
+    const close = () => {
+      this.closeSizePopover();
+    };
+
+    pop.addEventListener("mousedown", (e) => e.stopPropagation());
+    const okBtn = pop.querySelector(".md-table-size-btn-ok") as HTMLButtonElement;
+    const cancelBtn = pop.querySelector(".md-table-size-btn-cancel") as HTMLButtonElement;
+    const inputRows = pop.querySelector(".md-table-size-input-rows") as HTMLInputElement;
+    const inputCols = pop.querySelector(".md-table-size-input-cols") as HTMLInputElement;
+
+    const apply = () => {
+      const rows = Math.max(2, Math.min(60, parseInt(inputRows.value, 10) || this.rowCount));
+      const cols = Math.max(1, Math.min(25, parseInt(inputCols.value, 10) || this.colCount));
+      close();
+      this.applyEdit((m) => resizeTableEdit(m, rows, cols));
+    };
+
+    okBtn.addEventListener("click", apply);
+    cancelBtn.addEventListener("click", close);
+    inputRows.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") apply();
+      if (e.key === "Escape") close();
+    });
+    inputCols.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") apply();
+      if (e.key === "Escape") close();
+    });
+
+    const rect = anchorBtn.getBoundingClientRect();
+    pop.style.left = `${Math.max(8, rect.left)}px`;
+    pop.style.top = `${rect.bottom + 6}px`;
+
+    const onOutside = (e: MouseEvent) => {
+      if (!pop.contains(e.target as Node) && !anchorBtn.contains(e.target as Node)) {
+        close();
+      }
+    };
+    setTimeout(() => {
+      window.addEventListener("mousedown", onOutside, true);
+    }, 10);
+
+    document.body.appendChild(pop);
+    this.sizePopupEl = pop;
+    inputRows.focus();
+    inputRows.select();
+  }
+
+  private closeSizePopover() {
+    this.sizePopupEl?.remove();
+    this.sizePopupEl = null;
+  }
+
+  /** 打开单元格原位编辑器 */
   private openEditor(
     r: number,
     c: number,
-    opts: { selectAll?: boolean; x?: number; y?: number } = {}
+    opts: {
+      caretMode?: "select" | "start" | "end";
+      x?: number;
+      y?: number;
+    } = {}
   ) {
     const cell = this.cellEls[r]?.[c];
     if (!cell) return;
-    // 先把上一个单元格的输入记入 pending 并同步到显示层
     this.stashActiveCell();
     this.activeRow = r;
     this.activeCol = c;
     cell.classList.add("md-cell-active");
+    this.wrapEl?.classList.add("has-active-cell");
+
     if (!this.overlay) {
       this.overlay = document.createElement("textarea");
       this.overlay.className = "md-cell-editor";
@@ -331,21 +651,27 @@ class TableWidget extends WidgetType {
       this.overlay.addEventListener("blur", () => this.finish(false));
       this.overlay.addEventListener("keydown", (e) => this.onKeydown(e));
     }
+
     const raw = this.pending.get(`${r},${c}`) ?? unescapeCell(this.data.rows[r][c].text);
     this.overlay.value = raw;
     cell.appendChild(this.overlay);
     this.overlay.focus();
-    const at =
-      opts.selectAll || opts.x === undefined
-        ? opts.selectAll
-          ? [0, raw.length]
-          : [raw.length, raw.length]
-        : this.caretFromPoint(r, c, opts.x, opts.y);
-    this.overlay.setSelectionRange(at[0], at[1]);
+
+    if (opts.caretMode === "start") {
+      this.overlay.setSelectionRange(0, 0);
+    } else if (opts.caretMode === "end") {
+      this.overlay.setSelectionRange(raw.length, raw.length);
+    } else if (opts.caretMode === "select" || opts.x === undefined) {
+      this.overlay.setSelectionRange(0, raw.length);
+    } else {
+      const at = this.caretFromPoint(r, c, opts.x, opts.y);
+      this.overlay.setSelectionRange(at[0], at[1]);
+    }
+
     setActiveEdit({ tableFrom: this.data.from, row: r, col: c });
+    this.updateToolbarState(c);
   }
 
-  /** 点击位置 → 单元格内字符偏移（渲染文本与源文 1:1 时精确，其余就近） */
   private caretFromPoint(
     r: number,
     c: number,
@@ -359,10 +685,12 @@ class TableWidget extends WidgetType {
     const pre = document.createRange();
     pre.setStart(cell, 0);
     pre.setEnd(range.startContainer, range.startOffset);
-    return [Math.min(pre.toString().length, raw.length), Math.min(pre.toString().length, raw.length)];
+    return [
+      Math.min(pre.toString().length, raw.length),
+      Math.min(pre.toString().length, raw.length),
+    ];
   }
 
-  /** 把编辑中的文本记入 pending，并同步到单元格显示层 */
   private stashActiveCell() {
     if (!this.overlay || this.activeRow < 0 || this.activeCol < 0) return;
     const key = `${this.activeRow},${this.activeCol}`;
@@ -378,6 +706,8 @@ class TableWidget extends WidgetType {
 
   private onKeydown(e: KeyboardEvent) {
     if (!this.overlay || this.activeRow < 0 || e.isComposing) return;
+
+    // Ctrl+Enter: 紧邻下方追加新行
     if (e.ctrlKey && e.key === "Enter") {
       e.preventDefault();
       this.applyEdit((m) =>
@@ -385,22 +715,47 @@ class TableWidget extends WidgetType {
       );
       return;
     }
+
+    // Enter: 下移行格，末行自动追加
     if (e.key === "Enter") {
       e.preventDefault();
-      this.moveBy(1, 0);
+      this.moveBy(1, 0, "select");
     } else if (e.key === "Tab") {
+      // Tab / Shift+Tab
       e.preventDefault();
-      if (e.shiftKey) this.moveBy(0, -1);
-      else this.moveBy(0, 1);
+      if (e.shiftKey) this.moveBy(0, -1, "select");
+      else this.moveBy(0, 1, "select");
     } else if (e.key === "ArrowUp") {
       if (this.activeRow > 0) {
         e.preventDefault();
-        this.moveBy(-1, 0);
+        this.moveBy(-1, 0, "select");
       }
     } else if (e.key === "ArrowDown") {
       if (this.activeRow < this.rowCount - 1) {
         e.preventDefault();
-        this.moveBy(1, 0);
+        this.moveBy(1, 0, "select");
+      }
+    } else if (e.key === "ArrowLeft") {
+      // 光标位于最左端时，按左箭头平滑移入前一格末尾
+      if (this.overlay.selectionStart === 0 && this.overlay.selectionEnd === 0) {
+        if (this.activeRow > 0 || this.activeCol > 0) {
+          e.preventDefault();
+          this.moveBy(0, -1, "end");
+        }
+      }
+    } else if (e.key === "ArrowRight") {
+      // 光标位于最右端时，按右箭头平滑移入后一格首部
+      if (
+        this.overlay.selectionStart === this.overlay.value.length &&
+        this.overlay.selectionEnd === this.overlay.value.length
+      ) {
+        if (
+          this.activeRow < this.rowCount - 1 ||
+          this.activeCol < (this.cellEls[this.activeRow]?.length ?? 1) - 1
+        ) {
+          e.preventDefault();
+          this.moveBy(0, 1, "start");
+        }
       }
     } else if (e.key === "Escape") {
       e.preventDefault();
@@ -408,8 +763,12 @@ class TableWidget extends WidgetType {
     }
   }
 
-  /** 相对移动；行末水平越界换行，末行下移 / 末格 Tab 时追加新行 */
-  private moveBy(dr: number, dc: number) {
+  /** 跨单元格移动；末行 Enter 或末格 Tab 自动追加新行 */
+  private moveBy(
+    dr: number,
+    dc: number,
+    caretMode: "select" | "start" | "end" = "select"
+  ) {
     let r = this.activeRow + dr;
     let c = this.activeCol + dc;
     if (c >= (this.cellEls[r]?.length ?? 0)) {
@@ -421,18 +780,23 @@ class TableWidget extends WidgetType {
     }
     if (r < 0) r = 0;
     if (r >= this.rowCount) {
-      // 末行 Enter / 末格 Tab：追加行（Typora 式），新行当前列进入编辑
+      // 末行 Enter / 末格 Tab：追加行（Typora 经典连击录入体验）
       this.applyEdit((m) =>
-        insertRowEdit(m, m.rows.length, Math.max(0, Math.min(this.activeCol, m.rows[0].length - 1)))
+        insertRowEdit(
+          m,
+          m.rows.length,
+          Math.max(0, Math.min(this.activeCol, m.rows[0].length - 1))
+        )
       );
       return;
     }
-    this.openEditor(r, Math.max(0, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1)), {
-      selectAll: true,
-    });
+    this.openEditor(
+      r,
+      Math.max(0, Math.min(c, (this.cellEls[r]?.length ?? 1) - 1)),
+      { caretMode }
+    );
   }
 
-  /** 编辑中内容合并进当前文档的表格模型（结构操作与落盘共用） */
   private modelWithPending(): TableModel | null {
     const view = this.view;
     if (!view) return null;
@@ -448,8 +812,6 @@ class TableWidget extends WidgetType {
     return { ...model, rows };
   }
 
-  /** 执行结构操作：合并编辑中内容 → 整表重写。有编辑会话时把编辑位置
-   *  恢复到落点格；纯菜单操作（无会话）保持渲染态不打开编辑器 */
   applyEdit(make: (model: TableModel) => TableEdit | null) {
     const view = this.view;
     if (!view) return;
@@ -479,7 +841,6 @@ class TableWidget extends WidgetType {
     }
   }
 
-  /** 结束编辑：落盘全部改动；caretAfter 时（Escape）光标移到表格之后 */
   finish(caretAfter: boolean) {
     const view = this.view;
     if (!view) return;
@@ -515,20 +876,24 @@ class TableWidget extends WidgetType {
   }
 
   private teardown() {
+    this.closeSizePopover();
     this.overlay?.remove();
     this.overlay = null;
-    for (const row of this.cellEls) for (const el of row) el.classList.remove("md-cell-active");
+    this.wrapEl?.classList.remove("has-active-cell");
+    for (const row of this.cellEls) {
+      for (const el of row) el.classList.remove("md-cell-active");
+    }
     this.pending.clear();
     this.activeRow = -1;
     this.activeCol = -1;
   }
 
-  /** 列头手柄：悬停显示，点击弹出列操作/对齐菜单（Typora 式列交互） */
   private buildHandle(view: EditorView, col: number) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "md-table-handle";
-    btn.setAttribute("aria-label", "列操作");
+    btn.setAttribute("aria-label", "列操作与对齐");
+    btn.title = "列操作与对齐";
     btn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -538,8 +903,6 @@ class TableWidget extends WidgetType {
     return btn;
   }
 
-  /** 事件全权由 widget 自己的处理器负责：CM 若再处理 mousedown 会移动光标
-   *  并夺走 textarea 焦点（blur → 立即结束编辑） */
   ignoreEvent() {
     return true;
   }
@@ -872,12 +1235,11 @@ export function computeLiveRanges(
         return;
       }
 
-      // —— 行内：强调 / 删除线 / 行内代码（隐藏标记字符） ——
+      // —— 行内：强调 / 删除线 / 行内代码（Typora 风格常驻所见即所得，隐藏标记字符） ——
       if (node.name === "EmphasisMark") {
         if (
           parent &&
-          (parent.name === "Emphasis" || parent.name === "StrongEmphasis") &&
-          !selectionTouches(state, parent.from, parent.to)
+          (parent.name === "Emphasis" || parent.name === "StrongEmphasis")
         ) {
           hideChild(node);
         }
@@ -886,8 +1248,7 @@ export function computeLiveRanges(
       if (node.name === "StrikethroughMark") {
         if (
           parent &&
-          parent.name === "Strikethrough" &&
-          !selectionTouches(state, parent.from, parent.to)
+          parent.name === "Strikethrough"
         ) {
           hideChild(node);
         }
@@ -897,23 +1258,21 @@ export function computeLiveRanges(
         // FencedCode 的 fence 行在下方整行处理；这里只管行内代码的反引号
         if (
           parent &&
-          parent.name === "InlineCode" &&
-          !selectionTouches(state, parent.from, parent.to)
+          parent.name === "InlineCode"
         ) {
           hideChild(node);
         }
         return;
       }
 
-      // —— 链接：隐藏 [ ](url)，只剩链接文字 ——
+      // —— 链接：隐藏 [ ](url)，只剩链接文字（Typora 风格常驻所见即所得） ——
       if (
         (node.name === "LinkMark" ||
           node.name === "URL" ||
           node.name === "LinkLabel" ||
           node.name === "LinkTitle") &&
         parent &&
-        parent.name === "Link" &&
-        !selectionTouches(state, parent.from, parent.to)
+        parent.name === "Link"
       ) {
         hideChild(node);
         return;
@@ -954,32 +1313,36 @@ export function computeLiveRanges(
         }
         const lang = codeInfoOf(node, doc);
         // mermaid 围栏：整块替换为渲染后的 SVG（StateField 允许跨行 block replace）
-        if (!active && lang === "mermaid") {
-          const dark = document.documentElement.dataset.theme === "dark";
-          // 有闭合围栏时源码不含闭合行
-          const source = doc
-            .sliceString(
-              first.to,
-              hasClosing ? doc.line(last.number - 1).to : last.to
-            )
-            .trim();
-          ranges.push(
-            Decoration.replace({
-              widget: new MermaidWidget(source, dark),
-              block: true,
-            }).range(first.from, last.to)
-          );
-          return false;
+        if (lang === "mermaid") {
+          if (!active) {
+            const dark = document.documentElement.dataset.theme === "dark";
+            // 有闭合围栏时源码不含闭合行
+            const source = doc
+              .sliceString(
+                first.to,
+                hasClosing ? doc.line(last.number - 1).to : last.to
+              )
+              .trim();
+            ranges.push(
+              Decoration.replace({
+                widget: new MermaidWidget(source, dark),
+                block: true,
+              }).range(first.from, last.to)
+            );
+            return false;
+          }
+        } else {
+          // 常规代码块（Typora 风格代码卡片）：首尾围栏常驻隐藏与卡片化，光标在代码内编辑时不展开首尾 ``` 围栏
+          if (hasClosing || !active) {
+            ranges.push(
+              (lang
+                ? Decoration.replace({ widget: new FenceWidget(lang) })
+                : HIDE
+              ).range(first.from, first.to)
+            );
+          }
         }
-        if (!active) {
-          ranges.push(
-            (lang
-              ? Decoration.replace({ widget: new FenceWidget(lang) })
-              : HIDE
-            ).range(first.from, first.to)
-          );
-        }
-        // 闭 fence 无条件隐藏；开 fence 光标进入时显示原文，便于修改语言标注
+        // 闭 fence 无条件隐藏；开 fence 保持右上角语言标签卡片
         if (hasClosing) {
           const r = hideRange(state, last.from, last.to);
           if (r) ranges.push(r);

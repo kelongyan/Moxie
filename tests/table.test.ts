@@ -3,8 +3,10 @@ import { EditorState } from "@codemirror/state";
 import { markdownExtensions } from "../src/editor/languages";
 import {
   buildTable,
+  clearCellEdit,
   deleteColEdit,
   deleteRowEdit,
+  deleteTableEdit,
   displayWidth,
   emptyTable,
   findTableAt,
@@ -13,6 +15,7 @@ import {
   insertRowEdit,
   locateCell,
   parseAlignments,
+  resizeTableEdit,
   setAlignEdit,
   type TableModel,
 } from "../src/editor/table";
@@ -205,6 +208,35 @@ describe("table · 结构变换", () => {
     const model = modelOf("| a \\| b |\n| --- |\n| c |", 0);
     const edit = insertRowEdit(model, 1, 0);
     expect(edit!.insert.split("\n")[0]).toBe("| a \\| b |");
+  });
+
+  it("resizeTableEdit 扩展与缩减行列", () => {
+    const model = modelOf(TABLE, 0); // 3 行 2 列
+    const expanded = resizeTableEdit(model, 4, 3);
+    expect(expanded).not.toBeNull();
+    const expLines = expanded!.insert.split("\n");
+    expect(expLines).toHaveLength(5); // 1 header + 1 delimiter + 3 data rows
+
+    const shrink = resizeTableEdit(model, 2, 1);
+    expect(shrink).not.toBeNull();
+    const shrinkLines = shrink!.insert.split("\n");
+    expect(shrinkLines).toHaveLength(3); // 1 header + 1 delimiter + 1 data row
+  });
+
+  it("deleteTableEdit 产出清空替换", () => {
+    const model = modelOf(TABLE, 0);
+    const edit = deleteTableEdit(model);
+    expect(edit.insert).toBe("");
+    expect(edit.from).toBe(model.from);
+    expect(edit.to).toBe(model.to);
+  });
+
+  it("clearCellEdit 清空特定单元格", () => {
+    const model = modelOf(TABLE, 0);
+    const edit = clearCellEdit(model, 1, 0);
+    expect(edit).not.toBeNull();
+    const lines = edit!.insert.split("\n");
+    expect(lines[2]).toContain("|      | b");
   });
 });
 

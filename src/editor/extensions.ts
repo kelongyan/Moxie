@@ -182,6 +182,190 @@ function linkClickExtension(onOpenLink: (url: string) => void): Extension {
   });
 }
 
+/** Typora 风格链接悬浮气泡（显示 URL、一键打开与原位编辑，不破坏行内文本排版） */
+function linkPopoverExtension(onOpenLink?: (url: string) => void): Extension {
+  let popoverEl: HTMLElement | null = null;
+  let activeUrlFrom = 0;
+  let activeUrlTo = 0;
+  let hideTimer: number | null = null;
+
+  const removePopover = () => {
+    popoverEl?.remove();
+    popoverEl = null;
+  };
+
+  const scheduleRemove = () => {
+    if (hideTimer !== null) window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => {
+      if (!popoverEl?.matches(":hover") && !popoverEl?.contains(document.activeElement)) {
+        removePopover();
+      }
+    }, 250);
+  };
+
+  const showForLink = (
+    view: EditorView,
+    linkNode: SyntaxNode,
+    anchorCoords: { left: number; bottom: number }
+  ) => {
+    if (hideTimer !== null) {
+      window.clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+    let url = "";
+    let urlFrom = 0;
+    let urlTo = 0;
+    if (linkNode.name === "Autolink") {
+      url = view.state.sliceDoc(linkNode.from, linkNode.to);
+      urlFrom = linkNode.from;
+      urlTo = linkNode.to;
+    } else {
+      for (let ch = linkNode.firstChild; ch; ch = ch.nextSibling) {
+        if (ch.name === "URL") {
+          url = view.state.sliceDoc(ch.from, ch.to);
+          urlFrom = ch.from;
+          urlTo = ch.to;
+          break;
+        }
+      }
+    }
+    url = url.trim();
+    if (!url) return;
+
+    activeUrlFrom = urlFrom;
+    activeUrlTo = urlTo;
+
+    if (!popoverEl) {
+      popoverEl = document.createElement("div");
+      popoverEl.className = "md-link-popover";
+      popoverEl.addEventListener("mouseenter", () => {
+        if (hideTimer !== null) {
+          window.clearTimeout(hideTimer);
+          hideTimer = null;
+        }
+      });
+      popoverEl.addEventListener("mouseleave", () => {
+        scheduleRemove();
+      });
+      document.body.appendChild(popoverEl);
+    }
+
+    popoverEl.innerHTML = `
+      <span class="md-link-popover-url" title="${url}">${url}</span>
+      <button type="button" class="md-link-popover-btn open-btn" title="在浏览器中打开链接">访问</button>
+      <button type="button" class="md-link-popover-btn edit-btn" title="编辑链接地址">修改</button>
+    `;
+
+    const openBtn = popoverEl.querySelector(".open-btn") as HTMLButtonElement;
+    const editBtn = popoverEl.querySelector(".edit-btn") as HTMLButtonElement;
+    const urlSpan = popoverEl.querySelector(".md-link-popover-url") as HTMLSpanElement;
+
+    const handleOpen = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onOpenLink) onOpenLink(url);
+      else window.open(url, "_blank");
+    };
+
+    openBtn.addEventListener("mousedown", (e) => e.stopPropagation());
+    openBtn.addEventListener("click", handleOpen);
+    urlSpan.addEventListener("mousedown", (e) => e.stopPropagation());
+    urlSpan.addEventListener("click", handleOpen);
+
+    editBtn.addEventListener("mousedown", (e) => e.stopPropagation());
+    editBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!popoverEl) return;
+      popoverEl.innerHTML = `
+        <input type="text" class="md-link-popover-input" value="${url}" />
+        <button type="button" class="md-link-popover-btn confirm-btn">确定</button>
+        <button type="button" class="md-link-popover-btn cancel-btn">取消</button>
+      `;
+      const input = popoverEl.querySelector(".md-link-popover-input") as HTMLInputElement;
+      const confirmBtn = popoverEl.querySelector(".confirm-btn") as HTMLButtonElement;
+      const cancelBtn = popoverEl.querySelector(".cancel-btn") as HTMLButtonElement;
+
+      const commit = () => {
+        const next = input.value.trim();
+        if (next && activeUrlFrom && activeUrlTo) {
+          view.dispatch({
+            changes: { from: activeUrlFrom, to: activeUrlTo, insert: next },
+          });
+        }
+        removePopover();
+        view.focus();
+      };
+
+      confirmBtn.addEventListener("click", commit);
+      cancelBtn.addEventListener("click", () => {
+        removePopover();
+        view.focus();
+      });
+      input.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") commit();
+        if (ev.key === "Escape") {
+          removePopover();
+          view.focus();
+        }
+      });
+      input.focus();
+      input.select();
+    });
+
+    const top = anchorCoords.bottom + 6;
+    const left = Math.max(12, Math.min(anchorCoords.left, window.innerWidth - 320));
+    popoverEl.style.top = `${top}px`;
+    popoverEl.style.left = `${left}px`;
+  };
+
+  const findLinkNode = (state: EditorState, pos: number): SyntaxNode | null => {
+    const tree = syntaxTree(state);
+    for (const offset of [0, -1, 1]) {
+      const probe = Math.max(0, Math.min(pos + offset, state.doc.length));
+      for (let n: SyntaxNode | null = tree.resolveInner(probe, 0); n; n = n.parent) {
+        if (n.name === "Link" || n.name === "Autolink") return n;
+      }
+    }
+    return null;
+  };
+
+  return [
+    EditorView.updateListener.of((update) => {
+      if (!update.docChanged && !update.selectionSet && !update.viewportChanged) return;
+      const view = update.view;
+      const sel = update.state.selection.main;
+      if (!sel.empty) {
+        scheduleRemove();
+        return;
+      }
+      const pos = sel.head;
+      const linkNode = findLinkNode(view.state, pos);
+      if (!linkNode) {
+        scheduleRemove();
+        return;
+      }
+      const coords = view.coordsAtPos(pos);
+      if (coords) {
+        showForLink(view, linkNode, coords);
+      }
+    }),
+    EditorView.domEventHandlers({
+      mousemove(event, view) {
+        const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+        if (pos == null) return false;
+        const linkNode = findLinkNode(view.state, pos);
+        if (linkNode) {
+          showForLink(view, linkNode, { left: event.clientX, bottom: event.clientY + 8 });
+        } else if (!popoverEl?.matches(":hover")) {
+          scheduleRemove();
+        }
+        return false;
+      },
+    }),
+  ];
+}
+
 export function buildEditorState(options: EditorOptions): EditorState {
   const fontSizePx = options.fontSizePt * PT_TO_PX;
   // 行距偏好以默认 4pt（= 校样样张 1.75 行高）为零点，仅把偏离量叠加到基准行高上
@@ -199,16 +383,18 @@ export function buildEditorState(options: EditorOptions): EditorState {
         color: "var(--lac-text)",
       },
       ".cm-scroller": {
-        fontFamily: editable ? "var(--font-ui)" : "var(--font-mono)",
+        fontFamily: editable
+          ? "var(--font-content, var(--font-ui))"
+          : "var(--font-mono)",
         // 基准行高（typography.CONTENT_LINE_HEIGHT，与导出 renderShell 同源）+ 行距偏离量；
-        // 默认 lineSpacingPt=4 → 恰好 1.75em（16px 正文 = 28px 行盒）
+        // 默认 lineSpacingPt=4 → 恰好 1.65em（16px 正文 ≈ 26.4px 行盒）
         lineHeight: `calc(${CONTENT_LINE_HEIGHT}em + ${lineSpacingPx}px)`,
         // 中文排版增强，与导出 renderShell 对齐（markdown.ts）：全角标点挤压、
         // 等宽数字、kern/liga；旧 WebView2 不识别时无害回落
         textSpacingTrim: "space-first",
         fontVariantNumeric: "tabular-nums",
         fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
-        // 书写面：正文区限宽居中（--measure-writing），两端留白；16/24 内边距由 .cm-content padding 提供
+        // 书写面：正文区限宽居中（--measure-writing），两端留白；内边距由 .cm-content padding 提供
         // 源码视图：整块（行号 + 正文）居中并限制列宽；56px 是行号槽的预留宽度
         paddingInline: editable
           ? "max(0px, calc((100% - var(--measure-writing)) / 2))"
@@ -216,7 +402,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
       },
       ".cm-content": {
         caretColor: "var(--lac-accent)",
-        padding: editable ? "24px 24px 32px" : "24px 0 32px",
+        padding: editable ? "32px 36px 80px" : "24px 0 32px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {
@@ -339,6 +525,9 @@ export function buildEditorState(options: EditorOptions): EditorState {
   }
   if (options.onOpenLink) {
     extensions.push(linkClickExtension(options.onOpenLink));
+  }
+  if (editable) {
+    extensions.push(linkPopoverExtension(options.onOpenLink));
   }
   if (options.onImagePaste) {
     extensions.push(pasteImageExtension(options.onImagePaste));

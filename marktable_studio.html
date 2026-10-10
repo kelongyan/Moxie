@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MarkTable Studio - 现代化 Markdown 编译器与表格渲染工坊</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'Fira Code', 'Consolas', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            editor: {
+              dark: '#0f141c',
+              darker: '#0a0d13',
+              border: '#1f293d',
+              surface: '#151b26'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom sleek scrollbars */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.45);
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.2);
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.35);
+    }
+
+    /* Line Numbers Sync */
+    .line-number-gutter {
+      user-select: none;
+    }
+
+    /* Table theme transitions */
+    .table-container table {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Glow highlights */
+    .glow-accent {
+      box-shadow: 0 0 20px -3px rgba(99, 102, 241, 0.25);
+    }
+
+    /* Badge pulse effects */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.65; }
+    }
+    .animate-pulse-subtle {
+      animation: pulse-subtle 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-editor-darker text-slate-800 dark:text-slate-100 font-sans antialiased h-screen flex flex-col overflow-hidden transition-colors duration-200">
+
+  <!-- Top Navigation Header -->
+  <header class="h-14 border-b border-slate-200 dark:border-editor-border bg-white/95 dark:bg-editor-dark/95 backdrop-blur flex items-center justify-between px-4 z-30 select-none shrink-0">
+    <div class="flex items-center space-x-3">
+      <!-- Brand Logo -->
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 via-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+        <i class="fa-solid fa-table-cells text-sm"></i>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-base tracking-tight text-slate-900 dark:text-white">MarkTable<span class="text-brand-500">.Studio</span></span>
+          <span class="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 rounded">v2.5 Pro</span>
+        </div>
+      </div>
+
+      <div class="h-4 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
+
+      <!-- Preset Selector -->
+      <div class="flex items-center space-x-1.5">
+        <span class="text-xs text-slate-400 hidden sm:inline"><i class="fa-solid fa-folder-open mr-1"></i>模板:</span>
+        <select id="presetSelector" class="text-xs bg-slate-100 dark:bg-editor-surface border border-slate-300 dark:border-editor-border text-slate-700 dark:text-slate-200 rounded-md px-2.5 py-1.5 font-medium outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer transition">
+          <option value="apiSpec">🚀 RESTful API 规范与请求性能表</option>
+          <option value="frameworks">⚡ 现代前端框架特性基准评测</option>
+          <option value="taskSprint">🎯 敏捷迭代敏捷任务状态追踪</option>
+          <option value="pricingMatrix">💎 SaaS 产品功能与定价矩阵</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Center Status Indicator -->
+    <div class="hidden lg:flex items-center space-x-3 text-xs">
+      <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-editor-surface border border-slate-200 dark:border-editor-border">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse-subtle"></span>
+        <span class="text-slate-600 dark:text-slate-300 font-mono" id="latencyDisplay">编译耗时: 0.6ms</span>
+      </div>
+      <div class="text-slate-400 text-xs">
+        <span id="detectedTablesCount"><i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i>已解析 1 个表格</span>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center space-x-2">
+      <!-- Layout Modes -->
+      <div class="hidden md:flex bg-slate-100 dark:bg-editor-surface p-0.5 rounded-lg border border-slate-200 dark:border-editor-border">
+        <button id="viewSplitBtn" onclick="setLayoutMode('split')" title="双栏视图" class="px-2 py-1 text-xs rounded font-medium bg-white dark:bg-brand-600 text-slate-900 dark:text-white shadow-sm transition">
+          <i class="fa-solid fa-columns"></i>
+        </button>
+        <button id="viewEditBtn" onclick="setLayoutMode('editor')" title="仅源码" class="px-2 py-1 text-xs rounded font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+          <i class="fa-solid fa-code"></i>
+        </button>
+        <button id="viewPreviewBtn" onclick="setLayoutMode('preview')" title="仅渲染" class="px-2 py-1 text-xs rounded font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+
+      <div class="h-4 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
+
+      <!-- Quick Export Menu -->
+      <div class="relative inline-block text-left">
+        <button onclick="toggleExportMenu()" class="text-xs flex items-center space-x-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-md shadow-sm shadow-brand-500/30 transition">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>导出 / 分享</span>
+          <i class="fa-solid fa-chevron-down text-[10px]"></i>
+        </button>
+        <div id="exportDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-xl bg-white dark:bg-editor-surface border border-slate-200 dark:border-editor-border py-1.5 z-50 divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+          <div class="py-1">
+            <button onclick="copyRawMarkdown()" class="w-full text-left px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 flex items-center space-x-2">
+              <i class="fa-brands fa-markdown text-brand-500 w-4"></i>
+              <span>复制 Markdown 源码</span>
+            </button>
+            <button onclick="copyRenderedHTML()" class="w-full text-left px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 flex items-center space-x-2">
+              <i class="fa-brands fa-html5 text-orange-500 w-4"></i>
+              <span>复制纯 HTML 代码</span>
+            </button>
+            <button onclick="copyCurrentTableCSV()" class="w-full text-left px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 flex items-center space-x-2">
+              <i class="fa-solid fa-file-csv text-emerald-500 w-4"></i>
+              <span>复制当前表格为 CSV</span>
+            </button>
+          </div>
+          <div class="py-1">
+            <button onclick="downloadMarkdownFile()" class="w-full text-left px-3 py-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/80 flex items-center space-x-2">
+              <i class="fa-solid fa-download text-blue-500 w-4"></i>
+              <span>下载 .md 文档文件</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button onclick="toggleDarkMode()" title="切换亮/暗色模式" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-editor-surface border border-slate-200 dark:border-editor-border text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 flex items-center justify-center transition">
+        <i id="themeIcon" class="fa-solid fa-moon text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Context Toolbar: Table Operations (Left) & Visual Styler (Right) -->
+  <div class="h-11 bg-slate-100/90 dark:bg-editor-surface border-b border-slate-200 dark:border-editor-border px-4 flex items-center justify-between text-xs select-none shrink-0 overflow-x-auto">
+    <!-- Left: Markdown Table Editing Tools -->
+    <div class="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+      <span class="text-slate-400 font-medium mr-1 hidden sm:inline"><i class="fa-solid fa-wrench mr-1"></i>表格工具:</span>
+      <button onclick="insertRow()" class="px-2 py-1 rounded bg-white dark:bg-editor-dark hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-editor-border text-slate-700 dark:text-slate-300 font-medium transition flex items-center space-x-1" title="在当前位置下方追加行">
+        <i class="fa-solid fa-plus text-[10px] text-emerald-500"></i>
+        <span>添加行</span>
+      </button>
+      <button onclick="insertColumn()" class="px-2 py-1 rounded bg-white dark:bg-editor-dark hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-editor-border text-slate-700 dark:text-slate-300 font-medium transition flex items-center space-x-1" title="在最右侧追加列">
+        <i class="fa-solid fa-columns text-[10px] text-blue-500"></i>
+        <span>添加列</span>
+      </button>
+
+      <div class="h-4 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1"></div>
+
+      <!-- Alignments -->
+      <div class="flex items-center bg-white dark:bg-editor-dark rounded border border-slate-200 dark:border-editor-border p-0.5">
+        <button onclick="setColAlign('left')" title="设为左对齐 (:-)" class="px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-400 hover:text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i class="fa-solid fa-align-left text-[11px]"></i>
+        </button>
+        <button onclick="setColAlign('center')" title="设为居中对齐 (:-:)" class="px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-400 hover:text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i class="fa-solid fa-align-center text-[11px]"></i>
+        </button>
+        <button onclick="setColAlign('right')" title="设为右对齐 (-:)" class="px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-400 hover:text-brand-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <i class="fa-solid fa-align-right text-[11px]"></i>
+        </button>
+      </div>
+
+      <!-- Prettify Formatter -->
+      <button onclick="formatMarkdownTable()" class="px-2 py-1 rounded bg-white dark:bg-editor-dark hover:bg-brand-50 dark:hover:bg-brand-950/40 border border-slate-200 dark:border-editor-border hover:border-brand-400 text-brand-600 dark:text-brand-400 font-medium transition flex items-center space-x-1" title="等宽格式化对齐所有竖线">
+        <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
+        <span>美化排版</span>
+      </button>
+
+      <button onclick="openCsvModal()" class="px-2 py-1 rounded bg-white dark:bg-editor-dark hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-editor-border text-slate-600 dark:text-slate-300 font-medium transition flex items-center space-x-1" title="将逗号分隔符数据转为 Markdown 表格">
+        <i class="fa-solid fa-file-import text-[11px] text-amber-500"></i>
+        <span class="hidden md:inline">CSV转换</span>
+      </button>
+    </div>
+
+    <!-- Right: Render Customizer (Style presets, zebra, borders, density) -->
+    <div class="flex items-center space-x-2 shrink-0 ml-4">
+      <!-- Style Preset Theme -->
+      <div class="flex items-center space-x-1.5">
+        <span class="text-slate-400 text-[11px] hidden sm:inline">风格:</span>
+        <select id="tableStyleTheme" onchange="updateTableStylePreset(this.value)" class="bg-white dark:bg-editor-dark border border-slate-200 dark:border-editor-border text-slate-700 dark:text-slate-300 rounded px-2 py-1 font-medium text-xs outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer">
+          <option value="modern">✨ 现代仪表盘 (Modern Glass)</option>
+          <option value="notion">📝 Notion 极简文档 (Minimal)</option>
+          <option value="github">🐙 GitHub 经典风格 (Classic)</option>
+          <option value="compact">⚡ 高密工程级 (Compact Pro)</option>
+        </select>
+      </div>
+
+      <!-- Density Toggle -->
+      <div class="flex items-center bg-white dark:bg-editor-dark rounded border border-slate-200 dark:border-editor-border p-0.5" title="行内填充紧凑度">
+        <button onclick="setDensity('compact')" id="densityCompact" class="px-1.5 py-0.5 text-[10px] rounded text-slate-500 dark:text-slate-400 hover:text-brand-500">紧凑</button>
+        <button onclick="setDensity('normal')" id="densityNormal" class="px-1.5 py-0.5 text-[10px] rounded bg-brand-500 text-white font-medium">常规</button>
+        <button onclick="setDensity('loose')" id="densityLoose" class="px-1.5 py-0.5 text-[10px] rounded text-slate-500 dark:text-slate-400 hover:text-brand-500">宽松</button>
+      </div>
+
+      <!-- Zebra Toggle -->
+      <button onclick="toggleZebraStripe()" id="zebraToggleBtn" class="px-2 py-1 rounded bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 font-medium transition flex items-center space-x-1" title="切换奇偶斑马纹行背景">
+        <i class="fa-solid fa-bars-staggered text-[11px]"></i>
+        <span class="hidden md:inline">斑马纹</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Dual-Pane Workspace -->
+  <main class="flex-1 flex overflow-hidden relative">
+
+    <!-- LEFT PANE: Markdown Source Editor -->
+    <div id="editorPane" class="w-1/2 flex flex-col border-r border-slate-200 dark:border-editor-border bg-white dark:bg-editor-dark transition-all duration-150">
+      <!-- Editor Subheader -->
+      <div class="h-8 bg-slate-50 dark:bg-editor-darker/60 border-b border-slate-200 dark:border-editor-border px-3 flex items-center justify-between text-[11px] text-slate-500 select-none">
+        <div class="flex items-center space-x-2 font-mono">
+          <i class="fa-solid fa-code text-brand-500"></i>
+          <span>MARKDOWN_SOURCE.md</span>
+          <span class="text-slate-400 text-[10px]">(实时双向监听)</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="clearEditor()" class="hover:text-red-500 transition" title="清空编辑器"><i class="fa-solid fa-trash-can mr-1"></i>清空</button>
+          <span class="text-slate-300 dark:text-slate-700">|</span>
+          <button onclick="resetCurrentPreset()" class="hover:text-brand-500 transition" title="重置回当前模板默认值"><i class="fa-solid fa-rotate-left mr-1"></i>重置</button>
+        </div>
+      </div>
+
+      <!-- Editor Core Area (Gutter + Textarea) -->
+      <div class="flex-1 flex overflow-hidden relative font-mono text-xs leading-relaxed">
+        <!-- Line Numbers Gutter -->
+        <div id="lineNumbers" class="line-number-gutter w-10 py-3 pr-2 text-right text-slate-400 dark:text-slate-600 bg-slate-50 dark:bg-editor-darker/40 select-none overflow-hidden shrink-0 border-r border-slate-200 dark:border-editor-border text-[11px]">
+          1
+        </div>
+        <!-- Raw Textarea -->
+        <div class="flex-1 relative h-full">
+          <textarea id="markdownInput" spellcheck="false" class="w-full h-full p-3 bg-transparent text-slate-800 dark:text-slate-200 outline-none resize-none font-mono text-[13px] leading-6 selection:bg-brand-500/20" placeholder="在此输入 Markdown 源码或粘贴表格数据..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: Real-time Rendered Result (The Visual Highlight) -->
+    <div id="previewPane" class="w-1/2 flex flex-col bg-slate-50 dark:bg-[#0c1017] transition-all duration-150 overflow-hidden">
+      <!-- Preview Subheader with search and view options -->
+      <div class="h-8 bg-slate-50 dark:bg-editor-darker/60 border-b border-slate-200 dark:border-editor-border px-3 flex items-center justify-between text-[11px] text-slate-500 select-none">
+        <div class="flex items-center space-x-2">
+          <span class="flex items-center space-x-1.5 font-medium text-slate-700 dark:text-slate-300">
+            <i class="fa-solid fa-circle-play text-emerald-500"></i>
+            <span>实时编译渲染视图 (Live Render)</span>
+          </span>
+          <span id="sortIndicatorBadge" class="hidden text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">排序激活</span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Quick Filter Input -->
+          <div class="relative flex items-center">
+            <i class="fa-solid fa-magnifying-glass absolute left-2 text-[10px] text-slate-400"></i>
+            <input type="text" id="tableFilterInput" oninput="handleTableFilter(this.value)" placeholder="搜索表格内容..." class="pl-6 pr-2 py-0.5 text-[11px] rounded bg-white dark:bg-editor-dark border border-slate-200 dark:border-editor-border text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-brand-500 w-32 focus:w-44 transition-all">
+          </div>
+          <button onclick="togglePreviewFullscreen()" class="hover:text-slate-900 dark:hover:text-white transition" title="全屏视窗"><i class="fa-solid fa-expand"></i></button>
+        </div>
+      </div>
+
+      <!-- Preview Scroll Area -->
+      <div id="renderedOutput" class="flex-1 overflow-auto p-4 md:p-6 lg:p-8 table-container space-y-6">
+        <!-- Dynamic rendered content injects here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Status Bar -->
+  <footer class="h-7 bg-white dark:bg-editor-darker border-t border-slate-200 dark:border-editor-border px-4 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 select-none shrink-0 font-mono">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+        <span id="statusCursorPos">行 1, 列 1</span>
+      </div>
+      <div class="hidden sm:inline text-slate-300 dark:text-slate-700">|</div>
+      <div id="statusCharCount" class="hidden sm:inline">字数: 0 字符</div>
+      <div class="hidden sm:inline text-slate-300 dark:text-slate-700">|</div>
+      <div id="statusDimension" class="text-brand-600 dark:text-brand-400 font-semibold">表格规格: 0 行 × 0 列</div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <span class="hidden md:inline text-emerald-500"><i class="fa-solid fa-shield-halved mr-1"></i>GFM 规范校验通过</span>
+      <span class="text-slate-300 dark:text-slate-700 hidden md:inline">|</span>
+      <span>UTF-8</span>
+      <span class="text-slate-300 dark:text-slate-700">|</span>
+      <span class="text-slate-600 dark:text-slate-300">MarkTable Core Engine v2.5</span>
+    </div>
+  </footer>
+
+  <!-- CSV to Markdown Dialog Modal -->
+  <div id="csvModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-editor-surface border border-slate-200 dark:border-editor-border rounded-xl shadow-2xl max-w-lg w-full p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <div class="w-7 h-7 rounded bg-amber-500/10 text-amber-500 flex items-center justify-center">
+            <i class="fa-solid fa-file-csv"></i>
+          </div>
+          <h3 class="font-bold text-sm text-slate-900 dark:text-white">一键 CSV / TSV 转换为 Markdown 表格</h3>
+        </div>
+        <button onclick="closeCsvModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-500 dark:text-slate-400">将 Excel、电子表格或数据库导出的逗号或制表符分隔数据直接粘贴至下方：</p>
+
+      <textarea id="csvInputArea" rows="6" class="w-full p-2.5 bg-slate-50 dark:bg-editor-dark border border-slate-200 dark:border-editor-border rounded-lg font-mono text-xs outline-none focus:ring-2 focus:ring-brand-500" placeholder="ID,名称,状态,耗时&#10;101,用户鉴权,/auth/v1,24ms&#10;102,订单创建,/order/new,85ms"></textarea>
+
+      <div class="flex items-center justify-between pt-2">
+        <div class="flex items-center space-x-2 text-xs">
+          <label class="text-slate-600 dark:text-slate-300">分隔符:</label>
+          <select id="csvDelimiterSelect" class="bg-slate-100 dark:bg-editor-dark border border-slate-200 dark:border-editor-border rounded px-2 py-1 text-xs">
+            <option value=",">逗号 (,)</option>
+            <option value="\t">制表符 (Tab)</option>
+            <option value=";">分号 (;)</option>
+          </select>
+        </div>
+        <div class="flex space-x-2">
+          <button onclick="closeCsvModal()" class="px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">取消</button>
+          <button onclick="executeCsvConversion()" class="px-3 py-1.5 text-xs bg-brand-600 hover:bg-brand-700 text-white font-medium rounded shadow-sm">转换并插入</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Feedback -->
+  <div id="toastNotification" class="fixed bottom-12 right-6 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center space-x-2 px-4 py-2.5 rounded-lg shadow-xl text-xs font-medium text-white bg-slate-900 border border-slate-700 dark:bg-slate-800 dark:border-slate-600">
+    <i id="toastIcon" class="fa-solid fa-check text-emerald-400"></i>
+    <span id="toastMsg">操作成功</span>
+  </div>
+
+  <script>
+    // Preset Markdown templates tailored for visual excellence
+    const PRESETS = {
+      apiSpec: `# 🚀 微服务 API 规格网关与性能评测指标
+
+> 本文档规范各核心高并发接口的协议、身份鉴权模式、QPS能力以及实时 SLA 目标。
+
+| 模块端点 (Endpoint) | 请求方式 | 身份鉴权 | 当前状态 | 目标延迟 (P99) | 吞吐容量 (QPS) | 灰度放量 | 负责人 |
+| :------------------ | :------: | :------- | :------: | -------------: | -------------: | :------: | :----- |
+| \`/api/v3/auth/token\` | [POST] | Bearer JWT | [ACTIVE] | \`18ms\` | 35,000 req/s | [x] 100% | @alex |
+| \`/api/v3/users/profile\` | [GET] | OAuth2.0 | [ACTIVE] | \`24ms\` | 22,000 req/s | [x] 100% | @sarah |
+| \`/api/v3/order/checkout\` | [POST] | mTLS + HMAC | [PENDING] | \`85ms\` | 8,500 req/s | [ ] 25% | @david |
+| \`/api/v3/metrics/stream\` | [WS] | Session Cookie | [BETA] | \`4ms\` | 50,000 req/s | [ ] 10% | @elena |
+| \`/api/v3/legacy/billing\` | [DELETE] | API Key | [DEPRECATED] | \`140ms\` | 1,200 req/s | [x] 0% | @kevin |
+| \`/api/v3/ai/completions\` | [POST] | Dynamic Token | [ACTIVE] | \`260ms\` | 4,200 req/s | [x] 80% | @chen |
+
+💡 **提示**：可直接点击表头进行**升序/降序实时排序**，或在单元格点击复选框即时更新！`,
+
+      frameworks: `# ⚡ 2026 前端与全栈框架多维技术矩阵
+
+评测维度涵盖启动性能、打包体积、水合策略以及开发者体验 (DX)：
+
+| 前端框架 (Framework) | 架构范式 | Github Stars | 首屏体积 (Gzip) | 渲染范式 | 水合成本 (Hydration) | 生态评级 | 企业级采用 |
+| :------------------ | :------- | -----------: | --------------: | :------- | :------------------: | :------: | :--------: |
+| **Next.js (App Dir)** | React RSC | 128,500 ⭐ | \`42.8 KB\` | Hybrid SSR/SSG | Partial Island | [HIGH] | [x] 已上线 |
+| **Nuxt 4** | Vue 3 Composition | 56,200 ⭐ | \`38.2 KB\` | SSR + Nitro Engine | Fast Hydration | [HIGH] | [x] 已上线 |
+| **SvelteKit 3.0** | Compiler Reactive | 44,100 ⭐ | \`18.6 KB\` | Zero-virtual DOM | Compile-time | [MEDIUM] | [ ] 评估中 |
+| **Astro 5.0** | Islands Architecture | 49,800 ⭐ | \`6.4 KB\` | Static First MPA | Zero JS by Default | [HIGH] | [x] 已上线 |
+| **Qwik 2.0** | Resumable Architecture | 26,400 ⭐ | \`2.1 KB\` | Resumable Lazy | No Hydration! | [MEDIUM] | [ ] 试点中 |
+| **SolidStart** | Fine-grained Reactivity | 16,900 ⭐ | \`14.2 KB\` | Reactive Primitives | Direct DOM Binding | [MEDIUM] | [ ] 试点中 |`,
+
+      taskSprint: `# 🎯 Q4 敏捷冲刺研发任务看板 (Sprint 42)
+
+> 周期：2026-10-01 至 2026-10-15 | 重点方向：高性能编译内核与实时协作引擎
+
+| 任务编号 | 核心功能特性描述 | 所属模块 | 优先级 | 当前状态 | 进度占比 | 评审验收人 | 截止日期 |
+| :------: | :--------------- | :------- | :----: | :------: | :------: | :--------- | :------: |
+| #TSK-801 | WebAssembly 正则解析器加速 | Core Engine | [CRITICAL] | [ACTIVE] | 85% | @marcus | 10-11 |
+| #TSK-802 | 单元格跨行合并与富文本嵌入 | Table UI | [HIGH] | [ACTIVE] | 60% | @sophia | 10-12 |
+| #TSK-803 | 导出高清矢量 PDF / SVG 表格 | Export Plugin | [MEDIUM] | [PENDING] | 30% | @daniel | 10-14 |
+| #TSK-804 | 暗色模式色彩对比度无障碍合规 (WCAG) | A11y & Design | [LOW] | [DONE] | 100% | @clara | 10-09 |
+| #TSK-805 | 端到端单元测试与内存泄漏防护 | QA Auto | [HIGH] | [DONE] | 100% | @tony | 10-08 |
+| #TSK-806 | 协同光标与行锁广播协议接入 | WebSocket CRDT | [CRITICAL] | [ACTIVE] | 45% | @leo | 10-15 |`,
+
+      pricingMatrix: `# 💎 MarkTable Cloud 商业版本订阅权益
+
+| 特性方案 / 权益对比 | 个人开源版 (Free) | 团队进阶版 (Pro) | 研发企业版 (Enterprise) |
+| :------------------ | :---------------: | :-------------: | :---------------------: |
+| **月度单价** | ¥ 0 / 永久免费 | ¥ 49 / 人/月 | ¥ 199 / 人/月 (定制) |
+| 表格最大行数上限 | 500 行 | 50,000 行 | 无限制 (流式分块) |
+| 导出格式支持 | MD / HTML / CSV | 全部格式 + Excel / PDF | 包含私有化 S3 Webhook |
+| 实时协同并发用户 | 单机离线 | 最多 25 人协作 | 专属集群 / SSO 单点登录 |
+| 技术支持 SLA | 社区论坛 | 12 小时响应 | 99.99% + 1v1 架构师直连 |
+| 商业部署授权 | [x] 允许 | [x] 允许 | [x] 允许企业私有内网隔离 |`
+    };
+
+    // Application Reactive State
+    const state = {
+      stylePreset: 'modern',     // modern | notion | github | compact
+      density: 'normal',         // compact | normal | loose
+      zebra: true,               // boolean
+      filterQuery: '',
+      sortColumn: null,          // { tableIndex: 0, colIndex: 0, order: 'asc'|'desc' }
+      layoutMode: 'split',       // split | editor | preview
+      tablesData: []             // cached parsed table structures for sorting & filtering
+    };
+
+    // DOM Elements
+    const editor = document.getElementById('markdownInput');
+    const lineNumbers = document.getElementById('lineNumbers');
+    const renderedOutput = document.getElementById('renderedOutput');
+    const latencyDisplay = document.getElementById('latencyDisplay');
+    const statusCursorPos = document.getElementById('statusCursorPos');
+    const statusCharCount = document.getElementById('statusCharCount');
+    const statusDimension = document.getElementById('statusDimension');
+    const detectedTablesCount = document.getElementById('detectedTablesCount');
+    const presetSelector = document.getElementById('presetSelector');
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load default preset
+      editor.value = PRESETS.apiSpec;
+      updateLineNumbers();
+      compileAndRender();
+
+      // Editor input listeners
+      editor.addEventListener('input', () => {
+        updateLineNumbers();
+        compileAndRender();
+        updateCursorStats();
+      });
+
+      editor.addEventListener('keyup', updateCursorStats);
+      editor.addEventListener('click', updateCursorStats);
+
+      // Sync editor scrolling with line numbers
+      editor.addEventListener('scroll', () => {
+        lineNumbers.scrollTop = editor.scrollTop;
+      });
+
+      // Preset Change
+      presetSelector.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (PRESETS[val]) {
+          editor.value = PRESETS[val];
+          state.sortColumn = null;
+          state.filterQuery = '';
+          document.getElementById('tableFilterInput').value = '';
+          updateLineNumbers();
+          compileAndRender();
+          showToast(`已加载示例: ${e.target.options[e.target.selectedIndex].text}`);
+        }
+      });
+
+      // Keyboard Shortcut: Tab indent in textarea
+      editor.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = editor.selectionStart;
+          const end = editor.selectionEnd;
+          editor.value = editor.value.substring(0, start) + '  ' + editor.value.substring(end);
+          editor.selectionStart = editor.selectionEnd = start + 2;
+          compileAndRender();
+        }
+      });
+
+      // Close dropdowns on outside click
+      document.addEventListener('click', (e) => {
+        const exportBtn = e.target.closest('[onclick="toggleExportMenu()"]');
+        const exportMenu = document.getElementById('exportDropdown');
+        if (!exportBtn && !exportMenu.contains(e.target)) {
+          exportMenu.classList.add('hidden');
+        }
+      });
+    });
+
+    // Update Line Numbers in Gutter
+    function updateLineNumbers() {
+      const lines = editor.value.split('\n').length;
+      let numbersHtml = '';
+      for (let i = 1; i <= lines; i++) {
+        numbersHtml += `<div>${i}</div>`;
+      }
+      lineNumbers.innerHTML = numbersHtml;
+    }
+
+    // Update cursor position and char stats in status bar
+    function updateCursorStats() {
+      const text = editor.value;
+      const pos = editor.selectionStart;
+      const sub = text.substring(0, pos);
+      const lines = sub.split('\n');
+      const lineNum = lines.length;
+      const colNum = lines[lines.length - 1].length + 1;
+
+      statusCursorPos.innerText = `行 ${lineNum}, 列 ${colNum}`;
+      statusCharCount.innerText = `字数: ${text.length} 字符`;
+    }
+
+    // Core Markdown + GFM Table Compiler
+    function compileAndRender() {
+      const startTime = performance.now();
+      const rawText = editor.value;
+
+      // Extract and Parse Markdown Blocks
+      const { html, tableStats } = parseMarkdownToHtml(rawText);
+
+      renderedOutput.innerHTML = html;
+
+      // Update Render Latency
+      const elapsed = Math.max(0.2, (performance.now() - startTime)).toFixed(2);
+      latencyDisplay.innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i>渲染耗时: ${elapsed}ms`;
+
+      // Update Dimension stats
+      if (tableStats.length > 0) {
+        statusDimension.innerText = `表格规格: ${tableStats[0].rows} 行 × ${tableStats[0].cols} 列`;
+        detectedTablesCount.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i>已解析 ${tableStats.length} 个表格`;
+      } else {
+        statusDimension.innerText = `表格规格: 0 行 × 0 列`;
+        detectedTablesCount.innerHTML = `<span class="text-slate-400">未检测到表格</span>`;
+      }
+
+      // Re-bind interactive events inside preview (checkboxes, table sorts)
+      bindPreviewInteractions();
+    }
+
+    function parseMarkdownToHtml(md) {
+      const lines = md.split('\n');
+      let resultHtml = '';
+      let i = 0;
+      const tableStats = [];
+      let tableCounter = 0;
+      state.tablesData = [];
+
+      while (i < lines.length) {
+        const line = lines[i];
+
+        // Check if line looks like a markdown table header candidate
+        if (line.includes('|') && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+          // Parse entire table block
+          const headerLine = line;
+          const delimiterLine = lines[i + 1];
+          const rowLines = [];
+          const headerLineIndexInEditor = i;
+
+          i += 2;
+          while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].includes('|')) {
+            rowLines.push({ text: lines[i], editorLineIndex: i });
+            i++;
+          }
+
+          // Build parsed Table Model
+          const alignments = parseAlignments(delimiterLine);
+          const headers = splitTableRow(headerLine);
+          const rows = rowLines.map(r => ({
+            cells: splitTableRow(r.text),
+            originalIndex: r.editorLineIndex
+          }));
+
+          // Save into state for interactive sorting / searching
+          state.tablesData.push({
+            tableIndex: tableCounter,
+            headers,
+            alignments,
+            rows: rows
+          });
+
+          tableStats.push({
+            rows: rows.length,
+            cols: headers.length
+          });
+
+          // Generate styled table HTML
+          resultHtml += renderCustomizedTable(tableCounter, headers, alignments, rows);
+          tableCounter++;
+        } else {
+          // Regular Markdown Elements
+          resultHtml += parseStandardMarkdownLine(line);
+          i++;
+        }
+      }
+
+      return { html: resultHtml, tableStats };
+    }
+
+    function isTableDelimiter(line) {
+      if (!line || !line.includes('|')) return false;
+      const cleaned = line.trim().replace(/^\||\|$/g, '');
+      const parts = cleaned.split('|');
+      return parts.length > 0 && parts.every(part => {
+        const p = part.trim();
+        return /^:?-+:?$/.test(p);
+      });
+    }
+
+    function parseAlignments(delimLine) {
+      const cleaned = delimLine.trim().replace(/^\||\|$/g, '');
+      return cleaned.split('|').map(segment => {
+        const s = segment.trim();
+        const left = s.startsWith(':');
+        const right = s.endsWith(':');
+        if (left && right) return 'center';
+        if (right) return 'right';
+        return 'left';
+      });
+    }
+
+    function splitTableRow(rowLine) {
+      let str = rowLine.trim();
+      if (str.startsWith('|')) str = str.substring(1);
+      if (str.endsWith('|')) str = str.substring(0, str.length - 1);
+      return str.split('|').map(s => s.trim());
+    }
+
+    function parseInlineMarkdown(text) {
+      if (!text) return '';
+
+      // Task Checkboxes: [x] or [ ]
+      let out = text.replace(/\[x\]/gi, `<input type="checkbox" checked class="table-task-checkbox w-3.5 h-3.5 text-brand-600 rounded border-slate-300 dark:border-slate-600 focus:ring-brand-500 mr-1.5 cursor-pointer accent-indigo-600 align-middle">`);
+      out = out.replace(/\[ \]/g, `<input type="checkbox" class="table-task-checkbox w-3.5 h-3.5 text-brand-600 rounded border-slate-300 dark:border-slate-600 focus:ring-brand-500 mr-1.5 cursor-pointer accent-indigo-600 align-middle">`);
+
+      // Status Badges: [ACTIVE], [PENDING], [HIGH], etc.
+      out = out.replace(/\[(ACTIVE|GET|POST|PUT|DELETE|WS|DONE|HIGH|CRITICAL|MEDIUM|LOW|BETA|DEPRECATED|SUCCESS|FAILED)\]/g, (match, tag) => {
+        return getBadgeHtml(tag);
+      });
+
+      // Code backticks: `code`
+      out = out.replace(/`([^`]+)`/g, `<code class="px-1.5 py-0.5 rounded text-xs font-mono bg-slate-100 dark:bg-slate-800 text-brand-600 dark:text-brand-400 border border-slate-200 dark:border-slate-700/60 font-semibold">$1</code>`);
+
+      // Bold: **text** or __text__
+      out = out.replace(/\*\*([^*]+)\*\*/g, `<strong class="font-bold text-slate-900 dark:text-white">$1</strong>`);
+
+      // Italic: *text*
+      out = out.replace(/\*([^*]+)\*/g, `<em class="italic text-slate-700 dark:text-slate-300">$1</em>`);
+
+      // Links: [label](url)
+      out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" target="_blank" class="text-brand-500 hover:text-brand-600 underline font-medium inline-flex items-center gap-1">$1<i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>`);
+
+      // Strikethrough: ~~text~~
+      out = out.replace(/~~([^~]+)~~/g, `<del class="line-through text-slate-400">$1</del>`);
+
+      // User handles: @username
+      out = out.replace(/@([a-zA-Z0-9_-]+)/g, `<span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[11px] bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium"><i class="fa-solid fa-user-circle mr-1 text-slate-400"></i>$1</span>`);
+
+      return out;
+    }
+
+    // Micro badge generator
+    function getBadgeHtml(tag) {
+      const map = {
+        'GET': 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+        'POST': 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30',
+        'PUT': 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
+        'DELETE': 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30',
+        'WS': 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30',
+        'ACTIVE': 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+        'DONE': 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+        'CRITICAL': 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-500/30 animate-pulse',
+        'HIGH': 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30',
+        'MEDIUM': 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30',
+        'LOW': 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border-slate-500/30',
+        'BETA': 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/30',
+        'DEPRECATED': 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20 line-through',
+        'PENDING': 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
+      };
+      const style = map[tag] || 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700';
+      return `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase tracking-wider border ${style}">${tag}</span>`;
+    }
+
+    function parseStandardMarkdownLine(line) {
+      const trimmed = line.trim();
+      if (!trimmed) return '<div class="h-3"></div>';
+
+      // Headings
+      if (trimmed.startsWith('# ')) {
+        return `<h1 class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white pb-2 border-b border-slate-200 dark:border-slate-800 flex items-center space-x-2">${parseInlineMarkdown(trimmed.substring(2))}</h1>`;
+      }
+      if (trimmed.startsWith('## ')) {
+        return `<h2 class="text-lg md:text-xl font-bold tracking-tight text-slate-900 dark:text-white pt-2 pb-1">${parseInlineMarkdown(trimmed.substring(3))}</h2>`;
+      }
+      if (trimmed.startsWith('### ')) {
+        return `<h3 class="text-base font-semibold text-slate-800 dark:text-slate-200">${parseInlineMarkdown(trimmed.substring(4))}</h3>`;
+      }
+
+      // Blockquotes
+      if (trimmed.startsWith('> ')) {
+        return `<div class="border-l-4 border-brand-500 bg-brand-50/50 dark:bg-brand-950/20 px-3.5 py-2 rounded-r-lg text-xs md:text-sm text-slate-600 dark:text-slate-300 italic">${parseInlineMarkdown(trimmed.substring(2))}</div>`;
+      }
+
+      // Horizontal Rule
+      if (trimmed === '---' || trimmed === '***') {
+        return `<hr class="border-t border-slate-200 dark:border-editor-border my-4">`;
+      }
+
+      // Bullet points
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        return `<div class="flex items-start space-x-2 text-xs md:text-sm text-slate-600 dark:text-slate-300 pl-2"><span class="text-brand-500 font-bold">•</span><span>${parseInlineMarkdown(trimmed.substring(2))}</span></div>`;
+      }
+
+      // Normal paragraph
+      return `<p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${parseInlineMarkdown(trimmed)}</p>`;
+    }
+
+    function renderCustomizedTable(tableIndex, headers, alignments, rows) {
+      // Density padding classes
+      let paddingClass = 'px-4 py-3';
+      if (state.density === 'compact') paddingClass = 'px-3 py-1.5 text-xs';
+      if (state.density === 'loose') paddingClass = 'px-5 py-4';
+
+      // Style Presets Class Definition
+      let wrapperClasses = 'rounded-xl shadow-lg border';
+      let tableClasses = 'w-full text-left border-collapse';
+      let theadClasses = '';
+      let thClasses = `${paddingClass} font-semibold text-xs tracking-wider uppercase select-none transition-colors`;
+      let tdClasses = `${paddingClass} text-xs md:text-sm transition-colors`;
+
+      switch (state.stylePreset) {
+        case 'notion':
+          wrapperClasses = 'rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#12161f] shadow-none';
+          theadClasses = 'bg-slate-50/70 dark:bg-[#151a24] text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800';
+          break;
+        case 'github':
+          wrapperClasses = 'rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0d1117] shadow-sm';
+          theadClasses = 'bg-slate-100 dark:bg-[#161b22] text-slate-700 dark:text-slate-200 font-bold border-b border-slate-200 dark:border-slate-700';
+          break;
+        case 'compact':
+          wrapperClasses = 'rounded border border-slate-300 dark:border-slate-700/80 bg-white dark:bg-[#0b0e14] shadow-none font-mono';
+          theadClasses = 'bg-slate-200/70 dark:bg-slate-800/90 text-slate-800 dark:text-slate-200 text-[11px] border-b border-slate-300 dark:border-slate-700';
+          break;
+        case 'modern':
+        default:
+          wrapperClasses = 'rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#111622]/95 backdrop-blur shadow-xl shadow-slate-200/50 dark:shadow-black/40 overflow-hidden';
+          theadClasses = 'bg-gradient-to-r from-slate-100/90 via-slate-50 to-indigo-50/30 dark:from-slate-800/70 dark:via-[#151c2a] dark:to-indigo-950/20 text-slate-700 dark:text-slate-200 border-b border-slate-200/80 dark:border-slate-800';
+          break;
+      }
+
+      // Filter rows if user typed into search box
+      let displayRows = [...rows];
+      if (state.filterQuery.trim()) {
+        const query = state.filterQuery.toLowerCase();
+        displayRows = displayRows.filter(r => r.cells.some(cell => cell.toLowerCase().includes(query)));
+      }
+
+      // Sort rows if sortColumn is active
+      if (state.sortColumn && state.sortColumn.tableIndex === tableIndex) {
+        const { colIndex, order } = state.sortColumn;
+        displayRows.sort((a, b) => {
+          const valA = (a.cells[colIndex] || '').replace(/[^\w\u4e00-\u9fa5]/gi, '');
+          const valB = (b.cells[colIndex] || '').replace(/[^\w\u4e00-\u9fa5]/gi, '');
+          // numeric compare
+          const numA = parseFloat(valA);
+          const numB = parseFloat(valB);
+          if (!isNaN(numA) && !isNaN(numB)) {
+            return order === 'asc' ? numA - numB : numB - numA;
+          }
+          return order === 'asc' ? valA.localeCompare(valB, 'zh') : valB.localeCompare(valA, 'zh');
+        });
+      }
+
+      // Build Headers HTML
+      let theadHtml = `<thead><tr class="${theadClasses}">`;
+      headers.forEach((headerText, colIdx) => {
+        const align = alignments[colIdx] || 'left';
+        let alignStyle = `text-align: ${align};`;
+
+        // Sort Icon
+        let sortIcon = '<i class="fa-solid fa-sort text-slate-300 dark:text-slate-600 ml-1.5 opacity-60 group-hover:opacity-100 transition"></i>';
+        if (state.sortColumn && state.sortColumn.tableIndex === tableIndex && state.sortColumn.colIndex === colIdx) {
+          sortIcon = state.sortColumn.order === 'asc'
+            ? '<i class="fa-solid fa-arrow-up-short-wide text-brand-500 ml-1.5"></i>'
+            : '<i class="fa-solid fa-arrow-down-wide-short text-brand-500 ml-1.5"></i>';
+        }
+
+        theadHtml += `
+          <th style="${alignStyle}" class="${thClasses} cursor-pointer group hover:bg-slate-200/50 dark:hover:bg-slate-700/40" onclick="handleSortColumn(${tableIndex}, ${colIdx})" title="点击按此列排序">
+            <div class="inline-flex items-center ${align === 'center' ? 'justify-center w-full' : align === 'right' ? 'justify-end w-full' : ''}">
+              <span>${parseInlineMarkdown(headerText)}</span>
+              ${sortIcon}
+            </div>
+          </th>
+        `;
+      });
+      theadHtml += `</tr></thead>`;
+
+      // Build Body Rows HTML
+      let tbodyHtml = `<tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">`;
+      if (displayRows.length === 0) {
+        tbodyHtml += `
+          <tr>
+            <td colspan="${headers.length}" class="py-8 text-center text-xs text-slate-400">
+              <i class="fa-solid fa-inbox text-2xl mb-2 block"></i>
+              未匹配到符合搜索条件「${state.filterQuery}」的表格数据
+            </td>
+          </tr>
+        `;
+      } else {
+        displayRows.forEach((rowObj, rowIdx) => {
+          let zebraBg = '';
+          if (state.zebra) {
+            zebraBg = rowIdx % 2 === 1 ? 'bg-slate-50/60 dark:bg-white/[0.015]' : 'bg-transparent';
+          }
+
+          tbodyHtml += `<tr class="${zebraBg} hover:bg-brand-50/40 dark:hover:bg-brand-950/20 transition-colors group">`;
+
+          headers.forEach((_, colIdx) => {
+            const cellText = rowObj.cells[colIdx] || '';
+            const align = alignments[colIdx] || 'left';
+            const alignClass = `text-${align}`;
+
+            tbodyHtml += `
+              <td class="${tdClasses} ${alignClass} text-slate-700 dark:text-slate-300" data-editor-line="${rowObj.originalIndex}" data-col="${colIdx}">
+                ${parseInlineMarkdown(cellText)}
+              </td>
+            `;
+          });
+          tbodyHtml += `</tr>`;
+        });
+      }
+      tbodyHtml += `</tbody>`;
+
+      // Return fully encapsulated responsive table container
+      return `
+        <div class="w-full ${wrapperClasses} overflow-hidden my-4">
+          <div class="overflow-x-auto">
+            <table class="${tableClasses}">
+              ${theadHtml}
+              ${tbodyHtml}
+            </table>
+          </div>
+          <div class="px-3 py-1.5 bg-slate-50/60 dark:bg-editor-darker/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+            <span>当前显示 ${displayRows.length} 条记录 (总计 ${rows.length})</span>
+            <div class="flex items-center space-x-2">
+              <button onclick="copySingleTableMarkdown(${tableIndex})" class="hover:text-brand-500 transition" title="单独复制此表"><i class="fa-regular fa-copy mr-1"></i>复制本表</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Handle Sorting by column
+    function handleSortColumn(tableIndex, colIdx) {
+      if (state.sortColumn && state.sortColumn.tableIndex === tableIndex && state.sortColumn.colIndex === colIdx) {
+        if (state.sortColumn.order === 'asc') {
+          state.sortColumn.order = 'desc';
+        } else {
+          // Reset sort
+          state.sortColumn = null;
+        }
+      } else {
+        state.sortColumn = { tableIndex, colIndex: colIdx, order: 'asc' };
+      }
+
+      document.getElementById('sortIndicatorBadge').classList.toggle('hidden', !state.sortColumn);
+      compileAndRender();
+      showToast(state.sortColumn ? `已按列「${state.tablesData[tableIndex].headers[colIdx]}」${state.sortColumn.order === 'asc' ? '升序' : '降序'}排列` : '已恢复默认排序');
+    }
+
+    // Table Filter Input
+    function handleTableFilter(val) {
+      state.filterQuery = val;
+      compileAndRender();
+    }
+
+    // Bind preview task checkbox change directly back to Markdown source! (Bi-directional feedback)
+    function bindPreviewInteractions() {
+      const checkboxes = renderedOutput.querySelectorAll('.table-task-checkbox');
+      checkboxes.forEach((cb) => {
+        cb.addEventListener('change', (e) => {
+          const td = e.target.closest('td');
+          if (!td) return;
+          const lineIndex = parseInt(td.getAttribute('data-editor-line'));
+          if (isNaN(lineIndex)) return;
+
+          const lines = editor.value.split('\n');
+          if (lines[lineIndex]) {
+            if (e.target.checked) {
+              lines[lineIndex] = lines[lineIndex].replace('[ ]', '[x]');
+            } else {
+              lines[lineIndex] = lines[lineIndex].replace('[x]', '[ ]');
+            }
+            editor.value = lines.join('\n');
+            compileAndRender();
+            showToast('已同步更新 Markdown 源码中的任务状态！');
+          }
+        });
+      });
+    }
+
+    // Insert new row into the first/active table
+    function insertRow() {
+      const text = editor.value;
+      const lines = text.split('\n');
+      let targetIndex = -1;
+
+      // Find the end of first table
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('|') && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+          // Table started
+          let j = i + 2;
+          while (j < lines.length && lines[j].trim().startsWith('|')) {
+            j++;
+          }
+          targetIndex = j;
+          break;
+        }
+      }
+
+      if (targetIndex !== -1) {
+        // Count columns from previous row
+        const prevRow = lines[targetIndex - 1];
+        const cols = splitTableRow(prevRow).length;
+        const newCells = Array(cols).fill('新数据');
+        const newRowStr = `| ${newCells.join(' | ')} |`;
+
+        lines.splice(targetIndex, 0, newRowStr);
+        editor.value = lines.join('\n');
+        updateLineNumbers();
+        compileAndRender();
+        showToast('已在表格末尾追加 1 行');
+      } else {
+        showToast('未定位到有效表格，请先创建表格结构');
+      }
+    }
+
+    // Insert new column to the right
+    function insertColumn() {
+      const lines = editor.value.split('\n');
+      let tableFound = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('|') && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+          tableFound = true;
+          // Append to header
+          lines[i] = lines[i].trim().replace(/\|$/, '') + ' | 新列名 |';
+          // Append to delimiter
+          lines[i + 1] = lines[i + 1].trim().replace(/\|$/, '') + ' | :--- |';
+
+          // Append to rows
+          let j = i + 2;
+          while (j < lines.length && lines[j].trim().startsWith('|')) {
+            lines[j] = lines[j].trim().replace(/\|$/, '') + ' | - |';
+            j++;
+          }
+          break;
+        }
+      }
+
+      if (tableFound) {
+        editor.value = lines.join('\n');
+        formatMarkdownTable();
+        showToast('已追加新列并自动对齐格式');
+      } else {
+        showToast('未找到可操作的表格');
+      }
+    }
+
+    // Set Column Alignment
+    function setColAlign(alignType) {
+      const lines = editor.value.split('\n');
+      let modified = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        if (isTableDelimiter(lines[i])) {
+          const parts = splitTableRow(lines[i]);
+          const newParts = parts.map(() => {
+            if (alignType === 'center') return ':-:';
+            if (alignType === 'right') return '--:';
+            return ':--';
+          });
+          lines[i] = `| ${newParts.join(' | ')} |`;
+          modified = true;
+          break;
+        }
+      }
+
+      if (modified) {
+        editor.value = lines.join('\n');
+        formatMarkdownTable();
+        showToast(`已将表格对齐设置为: ${alignType === 'center' ? '居中' : alignType === 'right' ? '右对齐' : '左对齐'}`);
+      }
+    }
+
+    // Prettify: Align all pipes and calculate visual width (handles CJK characters)
+    function formatMarkdownTable() {
+      const lines = editor.value.split('\n');
+      let i = 0;
+      let anyFormatted = false;
+
+      while (i < lines.length) {
+        if (lines[i].includes('|') && i + 1 < lines.length && isTableDelimiter(lines[i + 1])) {
+          const startIdx = i;
+          const tableLines = [];
+
+          while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].includes('|')) {
+            tableLines.push(lines[i]);
+            i++;
+          }
+
+          // Split cells for all rows
+          const parsedMatrix = tableLines.map((tl, rowIdx) => {
+            if (rowIdx === 1) {
+              return parseAlignments(tl); // Keep alignments
+            }
+            return splitTableRow(tl);
+          });
+
+          // Compute max col counts
+          const numCols = Math.max(...parsedMatrix.map(r => r.length));
+
+          // Compute max display width for each column
+          const colWidths = Array(numCols).fill(3);
+          parsedMatrix.forEach((row, rowIdx) => {
+            if (rowIdx === 1) return; // skip delimiter
+            row.forEach((cell, cIdx) => {
+              const w = getVisualLength(cell);
+              if (w > colWidths[cIdx]) colWidths[cIdx] = w;
+            });
+          });
+
+          // Rebuild aligned table strings
+          const alignments = parsedMatrix[1];
+          const newTableLines = [];
+
+          parsedMatrix.forEach((row, rowIdx) => {
+            if (rowIdx === 1) {
+              // Rebuild delimiter
+              const delims = colWidths.map((w, cIdx) => {
+                const align = alignments[cIdx] || 'left';
+                const dashes = Math.max(3, w);
+                if (align === 'center') return `:${'-'.repeat(dashes - 2)}:`;
+                if (align === 'right') return `${'-'.repeat(dashes - 1)}:`;
+                return `:${'-'.repeat(dashes - 1)}`;
+              });
+              newTableLines.push(`| ${delims.join(' | ')} |`);
+            } else {
+              // Rebuild content row with padding
+              const paddedCells = colWidths.map((w, cIdx) => {
+                const cell = row[cIdx] || '';
+                const align = alignments[cIdx] || 'left';
+                return padCellString(cell, w, align);
+              });
+              newTableLines.push(`| ${paddedCells.join(' | ')} |`);
+            }
+          });
+
+          // Replace in lines array
+          lines.splice(startIdx, tableLines.length, ...newTableLines);
+          i = startIdx + newTableLines.length;
+          anyFormatted = true;
+        } else {
+          i++;
+        }
+      }
+
+      if (anyFormatted) {
+        editor.value = lines.join('\n');
+        updateLineNumbers();
+        compileAndRender();
+        showToast('✨ 表格已完成等宽格式化对齐！');
+      } else {
+        showToast('未检测到需要格式化的表格');
+      }
+    }
+
+    // Calculate length accounting for Chinese/CJK wide characters
+    function getVisualLength(str) {
+      let len = 0;
+      for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i);
+        len += (code > 255) ? 2 : 1;
+      }
+      return len;
+    }
+
+    function padCellString(str, targetWidth, align) {
+      const currentWidth = getVisualLength(str);
+      const diff = Math.max(0, targetWidth - currentWidth);
+
+      if (align === 'right') {
+        return ' '.repeat(diff) + str;
+      } else if (align === 'center') {
+        const left = Math.floor(diff / 2);
+        const right = diff - left;
+        return ' '.repeat(left) + str + ' '.repeat(right);
+      } else {
+        return str + ' '.repeat(diff);
+      }
+    }
+
+    function updateTableStylePreset(presetName) {
+      state.stylePreset = presetName;
+      compileAndRender();
+      showToast(`已应用风格预设: ${presetName}`);
+    }
+
+    function setDensity(mode) {
+      state.density = mode;
+      document.getElementById('densityCompact').className = mode === 'compact' ? 'px-1.5 py-0.5 text-[10px] rounded bg-brand-500 text-white font-medium' : 'px-1.5 py-0.5 text-[10px] rounded text-slate-500 dark:text-slate-400 hover:text-brand-500';
+      document.getElementById('densityNormal').className = mode === 'normal' ? 'px-1.5 py-0.5 text-[10px] rounded bg-brand-500 text-white font-medium' : 'px-1.5 py-0.5 text-[10px] rounded text-slate-500 dark:text-slate-400 hover:text-brand-500';
+      document.getElementById('densityLoose').className = mode === 'loose' ? 'px-1.5 py-0.5 text-[10px] rounded bg-brand-500 text-white font-medium' : 'px-1.5 py-0.5 text-[10px] rounded text-slate-500 dark:text-slate-400 hover:text-brand-500';
+      compileAndRender();
+    }
+
+    function toggleZebraStripe() {
+      state.zebra = !state.zebra;
+      const btn = document.getElementById('zebraToggleBtn');
+      if (state.zebra) {
+        btn.className = 'px-2 py-1 rounded bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 font-medium transition flex items-center space-x-1';
+      } else {
+        btn.className = 'px-2 py-1 rounded bg-white dark:bg-editor-dark text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-editor-border font-medium transition flex items-center space-x-1';
+      }
+      compileAndRender();
+      showToast(state.zebra ? '斑马纹交替行背景已开启' : '斑马纹已关闭');
+    }
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        icon.className = 'fa-solid fa-sun text-xs text-amber-500';
+      } else {
+        html.classList.add('dark');
+        icon.className = 'fa-solid fa-moon text-xs';
+      }
+    }
+
+    function setLayoutMode(mode) {
+      state.layoutMode = mode;
+      const editorPane = document.getElementById('editorPane');
+      const previewPane = document.getElementById('previewPane');
+
+      const splitBtn = document.getElementById('viewSplitBtn');
+      const editBtn = document.getElementById('viewEditBtn');
+      const prevBtn = document.getElementById('viewPreviewBtn');
+
+      [splitBtn, editBtn, prevBtn].forEach(b => {
+        b.className = 'px-2 py-1 text-xs rounded font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition';
+      });
+
+      if (mode === 'split') {
+        editorPane.classList.remove('hidden');
+        editorPane.style.width = '50%';
+        previewPane.classList.remove('hidden');
+        previewPane.style.width = '50%';
+        splitBtn.className = 'px-2 py-1 text-xs rounded font-medium bg-white dark:bg-brand-600 text-slate-900 dark:text-white shadow-sm transition';
+      } else if (mode === 'editor') {
+        editorPane.classList.remove('hidden');
+        editorPane.style.width = '100%';
+        previewPane.classList.add('hidden');
+        editBtn.className = 'px-2 py-1 text-xs rounded font-medium bg-white dark:bg-brand-600 text-slate-900 dark:text-white shadow-sm transition';
+      } else if (mode === 'preview') {
+        editorPane.classList.add('hidden');
+        previewPane.classList.remove('hidden');
+        previewPane.style.width = '100%';
+        prevBtn.className = 'px-2 py-1 text-xs rounded font-medium bg-white dark:bg-brand-600 text-slate-900 dark:text-white shadow-sm transition';
+      }
+    }
+
+    function togglePreviewFullscreen() {
+      if (state.layoutMode === 'preview') {
+        setLayoutMode('split');
+      } else {
+        setLayoutMode('preview');
+      }
+    }
+
+    function toggleExportMenu() {
+      const menu = document.getElementById('exportDropdown');
+      menu.classList.toggle('hidden');
+    }
+
+    function copyToClipboard(text, successMsg) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (err) {
+        showToast('复制失败，请手动选取复制');
+      }
+      document.body.removeChild(textarea);
+      document.getElementById('exportDropdown').classList.add('hidden');
+    }
+
+    function copyRawMarkdown() {
+      copyToClipboard(editor.value, '已复制完整 Markdown 源码到剪贴板！');
+    }
+
+    function copyRenderedHTML() {
+      const htmlContent = renderedOutput.innerHTML;
+      copyToClipboard(htmlContent, '已复制纯 HTML 代码！');
+    }
+
+    function copyCurrentTableCSV() {
+      if (state.tablesData.length === 0) {
+        showToast('当前未解析出可用的表格');
+        return;
+      }
+      const t = state.tablesData[0];
+      const csvLines = [];
+      csvLines.push(t.headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
+      t.rows.forEach(r => {
+        csvLines.push(r.cells.map(c => `"${c.replace(/"/g, '""')}"`).join(','));
+      });
+      copyToClipboard(csvLines.join('\n'), '已复制第一张表格为 CSV 格式！');
+    }
+
+    function copySingleTableMarkdown(idx) {
+      if (!state.tablesData[idx]) return;
+      const t = state.tablesData[idx];
+      const lines = [];
+      lines.push(`| ${t.headers.join(' | ')} |`);
+      lines.push(`| ${t.alignments.map(a => a === 'center' ? ':-:' : a === 'right' ? '--:' : ':--').join(' | ')} |`);
+      t.rows.forEach(r => {
+        lines.push(`| ${r.cells.join(' | ')} |`);
+      });
+      copyToClipboard(lines.join('\n'), `已复制第 ${idx + 1} 个表格 Markdown 源码！`);
+    }
+
+    function downloadMarkdownFile() {
+      const blob = new Blob([editor.value], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `MarkTable_${new Date().toISOString().slice(0, 10)}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      document.getElementById('exportDropdown').classList.add('hidden');
+      showToast('Markdown 文档已下载到本地！');
+    }
+
+    // Clear and Reset Handlers
+    function clearEditor() {
+      editor.value = '';
+      updateLineNumbers();
+      compileAndRender();
+      showToast('已清空源码编辑器');
+    }
+
+    function resetCurrentPreset() {
+      const current = presetSelector.value;
+      if (PRESETS[current]) {
+        editor.value = PRESETS[current];
+        state.sortColumn = null;
+        updateLineNumbers();
+        compileAndRender();
+        showToast('已重置为当前模板预设！');
+      }
+    }
+
+    // CSV Modal operations
+    function openCsvModal() {
+      document.getElementById('csvModal').classList.remove('hidden');
+    }
+
+    function closeCsvModal() {
+      document.getElementById('csvModal').classList.add('hidden');
+    }
+
+    function executeCsvConversion() {
+      const rawCsv = document.getElementById('csvInputArea').value.trim();
+      const delim = document.getElementById('csvDelimiterSelect').value;
+      if (!rawCsv) {
+        showToast('请输入 CSV 数据内容');
+        return;
+      }
+
+      const rows = rawCsv.split('\n').map(line => {
+        if (delim === '\t') return line.split('\t').map(c => c.trim());
+        // Simple comma split
+        return line.split(delim).map(c => c.trim().replace(/^"|"$/g, ''));
+      });
+
+      if (rows.length < 1) return;
+
+      const headers = rows[0];
+      const delimiters = headers.map(() => ':---');
+      const mdLines = [];
+      mdLines.push(`| ${headers.join(' | ')} |`);
+      mdLines.push(`| ${delimiters.join(' | ')} |`);
+
+      for (let i = 1; i < rows.length; i++) {
+        mdLines.push(`| ${rows[i].join(' | ')} |`);
+      }
+
+      const tableMd = '\n\n' + mdLines.join('\n') + '\n';
+      editor.value += tableMd;
+      closeCsvModal();
+      formatMarkdownTable();
+      showToast('CSV 已成功转换为 Markdown 表格并附加到文档！');
+    }
+
+    // Toast message component
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMsg');
+      text.innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
+      }, 2600);
+    }
+  </script>
+</body>
+</html>

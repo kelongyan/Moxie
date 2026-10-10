@@ -309,6 +309,55 @@ export function setAlignEdit(
   return editOf(model, model.rows, aligns, { row: 0, col });
 }
 
+/** 调整表格规模（行数与列数），对标 Typora 快捷调整表格大小 */
+export function resizeTableEdit(
+  model: TableModel,
+  targetRows: number,
+  targetCols: number
+): TableEdit | null {
+  const r = Math.max(2, targetRows); // 至少 1 表头 + 1 数据行
+  const c = Math.max(1, targetCols); // 至少 1 列
+  const rows: TableCellRef[][] = [];
+  for (let i = 0; i < r; i++) {
+    const existingRow = model.rows[i] ?? [];
+    const newRow: TableCellRef[] = [];
+    for (let j = 0; j < c; j++) {
+      newRow.push(existingRow[j] ?? rawCell(""));
+    }
+    rows.push(newRow);
+  }
+  const aligns: ColumnAlign[] = [];
+  for (let j = 0; j < c; j++) {
+    aligns.push(model.aligns[j] ?? null);
+  }
+  return editOf(model, rows, aligns, { row: 0, col: 0 });
+}
+
+/** 删除整张表格 */
+export function deleteTableEdit(model: TableModel): TableEdit {
+  return {
+    from: model.from,
+    to: model.to,
+    insert: "",
+    caretRow: 0,
+    caretCol: 0,
+  };
+}
+
+/** 清空指定单元格内容 */
+export function clearCellEdit(
+  model: TableModel,
+  row: number,
+  col: number
+): TableEdit | null {
+  if (row < 0 || row >= model.rows.length) return null;
+  if (col < 0 || col >= (model.rows[row]?.length ?? 0)) return null;
+  const rows = model.rows.map((r, ri) =>
+    r.map((c, ci) => (ri === row && ci === col ? rawCell("") : c))
+  );
+  return editOf(model, rows, model.aligns, { row, col });
+}
+
 /** 新建空表格源码（1 表头 + rows-1 数据行 × cols），返回文本与表头首格光标偏移 */
 export function emptyTable(rows: number, cols: number): { text: string; caret: number } {
   const r = Math.max(1, rows);
