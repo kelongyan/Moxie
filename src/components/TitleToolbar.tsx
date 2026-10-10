@@ -157,10 +157,6 @@ export function TitleToolbar({
     },
   ];
 
-  const docTitle = activeDoc
-    ? `${activeDoc.name}${activeDoc.isDirty ? " *" : ""}`
-    : "Moxie";
-
   return (
     <header className="title-toolbar typora-header" data-tauri-drag-region>
       {/* 1. 左侧：侧栏切换按钮 + 仿 Typora 菜单栏（灰色占位按钮） */}
@@ -190,12 +186,8 @@ export function TitleToolbar({
         </div>
       </div>
 
-      {/* 2. 中间：Typora 风格居中文档标题（带可拖拽区） */}
-      <div className="titlebar-center" data-tauri-drag-region>
-        <span className="titlebar-doc-name" data-tauri-drag-region>
-          {docTitle}
-        </span>
-      </div>
+      {/* 2. 中间：纯拖拽留白区 */}
+      <div className="titlebar-center" data-tauri-drag-region />
 
       {/* 3. 右侧：快速占位操作（导出/更多） + 窗口控制 */}
       <div className="titlebar-right" data-tauri-drag-region>

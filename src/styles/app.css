@@ -275,25 +275,11 @@ body {
   color: var(--lac-text);
 }
 
-/* 顶栏中段：Typora 风格居中文档标题 */
+/* 顶栏中段：拖拽留白区 */
 .titlebar-center {
   flex: 1;
   min-width: 0;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
-}
-
-.titlebar-doc-name {
-  font-size: var(--fs-caption);
-  font-weight: 500;
-  color: var(--lac-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  user-select: none;
 }
 
 /* 顶栏右侧：占位动作 + 窗口控制 */
