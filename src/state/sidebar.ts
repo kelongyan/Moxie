@@ -17,7 +17,7 @@ export interface SidebarGroup {
   paths: string[];
 }
 
-/** 最近文件条目（与 Rust RecentEntryDto 对应） */
+/** 会话内最近文件条目（仅本次运行有效，不落盘） */
 export interface RecentEntry {
   path: string;
   lastOpenedMs: number;
@@ -29,7 +29,7 @@ export interface SectionsExpanded {
   outline: boolean;
 }
 
-export type SidebarTab = "files" | "outline" | "tabs";
+export type SidebarTab = "files" | "outline";
 
 interface SidebarState {
   activeTab: SidebarTab;
@@ -53,7 +53,8 @@ interface SidebarState {
   deleteWorkspaceItem: (path: string) => Promise<boolean>;
   renameWorkspaceItem: (oldPath: string, newPath: string) => Promise<boolean>;
   refresh: () => Promise<void>;
-  refreshRecent: () => Promise<void>;
+  /** 会话内最近文件：仅在本次运行中记录，不落盘、不跨启动恢复 */
+  pushRecent: (path: string) => void;
   refreshMissing: () => Promise<void>;
   toggleSection: (key: keyof SectionsExpanded) => void;
   addGroup: (name: string) => void;
@@ -63,9 +64,10 @@ interface SidebarState {
   addToGroup: (groupId: string, path: string) => void;
   removeFromGroup: (groupId: string, path: string) => void;
   replacePath: (oldPath: string, newPath: string) => void;
-  clearRecent: () => Promise<void>;
-  removeRecent: (path: string) => Promise<void>;
 }
+
+/** 会话内最近文件上限（与旧版落盘上限一致） */
+const RECENT_LIMIT = 12;
 
 let groupSeq = 0;
 function newGroupId(): string {
@@ -90,14 +92,13 @@ export function parentDirPath(path: string): string {
 }
 
 async function persist(get: () => SidebarState) {
-  const { groups, sectionsExpanded, workspacePath, expandedDirs, activeTab } = get();
+  // 只持久化界面偏好；工作区文件夹与展开状态属会话内状态，不写入磁盘、不跨启动恢复
+  const { groups, sectionsExpanded, activeTab } = get();
   try {
     await invoke("sidebar_save", {
       value: {
         groups,
         sections: sectionsExpanded,
-        workspacePath,
-        expandedDirs,
         activeTab,
       },
     });
@@ -268,14 +269,11 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           }))
         : [];
       const sections = (value.sections ?? {}) as Partial<SectionsExpanded>;
-      const workspacePath = typeof value.workspacePath === "string" ? value.workspacePath : null;
-      const activeTab = (value.activeTab === "files" || value.activeTab === "outline" || value.activeTab === "tabs")
+      const activeTab = (value.activeTab === "files" || value.activeTab === "outline")
         ? value.activeTab
         : "files";
-      const expandedDirs = (typeof value.expandedDirs === "object" && value.expandedDirs !== null)
-        ? (value.expandedDirs as Record<string, boolean>)
-        : {};
 
+      // 工作区文件夹与最近文件均不跨启动恢复：磁盘上的历史值一律忽略
       set({
         groups,
         sectionsExpanded: {
@@ -283,34 +281,23 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           recent: sections.recent !== false,
           outline: sections.outline !== false,
         },
-        workspacePath,
         activeTab,
-        expandedDirs,
         loaded: true,
       });
-
-      if (workspacePath) {
-        void get().refreshWorkspace();
-      }
     } catch {
       set({ loaded: true });
     }
-    await get().refreshRecent();
+    await get().refreshMissing();
   },
 
-  refreshRecent: async () => {
-    try {
-      const list = await invoke<RecentEntry[]>("recent_list");
-      set({
-        recent: (list ?? []).map((e) => ({
-          path: String(e?.path ?? ""),
-          lastOpenedMs: Number(e?.lastOpenedMs ?? 0),
-        })),
-      });
-    } catch {
-      // ignore
-    }
-    await get().refreshMissing();
+  pushRecent: (path) => {
+    set((s) => ({
+      recent: [
+        { path, lastOpenedMs: Date.now() },
+        ...s.recent.filter((e) => e.path !== path),
+      ].slice(0, RECENT_LIMIT),
+      missing: { ...s.missing, [path]: false },
+    }));
   },
 
   refreshMissing: async () => {
@@ -397,20 +384,10 @@ export const useSidebar = create<SidebarState>((set, get) => ({
         ...g,
         paths: g.paths.map((p) => (p === oldPath ? newPath : p)),
       })),
+      recent: s.recent.map((e) => (e.path === oldPath ? { ...e, path: newPath } : e)),
     }));
-    void invoke("recent_replace", { old: oldPath, new: newPath }).catch(() => {});
     void persist(get);
-    void get().refreshRecent();
-  },
-
-  clearRecent: async () => {
-    await invoke("recent_clear").catch(() => {});
-    await get().refreshRecent();
-  },
-
-  removeRecent: async (path) => {
-    await invoke("recent_remove", { path }).catch(() => {});
-    await get().refreshRecent();
+    void get().refreshMissing();
   },
 }));
 

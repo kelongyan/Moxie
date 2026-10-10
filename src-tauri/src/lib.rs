@@ -358,18 +358,6 @@ fn recovery_finish_cleanly(session: String) {
     recovery::finish_cleanly(&session);
 }
 
-#[command]
-fn workspace_save(manifest: String, docs: Vec<(String, String)>) -> Result<(), String> {
-    recovery::workspace_save(&manifest, &docs).map_err(|e| e.to_string())
-}
-
-#[derive(serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct WorkspaceSnapshotDto {
-    pub manifest: String,
-    pub docs: Vec<(String, String)>,
-}
-
 /// 从命令行参数筛出存在的 Markdown 文件（单实例二次启动 / 首次启动共用）
 fn markdown_paths_from_args(argv: &[String]) -> Vec<String> {
     argv.iter()
@@ -391,14 +379,6 @@ fn launch_args() -> Vec<String> {
     markdown_paths_from_args(&std::env::args().collect::<Vec<String>>())
 }
 
-#[command]
-fn workspace_load_and_consume() -> Option<WorkspaceSnapshotDto> {
-    recovery::workspace_load_and_consume().map(|s| WorkspaceSnapshotDto {
-        manifest: s.manifest,
-        docs: s.docs,
-    })
-}
-
 pub fn run() {
     tauri::Builder::default()
         // 单实例必须最先注册：二次启动把文件参数转发给主窗口
@@ -415,6 +395,12 @@ pub fn run() {
             None,
         ))
         .setup(|app| {
+            // 旧版遗留清理：退出工作区快照目录、"最近文件"记录与侧栏工作区键（均已按需求移除）
+            recovery::cleanup_legacy_workspace();
+            sidebar::cleanup_legacy_keys();
+            if !recent::list().is_empty() {
+                recent::clear();
+            }
             // 上次开启过"关闭到托盘"则恢复托盘图标
             if recent::load_preferences()
                 .get("isCloseToTray")
@@ -458,8 +444,6 @@ pub fn run() {
             recovery_remove_doc,
             recovery_cleanup,
             recovery_finish_cleanly,
-            workspace_save,
-            workspace_load_and_consume,
             launch_args,
             fs_watch,
             tray_set_enabled,

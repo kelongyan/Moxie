@@ -297,23 +297,6 @@ export function SettingsWindow() {
                 </select>
               </SettingRow>
 
-              <SettingRow title={t("退出行为")} description={t("退出应用时对未保存内容的处理")}>
-                <select
-                  className="settings-select"
-                  value={prefs.exitBehavior}
-                  onChange={(e) =>
-                    set({
-                      exitBehavior: e.target.value as
-                        | "preserveWorkspace"
-                        | "askToSave",
-                    })
-                  }
-                >
-                  <option value="preserveWorkspace">{t("保留工作区并退出")}</option>
-                  <option value="askToSave">{t("每次检查未保存文件")}</option>
-                </select>
-              </SettingRow>
-
               <SwitchRow
                 title={t("关闭时最小化到托盘")}
                 description={t("开启后点关闭隐藏到托盘,托盘菜单可退出")}

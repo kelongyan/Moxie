@@ -1,17 +1,11 @@
 import { useEffect } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { getAllWindows, getCurrentWindow } from "@tauri-apps/api/window";
 import { saveDocumentAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { usePreferences } from "../state/preferences";
-import { promptConfirm } from "../state/prompts";
-import {
-  finishCleanly,
-  flushAllRecoveryNow,
-  saveWorkspaceAndFinish,
-} from "../state/recovery";
 import { promptSaveChoice } from "../state/savePrompt";
 import { editorWindowLabels } from "../state/windows";
+import { finishCleanly, flushAllRecoveryNow } from "../state/recovery";
 
 let closing = false;
 let prompting = false;
@@ -27,27 +21,7 @@ async function waitSavingSettled(timeoutMs = 5000): Promise<void> {
   }
 }
 
-async function isExitConfirmed(): Promise<boolean> {
-  try {
-    const disk = await invoke<Record<string, unknown>>("settings_load");
-    return disk?.hasConfirmedWorkspaceExitPrompt === true;
-  } catch {
-    return false;
-  }
-}
-
-async function setExitConfirmed(): Promise<void> {
-  try {
-    const disk = await invoke<Record<string, unknown>>("settings_load");
-    await invoke("settings_save", {
-      value: { ...(disk ?? {}), hasConfirmedWorkspaceExitPrompt: true },
-    });
-  } catch {
-    // ignore
-  }
-}
-
-async function confirmAndProcessDirty(): Promise<boolean> {
+export async function confirmAndProcessDirty(): Promise<boolean> {
   const dirtyDocs = useDocuments.getState().documents.filter((d) => d.isDirty);
   for (const doc of [...dirtyDocs]) {
     const current = useDocuments.getState().documents.find((d) => d.id === doc.id);
@@ -79,39 +53,11 @@ export function useCloseGuard() {
 
           const labels = await editorWindowLabels();
           const isLastWindow = labels.length <= 1;
-          const exitBehavior = usePreferences.getState().exitBehavior;
 
           // 关闭到托盘：隐藏全部窗口，内容保持在内存（恢复机制持续兜底）
           if (usePreferences.getState().closeToTray && isLastWindow) {
             const wins = await getAllWindows();
             for (const w of wins) await w.hide().catch(() => {});
-            return;
-          }
-
-          const dirtyDocs = useDocuments
-            .getState()
-            .documents.filter((d) => d.isDirty);
-
-          if (exitBehavior === "preserveWorkspace" && isLastWindow) {
-            if (dirtyDocs.length > 0 && !(await isExitConfirmed())) {
-              const ok = await promptConfirm(
-                "保留工作区并退出",
-                "未保存的内容将随工作区快照保留,并在下次启动时恢复。要继续吗?",
-                "继续"
-              );
-              if (!ok) return;
-              await setExitConfirmed();
-            }
-            const saved = await saveWorkspaceAndFinish();
-            if (!saved) {
-              useDocuments
-                .getState()
-                .setStatus({ text: "工作区保存失败,已取消退出", kind: "error" });
-              return;
-            }
-            closing = true;
-            // close() 在 close-requested 处理器内会被吞掉，最终关闭必须用 destroy()
-            await getCurrentWindow().destroy();
             return;
           }
 

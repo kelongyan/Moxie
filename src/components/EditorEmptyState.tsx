@@ -1,6 +1,7 @@
 import { baseName } from "../models/markdown";
 import { newTabAction, openFileAction, openPathAction } from "../state/actions";
 import { dirName, useSidebar } from "../state/sidebar";
+import brandMark from "../../src-tauri/icons/128x128.png";
 
 /** 欢迎页最多展示的最近文件条数 */
 const RECENT_LIMIT = 5;
@@ -15,10 +16,13 @@ export function EditorEmptyState() {
 
   return (
     <div className="editor-empty">
-      {/* 校样样张 wordmark 放大版（与顶栏 .wordmark 同语言），替代彩色应用图标 */}
-      <div className="editor-empty-brand" aria-hidden="true">
-        M
-      </div>
+      {/* 应用 logo（用户指定：首页使用软件图标） */}
+      <img
+        className="editor-empty-brand"
+        src={brandMark}
+        alt="Moxie"
+        draggable={false}
+      />
       <h2 className="editor-empty-title">Moxie</h2>
       <p className="editor-empty-desc">安静、快速、本地优先的书写工具</p>
 

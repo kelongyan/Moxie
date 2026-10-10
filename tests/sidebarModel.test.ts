@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { invoke } from "@tauri-apps/api/core";
 import {
   dirName,
   formatRelativeTime,
@@ -80,8 +81,6 @@ describe("sidebar workspace and tabs", () => {
   it("switches active tab cleanly", () => {
     useSidebar.getState().setActiveTab("outline");
     expect(useSidebar.getState().activeTab).toBe("outline");
-    useSidebar.getState().setActiveTab("tabs");
-    expect(useSidebar.getState().activeTab).toBe("tabs");
     useSidebar.getState().setActiveTab("files");
     expect(useSidebar.getState().activeTab).toBe("files");
   });
@@ -96,5 +95,50 @@ describe("sidebar workspace and tabs", () => {
     expect(useSidebar.getState().workspacePath).toBeNull();
     expect(useSidebar.getState().dirChildren).toEqual({});
     expect(useSidebar.getState().expandedDirs).toEqual({});
+  });
+});
+
+describe("会话内状态：不落盘、不跨启动恢复", () => {
+  it("refresh 忽略磁盘上的工作区文件夹与展开状态", async () => {
+    vi.mocked(invoke).mockImplementation(async (cmd: string) => {
+      if (cmd === "sidebar_load") {
+        return {
+          workspacePath: "C:\\Users\\x\\Desktop\\notes",
+          expandedDirs: { "C:\\Users\\x\\Desktop\\notes": true },
+          activeTab: "outline",
+        };
+      }
+      return null;
+    });
+    await useSidebar.getState().refresh();
+    expect(useSidebar.getState().workspacePath).toBeNull();
+    expect(useSidebar.getState().expandedDirs).toEqual({});
+    expect(useSidebar.getState().activeTab).toBe("outline");
+  });
+
+  it("persist 不写入 workspacePath / expandedDirs", () => {
+    const invokeMock = vi.mocked(invoke);
+    invokeMock.mockClear();
+    useSidebar.getState().setActiveTab("files");
+    const saveCall = invokeMock.mock.calls.find(([cmd]) => cmd === "sidebar_save");
+    expect(saveCall).toBeTruthy();
+    const payload = (saveCall?.[1] as { value: Record<string, unknown> }).value;
+    expect(payload).not.toHaveProperty("workspacePath");
+    expect(payload).not.toHaveProperty("expandedDirs");
+  });
+
+  it("pushRecent 会话内去重、置顶并封顶", () => {
+    useSidebar.setState({ recent: [], missing: {} });
+    const push = useSidebar.getState().pushRecent;
+    push("C:\\a.md");
+    push("C:\\b.md");
+    push("C:\\a.md");
+    expect(useSidebar.getState().recent.map((e) => e.path)).toEqual([
+      "C:\\a.md",
+      "C:\\b.md",
+    ]);
+    for (let i = 0; i < 15; i += 1) push(`C:\\n${i}.md`);
+    expect(useSidebar.getState().recent).toHaveLength(12);
+    expect(useSidebar.getState().recent[0].path).toBe("C:\\n14.md");
   });
 });

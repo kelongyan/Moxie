@@ -9,6 +9,7 @@ import { flushDocument, replaceContent, viewFor } from "../editor/registry";
 import { promptSaveChoice } from "../state/savePrompt";
 import { promptInput } from "../state/prompts";
 import { usePreferences } from "../state/preferences";
+import { useSidebar } from "../state/sidebar";
 import { markSelfWrite, syncWatchedDirs } from "../state/externalWatch";
 import {
   buildExportHtml,
@@ -118,7 +119,8 @@ export async function openPathAction(path: string): Promise<boolean> {
     perfTier: resolveProfile(bytes, lines),
   });
   useDocuments.getState().setStatus(null);
-  void invoke("recent_add", { path });
+  // 最近文件仅会话内记录（欢迎页"最近"与 Ctrl+P 数据源），不落盘
+  useSidebar.getState().pushRecent(path);
   return true;
 }
 
@@ -207,7 +209,7 @@ async function writeToFile(
   } else {
     after.setStatus(null);
   }
-  void invoke("recent_add", { path: target });
+  useSidebar.getState().pushRecent(target);
   return true;
 }
 

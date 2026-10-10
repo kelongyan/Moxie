@@ -99,18 +99,11 @@ body {
   animation: lac-fade-in var(--dur-3) var(--ease-out);
 }
 
-/* 欢迎屏 wordmark：顶栏 .wordmark 的放大版（描边方块 + 校对红等宽 M） */
+/* 欢迎屏 logo：软件应用图标（128x128.png） */
 .editor-empty-brand {
   width: 64px;
   height: 64px;
-  border: 1.5px solid var(--lac-border-strong);
   border-radius: 14px;
-  color: var(--lac-accent);
-  font-family: var(--font-mono);
-  font-size: 32px;
-  font-weight: 600;
-  display: grid;
-  place-items: center;
   user-select: none;
 }
 
@@ -1856,122 +1849,6 @@ body {
   cursor: pointer;
   text-decoration: underline;
   padding: 4px;
-}
-
-/* ---------- 侧栏打开的标签页视图 ---------- */
-.tabs-list-view {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.sidebar-tabs-container {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 4px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sidebar-tab-row {
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  user-select: none;
-  transition: background var(--anim-hover), border-color var(--anim-hover);
-}
-
-.sidebar-tab-row:hover {
-  background: var(--lac-hover);
-}
-
-.sidebar-tab-row.is-active {
-  background: var(--lac-tab-selected-bg);
-  border-color: var(--lac-border);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-}
-
-.tab-row-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  flex: 1;
-}
-
-.tab-row-icon {
-  color: var(--lac-text-secondary);
-  flex-shrink: 0;
-}
-
-.tab-row-icon.is-active {
-  color: var(--lac-accent);
-}
-
-.tab-row-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-}
-
-.tab-row-name {
-  font-size: var(--fs-caption);
-  font-weight: 500;
-  color: var(--lac-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sidebar-tab-row.is-active .tab-row-name {
-  font-weight: 600;
-}
-
-.tab-row-path {
-  font-size: var(--fs-badge);
-  color: var(--lac-text-tertiary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tab-row-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.tab-row-close-btn {
-  opacity: 0;
-  border: none;
-  background: transparent;
-  color: var(--lac-text-tertiary);
-  cursor: pointer;
-  width: 18px;
-  height: 18px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  padding: 0;
-  transition: opacity var(--anim-hover), color var(--anim-hover), background var(--anim-hover);
-}
-
-.sidebar-tab-row:hover .tab-row-close-btn {
-  opacity: 1;
-}
-
-.tab-row-close-btn:hover {
-  color: var(--lac-text);
-  background: var(--lac-hover);
 }
 
 @keyframes spin {

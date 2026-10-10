@@ -12,7 +12,7 @@ import { QuickOpen } from "./components/QuickOpen";
 import { useFindBar } from "./state/findBar";
 import { useHistoryOverlay } from "./state/historyOverlay";
 import { useQuickOpen } from "./state/quickOpen";
-import { saveWorkspaceAndFinish } from "./state/recovery";
+import { finishCleanly } from "./state/recovery";
 import { ConflictDialog, EncodingDialog, LossyDialog } from "./components/FileDialogs";
 import { PromptDialogs } from "./components/PromptDialogs";
 import { SavePromptDialog } from "./components/SavePromptDialog";
@@ -20,7 +20,7 @@ import { SidebarView } from "./components/SidebarView";
 import { StatusBar } from "./components/StatusBar";
 import { TableInsertPicker } from "./components/TableInsertPicker";
 import { TitleToolbar } from "./components/TitleToolbar";
-import { useCloseGuard } from "./hooks/useCloseGuard";
+import { useCloseGuard, confirmAndProcessDirty } from "./hooks/useCloseGuard";
 import { DropOverlay, useFileDrop } from "./hooks/useFileDrop";
 import { useShortcuts } from "./hooks/useShortcuts";
 import { initCodecSession } from "./state/codecSession";
@@ -70,10 +70,12 @@ export default function App() {
       if (disposed) fn();
       else unlistenFiles = fn;
     });
-    // 托盘"退出"：先保存工作区快照再退出
+    // 托盘"退出"：与窗口关闭一致——逐个确认未保存内容后干净退出（不留工作区快照）
     void listen("app:quit", () => {
       void (async () => {
-        await saveWorkspaceAndFinish();
+        const approved = await confirmAndProcessDirty();
+        if (!approved) return;
+        await finishCleanly();
         await invoke("app_exit");
       })();
     }).then((fn) => {
