@@ -9,10 +9,8 @@ import {
   FolderPlus,
   History,
   ListTree,
-  PanelLeftClose,
   RotateCw,
   Search,
-  Settings,
   Trash2,
   TriangleAlert,
   X,
@@ -25,7 +23,6 @@ import { baseName } from "../models/markdown";
 import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { promptConfirm, promptInput } from "../state/prompts";
-import { usePreferences } from "../state/preferences";
 import {
   dirName,
   formatRelativeTime,
@@ -34,7 +31,6 @@ import {
   type DirEntry,
   useSidebar,
 } from "../state/sidebar";
-import { openSettingsWindow } from "../state/settingsWindow";
 import { subscribeTextChange, viewFor } from "../editor/registry";
 import { Tooltip } from "./Tooltip";
 import { ContextMenu, type MenuItem } from "./ContextMenu";
@@ -790,15 +786,10 @@ export function SidebarView() {
   const activeId = useDocuments((s) => s.activeId);
   const activeTab = useSidebar((s) => s.activeTab);
   const setActiveTab = useSidebar((s) => s.setActiveTab);
-  const sidebarPinned = usePreferences((s) => s.sidebarPinned);
   const [menu, setMenu] = useState<MenuState | null>(null);
 
   const openMenu = (x: number, y: number, items: MenuItem[]) => {
     setMenu({ x, y, items });
-  };
-
-  const handleTogglePin = () => {
-    usePreferences.getState().set({ sidebarPinned: !sidebarPinned });
   };
 
   return (
@@ -844,26 +835,6 @@ export function SidebarView() {
         {activeTab === "files" && <WorkspaceView onMenu={openMenu} />}
         {activeTab === "outline" && <OutlineView activeId={activeId} />}
         {activeTab === "recent" && <RecentFilesView onMenu={openMenu} />}
-      </div>
-
-      {/* 底部功能条 */}
-      <div className="sidebar-footer">
-        <button
-          className="sidebar-settings-btn"
-          onClick={() => void openSettingsWindow()}
-          title="偏好设置"
-        >
-          <Settings size={14} />
-          <span>设置</span>
-        </button>
-
-        <button
-          className="sidebar-collapse-btn"
-          onClick={handleTogglePin}
-          title="收起侧栏"
-        >
-          <PanelLeftClose size={14} />
-        </button>
       </div>
 
       {/* 上下文右键菜单 */}

@@ -1,4 +1,4 @@
-import { Check, Gauge, Loader2 } from "lucide-react";
+import { Check, Gauge, Loader2, PanelLeft, PanelLeftClose, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ENCODING_LABELS, StoredEncodingId } from "../models/encoding";
 import { subscribeTextChange, viewFor } from "../editor/registry";
@@ -9,6 +9,10 @@ import {
   FeatureKey,
   WordCountHandle,
 } from "../state/performance";
+import { usePreferences } from "../state/preferences";
+import { openSettingsWindow } from "../state/settingsWindow";
+import { openCodecWindow } from "../state/codecWindow";
+import { gotoLineAction, saveActiveAction } from "../state/actions";
 
 interface StatusBarProps {
   activeDoc: EditorDocument | null;
@@ -48,14 +52,14 @@ function useWordCount(doc: EditorDocument | null): string {
         const handle = countWords(text);
         handleRef.current = handle;
         void handle.promise.then((n) => {
-          if (n !== null) setDisplay(`字数 ${n}`);
+          if (n !== null) setDisplay(`${n.toLocaleString()} 字`);
         });
       } else {
         setDisplay("统计中…");
         const handle = countWords(text);
         handleRef.current = handle;
         void handle.promise.then((n) => {
-          if (n !== null) setDisplay(`字数 ${n}`);
+          if (n !== null) setDisplay(`${n.toLocaleString()} 字`);
         });
       }
     };
@@ -134,6 +138,9 @@ function LargeFileMenu({ doc }: { doc: EditorDocument }) {
 export function StatusBar({ activeDoc }: StatusBarProps) {
   const statusMessage = useDocuments((s) => s.statusMessage);
   const wordCount = useWordCount(activeDoc);
+  const sidebarPinned = usePreferences((s) => s.sidebarPinned);
+  const sidebarWidth = usePreferences((s) => s.sidebarWidth ?? 240);
+
   // 常态不常驻"已保存"：只在"脏 → 净"的瞬间提示一次，随后淡出
   const [justSaved, setJustSaved] = useState(false);
   const lastDirtyRef = useRef<{ id: string | null; dirty: boolean }>({
@@ -154,45 +161,104 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
     return () => window.clearTimeout(timer);
   }, [activeDoc?.id, activeDoc?.isDirty, activeDoc?.ioState]);
 
+  const toggleSidebar = () => {
+    usePreferences.getState().set({ sidebarPinned: !sidebarPinned });
+  };
+
   return (
     <footer className="status-bar">
-      {activeDoc &&
-        (activeDoc.ioState === "saving" ? (
-          <span className="save-state saving">
-            <Loader2 size={12} className="save-spin" />
-            保存中…
-          </span>
-        ) : activeDoc.isDirty ? (
-          <span className="save-state dirty">
-            <span className="dot" />
-            未保存
-          </span>
-        ) : justSaved ? (
-          <span className="save-state saved">
-            <Check size={12} />
-            已保存
-          </span>
-        ) : null)}
-      {activeDoc && activeDoc.perfTier !== "standard" && (
-        <LargeFileMenu doc={activeDoc} />
-      )}
-      <span
-        className={
-          "status-message" + (statusMessage?.kind === "error" ? " error" : "")
-        }
+      {/* 1. 左侧区域：与侧边栏对齐，容纳设置与侧栏折叠开关 */}
+      <div
+        className={"status-sidebar-slot" + (sidebarPinned ? " is-pinned" : " is-collapsed")}
+        style={sidebarPinned ? { width: `${sidebarWidth}px` } : undefined}
       >
-        {statusMessage?.text ?? ""}
-      </span>
-      <span className="spacer" />
-      {activeDoc && (
-        <>
-          <span className="status-item">
-            行 {activeDoc.cursorLine} · 列 {activeDoc.cursorColumn}
-          </span>
-          <span className="status-item">{encodingLabel(activeDoc.encoding)}</span>
-          {wordCount && <span className="status-item">{wordCount}</span>}
-        </>
-      )}
+        <button
+          className="status-slot-btn"
+          onClick={() => void openSettingsWindow()}
+          title="打开偏好设置"
+        >
+          <Settings size={13} />
+          {sidebarPinned && <span className="btn-text">设置</span>}
+        </button>
+        <button
+          className="status-slot-btn collapse-toggle"
+          onClick={toggleSidebar}
+          title={sidebarPinned ? "收起侧栏" : "展开侧栏"}
+        >
+          {sidebarPinned ? <PanelLeftClose size={13} /> : <PanelLeft size={13} />}
+        </button>
+      </div>
+
+      {/* 2. 右侧区域：与主编辑区对齐，容纳保存状态、消息与统计 */}
+      <div className="status-editor-slot">
+        <div className="status-left">
+          {activeDoc &&
+            (activeDoc.ioState === "saving" ? (
+              <span className="save-state saving">
+                <Loader2 size={12} className="save-spin" />
+                保存中…
+              </span>
+            ) : activeDoc.isDirty ? (
+              <button
+                className="save-state dirty"
+                onClick={() => void saveActiveAction()}
+                title="点击保存文件 (Ctrl+S)"
+              >
+                <span className="dot" />
+                未保存
+              </button>
+            ) : justSaved ? (
+              <span className="save-state saved">
+                <Check size={12} />
+                已保存
+              </span>
+            ) : null)}
+
+          {activeDoc && activeDoc.perfTier !== "standard" && (
+            <LargeFileMenu doc={activeDoc} />
+          )}
+
+          {statusMessage && (
+            <span
+              className={
+                "status-message" + (statusMessage.kind === "error" ? " error" : "")
+              }
+            >
+              {statusMessage.text}
+            </span>
+          )}
+        </div>
+
+        <div className="spacer" />
+
+        {activeDoc && (
+          <div className="status-right">
+            <button
+              className="status-item status-action-item"
+              onClick={() => void gotoLineAction()}
+              title="跳转到行 (Ctrl+L)"
+            >
+              行 {activeDoc.cursorLine} · 列 {activeDoc.cursorColumn}
+            </button>
+            <span className="status-divider">·</span>
+            <button
+              className="status-item status-action-item"
+              onClick={() => void openCodecWindow()}
+              title="编码转换与查看"
+            >
+              {encodingLabel(activeDoc.encoding)}
+            </button>
+            {wordCount && (
+              <>
+                <span className="status-divider">·</span>
+                <span className="status-item" title="文档字数统计">
+                  {wordCount}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </footer>
   );
 }

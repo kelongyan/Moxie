@@ -170,7 +170,14 @@ export default function App() {
   };
 
   return (
-    <div className="lac-window">
+    <div
+      className={"lac-window" + (isResizing ? " is-resizing" : "")}
+      style={
+        {
+          "--lac-sidebar-width": `${sidebarWidth}px`,
+        } as React.CSSProperties
+      }
+    >
       <TitleToolbar
         activeDoc={activeDoc}
         sidebarPinned={sidebarPinned}
@@ -180,21 +187,9 @@ export default function App() {
       >
         <TabBar />
       </TitleToolbar>
-      <div
-        className={
-          "lac-main" +
-          (sidebarMode === "pinned" ? " sidebar-pinned" : "") +
-          (isResizing ? " is-resizing" : "")
-        }
-        style={
-          {
-            "--lac-sidebar-width": `${sidebarWidth}px`,
-          } as React.CSSProperties
-        }
-      >
+      <div className={"lac-main" + (sidebarMode === "pinned" ? " sidebar-pinned" : "")}>
         <aside
           className={`sidebar mode-${sidebarMode}`}
-          style={{ width: `${sidebarWidth}px` }}
           onMouseEnter={() => {
             if (hideTimer.current !== null) {
               window.clearTimeout(hideTimer.current);
