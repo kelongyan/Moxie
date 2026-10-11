@@ -75,8 +75,8 @@
 }
 
 /* 操作按钮：弹窗 / 查找 / 编解码共用一套——校样样张描边风：
-   透明底 + line-strong 描边，悬停转校对红（描边/文字/淡红底）。
-   弹窗内按钮走"强调档"（32px），与主窗口的 28px 档控件形成层级 */
+   透明底 + line-strong 描边，悬停转强调色（描边/文字/淡色底）。
+   圆角与输入域统一 8px；宽度随内容（天然宽度更现代），弹窗内走 32px 高"强调档" */
 .modal-button,
 .modal-choice-button,
 .find-button {
@@ -85,10 +85,10 @@
   color: var(--lac-text);
   font-family: inherit;
   font-size: var(--fs-ui);
+  font-weight: 500;
   height: var(--control-h);
-  min-width: 80px;
-  padding: 0 14px;
-  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background var(--anim-hover), color var(--anim-hover),
     border-color var(--anim-hover);
@@ -155,16 +155,18 @@
   background: var(--lac-bg);
   color: var(--lac-text);
   font-family: inherit;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 
+/* 聚焦：描边转强调色 + 3px 柔和光晕（替代粗 outline，聚焦可见且不压界面） */
 .find-grid input:focus-visible,
 .prompt-input:focus-visible,
 .settings-select:focus-visible,
 .settings-input:focus-visible,
 .codec-text:focus-visible {
-  outline: 2px solid var(--lac-accent);
-  outline-offset: -1px;
+  outline: none;
+  border-color: var(--lac-accent);
+  box-shadow: 0 0 0 3px var(--lac-accent-soft);
 }
 
 /* 复选框：全局视觉接管，与 switch 同一控件语言。

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
@@ -35,6 +35,8 @@ interface TitleToolbarProps {
   onSidebarToggle: () => void;
   onSidebarHoverStart: () => void;
   onSidebarHoverEnd: () => void;
+  /** 顶栏中段内容（标签栏）；菜单栏与窗口控制之间的可用宽度 */
+  children?: ReactNode;
 }
 
 function WindowControls() {
@@ -104,6 +106,7 @@ export function TitleToolbar({
   onSidebarToggle,
   onSidebarHoverStart,
   onSidebarHoverEnd,
+  children,
 }: TitleToolbarProps) {
   const [openMenu, setOpenMenu] = useState<{
     key: string;
@@ -313,8 +316,8 @@ export function TitleToolbar({
         </div>
       </div>
 
-      {/* 2. 中间：整幅无阻碍拖拽留白区 */}
-      <div className="titlebar-center" data-tauri-drag-region />
+      {/* 2. 中间：标签栏（无文档时仅剩新建按钮与拖拽留白） */}
+      <div className="titlebar-center">{children}</div>
 
       {/* 3. 右侧：彻底清除多余下载与点阵按钮，仅保留 Windows 原生窗口控制 */}
       <div className="titlebar-right" data-tauri-drag-region>

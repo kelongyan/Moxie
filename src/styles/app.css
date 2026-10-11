@@ -585,11 +585,13 @@ body {
   color: var(--lac-text-secondary);
 }
 
-/* 标签栏：并入顶栏一行，横向占满可用宽度（自身不设高度与底边） */
+/* 标签栏：并入顶栏一行，横向占满菜单栏与窗口控制之间的可用宽度
+   （自身不设高度与底边，随顶栏 38px 行高居中） */
 .tab-bar {
   flex: 1 1 auto;
   min-width: 0;
   height: 100%;
+  margin-left: 8px;
   display: flex;
   align-items: center;
 }
@@ -647,7 +649,6 @@ body {
 .tab.selected {
   background: var(--lac-tab-selected-bg);
   border-color: var(--lac-border);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .tab.dragging {
@@ -793,6 +794,7 @@ body {
   flex-direction: column;
 }
 
+/* 菜单元件圆角与悬停胶囊对齐分段控件（6px） */
 .context-menu button {
   display: flex;
   align-items: center;
@@ -806,7 +808,7 @@ body {
   color: var(--lac-text);
   text-align: left;
   padding: 0 10px 0 8px;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
@@ -1038,14 +1040,15 @@ body {
   justify-content: flex-end;
 }
 
+/* 分段控件：凹槽容器 + 浮起滑块（查找形态 / 设置页多处共用） */
 .segmented {
   display: inline-flex;
   height: var(--ctl-md);
   padding: 2px;
   gap: 2px;
-  background: var(--lac-button-bg);
-  border: 1px solid var(--lac-border);
-  border-radius: var(--radius-sm);
+  background: var(--lac-bg-inset);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
 }
 
 .segmented button {
@@ -1055,7 +1058,7 @@ body {
   font-family: inherit;
   font-size: var(--fs-ui);
   padding: 0 12px;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   white-space: nowrap;
   transition: background var(--anim-hover), color var(--anim-hover);
@@ -1068,6 +1071,7 @@ body {
 .segmented button.active {
   background: var(--lac-bg-elevated);
   color: var(--lac-text);
+  font-weight: 500;
   box-shadow: var(--sh-1);
 }
 
@@ -1785,21 +1789,22 @@ body {
 .primary-open-btn {
   margin-top: 8px;
   height: 30px;
-  padding: 0 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--lac-border);
-  background: var(--lac-bg-chrome);
+  padding: 0 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--lac-border-strong);
+  background: transparent;
   color: var(--lac-text);
   font-size: var(--fs-caption);
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--anim-hover), border-color var(--anim-hover);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background var(--anim-hover), border-color var(--anim-hover),
+    color var(--anim-hover);
 }
 
 .primary-open-btn:hover {
-  background: var(--lac-hover);
-  border-color: var(--lac-border-strong);
+  border-color: var(--lac-accent);
+  color: var(--lac-accent);
+  background: var(--lac-accent-soft);
 }
 
 .workspace-empty-container {
@@ -1995,13 +2000,13 @@ body {
   padding-right: 28px;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b8f9a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b8f9a' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
 
 [data-theme="dark"] .settings-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a4a8b2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a4a8b2' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 .stepper-group {
@@ -3440,14 +3445,16 @@ body {
   color: var(--lac-text);
   font-family: inherit;
   font-size: var(--fs-ui);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   padding: 3px 6px;
   outline: none;
 }
 
+/* 与输入域同一聚焦语言：强调色描边 + 柔和光晕 */
 .find-inline-input:focus-visible {
-  outline: 2px solid var(--lac-accent);
-  outline-offset: -1px;
+  outline: none;
+  border-color: var(--lac-accent);
+  box-shadow: 0 0 0 3px var(--lac-accent-soft);
 }
 
 .find-inline-btn {

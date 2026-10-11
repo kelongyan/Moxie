@@ -46,7 +46,9 @@
   --lac-selection: rgba(43, 108, 176, 0.16);
   --lac-find-match: rgba(255, 166, 87, 0.28);
 
-  --lac-tab-selected-bg: #ffffff;
+  /* 选中标签与编辑器画布同色：形成"标签—正文"连通感（VSCode/Typora 惯例），
+     比顶栏（chrome 面白）略深一档，浅色下轻微下沉即可辨识 */
+  --lac-tab-selected-bg: #f4f6f9;
   --lac-preview-shadow: rgba(0, 0, 0, 0.1);
 
   /* 语法高亮（以蓝墨为锚降饱和：keyword 深一档、type 转深青、meta 转雾紫；heading 随 accent 蓝） */
@@ -129,7 +131,8 @@
   --lac-selection: rgba(99, 179, 237, 0.22);
   --lac-find-match: rgba(255, 166, 87, 0.22);
 
-  --lac-tab-selected-bg: #1b2027;
+  /* 选中标签与编辑器画布同色（暗色下纸比 chrome 更深） */
+  --lac-tab-selected-bg: #14181e;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
   --syn-keyword: #8db5e3;
