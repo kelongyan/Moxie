@@ -22,6 +22,7 @@ import {
   chainHighlight,
   dirName,
   joinPath,
+  outlineIndent,
   parentDirPath,
   treeGuideLines,
   TREE_INDENT,
@@ -156,7 +157,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
       <div className="sidebar-empty-state">
         <ListTree size={24} className="empty-icon" />
         <div className="empty-title">暂无活动文档</div>
-        <div className="empty-desc">在编辑器中打开或新建文档后，此处将自动呈现层级大纲。</div>
+        <div className="empty-desc">打开或新建文档后自动生成</div>
       </div>
     );
   }
@@ -193,7 +194,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
       {items.length === 0 ? (
         <div className="sidebar-empty-state compact">
           <div className="empty-title">当前文档暂无标题</div>
-          <div className="empty-desc">键入 # 一级标题、## 二级标题 即可生成导航</div>
+          <div className="empty-desc">用 # 号书写标题即可生成</div>
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="sidebar-empty-state compact">
@@ -203,13 +204,12 @@ function OutlineView({ activeId }: { activeId: string | null }) {
         <div className="outline-tree" role="list">
           {filteredItems.map((item, idx) => {
             const isActive = item.from === activeFrom;
-            const indentLevel = Math.max(0, Math.min(item.level - 1, 5));
             return (
               <button
                 key={`${item.from}-${idx}`}
                 role="listitem"
                 className={`outline-node lvl-${item.level}` + (isActive ? " is-active" : "")}
-                style={{ paddingLeft: `${indentLevel * 12 + 12}px` }}
+                style={{ paddingLeft: `${outlineIndent(item.level)}px` }}
                 onClick={() => jump(item)}
                 title={item.text}
               >

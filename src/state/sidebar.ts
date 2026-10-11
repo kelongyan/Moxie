@@ -455,6 +455,17 @@ export function dirName(path: string): string {
   return slash >= 0 ? dir.slice(slash + 1) : dir;
 }
 
+/* ---------- 大纲导航缩进（纯几何计算）---------- */
+
+/** 大纲每级缩进：基准 10px + 每级 8px，压缩深层留白保证窄侧栏可读 */
+export const OUTLINE_INDENT_BASE = 10;
+export const OUTLINE_INDENT_STEP = 8;
+
+export function outlineIndent(level: number): number {
+  const depth = Math.max(0, Math.min(level - 1, 5));
+  return OUTLINE_INDENT_BASE + depth * OUTLINE_INDENT_STEP;
+}
+
 /* ---------- 文件树引导线（树形"树干 + 分支"的纯几何计算）---------- */
 
 /** 每级缩进步长（px），与行的 paddingLeft 保持同一节奏 */

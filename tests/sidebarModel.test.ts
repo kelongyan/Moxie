@@ -5,6 +5,7 @@ import {
   dirName,
   formatRelativeTime,
   joinPath,
+  outlineIndent,
   parentDirPath,
   treeGuideLines,
   useSidebar,
@@ -176,6 +177,23 @@ describe("treeGuideLines（文件树引导线几何）", () => {
       { level: 2, x: 32 },
     ]);
     expect(g.elbow).toEqual({ x: 46, stem: true });
+  });
+});
+
+describe("outlineIndent（大纲导航缩进）", () => {
+  it("基准 10 + 每级 8：h1→h6 依次 10/18/26/34/42/50", () => {
+    expect(outlineIndent(1)).toBe(10);
+    expect(outlineIndent(2)).toBe(18);
+    expect(outlineIndent(3)).toBe(26);
+    expect(outlineIndent(4)).toBe(34);
+    expect(outlineIndent(5)).toBe(42);
+    expect(outlineIndent(6)).toBe(50);
+  });
+
+  it("h6 以上封顶同缩进；非法层级（0/负数）回落基准", () => {
+    expect(outlineIndent(9)).toBe(50);
+    expect(outlineIndent(0)).toBe(10);
+    expect(outlineIndent(-3)).toBe(10);
   });
 });
 
