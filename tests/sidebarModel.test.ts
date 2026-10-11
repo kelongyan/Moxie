@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 import {
+  chainHighlight,
   dirName,
   formatRelativeTime,
   joinPath,
   parentDirPath,
+  treeGuideLines,
   useSidebar,
 } from "../src/state/sidebar";
 
@@ -140,5 +142,97 @@ describe("会话内状态：不落盘、不跨启动恢复", () => {
     for (let i = 0; i < 15; i += 1) push(`C:\\n${i}.md`);
     expect(useSidebar.getState().recent).toHaveLength(12);
     expect(useSidebar.getState().recent[0].path).toBe("C:\\n14.md");
+  });
+});
+
+describe("treeGuideLines（文件树引导线几何）", () => {
+  it("根级末项：树干停在中线（└），无贯穿线", () => {
+    const g = treeGuideLines(0, [], true);
+    expect(g.vlines).toEqual([]);
+    expect(g.elbow).toEqual({ x: 4, stem: false });
+  });
+
+  it("根级非末项：树干延伸到底（├）", () => {
+    const g = treeGuideLines(0, [], false);
+    expect(g.elbow).toEqual({ x: 4, stem: true });
+  });
+
+  it("子项：祖先还有后继时在祖先级位置画贯穿竖线", () => {
+    const g = treeGuideLines(1, [true], false);
+    expect(g.vlines).toEqual([{ level: 0, x: 4 }]);
+    expect(g.elbow).toEqual({ x: 18, stem: true });
+  });
+
+  it("末级子树：祖先无后继则不画贯穿线，本级为 └", () => {
+    const g = treeGuideLines(2, [false, true], true);
+    expect(g.vlines).toEqual([{ level: 1, x: 18 }]);
+    expect(g.elbow).toEqual({ x: 32, stem: false });
+  });
+
+  it("深层级：贯穿线只出现在仍在延续的祖先级", () => {
+    const g = treeGuideLines(3, [true, false, true], false);
+    expect(g.vlines).toEqual([
+      { level: 0, x: 4 },
+      { level: 2, x: 32 },
+    ]);
+    expect(g.elbow).toEqual({ x: 46, stem: true });
+  });
+});
+
+describe("chainHighlight（祖先链追踪点亮计算）", () => {
+  const chain = [
+    { path: "A", index: 1 },
+    { path: "B", index: 1 },
+    { path: "C", index: 0 },
+  ];
+
+  it("无悬停链时全部不点亮", () => {
+    expect(chainHighlight(null, [{ path: "A", index: 1 }])).toEqual({
+      vlines: 0,
+      onChain: false,
+    });
+  });
+
+  it("目标行自身：在链上，贯穿线全点亮 + 树枝点亮", () => {
+    expect(chainHighlight(chain, chain)).toEqual({ vlines: 2, onChain: true });
+  });
+
+  it("链上祖先行（A）：在链上，无贯穿线也点亮树枝", () => {
+    expect(chainHighlight(chain, [{ path: "A", index: 1 }])).toEqual({
+      vlines: 0,
+      onChain: true,
+    });
+  });
+
+  it("分叉处位于目标分支之前的前序兄弟：点亮共享祖先列（补路径段，不断链）", () => {
+    // X 与 B 同级（A 的子项）、序号 0 < B 的 1 → 位于目标之前
+    expect(chainHighlight(chain, [{ path: "A", index: 1 }, { path: "X", index: 0 }])).toEqual({
+      vlines: 1,
+      onChain: false,
+    });
+  });
+
+  it("分叉处位于目标分支之后的兄弟：不点亮", () => {
+    expect(chainHighlight(chain, [{ path: "A", index: 1 }, { path: "Y", index: 2 }])).toEqual({
+      vlines: 0,
+      onChain: false,
+    });
+  });
+
+  it("根级位于目标之前/之后：根行无贯穿线，均不点亮", () => {
+    expect(chainHighlight(chain, [{ path: "R0", index: 0 }])).toEqual({
+      vlines: 0,
+      onChain: false,
+    });
+    expect(chainHighlight(chain, [{ path: "R9", index: 9 }])).toEqual({
+      vlines: 0,
+      onChain: false,
+    });
+  });
+
+  it("悬停行的后代：不在路径上，不点亮", () => {
+    expect(
+      chainHighlight(chain, [...chain, { path: "D", index: 0 }])
+    ).toEqual({ vlines: 0, onChain: false });
   });
 });

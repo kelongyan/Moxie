@@ -84,7 +84,7 @@ async function handleChanged(paths: string[]) {
     } else {
       const ok = await promptConfirm(
         "文件已在磁盘被修改",
-        `“${doc.name}”在外部被修改,当前有未保存内容。重新载入将覆盖这些内容。`,
+        `“${doc.name}”在外部被修改，重新载入将丢弃未保存的更改。`,
         "重新载入"
       );
       if (ok) {

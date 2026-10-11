@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ChevronRight,
-  File,
   FilePlus,
-  FileText,
   Folder,
   FolderOpen,
   FolderPlus,
@@ -21,11 +19,16 @@ import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { promptConfirm, promptInput } from "../state/prompts";
 import {
+  chainHighlight,
   dirName,
   joinPath,
   parentDirPath,
-  type DirEntry,
+  treeGuideLines,
+  TREE_INDENT,
   useSidebar,
+  useTreeHover,
+  type ChainEntry,
+  type DirEntry,
 } from "../state/sidebar";
 import { subscribeTextChange, viewFor } from "../editor/registry";
 import { Tooltip } from "./Tooltip";
@@ -224,16 +227,64 @@ function OutlineView({ activeId }: { activeId: string | null }) {
 // 2. 工作区文件目录树 (Workspace File Tree View)
 // ============================================================================
 
+/** 树内文件图标：极简"折角页"，替代通用文档图标；
+    Markdown 文件的折角带一点强调色（注释感），其他文件保持纯灰阶 */
+function FileGlyph({ className, accent }: { className?: string; accent: boolean }) {
+  return (
+    <svg
+      className={className}
+      width={14}
+      height={14}
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M8.6 1.8H4.5a.9.9 0 0 0-.9.9v10.6a.9.9 0 0 0 .9.9h7a.9.9 0 0 0 .9-.9V5.6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.6 1.8v3.8h3.8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {accent && (
+        <path d="M8.6 1.8 12.4 5.6H8.6Z" fill="var(--lac-accent)" fillOpacity="0.3" />
+      )}
+    </svg>
+  );
+}
+
 function FileTreeItem({
   entry,
+  index,
   depth,
+  isLast,
+  ancestorContinues,
+  ancestorChain,
   onMenu,
 }: {
   entry: DirEntry;
+  /** 同级序号（祖先链追踪判定"之前/之后"用） */
+  index: number;
   depth: number;
+  /** 是否同级最后一项（决定本行拐弯线为 "└" 还是 "├"） */
+  isLast: boolean;
+  /** 各祖先级是否还有后继同级项（决定贯穿竖线的位置） */
+  ancestorContinues: boolean[];
+  /** 从根到本行父级的链（祖先链追踪悬停用） */
+  ancestorChain: ChainEntry[];
   onMenu: (x: number, y: number, items: MenuItem[]) => void;
 }) {
   const sidebar = useSidebar();
+  const setHoverChain = useTreeHover((s) => s.setChain);
+  const selfChain = [...ancestorChain, { path: entry.path, index }];
+  const litVlines = useTreeHover((s) => chainHighlight(s.chain, selfChain).vlines);
+  const onHoverChain = useTreeHover((s) => chainHighlight(s.chain, selfChain).onChain);
   const documents = useDocuments((s) => s.documents);
   const activeId = useDocuments((s) => s.activeId);
 
@@ -373,6 +424,8 @@ function FileTreeItem({
     onMenu(e.clientX, e.clientY, items);
   };
 
+  const guides = treeGuideLines(depth, ancestorContinues, isLast);
+
   return (
     <div className="tree-node-wrapper">
       <div
@@ -380,14 +433,27 @@ function FileTreeItem({
           "tree-node" +
           (entry.isDir ? " is-dir" : " is-file") +
           (isOpen ? " is-open" : "") +
-          (isActive ? " is-active" : "")
+          (isActive ? " is-active" : "") +
+          (onHoverChain ? " is-chain" : "")
         }
-        style={{ paddingLeft: `${depth * 14 + 10}px` }}
+        style={{ paddingLeft: `${depth * TREE_INDENT + 12}px` }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
+        onMouseEnter={() => setHoverChain(selfChain)}
+        onMouseLeave={() => setHoverChain(null)}
         title={entry.path}
       >
-        {depth > 0 && <span className="tree-guide" />}
+        {guides.vlines.map((v) => (
+          <span
+            key={`v-${v.level}`}
+            className={"tree-vline" + (v.level < litVlines ? " is-lit" : "")}
+            style={{ left: v.x }}
+          />
+        ))}
+        <span className="tree-elbow" style={{ left: guides.elbow.x }} />
+        {guides.elbow.stem && (
+          <span className="tree-elbow-stem" style={{ left: guides.elbow.x }} />
+        )}
 
         {entry.isDir ? (
           <>
@@ -404,11 +470,10 @@ function FileTreeItem({
         ) : (
           <>
             <span className="node-indent-spacer" />
-            {entry.isMarkdown ? (
-              <FileText size={14} className="node-icon file-md" />
-            ) : (
-              <File size={14} className="node-icon file-plain" />
-            )}
+            <FileGlyph
+              className={"node-icon " + (entry.isMarkdown ? "file-md" : "file-plain")}
+              accent={entry.isMarkdown}
+            />
           </>
         )}
 
@@ -444,16 +509,20 @@ function FileTreeItem({
           {children.length === 0 ? (
             <div
               className="tree-empty-children"
-              style={{ paddingLeft: `${(depth + 1) * 14 + 14}px` }}
+              style={{ paddingLeft: `${(depth + 1) * TREE_INDENT + 16}px` }}
             >
               (空文件夹)
             </div>
           ) : (
-            children.map((child) => (
+            children.map((child, childIndex) => (
               <FileTreeItem
                 key={child.path}
                 entry={child}
+                index={childIndex}
                 depth={depth + 1}
+                isLast={childIndex === children.length - 1}
+                ancestorContinues={[...ancestorContinues, !isLast]}
+                ancestorChain={selfChain}
                 onMenu={onMenu}
               />
             ))
@@ -510,9 +579,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
         <div className="sidebar-empty-state">
           <FolderOpen size={24} className="empty-icon" />
           <div className="empty-title">工作区未开启</div>
-          <div className="empty-desc">
-            打开本地文件夹作为工作区，可快速浏览、组织与创建 Markdown 笔记。
-          </div>
+          <div className="empty-desc">打开文件夹，开始整理笔记</div>
           <button className="primary-open-btn" onClick={handleOpenFolder}>
             打开文件夹…
           </button>
@@ -520,7 +587,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
 
         {activeDoc?.path && (
           <div className="quick-open-current">
-            <span className="quick-label">当前文档目录：</span>
+            <span className="quick-label">当前目录：</span>
             <button
               className="quick-link-btn"
               onClick={handleOpenCurrentFileDir}
@@ -618,11 +685,15 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
             )}
           </div>
         ) : (
-          filteredChildren.map((entry) => (
+          filteredChildren.map((entry, index) => (
             <FileTreeItem
               key={entry.path}
               entry={entry}
+              index={index}
               depth={0}
+              isLast={index === filteredChildren.length - 1}
+              ancestorContinues={[]}
+              ancestorChain={[]}
               onMenu={onMenu}
             />
           ))

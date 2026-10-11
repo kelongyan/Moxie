@@ -61,7 +61,7 @@ export function EditorEmptyState() {
           <kbd>Ctrl</kbd> <kbd>O</kbd> 打开
         </span>
         <span className="hint-dot" />
-        <span>拖入 Markdown 文件即可打开</span>
+        <span>拖入文件即可打开</span>
       </div>
     </div>
   );

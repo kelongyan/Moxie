@@ -193,7 +193,7 @@ function AboutSection() {
           <div className="settings-about-meta-row">
             <span>{t("性能")}</span>
             <span>
-              {t("按文档体量自动分级，无需手动配置")}
+              {t("按文档体量自动分级")}
             </span>
           </div>
           <div className="settings-about-meta-row">
@@ -257,7 +257,7 @@ export function SettingsWindow() {
         {section === "general" && (
           <>
             <SettingsSection title={t("通用")} description={t("基础行为与系统集成")}>
-              <SettingRow title={t("界面语言")} description={t("界面显示语言（英文为实验性，尚未覆盖全部界面）")}>
+              <SettingRow title={t("界面语言")} description={t("英文尚未覆盖全部界面")}>
                 <select
                   className="settings-select"
                   value={prefs.lang}
@@ -281,7 +281,7 @@ export function SettingsWindow() {
                 </select>
               </SettingRow>
 
-              <SettingRow title={t("自动保存")} description={t("定时（30 秒）或窗口失焦时保存已保存过的文档")}>
+              <SettingRow title={t("自动保存")} description={t("每 30 秒或窗口失焦时保存")}>
                 <select
                   className="settings-select"
                   value={prefs.autosave}
@@ -299,7 +299,7 @@ export function SettingsWindow() {
 
               <SwitchRow
                 title={t("关闭时最小化到托盘")}
-                description={t("开启后点关闭隐藏到托盘,托盘菜单可退出")}
+                description={t("关闭窗口时隐藏到托盘")}
                 checked={prefs.closeToTray}
                 onChange={(v) => {
                   set({ closeToTray: v });
@@ -336,7 +336,7 @@ export function SettingsWindow() {
             </SettingsSection>
 
             <SettingsSection title={t("强调色与字体")} description={t("界面外观的个性化")}>
-              <SettingRow title={t("强调色")} description={t("界面与光标的强调色（留空使用主题默认）")}>
+              <SettingRow title={t("强调色")} description={t("留空使用主题默认")}>
                 <span className="stepper-group">
                   <input
                     type="color"
@@ -354,7 +354,7 @@ export function SettingsWindow() {
                 </span>
               </SettingRow>
 
-              <SettingRow title={t("界面字体")} description={t("界面与正文字体（留空使用默认）")}>
+              <SettingRow title={t("界面字体")} description={t("留空使用默认字体")}>
                 <input
                   className="settings-input"
                   value={prefs.uiFont}
@@ -384,13 +384,13 @@ export function SettingsWindow() {
               />
               <SwitchRow
                 title={t("专注模式")}
-                description={t("当前段落之外的行降低透明度")}
+                description={t("段落外的行降低透明度")}
                 checked={prefs.focusMode}
                 onChange={(v) => set({ focusMode: v })}
               />
               <SwitchRow
                 title={t("打字机模式")}
-                description={t("光标行始终保持屏幕垂直居中")}
+                description={t("光标行始终垂直居中")}
                 checked={prefs.typewriterMode}
                 onChange={(v) => set({ typewriterMode: v })}
               />
@@ -407,7 +407,7 @@ export function SettingsWindow() {
                   onReset={() => set({ fontSizePt: 12 })}
                 />
               </SettingRow>
-              <SettingRow title={t("编辑器行距")} description={t("行与行之间的额外间距")}>
+              <SettingRow title={t("编辑器行距")} description={t("行间的额外间距")}>
                 <Stepper
                   value={prefs.lineSpacingPt}
                   min={0}
@@ -455,7 +455,7 @@ export function SettingsWindow() {
                   <option value={8}>8 {t("个字符")}</option>
                 </select>
               </SettingRow>
-              <SettingRow title={t("图片保存目录")} description={t("粘贴或拖入图片时，相对文档的存放目录")}>
+              <SettingRow title={t("图片保存目录")} description={t("粘贴或拖入图片的存放目录")}>
                 <input
                   className="settings-input"
                   value={prefs.imageFolder}
@@ -473,7 +473,7 @@ export function SettingsWindow() {
             <SettingsSection title="Markdown" description={t("解析与渲染选项")}>
               <SettingRow
                 title={t("Markdown 单换行")}
-                description={t("单个换行渲染为换行;关闭时遵循 GFM,仅在空行处分段")}
+                description={t("单个换行渲染为换行，关闭时按 GFM 分段")}
               >
                 <label className="switch">
                   <input
@@ -487,7 +487,7 @@ export function SettingsWindow() {
 
               <SettingRow
                 title={t("Markdown 排版美化")}
-                description={t("自动替换直引号、破折号等排版符号")}
+                description={t("替换直引号、破折号等符号")}
               >
                 <label className="switch">
                   <input
@@ -501,7 +501,7 @@ export function SettingsWindow() {
 
               <SettingRow
                 title={t("Markdown 原始 HTML")}
-                description={t("渲染文档中的 HTML 片段（经本地净化，默认关闭）")}
+                description={t("渲染文档中的 HTML 片段（已净化）")}
               >
                 <label className="switch">
                   <input
@@ -535,14 +535,14 @@ export function SettingsWindow() {
 
               <SwitchRow
                 title={t("导出正文限宽")}
-                description={t("导出 HTML 时正文限制在 960px 内居中")}
+                description={t("HTML 导出时正文限 960px 居中")}
                 checked={prefs.exportNarrow}
                 onChange={(v) => set({ exportNarrow: v })}
               />
 
               <SwitchRow
                 title={t("导出代码行号")}
-                description={t("导出 HTML / 富文本时代码块显示行号")}
+                description={t("导出时代码块显示行号")}
                 checked={prefs.exportCodeLineNumbers}
                 onChange={(v) => set({ exportCodeLineNumbers: v })}
               />
