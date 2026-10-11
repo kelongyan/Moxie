@@ -130,11 +130,60 @@ interface MenuSpec {
   danger?: boolean;
 }
 
-function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
+interface ShowMenuOptions {
+  colAlignHeader?: {
+    activeAlign: string;
+    onAlign: (align: "left" | "center" | "right") => void;
+  };
+}
+
+const MENU_SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
+const MENU_SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+const MENU_SVG_ALIGN_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+
+function showMenu(
+  view: EditorView,
+  items: MenuSpec[],
+  x: number,
+  y: number,
+  opts?: ShowMenuOptions
+) {
   closeTableMenu();
   const menu = document.createElement("div");
   menu.className = "md-table-menu";
   menu.setAttribute("role", "menu");
+
+  if (opts?.colAlignHeader) {
+    const alignBar = document.createElement("div");
+    alignBar.className = "md-table-menu-align-bar";
+
+    const aligns: Array<{ key: "left" | "center" | "right"; title: string; svg: string }> = [
+      { key: "left", title: "左对齐", svg: MENU_SVG_ALIGN_LEFT },
+      { key: "center", title: "居中对齐", svg: MENU_SVG_ALIGN_CENTER },
+      { key: "right", title: "右对齐", svg: MENU_SVG_ALIGN_RIGHT },
+    ];
+
+    for (const al of aligns) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `md-table-menu-align-btn${opts.colAlignHeader.activeAlign === al.key ? " is-active" : ""}`;
+      btn.title = al.title;
+      btn.innerHTML = al.svg;
+      btn.addEventListener("mousedown", (e) => e.stopPropagation());
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeTableMenu();
+        opts.colAlignHeader?.onAlign(al.key);
+      });
+      alignBar.appendChild(btn);
+    }
+
+    menu.appendChild(alignBar);
+    const divider = document.createElement("div");
+    divider.className = "md-table-menu-divider";
+    menu.appendChild(divider);
+  }
+
   for (const item of items) {
     if (item.separatorBefore) {
       const divider = document.createElement("div");
@@ -257,7 +306,16 @@ export function openTableMenu(
     );
   }
 
-  showMenu(view, items, x, y);
+  showMenu(view, items, x, y, {
+    colAlignHeader:
+      opts.col !== undefined
+        ? {
+            activeAlign: currentColAlign,
+            onAlign: (align) =>
+              runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, align)),
+          }
+        : undefined,
+  });
 }
 
 /** 行插入不允许越过表头（新空行不能当表头） */

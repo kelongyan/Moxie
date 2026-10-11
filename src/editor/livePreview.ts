@@ -131,7 +131,7 @@ class CalloutBadgeWidget extends WidgetType {
       <svg class="md-callout-bubble-caret" viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
     `;
 
-    btn.addEventListener("mousedown", (e) => {
+    const handleOpenMenu = (e: Event) => {
       e.preventDefault();
       e.stopPropagation();
       closeCalloutMenu();
@@ -143,10 +143,14 @@ class CalloutBadgeWidget extends WidgetType {
       for (const t of CALLOUT_TYPES) {
         const item = document.createElement("button");
         item.type = "button";
-        item.className = `md-callout-menu-item item-${t}` + (t === this.kind ? " is-current" : "");
+        const isCurrent = t === this.kind;
+        item.className = `md-callout-menu-item item-${t}` + (isCurrent ? " is-current" : "");
         const svg = CALLOUT_ICON_PATHS[t] ?? CALLOUT_ICON_PATHS.note;
         const name = CALLOUT_LABELS[t] ?? t;
-        item.innerHTML = `<svg class="md-callout-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg><span>${name}</span>`;
+        const checkSvg = isCurrent
+          ? `<svg class="md-callout-menu-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+          : "";
+        item.innerHTML = `<div class="md-callout-menu-label"><svg class="md-callout-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg><span>${name}</span></div>${checkSvg}`;
 
         item.addEventListener("mousedown", (ev) => ev.stopPropagation());
         item.addEventListener("click", () => {
@@ -162,17 +166,20 @@ class CalloutBadgeWidget extends WidgetType {
       }
 
       const rect = btn.getBoundingClientRect();
-      const menuWidth = 100;
+      const menuWidth = 125;
       menu.style.left = `${Math.max(4, rect.right - menuWidth)}px`;
       const spaceBelow = window.innerHeight - rect.bottom;
-      if (spaceBelow < 145) {
-        menu.style.top = `${Math.max(8, rect.top - 138)}px`;
+      if (spaceBelow < 155) {
+        menu.style.top = `${Math.max(8, rect.top - 150)}px`;
       } else {
-        menu.style.top = `${rect.bottom + 4}px`;
+        menu.style.top = `${rect.bottom + 5}px`;
       }
       document.body.appendChild(menu);
       openCalloutMenu = menu;
-    });
+    };
+
+    btn.addEventListener("mousedown", handleOpenMenu);
+    btn.addEventListener("click", handleOpenMenu);
 
     return btn;
   }
@@ -180,6 +187,136 @@ class CalloutBadgeWidget extends WidgetType {
   ignoreEvent() {
     return true;
   }
+}
+
+const ICON_CODE_SVG =
+  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md-lang-icon"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+const ICON_CHEVRON_SVG =
+  '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md-lang-arrow"><polyline points="6 9 12 15 18 9"/></svg>';
+const ICON_COPY_SVG =
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+const ICON_CHECK_SVG =
+  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+function getCodeBlockContent(view: EditorView, pos: number): string {
+  const doc = view.state.doc;
+  const tree = syntaxTree(view.state);
+  let node: SyntaxNode | null = tree.resolveInner(pos, 1);
+  while (node && node.name !== "FencedCode") {
+    node = node.parent;
+  }
+  if (node) {
+    const firstLine = doc.lineAt(node.from);
+    const lastLine = doc.lineAt(node.to);
+    const hasClosing =
+      lastLine.number > firstLine.number && /^\s*(`{3,}|~{3,})\s*$/.test(lastLine.text);
+    const endLineNumber = hasClosing ? lastLine.number - 1 : lastLine.number;
+    const lines: string[] = [];
+    for (let ln = firstLine.number + 1; ln <= endLineNumber; ln++) {
+      lines.push(doc.line(ln).text);
+    }
+    return lines.join("\n");
+  }
+  const curLine = doc.lineAt(pos);
+  const lines: string[] = [];
+  for (let ln = curLine.number + 1; ln <= doc.lines; ln++) {
+    const l = doc.line(ln);
+    if (/^\s*(`{3,}|~{3,})\s*$/.test(l.text)) break;
+    lines.push(l.text);
+  }
+  return lines.join("\n");
+}
+
+function applyFenceLanguage(view: EditorView, widgetEl: HTMLElement, newLang: string) {
+  closeLangMenu();
+  const pos = view.posAtDOM(widgetEl);
+  const line = view.state.doc.lineAt(pos);
+  const m = /^(\s*(?:`{3,}|~{3,}))( ?)(\S*)/.exec(line.text);
+  if (!m) return;
+  const from = line.from + m[1].length;
+  const to = line.from + m[1].length + m[2].length + m[3].length;
+  const insert = newLang ? ` ${newLang}` : "";
+  view.dispatch({
+    changes: { from, to, insert },
+    selection: { anchor: line.to },
+    userEvent: "input",
+  });
+  view.focus();
+}
+
+function openLanguageMenu(view: EditorView, triggerEl: HTMLElement, currentLang: string) {
+  closeLangMenu();
+  const menu = document.createElement("div");
+  menu.className = "md-lang-menu";
+  menu.setAttribute("role", "menu");
+
+  const searchWrap = document.createElement("div");
+  searchWrap.className = "md-lang-search-wrap";
+  const searchInput = document.createElement("input");
+  searchInput.className = "md-lang-search";
+  searchInput.placeholder = "搜索或输入语言...";
+  searchWrap.appendChild(searchInput);
+  menu.appendChild(searchWrap);
+
+  const listWrap = document.createElement("div");
+  listWrap.className = "md-lang-options-list";
+  menu.appendChild(listWrap);
+
+  const renderOptions = (filter: string) => {
+    listWrap.innerHTML = "";
+    const q = filter.trim().toLowerCase();
+    const matched = FENCE_LANGUAGE_OPTIONS.filter(
+      (opt) => !q || opt.label.toLowerCase().includes(q) || opt.key.toLowerCase().includes(q)
+    );
+
+    for (const opt of matched) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = opt.label;
+      if (opt.key === currentLang) btn.classList.add("current");
+      btn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+      btn.addEventListener("click", () => {
+        applyFenceLanguage(view, triggerEl, opt.key);
+      });
+      listWrap.appendChild(btn);
+    }
+
+    if (q && !FENCE_LANGUAGE_OPTIONS.some((o) => o.key.toLowerCase() === q)) {
+      const customBtn = document.createElement("button");
+      customBtn.type = "button";
+      customBtn.textContent = `使用 "${filter.trim()}"`;
+      customBtn.classList.add("custom");
+      customBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+      customBtn.addEventListener("click", () => {
+        applyFenceLanguage(view, triggerEl, filter.trim());
+      });
+      listWrap.appendChild(customBtn);
+    }
+  };
+
+  renderOptions("");
+
+  searchInput.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  searchInput.addEventListener("input", () => {
+    renderOptions(searchInput.value);
+  });
+  searchInput.addEventListener("keydown", (ev) => {
+    ev.stopPropagation();
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      const val = searchInput.value.trim();
+      applyFenceLanguage(view, triggerEl, val);
+    } else if (ev.key === "Escape") {
+      closeLangMenu();
+    }
+  });
+
+  const rect = triggerEl.getBoundingClientRect();
+  menu.style.left = `${Math.max(4, Math.min(rect.left, window.innerWidth - 210))}px`;
+  menu.style.top = `${Math.min(rect.bottom + 6, window.innerHeight - 300)}px`;
+  document.body.appendChild(menu);
+  openLangMenu = menu;
+  setTimeout(() => searchInput.focus(), 20);
 }
 
 class FenceWidget extends WidgetType {
@@ -190,46 +327,64 @@ class FenceWidget extends WidgetType {
     return other.lang === this.lang;
   }
   toDOM(view: EditorView) {
-    const el = document.createElement("span");
-    el.className = "md-lang-tag";
-    el.textContent = this.lang;
-    el.addEventListener("mousedown", (e) => {
+    const wrap = document.createElement("div");
+    wrap.className = "md-code-header";
+
+    const langBtn = document.createElement("button");
+    langBtn.type = "button";
+    langBtn.className = "md-lang-tag md-lang-badge";
+    langBtn.innerHTML = `${ICON_CODE_SVG}<span class="md-lang-text">${this.lang}</span>${ICON_CHEVRON_SVG}`;
+    langBtn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      closeLangMenu();
-      const menu = document.createElement("div");
-      menu.className = "md-lang-menu";
-      menu.setAttribute("role", "menu");
-      for (const opt of FENCE_LANGUAGE_OPTIONS) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.textContent = opt.label;
-        if (opt.key === this.lang) btn.classList.add("current");
-        btn.addEventListener("mousedown", (ev) => ev.stopPropagation());
-        btn.addEventListener("click", () => {
-          closeLangMenu();
-          const pos = view.posAtDOM(el);
-          const line = view.state.doc.lineAt(pos);
-          const m = /^(\s*(?:`{3,}|~{3,}))( ?)(\S*)/.exec(line.text);
-          if (!m) return;
-          const from = line.from + m[1].length + m[2].length;
-          view.dispatch({
-            changes: { from, to: from + m[3].length, insert: opt.key },
-            // 光标留在 fence 行上：语言标注保持可见可继续编辑
-            selection: { anchor: line.to },
-            userEvent: "input",
-          });
-          view.focus();
-        });
-        menu.appendChild(btn);
-      }
-      const rect = el.getBoundingClientRect();
-      menu.style.left = `${Math.max(4, Math.min(rect.left, window.innerWidth - 170))}px`;
-      menu.style.top = `${Math.min(rect.bottom + 4, window.innerHeight - 260)}px`;
-      document.body.appendChild(menu);
-      openLangMenu = menu;
+      openLanguageMenu(view, langBtn, this.lang);
     });
-    return el;
+    wrap.appendChild(langBtn);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "md-code-copy-btn";
+    copyBtn.title = "复制代码";
+    copyBtn.setAttribute("aria-label", "复制代码");
+    copyBtn.innerHTML = ICON_COPY_SVG;
+
+    copyBtn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    copyBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const text = getCodeBlockContent(view, view.posAtDOM(wrap));
+      const write =
+        navigator.clipboard && navigator.clipboard.writeText
+          ? navigator.clipboard.writeText(text)
+          : Promise.resolve().then(() => {
+              const ta = document.createElement("textarea");
+              ta.value = text;
+              ta.style.position = "fixed";
+              ta.style.opacity = "0";
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand("copy");
+              ta.remove();
+            });
+      write
+        .then(() => {
+          copyBtn.innerHTML = ICON_CHECK_SVG;
+          copyBtn.classList.add("copied");
+          copyBtn.title = "已复制";
+          setTimeout(() => {
+            copyBtn.innerHTML = ICON_COPY_SVG;
+            copyBtn.classList.remove("copied");
+            copyBtn.title = "复制代码";
+          }, 1500);
+        })
+        .catch(() => {});
+    });
+    wrap.appendChild(copyBtn);
+
+    return wrap;
   }
   ignoreEvent() {
     return false;
@@ -326,6 +481,32 @@ const SVG_COL_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="no
 const SVG_GRID = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`;
 const SVG_FORMAT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
 const SVG_TRASH = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
+const SVG_GEAR = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md-table-gear-icon"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const SVG_TABLE_COPY = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const SVG_TABLE_CHECK = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--lac-success)"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+let activeTableToolbarWidget: TableWidget | null = null;
+
+function closeActiveTableToolbar() {
+  if (activeTableToolbarWidget) {
+    activeTableToolbarWidget.closeToolbar();
+    activeTableToolbarWidget = null;
+  }
+}
+
+document.addEventListener("mousedown", (e) => {
+  if (
+    activeTableToolbarWidget &&
+    !activeTableToolbarWidget.containsElement(e.target as Node)
+  ) {
+    closeActiveTableToolbar();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && activeTableToolbarWidget) {
+    closeActiveTableToolbar();
+  }
+});
 
 /**
  * 表格（GFM，Typora 式）：始终渲染为带对齐与行内 markdown 的真实表格。
@@ -344,6 +525,8 @@ class TableWidget extends WidgetType {
   private view: EditorView | null = null;
   private wrapEl: HTMLElement | null = null;
   private toolbarEl: HTMLElement | null = null;
+  private gearBtnEl: HTMLElement | null = null;
+  private isToolbarOpen = false;
   private sizePopupEl: HTMLElement | null = null;
 
   constructor(readonly data: TableModel, readonly gap: number) {
@@ -437,6 +620,22 @@ class TableWidget extends WidgetType {
     const footer = document.createElement("div");
     footer.className = "md-table-footer";
 
+    // 快速在底部追加行手柄
+    const quickAddRow = document.createElement("button");
+    quickAddRow.type = "button";
+    quickAddRow.className = "md-table-quick-add-row";
+    quickAddRow.title = "在表格最下方追加行";
+    quickAddRow.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>添加新行</span>`;
+    quickAddRow.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    quickAddRow.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.applyEdit((m) => insertRowEdit(m, m.rows.length, 0));
+    });
+
     const stat = document.createElement("div");
     stat.className = "md-table-footer-stat";
     stat.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg><span>表格规格: ${this.rowCount} 行 × ${this.colCount} 列</span>`;
@@ -446,9 +645,10 @@ class TableWidget extends WidgetType {
 
     const copyBtn = document.createElement("button");
     copyBtn.type = "button";
-    copyBtn.className = "md-table-footer-btn";
-    copyBtn.title = "复制此表格 Markdown 源码";
-    copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
+    copyBtn.className = "md-table-footer-btn md-table-icon-btn";
+    copyBtn.title = "复制表格 Markdown 源码";
+    copyBtn.setAttribute("aria-label", "复制表格 Markdown 源码");
+    copyBtn.innerHTML = SVG_TABLE_COPY;
     copyBtn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -459,24 +659,109 @@ class TableWidget extends WidgetType {
       const model = this.modelWithPending() ?? this.data;
       const text = buildTable(model);
       void navigator.clipboard.writeText(text);
-      copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span style="color:var(--lac-success)">已复制!</span>`;
+      copyBtn.innerHTML = SVG_TABLE_CHECK;
+      copyBtn.title = "已复制表格！";
       setTimeout(() => {
-        copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
+        copyBtn.innerHTML = SVG_TABLE_COPY;
+        copyBtn.title = "复制表格 Markdown 源码";
       }, 1500);
     });
 
+    const gearBtn = document.createElement("button");
+    gearBtn.type = "button";
+    gearBtn.className = "md-table-footer-btn md-table-gear-btn md-table-icon-btn";
+    gearBtn.title = "表格设置与编辑操作";
+    gearBtn.setAttribute("aria-label", "表格设置与编辑操作");
+    gearBtn.innerHTML = SVG_GEAR;
+    this.gearBtnEl = gearBtn;
+
+    gearBtn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    gearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.toggleToolbar();
+    });
+
     actions.appendChild(copyBtn);
+    actions.appendChild(gearBtn);
     footer.appendChild(stat);
     footer.appendChild(actions);
 
+    // 快速在最右侧追加列手柄
+    const quickAddCol = document.createElement("button");
+    quickAddCol.type = "button";
+    quickAddCol.className = "md-table-quick-add-col";
+    quickAddCol.title = "在表格最右侧追加列";
+    quickAddCol.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+    quickAddCol.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    quickAddCol.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.applyEdit((m) => insertColEdit(m, m.rows[0].length));
+    });
+
     scrollBox.appendChild(table);
+    scrollBox.appendChild(quickAddRow);
     scrollBox.appendChild(footer);
+    scrollBox.appendChild(quickAddCol);
     wrap.appendChild(scrollBox);
     liveTableWidgets.set(this.data.from, this);
     return wrap;
   }
 
+  toggleToolbar(open?: boolean) {
+    const next = open !== undefined ? open : !this.isToolbarOpen;
+    if (next) {
+      closeActiveTableToolbar();
+      this.openToolbar();
+      activeTableToolbarWidget = this;
+    } else {
+      this.closeToolbar();
+      if (activeTableToolbarWidget === this) {
+        activeTableToolbarWidget = null;
+      }
+    }
+  }
+
+  openToolbar() {
+    this.isToolbarOpen = true;
+    if (this.toolbarEl && this.wrapEl) {
+      const wrapRect = this.wrapEl.getBoundingClientRect();
+      const spaceOnRight = window.innerWidth - wrapRect.right;
+      const canDockOutside = spaceOnRight >= 46;
+      this.toolbarEl.classList.toggle("is-docked-outside", canDockOutside);
+      this.toolbarEl.classList.toggle("is-docked-inside", !canDockOutside);
+      this.toolbarEl.classList.add("is-open");
+    }
+    this.gearBtnEl?.classList.add("is-active");
+  }
+
+  closeToolbar() {
+    this.isToolbarOpen = false;
+    this.toolbarEl?.classList.remove("is-open");
+    this.gearBtnEl?.classList.remove("is-active");
+    this.closeSizePopover();
+  }
+
+  containsElement(target: Node): boolean {
+    return Boolean(
+      this.toolbarEl?.contains(target) ||
+      this.gearBtnEl?.contains(target) ||
+      this.sizePopupEl?.contains(target)
+    );
+  }
+
   destroy(dom: HTMLElement) {
+    if (activeTableToolbarWidget === this) {
+      activeTableToolbarWidget = null;
+    }
+    this.closeToolbar();
     this.closeSizePopover();
     if (liveTableWidgets.get(this.data.from) === this) {
       liveTableWidgets.delete(this.data.from);
@@ -484,6 +769,7 @@ class TableWidget extends WidgetType {
     this.overlay = null;
     this.wrapEl = null;
     this.toolbarEl = null;
+    this.gearBtnEl = null;
     super.destroy(dom);
   }
 
@@ -532,9 +818,9 @@ class TableWidget extends WidgetType {
       return d;
     };
 
-    // 1. 对齐控制组
+    // 1. 对齐控制组 (分段胶囊控制条)
     const alignGroup = document.createElement("div");
-    alignGroup.className = "md-table-tool-group";
+    alignGroup.className = "md-table-tool-group md-table-align-pill";
 
     const btnAlignLeft = makeBtn("左对齐 (当前列)", SVG_ALIGN_LEFT, () => {
       this.applyEdit((m) =>
@@ -559,9 +845,12 @@ class TableWidget extends WidgetType {
 
     alignGroup.append(btnAlignLeft, btnAlignCenter, btnAlignRight);
 
-    // 2. 行列结构操作组
+    // 2. 行列结构操作组 (细分为行操作与列操作微组)
     const structGroup = document.createElement("div");
-    structGroup.className = "md-table-tool-group";
+    structGroup.className = "md-table-tool-group md-table-struct-group";
+
+    const rowGroup = document.createElement("div");
+    rowGroup.className = "md-table-subgroup";
 
     const btnRowAbove = makeBtn("在上方插入行", SVG_ROW_ABOVE, () => {
       this.applyEdit((m) =>
@@ -585,7 +874,12 @@ class TableWidget extends WidgetType {
       this.applyEdit((m) =>
         deleteRowEdit(m, this.activeRow >= 0 ? this.activeRow : m.rows.length - 1)
       );
-    });
+    }, "btn-danger-hover");
+
+    rowGroup.append(btnRowAbove, btnRowBelow, btnRowDel);
+
+    const colGroup = document.createElement("div");
+    colGroup.className = "md-table-subgroup";
 
     const btnColLeft = makeBtn("在左侧插入列", SVG_COL_LEFT, () => {
       this.applyEdit((m) =>
@@ -601,20 +895,15 @@ class TableWidget extends WidgetType {
       this.applyEdit((m) =>
         deleteColEdit(m, this.activeCol >= 0 ? this.activeCol : m.rows[0].length - 1)
       );
-    });
+    }, "btn-danger-hover");
 
-    structGroup.append(
-      btnRowAbove,
-      btnRowBelow,
-      btnRowDel,
-      btnColLeft,
-      btnColRight,
-      btnColDel
-    );
+    colGroup.append(btnColLeft, btnColRight, btnColDel);
+
+    structGroup.append(rowGroup, makeDivider(), colGroup);
 
     // 3. 表格整体操作（规模、整理、删除）
     const metaGroup = document.createElement("div");
-    metaGroup.className = "md-table-tool-group";
+    metaGroup.className = "md-table-tool-group md-table-meta-group";
 
     const btnSize = makeBtn(
       "调整表格大小",
@@ -635,7 +924,10 @@ class TableWidget extends WidgetType {
 
     metaGroup.append(btnSize, btnFormat, btnDelete);
 
-    bar.append(alignGroup, makeDivider(), structGroup, makeDivider(), metaGroup);
+    const arrow = document.createElement("div");
+    arrow.className = "md-table-toolbar-arrow";
+
+    bar.append(alignGroup, makeDivider(), structGroup, makeDivider(), metaGroup, arrow);
     return bar;
   }
 
@@ -706,8 +998,9 @@ class TableWidget extends WidgetType {
     });
 
     const rect = anchorBtn.getBoundingClientRect();
-    pop.style.left = `${Math.max(8, rect.left)}px`;
-    pop.style.top = `${rect.bottom + 6}px`;
+    const popWidth = 165;
+    pop.style.left = `${Math.max(8, rect.left - popWidth - 6)}px`;
+    pop.style.top = `${Math.max(8, Math.min(window.innerHeight - 180, rect.top - 20))}px`;
 
     const onOutside = (e: MouseEvent) => {
       if (!pop.contains(e.target as Node) && !anchorBtn.contains(e.target as Node)) {
@@ -998,6 +1291,7 @@ class TableWidget extends WidgetType {
     btn.className = "md-table-handle";
     btn.setAttribute("aria-label", "列操作与对齐");
     btn.title = "列操作与对齐";
+    btn.innerHTML = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
     btn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1119,6 +1413,9 @@ class MarkWidget extends WidgetType {
   }
 }
 
+const ICON_TASK_CHECK_SVG =
+  '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="md-task-check-icon"><polyline points="20 6 9 17 4 12"/></svg>';
+
 class TaskWidget extends WidgetType {
   constructor(readonly checked: boolean) {
     super();
@@ -1132,6 +1429,10 @@ class TaskWidget extends WidgetType {
     box.className = "md-task" + (this.checked ? " checked" : "");
     box.setAttribute("role", "checkbox");
     box.setAttribute("aria-checked", String(this.checked));
+    box.title = this.checked ? "标为未完成" : "标为已完成";
+    if (this.checked) {
+      box.innerHTML = ICON_TASK_CHECK_SVG;
+    }
     box.addEventListener("mousedown", (event) => {
       event.preventDefault();
       const pos = view.posAtDOM(box);
@@ -1166,21 +1467,379 @@ function hideRange(
   return HIDE.range(from, to);
 }
 
-/** 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span，渲染失败回退原文） */
+let activeMathBubble: HTMLElement | null = null;
+let activeMathTarget: HTMLElement | null = null;
+let closeMathBubbleCleanup: (() => void) | null = null;
+
+function closeMathBubble() {
+  if (closeMathBubbleCleanup) {
+    closeMathBubbleCleanup();
+    closeMathBubbleCleanup = null;
+  }
+  if (activeMathTarget) {
+    activeMathTarget.classList.remove("is-editing");
+    activeMathTarget = null;
+  }
+  if (activeMathBubble) {
+    activeMathBubble.classList.add("is-closing");
+    const el = activeMathBubble;
+    activeMathBubble = null;
+    setTimeout(() => {
+      el.remove();
+    }, 100);
+  }
+}
+
+document.addEventListener("mousedown", (e) => {
+  if (activeMathBubble && !activeMathBubble.contains(e.target as Node)) {
+    closeMathBubble();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && activeMathBubble) {
+    closeMathBubble();
+  }
+});
+
+function positionMathBubble(bubble: HTMLElement, targetEl: HTMLElement) {
+  const rect = targetEl.getBoundingClientRect();
+  const bubbleWidth = bubble.offsetWidth || 380;
+  const bubbleHeight = bubble.offsetHeight || 160;
+
+  let left = rect.left + rect.width / 2 - bubbleWidth / 2;
+  left = Math.max(12, Math.min(left, window.innerWidth - bubbleWidth - 12));
+
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const placeAbove = spaceBelow < bubbleHeight + 16 && rect.top > bubbleHeight + 16;
+
+  const top = placeAbove ? rect.top - bubbleHeight - 10 : rect.bottom + 10;
+
+  bubble.style.left = `${left}px`;
+  bubble.style.top = `${top}px`;
+  bubble.dataset.placement = placeAbove ? "top" : "bottom";
+
+  const arrow = bubble.querySelector(".md-math-bubble-arrow") as HTMLElement | null;
+  if (arrow) {
+    const arrowLeft = Math.max(16, Math.min(rect.left + rect.width / 2 - left, bubbleWidth - 16));
+    arrow.style.left = `${arrowLeft}px`;
+  }
+}
+
+function resolveInlineMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const text = line.text;
+  const relPos = pos - line.from;
+  let i = 0;
+  while (i < text.length - 1) {
+    if (text[i] !== "$" || text[i + 1] === "$" || (i > 0 && text[i - 1] === "\\")) {
+      i++;
+      continue;
+    }
+    let close = -1;
+    for (let j = i + 1; j < text.length; j++) {
+      if (text[j] === "\\") {
+        j++;
+        continue;
+      }
+      if (text[j] === "$") {
+        close = j;
+        break;
+      }
+    }
+    if (close > i + 1) {
+      if (relPos >= i && relPos <= close + 1) {
+        return { from: line.from + i, to: line.from + close + 1 };
+      }
+      i = close + 1;
+    } else {
+      i++;
+    }
+  }
+  return null;
+}
+
+function resolveBlockMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const trimmed = line.text.trim();
+  if (trimmed.startsWith("$$")) {
+    const second = trimmed.indexOf("$$", 2);
+    if (second > 2) {
+      return { from: line.from, to: line.to };
+    }
+    for (let j = line.number + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: line.from, to: doc.line(j).to };
+      }
+    }
+  }
+  let startLine = -1;
+  for (let j = line.number; j >= 1; j--) {
+    if (doc.line(j).text.trim().startsWith("$$")) {
+      startLine = j;
+      break;
+    }
+  }
+  if (startLine > 0) {
+    for (let j = startLine + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: doc.line(startLine).from, to: doc.line(j).to };
+      }
+    }
+  }
+  return null;
+}
+
+function openMathBubble(
+  view: EditorView,
+  targetEl: HTMLElement,
+  initialTex: string,
+  display: boolean,
+  from: number,
+  to: number
+) {
+  closeMathBubble();
+
+  activeMathTarget = targetEl;
+  targetEl.classList.add("is-editing");
+
+  const bubble = document.createElement("div");
+  bubble.className = "md-math-bubble";
+  bubble.setAttribute("role", "dialog");
+  bubble.setAttribute("aria-label", "编辑 LaTeX 公式");
+
+  let currentRange = { from, to };
+  let currentTex = initialTex;
+
+  const arrow = document.createElement("div");
+  arrow.className = "md-math-bubble-arrow";
+  bubble.appendChild(arrow);
+
+  const header = document.createElement("div");
+  header.className = "md-math-bubble-header";
+
+  const titleWrap = document.createElement("div");
+  titleWrap.className = "md-math-bubble-title";
+  titleWrap.innerHTML = `
+    <svg class="md-math-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19h4a8 8 0 0 0 8-8V4"/>
+      <path d="M12 4h6"/>
+      <path d="M8 11h8"/>
+    </svg>
+    <span>${display ? "块级 LaTeX 公式" : "行内 LaTeX 公式"}</span>
+  `;
+  header.appendChild(titleWrap);
+
+  const actions = document.createElement("div");
+  actions.className = "md-math-bubble-actions";
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.type = "button";
+  confirmBtn.className = "md-math-confirm-btn";
+  confirmBtn.textContent = "完成";
+  confirmBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  confirmBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(confirmBtn);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.type = "button";
+  copyBtn.className = "md-math-action-btn md-math-copy-btn";
+  copyBtn.title = "复制 LaTeX 源码";
+  copyBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+    </svg>
+  `;
+  copyBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  copyBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    void navigator.clipboard?.writeText(currentTex);
+    copyBtn.classList.add("copied");
+    setTimeout(() => copyBtn.classList.remove("copied"), 1200);
+  });
+  actions.appendChild(copyBtn);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "md-math-action-btn md-math-close-btn";
+  closeBtn.title = "关闭 (Esc)";
+  closeBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  `;
+  closeBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  closeBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(closeBtn);
+  header.appendChild(actions);
+  bubble.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "md-math-bubble-body";
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "md-math-input";
+  textarea.value = initialTex;
+  textarea.rows = display ? 3 : 1;
+  textarea.placeholder = display ? "输入 LaTeX 公式源码 (多行)..." : "输入 LaTeX 公式源码...";
+  body.appendChild(textarea);
+  bubble.appendChild(body);
+
+  const footer = document.createElement("div");
+  footer.className = "md-math-bubble-footer";
+
+  const quickSymbols = document.createElement("div");
+  quickSymbols.className = "md-math-quick-symbols";
+  const SYMBOLS = [
+    { label: "\\frac", insert: "\\frac{a}{b}" },
+    { label: "\\sqrt", insert: "\\sqrt{x}" },
+    { label: "\\sum", insert: "\\sum_{i=1}^{n}" },
+    { label: "\\int", insert: "\\int_{a}^{b}" },
+    { label: "\\alpha", insert: "\\alpha" },
+    { label: "\\infty", insert: "\\infty" },
+    { label: "\\pm", insert: "\\pm" },
+    { label: "\\leq", insert: "\\leq" },
+    { label: "\\geq", insert: "\\geq" },
+  ];
+  for (const s of SYMBOLS) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "md-math-chip";
+    chip.textContent = s.label;
+    chip.title = `插入 ${s.insert}`;
+    chip.addEventListener("mousedown", (ev) => ev.stopPropagation());
+    chip.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      textarea.value = val.slice(0, start) + s.insert + val.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + s.insert.length;
+      textarea.focus();
+      handleTexChange(textarea.value);
+    });
+    quickSymbols.appendChild(chip);
+  }
+  footer.appendChild(quickSymbols);
+  bubble.appendChild(footer);
+  bubble.appendChild(footer);
+
+  const handleTexChange = (newVal: string) => {
+    currentTex = newVal;
+    const trimmed = newVal.trim();
+    const newInsert = display
+      ? `$$\n${trimmed || " "}\n$$`
+      : `$${trimmed || " "}$`;
+
+    if (
+      currentRange.from <= view.state.doc.length &&
+      currentRange.to <= view.state.doc.length
+    ) {
+      view.dispatch({
+        changes: {
+          from: currentRange.from,
+          to: currentRange.to,
+          insert: newInsert,
+        },
+        userEvent: "input",
+      });
+      currentRange.to = currentRange.from + newInsert.length;
+    }
+  };
+
+  textarea.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  textarea.addEventListener("input", () => {
+    handleTexChange(textarea.value);
+  });
+  textarea.addEventListener("keydown", (ev) => {
+    ev.stopPropagation();
+    if (ev.key === "Escape") {
+      closeMathBubble();
+      view.focus();
+    } else if (
+      (display && ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) ||
+      (!display && ev.key === "Enter" && !ev.shiftKey)
+    ) {
+      ev.preventDefault();
+      closeMathBubble();
+      view.focus();
+    }
+  });
+
+  document.body.appendChild(bubble);
+  activeMathBubble = bubble;
+
+  positionMathBubble(bubble, targetEl);
+
+  setTimeout(() => {
+    textarea.focus();
+    textarea.select();
+  }, 30);
+
+  const reposition = () => {
+    if (activeMathBubble && activeMathTarget) {
+      positionMathBubble(activeMathBubble, activeMathTarget);
+    }
+  };
+  window.addEventListener("scroll", reposition, true);
+  window.addEventListener("resize", reposition);
+
+  closeMathBubbleCleanup = () => {
+    window.removeEventListener("scroll", reposition, true);
+    window.removeEventListener("resize", reposition);
+  };
+}
+
+/** 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span，常驻渲染并通过气泡浮层编辑） */
 class MathWidget extends WidgetType {
   constructor(
     readonly tex: string,
-    readonly display: boolean
+    readonly display: boolean,
+    readonly mathFrom?: number,
+    readonly mathTo?: number
   ) {
     super();
   }
   eq(other: MathWidget) {
     return other.tex === this.tex && other.display === this.display;
   }
-  toDOM() {
+  toDOM(view: EditorView) {
     const el = document.createElement(this.display ? "div" : "span");
     el.className = this.display ? "md-math-block" : "md-math-inline";
     el.innerHTML = renderKatex(this.tex, this.display);
+
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const pos = view.posAtDOM(el);
+      let from = this.mathFrom ?? pos;
+      let to = this.mathTo ?? pos + this.tex.length + (this.display ? 4 : 2);
+
+      const resolved = this.display
+        ? resolveBlockMathRange(view.state.doc, pos)
+        : resolveInlineMathRange(view.state.doc, pos);
+      if (resolved) {
+        from = resolved.from;
+        to = resolved.to;
+      }
+
+      openMathBubble(view, el, this.tex, this.display, from, to);
+    });
+
     return el;
   }
   ignoreEvent() {
@@ -1440,10 +2099,10 @@ export function computeLiveRanges(
           // 常规代码块（Typora 风格代码卡片）：首尾围栏常驻隐藏与卡片化，光标在代码内编辑时不展开首尾 ``` 围栏
           if (hasClosing || !active) {
             ranges.push(
-              (lang
-                ? Decoration.replace({ widget: new FenceWidget(lang) })
-                : HIDE
-              ).range(first.from, first.to)
+              Decoration.replace({ widget: new FenceWidget(lang) }).range(
+                first.from,
+                first.to
+              )
             );
           }
         }
@@ -1525,6 +2184,7 @@ export function computeLiveRanges(
       if (node.name === "TaskMarker") {
         const line = doc.lineAt(from);
         const checked = /^\[[xX]\]/.test(doc.sliceString(from, to));
+        pushLineClass(line.from, "md-task-line" + (checked ? " md-task-done" : ""));
         ranges.push(
           Decoration.replace({ widget: new TaskWidget(checked) }).range(from, to)
         );
@@ -1572,6 +2232,7 @@ export function computeLiveRanges(
   // —— 数学公式：语法树不认识 $...$，单独线性扫描 ——
   // 块级 $$..$$（单行或跨行）整块替换（StateField 允许跨行 replace）；
   // 行内 $..$ 内容非空、首尾无空白（降低把价格符号误判为公式的概率）。
+  // 点击通过气泡浮层编辑源码，正文常驻渲染，不漏出源码模式。
   const mathRanges: Range<Decoration>[] = [];
   const blockMathLines = new Set<number>();
   for (let ln = 1; ln <= doc.lines; ln++) {
@@ -1582,14 +2243,12 @@ export function computeLiveRanges(
     if (!t.startsWith("$$")) continue;
     const sameLineClose = t.indexOf("$$", 2);
     if (sameLineClose > 2) {
-      if (!selectionTouches(state, line.from, line.to)) {
-        mathRanges.push(
-          Decoration.replace({
-            widget: new MathWidget(t.slice(2, sameLineClose).trim(), true),
-            block: true,
-          }).range(line.from, line.to)
-        );
-      }
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(t.slice(2, sameLineClose).trim(), true, line.from, line.to),
+          block: true,
+        }).range(line.from, line.to)
+      );
       blockMathLines.add(ln);
       excluded.push({ from: line.from, to: line.to });
       continue;
@@ -1603,13 +2262,9 @@ export function computeLiveRanges(
     }
     if (endLine > 0) {
       const absTo = doc.line(endLine).to;
-      if (selectionTouches(state, line.from, absTo)) {
-        for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
-        continue;
-      }
       mathRanges.push(
         Decoration.replace({
-          widget: new MathWidget(doc.sliceString(line.to, doc.line(endLine).from).trim(), true),
+          widget: new MathWidget(doc.sliceString(line.to, doc.line(endLine).from).trim(), true, line.from, absTo),
           block: true,
         }).range(line.from, absTo)
       );
@@ -1649,11 +2304,9 @@ export function computeLiveRanges(
       }
       const absFrom = line.from + i;
       const absTo = line.from + close + 1;
-      if (!selectionTouches(state, absFrom, absTo)) {
-        mathRanges.push(
-          Decoration.replace({ widget: new MathWidget(content, false) }).range(absFrom, absTo)
-        );
-      }
+      mathRanges.push(
+        Decoration.replace({ widget: new MathWidget(content, false, absFrom, absTo) }).range(absFrom, absTo)
+      );
       i = close + 1;
     }
   }

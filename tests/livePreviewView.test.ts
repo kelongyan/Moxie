@@ -65,4 +65,60 @@ describe("livePreview · 真实视图渲染", () => {
     view.destroy();
     host.remove();
   });
+
+  it("代码块顶栏：渲染现代 Header 工具条（语言胶囊与复制代码按钮）", () => {
+    const state = EditorState.create({
+      doc: DOC,
+      selection: { anchor: DOC.length },
+      extensions: [markdownExtensions(), livePreview(() => null)],
+    });
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const view = new EditorView({ state, parent: host });
+
+    const header = host.querySelector(".cm-content .md-code-header");
+    expect(header).not.toBeNull();
+
+    const langBadge = header?.querySelector(".md-lang-badge");
+    expect(langBadge).not.toBeNull();
+    expect(langBadge?.querySelector(".md-lang-text")?.textContent).toBe("js");
+
+    const copyBtn = header?.querySelector(".md-code-copy-btn") as HTMLButtonElement | null;
+    expect(copyBtn).not.toBeNull();
+    expect(copyBtn?.getAttribute("title")).toBe("复制代码");
+
+    view.destroy();
+    host.remove();
+  });
+
+  it("数学公式：点击公式弹出气泡编辑浮层，正文不漏出源码模式", () => {
+    const mathDoc = "质能方程 $E=mc^2$ 演示";
+    const state = EditorState.create({
+      doc: mathDoc,
+      selection: { anchor: 0 },
+      extensions: [markdownExtensions(), livePreview(() => null)],
+    });
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const view = new EditorView({ state, parent: host });
+
+    const mathEl = host.querySelector(".md-math-inline") as HTMLElement | null;
+    expect(mathEl).not.toBeNull();
+    expect(mathEl?.classList.contains("md-math-inline")).toBe(true);
+
+    // 触发点击公式
+    mathEl?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+    // 气泡浮层挂载在 body 上
+    const bubble = document.querySelector(".md-math-bubble") as HTMLElement | null;
+    expect(bubble).not.toBeNull();
+    const input = bubble?.querySelector(".md-math-input") as HTMLTextAreaElement | null;
+    expect(input).not.toBeNull();
+    expect(input?.value).toBe("E=mc^2");
+
+    // 清理气泡
+    bubble?.remove();
+    view.destroy();
+    host.remove();
+  });
 });

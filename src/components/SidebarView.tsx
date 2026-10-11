@@ -148,6 +148,17 @@ function OutlineView({ activeId }: { activeId: string | null }) {
     view.focus();
   };
 
+  useEffect(() => {
+    if (activeFrom === null) return;
+    const timer = window.setTimeout(() => {
+      const activeEl = document.querySelector(".outline-node.is-active");
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }, 50);
+    return () => window.clearTimeout(timer);
+  }, [activeFrom]);
+
   if (!activeId) {
     return (
       <div className="sidebar-empty-state">
@@ -206,10 +217,11 @@ function OutlineView({ activeId }: { activeId: string | null }) {
                 key={`${item.from}-${idx}`}
                 role="listitem"
                 className={`outline-node lvl-${item.level}` + (isActive ? " is-active" : "")}
-                style={{ paddingLeft: `${indentLevel * 12 + 12}px` }}
+                style={{ paddingLeft: `${indentLevel * 10 + 10}px` }}
                 onClick={() => jump(item)}
                 title={item.text}
               >
+                <span className={`outline-level-tag lvl-${item.level}`}>H{item.level}</span>
                 <span className="outline-text">{item.text || "(空标题)"}</span>
               </button>
             );

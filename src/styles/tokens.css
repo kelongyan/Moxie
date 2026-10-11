@@ -13,6 +13,9 @@
   --lac-bg-sidebar: #f4f6f9;
   --lac-bg-elevated: #ffffff;
   --lac-bg-inset: #eceff4;
+  --lac-code-bg: #f8fafc;
+  --lac-code-header-bg: #f1f5f9;
+  --lac-code-border: #e2e8f0;
   --lac-overlay: rgba(0, 0, 0, 0.32);
 
   /* 文本三级：纸墨炭黑 / mute / 辅助灰（对标 Typora 舒适沉稳的纸面阅读对比度） */
@@ -102,6 +105,9 @@
   --lac-bg-sidebar: #14181e;
   --lac-bg-elevated: #212831;
   --lac-bg-inset: rgba(255, 255, 255, 0.07);
+  --lac-code-bg: #14181f;
+  --lac-code-header-bg: #1a2029;
+  --lac-code-border: #283340;
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
   --lac-text: #e6edf3;

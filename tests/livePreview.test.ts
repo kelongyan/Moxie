@@ -506,10 +506,11 @@ describe("livePreview · 数学公式（KaTeX）", () => {
     expect(math[0].display).toBe(false);
   });
 
-  it("光标进入公式区间时回显原文", () => {
+  it("光标进入公式区间时保持公式 widget 渲染（不漏出源码，通过气泡编辑）", () => {
     const doc = "能量 $E=mc^2$ 公式";
     const ranges = rangesOf(doc, doc.indexOf("E=mc"));
-    expect(mathWidgets(ranges)).toHaveLength(0);
+    expect(mathWidgets(ranges)).toHaveLength(1);
+    expect(mathWidgets(ranges)[0].tex).toBe("E=mc^2");
   });
 
   it("单行 $$..$$ 渲染为块级公式", () => {
