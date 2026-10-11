@@ -605,20 +605,25 @@ describe("livePreview · ==高亮== 荧光标记", () => {
 });
 
 describe("livePreview · 标注块（Callout）", () => {
-  it("首行 [!NOTE] 替换为 CalloutHeaderWidget，全块带 md-callout-note 类", () => {
+  it("纯声明首行折叠隐藏，末行挂载右下角气泡 Widget，全块带语义类", () => {
     const doc = "> [!NOTE]\n> 提示内容\n";
     const ranges = rangesOf(doc, 0);
     expect(hasClass(ranges, 0, "md-callout-note")).toBe(true);
-    expect(hasClass(ranges, 0, "md-callout-header-line")).toBe(true);
+    expect(hasClass(ranges, 0, "md-callout-decl-empty")).toBe(true);
     expect(hasClass(ranges, 10, "md-callout-note")).toBe(true);
+    expect(hasClass(ranges, 10, "md-callout-first")).toBe(true);
+    expect(hasClass(ranges, 10, "md-callout-last")).toBe(true);
     const ws = widgets(ranges).filter((w) => "kind" in (w.widget as object));
     expect(ws).toHaveLength(1);
     expect((ws[0].widget as { kind: string }).kind).toBe("note");
   });
 
-  it("光标在标注块首行时依然常驻渲染 HeaderWidget", () => {
-    const doc = "> [!TIP]\n> 建议内容\n";
+  it("单行标注块同时承载内容与末尾气泡 Widget", () => {
+    const doc = "> [!TIP] 建议内容\n";
     const ranges = rangesOf(doc, 4);
+    expect(hasClass(ranges, 0, "md-callout-tip")).toBe(true);
+    expect(hasClass(ranges, 0, "md-callout-first")).toBe(true);
+    expect(hasClass(ranges, 0, "md-callout-last")).toBe(true);
     const ws = widgets(ranges).filter((w) => "kind" in (w.widget as object));
     expect(ws).toHaveLength(1);
     expect((ws[0].widget as { kind: string }).kind).toBe("tip");

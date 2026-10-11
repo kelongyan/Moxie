@@ -100,73 +100,85 @@ document.addEventListener("keydown", (e) => {
 
 const CALLOUT_TYPES = ["note", "tip", "important", "warning", "caution"] as const;
 
-class CalloutHeaderWidget extends WidgetType {
+/** 标注块（Callout）右下角悬浮气泡 Widget */
+class CalloutBadgeWidget extends WidgetType {
   constructor(
     readonly kind: string,
-    readonly from: number,
-    readonly to: number
+    readonly markStart: number,
+    readonly markEnd: number
   ) {
     super();
   }
 
-  eq(other: CalloutHeaderWidget) {
-    return other.kind === this.kind && other.from === this.from && other.to === this.to;
+  eq(other: CalloutBadgeWidget) {
+    return (
+      other.kind === this.kind &&
+      other.markStart === this.markStart &&
+      other.markEnd === this.markEnd
+    );
   }
 
   toDOM(view: EditorView) {
-    const el = document.createElement("span");
-    el.className = `md-callout-header-tag md-callout-header-${this.kind}`;
-    el.title = "点击切换标注类型";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `md-callout-bubble md-callout-bubble-${this.kind}`;
+    btn.title = "点击切换标注类型";
     const iconSvg = CALLOUT_ICON_PATHS[this.kind] ?? CALLOUT_ICON_PATHS.note;
     const label = CALLOUT_LABELS[this.kind] ?? "Note";
-    el.innerHTML = `
-      <svg class="md-callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconSvg}</svg>
-      <span class="md-callout-label">${label}</span>
-      <svg class="md-callout-caret" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+    btn.innerHTML = `
+      <svg class="md-callout-bubble-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconSvg}</svg>
+      <span class="md-callout-bubble-label">${label}</span>
+      <svg class="md-callout-bubble-caret" viewBox="0 0 24 24" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
     `;
 
-    el.addEventListener("mousedown", (e) => {
+    btn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
       closeCalloutMenu();
 
       const menu = document.createElement("div");
-      menu.className = "md-callout-menu";
+      menu.className = `md-callout-menu md-callout-menu-${this.kind}`;
       menu.setAttribute("role", "menu");
 
       for (const t of CALLOUT_TYPES) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        if (t === this.kind) btn.className = "current";
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = `md-callout-menu-item item-${t}` + (t === this.kind ? " is-current" : "");
         const svg = CALLOUT_ICON_PATHS[t] ?? CALLOUT_ICON_PATHS.note;
         const name = CALLOUT_LABELS[t] ?? t;
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg><span>${name}</span>`;
+        item.innerHTML = `<svg class="md-callout-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svg}</svg><span>${name}</span>`;
 
-        btn.addEventListener("mousedown", (ev) => ev.stopPropagation());
-        btn.addEventListener("click", () => {
+        item.addEventListener("mousedown", (ev) => ev.stopPropagation());
+        item.addEventListener("click", () => {
           closeCalloutMenu();
-          const target = `[!${t.toUpperCase()}] `;
+          const target = `[!${t.toUpperCase()}]`;
           view.dispatch({
-            changes: { from: this.from, to: this.to, insert: target },
+            changes: { from: this.markStart, to: this.markEnd, insert: target },
             userEvent: "input",
           });
           view.focus();
         });
-        menu.appendChild(btn);
+        menu.appendChild(item);
       }
 
-      const rect = el.getBoundingClientRect();
-      menu.style.left = `${Math.max(4, rect.left)}px`;
-      menu.style.top = `${rect.bottom + 4}px`;
+      const rect = btn.getBoundingClientRect();
+      const menuWidth = 100;
+      menu.style.left = `${Math.max(4, rect.right - menuWidth)}px`;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      if (spaceBelow < 145) {
+        menu.style.top = `${Math.max(8, rect.top - 138)}px`;
+      } else {
+        menu.style.top = `${rect.bottom + 4}px`;
+      }
       document.body.appendChild(menu);
       openCalloutMenu = menu;
     });
 
-    return el;
+    return btn;
   }
 
   ignoreEvent() {
-    return false;
+    return true;
   }
 }
 
@@ -1224,6 +1236,7 @@ export function computeLiveRanges(
     spaceBefore: number;
   }
   const lineMap = new Map<number, LineInfo>();
+  const calloutEmptyDecls = new Set<number>();
   const lineInfo = (from: number): LineInfo => {
     let info = lineMap.get(from);
     if (!info) {
@@ -1442,25 +1455,42 @@ export function computeLiveRanges(
         return false;
       }
 
-      // —— callout（> [!NOTE] 等）：整块五色样式，首行标记常驻替换为类型徽标标题栏 ——
+      // —— callout（> [!NOTE] 等）：整块五色样式，首行标记折叠，末行右下角悬浮气泡徽标 ——
       if (node.name === "Blockquote") {
         const firstLine = doc.lineAt(from);
-        const cm = /^\s*>\s*(\[!((?:NOTE|TIP|IMPORTANT|WARNING|CAUTION))\][ \t]*)/i.exec(firstLine.text);
+        const cm = /^\s*>\s*(\[!((?:NOTE|TIP|IMPORTANT|WARNING|CAUTION))\][ \t]*)(.*)$/i.exec(firstLine.text);
         if (cm) {
           const kind = cm[2].toLowerCase();
           const lastLine = doc.lineAt(to > from ? to - 1 : from);
+          const hasEmptyDecl = cm[3].trim() === "" && lastLine.number > firstLine.number;
+
           for (let ln = firstLine.number; ln <= lastLine.number; ln++) {
             pushLineClass(doc.line(ln).from, `md-callout md-callout-${kind}`);
           }
-          pushLineClass(firstLine.from, "md-callout-first md-callout-header-line");
+
+          if (hasEmptyDecl) {
+            calloutEmptyDecls.add(firstLine.number);
+            pushLineClass(firstLine.from, "md-callout-decl-empty");
+            pushLineClass(doc.line(firstLine.number + 1).from, "md-callout-first");
+            // 纯声明首行全部隐藏折叠
+            ranges.push(HIDE.range(firstLine.from, firstLine.to));
+          } else {
+            pushLineClass(firstLine.from, "md-callout-first");
+            const markStart = firstLine.from + firstLine.text.indexOf(cm[1]);
+            const markEnd = markStart + cm[1].length;
+            ranges.push(HIDE.range(markStart, markEnd));
+          }
+
           pushLineClass(lastLine.from, "md-callout-last");
 
-          const markStart = firstLine.from + cm.index + (cm[0].length - cm[1].length);
-          const markEnd = markStart + cm[1].length;
+          // 在末行末尾插入右下角气泡 Widget
+          const markStartInDoc = firstLine.from + firstLine.text.indexOf(cm[1]);
+          const markEndInDoc = markStartInDoc + cm[1].length;
           ranges.push(
-            Decoration.replace({
-              widget: new CalloutHeaderWidget(kind, markStart, markEnd),
-            }).range(markStart, markEnd)
+            Decoration.widget({
+              widget: new CalloutBadgeWidget(kind, markStartInDoc, markEndInDoc),
+              side: 1,
+            }).range(lastLine.to)
           );
         }
         return;
@@ -1694,7 +1724,11 @@ export function computeLiveRanges(
       pushLineClass(firstLine.from, "md-block");
     }
     if (block.kind === "blockquote") {
-      pushLineClass(firstLine.from, "md-quote-first");
+      const actualFirst =
+        calloutEmptyDecls.has(block.firstLine) && block.firstLine < block.lastLine
+          ? doc.line(block.firstLine + 1)
+          : firstLine;
+      pushLineClass(actualFirst.from, "md-quote-first");
       pushLineClass(doc.line(block.lastLine).from, "md-quote-last");
     }
 
