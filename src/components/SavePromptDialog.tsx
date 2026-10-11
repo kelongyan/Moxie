@@ -34,7 +34,7 @@ export function SavePromptDialog() {
           </span>
           <div className="modal-head-text">
             <div className="modal-title">未保存的更改</div>
-            <p className="modal-message">“{docName}”尚未保存。要在关闭前保存吗?</p>
+            <p className="modal-message">“{docName}”尚未保存，关闭前要保存吗？</p>
           </div>
         </div>
         <div className="modal-buttons">

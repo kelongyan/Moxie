@@ -1692,23 +1692,80 @@ body {
 .tree-node.is-active::before {
   content: "";
   position: absolute;
-  left: 2px;
+  left: 0;
   top: 4px;
   bottom: 4px;
-  width: 3px;
-  border-radius: 2px;
+  width: 2px;
+  border-radius: 1px;
   background: var(--lac-accent);
 }
 
-.tree-guide {
+/* 文件树引导线：树干（祖先贯穿竖线）+ 本行分支（拐弯 + 圆角），
+   非末项延伸到底（├），末项停在中线（└）；线色随主题令牌 */
+.tree-vline {
   position: absolute;
-  left: 12px;
   top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--lac-border);
-  opacity: 0.5;
+  background: var(--lac-tree-line);
   pointer-events: none;
+  transition: background var(--anim-hover);
+}
+
+.tree-elbow {
+  position: absolute;
+  top: 0;
+  height: 50%;
+  width: 6px;
+  border-left: 1px solid var(--lac-tree-line);
+  border-bottom: 1px solid var(--lac-tree-line);
+  border-bottom-left-radius: 5px;
+  pointer-events: none;
+  transition: border-color var(--anim-hover);
+}
+
+.tree-elbow-stem {
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  width: 1px;
+  background: var(--lac-tree-line);
+  pointer-events: none;
+  transition: background var(--anim-hover);
+}
+
+/* 悬停交互：本行树枝点亮为强调色（"接通"反馈）；
+   本行贯穿线由祖先链追踪统一接管（悬停行必然在链上、其贯穿线全部 is-lit） */
+.tree-node:hover .tree-elbow {
+  border-color: var(--lac-accent);
+}
+
+.tree-node:hover .tree-elbow-stem {
+  background: var(--lac-accent);
+}
+
+/* 悬停文件夹行：其子树引导线整体提亮（范围感知） */
+.tree-node.is-dir:hover + .tree-children .tree-vline,
+.tree-node.is-dir:hover + .tree-children .tree-elbow-stem {
+  background: var(--lac-tree-line-hover);
+}
+
+.tree-node.is-dir:hover + .tree-children .tree-elbow {
+  border-color: var(--lac-tree-line-hover);
+}
+
+/* 祖先链追踪：悬停任意行时，"根 → 该行"的整条路径点亮为强调色——
+   链上各行的贯穿线与树枝、以及目标分支前序兄弟行的共享祖先列（is-lit 由 chainHighlight 计算） */
+.tree-vline.is-lit {
+  background: var(--lac-accent);
+}
+
+.tree-node.is-chain .tree-elbow {
+  border-color: var(--lac-accent);
+}
+
+.tree-node.is-chain .tree-elbow-stem {
+  background: var(--lac-accent);
 }
 
 .node-chevron {
@@ -1730,9 +1787,12 @@ body {
   flex-shrink: 0;
 }
 
+/* 文件夹轻填充：树中层级更实、与文件页区分（描边保持 1.6） */
 .node-icon.folder-open,
 .node-icon.folder-closed {
   color: var(--lac-text-secondary);
+  fill: currentColor;
+  fill-opacity: 0.14;
 }
 
 .node-icon.file-md {

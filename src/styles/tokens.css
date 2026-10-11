@@ -52,6 +52,9 @@
   /* 选中标签与编辑器画布同色：形成"标签—正文"连通感（VSCode/Typora 惯例），
      比顶栏（chrome 面白）略深一档，浅色下轻微下沉即可辨识 */
   --lac-tab-selected-bg: #f4f6f9;
+  /* 文件树引导线（树干/分支）：要读得出"结构"，但别与文字抢戏；hover 加深一档 */
+  --lac-tree-line: #c8d0dc;
+  --lac-tree-line-hover: #a9b4c4;
   --lac-preview-shadow: rgba(0, 0, 0, 0.1);
 
   /* 语法高亮（以蓝墨为锚降饱和：keyword 深一档、type 转深青、meta 转雾紫；heading 随 accent 蓝） */
@@ -139,6 +142,9 @@
 
   /* 选中标签与编辑器画布同色（暗色下纸比 chrome 更深） */
   --lac-tab-selected-bg: #14181e;
+  /* 文件树引导线（树干/分支）：深色下提亮一档保证可读，hover 再亮 */
+  --lac-tree-line: #3a4654;
+  --lac-tree-line-hover: #4e5c6e;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
   --syn-keyword: #8db5e3;

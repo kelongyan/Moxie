@@ -75,7 +75,7 @@ async function readDocumentContent(path: string): Promise<ReadResult | null> {
     } catch {
       useDocuments
         .getState()
-        .setStatus({ text: "所选编码无法解码该文件,请尝试其他编码", kind: "error" });
+        .setStatus({ text: "无法解码该文件，请尝试其他编码", kind: "error" });
     }
   }
 }
