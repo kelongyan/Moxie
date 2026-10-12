@@ -220,68 +220,30 @@ body {
 }
 
 /* 顶栏：无框窗口自绘标题区（对齐 Typora 菜单栏 + 居中文档名布局） */
+/* 顶栏单行（墨记式标签行）：标签栏占左侧与中段，右角依次为
+   侧栏弹入弹出 / 应用菜单 / 窗口控制；整行是窗口拖拽区。 */
 .title-toolbar {
   height: var(--lac-header-height);
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 0 0 6px;
+  gap: 2px;
   background: var(--lac-bg-chrome);
   border-bottom: 1px solid var(--lac-border);
   user-select: none;
 }
 
-/* 顶栏左侧：侧栏切换 + 仿 Typora 菜单栏（灰色占位按钮） */
-.titlebar-left {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-  height: 100%;
-}
-
-.typora-menu-bar {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  margin-left: 2px;
-}
-
-.typora-menu-placeholder-btn {
-  height: 24px;
-  padding: 0 6px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--lac-text-secondary);
-  font-family: inherit;
-  font-size: 12px;
-  border-radius: var(--radius-xs);
-  cursor: default;
-  user-select: none;
-  transition: background var(--anim-hover), color var(--anim-hover);
-  white-space: nowrap;
-}
-
-.typora-menu-placeholder-btn:hover,
-.typora-menu-placeholder-btn.is-active {
-  background: var(--lac-hover);
-  color: var(--lac-text);
-}
-
-/* 顶栏中段：拖拽留白区 */
+/* 顶栏中段：标签栏容器 */
 .titlebar-center {
   flex: 1;
   min-width: 0;
   height: 100%;
+  display: flex;
 }
 
-/* 顶栏右侧：纯窗口控制 */
-.titlebar-right {
-  display: flex;
-  align-items: center;
+.app-menu-btn {
   flex-shrink: 0;
-  height: 100%;
 }
 
 /* 顶栏极简图标按钮（Typora / Obsidian 级克制） */
@@ -311,14 +273,6 @@ body {
 .tool-icon-btn.active {
   color: var(--lac-accent);
   background: var(--lac-accent-soft);
-}
-
-.placeholder-action-btn {
-  color: var(--lac-text-tertiary);
-}
-
-.placeholder-action-btn:hover:not(:disabled) {
-  color: var(--lac-text);
 }
 
 /* 窗口控制按钮：46 宽贴右缘，关闭悬停系统红 */
@@ -407,7 +361,6 @@ body {
   width: 58px;
   padding: 0 4px;
   justify-content: center;
-  gap: 2px;
 }
 
 .status-slot-btn {
@@ -510,49 +463,6 @@ body {
   color: var(--lac-danger);
 }
 
-.save-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: var(--fs-caption);
-  line-height: 1;
-  cursor: default;
-}
-
-.save-state.dirty {
-  color: var(--lac-accent);
-  cursor: pointer;
-  transition: background var(--anim-hover);
-}
-
-.save-state.dirty:hover {
-  background: var(--lac-accent-soft);
-}
-
-.save-state.dirty .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--lac-accent);
-}
-
-.save-state.saved {
-  color: var(--lac-success);
-}
-
-.save-state.saving {
-  color: var(--lac-text-secondary);
-}
-
-.save-spin {
-  animation: spin 0.8s linear infinite;
-}
-
 .theme-cycle-button {
   font-size: var(--fs-caption);
   padding: 2px 6px;
@@ -585,27 +495,28 @@ body {
   color: var(--lac-text-secondary);
 }
 
-/* 标签栏：并入顶栏一行，横向占满菜单栏与窗口控制之间的可用宽度
-   （自身不设高度与底边，随顶栏 38px 行高居中） */
+/* 标签栏：顶栏第二层（工作条）中段——墨记式：无图标、文字自适应宽、
+   活动标签纸底 + 底部 2px 蓝墨滑轨（独立元素，TabBar 的 WAAPI 接管滑动） */
 .tab-bar {
   flex: 1 1 auto;
   min-width: 0;
   height: 100%;
-  margin-left: 8px;
+  margin-left: 2px;
   display: flex;
   align-items: center;
 }
 
 .tab-scroll {
+  position: relative;
   flex: 0 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-left: 4px;
+  padding-left: 2px;
   scrollbar-width: none;
 }
 
@@ -631,12 +542,12 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 27px;
-  padding: 0 6px 0 8px;
-  border: 1px solid transparent;
+  height: 26px; /* 与右角图标按钮同高，在 38px 行内居中——通高块太笨重 */
+  max-width: 200px;
+  padding: 0 22px 0 10px; /* 右侧固定留给 hover 关闭钮，文字不跳动 */
   border-radius: var(--radius-sm);
   cursor: default;
-  transition: background var(--anim-hover), color var(--anim-hover), border-color var(--anim-hover);
+  transition: background var(--anim-hover);
   flex-shrink: 0;
   position: relative;
   user-select: none;
@@ -646,9 +557,9 @@ body {
   background: var(--lac-hover);
 }
 
+/* 活动标签与编辑器画布同色：与下方正文形成"连通感"（令牌既定语义） */
 .tab.selected {
   background: var(--lac-tab-selected-bg);
-  border-color: var(--lac-border);
 }
 
 .tab.dragging {
@@ -656,86 +567,82 @@ body {
   transform: scale(0.98);
 }
 
-.tab-icon {
-  flex-shrink: 0;
-  color: var(--lac-text-secondary);
-}
-
-.tab.selected .tab-icon {
-  color: var(--lac-accent);
-}
-
 .tab-name {
-  flex: 1;
-  font-size: var(--fs-caption);
-  font-weight: 500;
+  min-width: 0;
+  flex: 0 1 auto;
+  font-size: var(--fs-caption); /* 12px：标签片 26px 高，13px 字偏挤（龙哥反馈） */
+  font-weight: 600;
   color: var(--lac-text-secondary);
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+  transition: font-size 0.25s var(--ease-tab-slide), color var(--anim-hover);
 }
 
+/* 活动标签文字微微变大一号（墨记 signature：字级 +1px） */
 .tab.selected .tab-name {
   color: var(--lac-text);
-  font-weight: 600;
-}
-
-.tab-state {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 13px;
 }
 
 .dirty-dot {
-  width: 6px;
-  height: 6px;
+  flex: none;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--lac-accent);
   opacity: 0.88;
 }
 
 .tab-close {
-  width: 16px;
-  height: 16px;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
   display: grid;
   place-items: center;
   border: none;
   background: transparent;
   color: var(--lac-text-secondary);
-  border-radius: 50%;
+  border-radius: var(--radius-xs);
   padding: 0;
   cursor: pointer;
-  opacity: 0.6;
-  transition: background var(--anim-hover), color var(--anim-hover), opacity var(--anim-hover);
+  opacity: 0;
+  transition: background var(--anim-hover), color var(--anim-hover),
+    opacity var(--dur-1) var(--ease-out);
 }
 
-.tab-close:hover:not(:disabled) {
+.tab:hover .tab-close {
+  opacity: 0.75;
+}
+
+.tab-close:hover {
   background: var(--lac-hover);
   color: var(--lac-text);
   opacity: 1;
 }
 
-.tab-close.on-selected {
-  opacity: 0.45;
-}
-
-.tab-close.on-selected:hover {
-  opacity: 1;
-}
-
-.tab-separator {
-  width: 1px;
-  height: 14px;
-  background: var(--lac-border);
-  opacity: 0.58;
-  flex-shrink: 0;
+/* 活动标签底部滑轨：独立元素（不随标签重建），transform/width 由 WAAPI 写入；
+   bottom 与 26px 标签片的下缘对齐（行高 38 → 上下各留 6px） */
+.tab-indicator {
+  position: absolute;
+  left: 0;
+  bottom: calc((var(--lac-header-height) - 26px) / 2);
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--lac-accent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-out);
+  z-index: 3;
 }
 
 .tab-drop-indicator {
   width: 2px;
-  height: 24px;
+  height: 20px;
   background: var(--lac-accent);
   border-radius: 1px;
   flex-shrink: 0;
@@ -753,7 +660,14 @@ body {
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: background var(--anim-hover), color var(--anim-hover), border-color var(--anim-hover);
+  opacity: 0;
+  transition: background var(--anim-hover), color var(--anim-hover),
+    border-color var(--anim-hover), opacity var(--dur-2) var(--ease-out);
+}
+
+/* 新建按钮随工作条 hover 淡显（墨记同款，平时不抢视线） */
+.tab-bar:hover .tab-new-button {
+  opacity: 1;
 }
 
 .tab-new-button:hover {
@@ -766,7 +680,7 @@ body {
   position: fixed;
   top: -1000px;
   left: -1000px;
-  height: 30px;
+  height: 26px;
   display: flex;
   align-items: center;
   padding: 0 12px;
@@ -854,47 +768,6 @@ body {
 
 .context-menu button.danger:hover {
   background: var(--lac-danger-soft);
-}
-
-/* 状态栏保存状态 */
-.save-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  color: var(--lac-text-tertiary);
-}
-
-.save-state.dirty {
-  color: var(--lac-warning);
-}
-
-/* 保存成功只在切换瞬间提示，1.6s 后淡出（由组件控制卸载） */
-.save-state.saved {
-  animation: lac-fade-in var(--dur-2) var(--ease-out);
-}
-
-.save-spin {
-  animation: lac-spin 1.2s linear infinite;
-}
-
-@keyframes lac-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .save-spin {
-    animation: none;
-  }
-}
-
-.save-state .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--lac-warning);
 }
 
 .status-message.error {
@@ -2828,6 +2701,7 @@ body {
   min-width: 0.9em;
 }
 
+/* 语言标签与复制按钮的定位在 .md-code-head（fence 行右上角容器） */
 /* ==高亮== 荧光标记（MarkWidget 的渲染态；光标进入回显 ==原文==） */
 .md-mark {
   background: var(--lac-mark-bg);
@@ -3630,6 +3504,8 @@ body {
   display: inline-flex;
   max-width: 100%;
   vertical-align: baseline;
+  border-radius: var(--radius-sm);
+  position: relative;
 }
 
 .md-image img {
@@ -3640,13 +3516,225 @@ body {
   border-radius: 8px;
 }
 
+/* 选中态：蓝墨描边（墨记 mu-inline-image-selected 同语义） */
+.md-image.md-image-selected {
+  outline: 2px solid var(--lac-accent);
+  outline-offset: 2px;
+}
+
+/* 粘贴占位（落盘中）：图片半透明 + 右上角转圈（墨记 mu-image-uploading 同语义） */
+.md-image.md-image-uploading img {
+  opacity: 0.65;
+}
+
+.md-image.md-image-uploading::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--lac-accent);
+  border-top-color: transparent;
+  background: var(--lac-bg-elevated);
+  animation: spin 0.8s linear infinite;
+}
+
+/* 缩放手柄：选中态出现在图片两侧（墨记 imageResizeBar 简化形） */
+.md-image-resize-handle {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 36px;
+  transform: translateY(-50%);
+  border-radius: 5px;
+  background: var(--lac-accent);
+  opacity: 0.85;
+  cursor: ew-resize;
+  z-index: 4;
+}
+
+.md-image-resize-handle[data-side="left"] {
+  left: -14px;
+}
+
+.md-image-resize-handle[data-side="right"] {
+  right: -14px;
+}
+
+.md-image-resize-handle:hover {
+  opacity: 1;
+}
+
+/* 对齐：图片所在行整体对齐（text-align 方式，兼容图行混排） */
+.cm-line.md-image-align-center {
+  text-align: center;
+}
+
+.cm-line.md-image-align-right {
+  text-align: right;
+}
+
 .md-image.broken {
-  padding: 2px 8px;
-  border-radius: var(--radius-xs);
-  background: var(--lac-warning-soft);
-  color: var(--lac-warning);
+  padding: 6px 12px;
+  border: 1px dashed var(--lac-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--lac-bg-inset);
+  color: var(--lac-text-tertiary);
   font-size: var(--fs-caption);
   white-space: nowrap;
+  gap: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 图片浮动工具条：选中图片后浮出（编辑/资源管理器/复制路径/删除） */
+.md-image-toolbar {
+  position: fixed;
+  z-index: var(--z-popover);
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 3px;
+  background: var(--lac-bg-elevated);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--sh-2);
+  animation: lac-pop-in var(--dur-1) var(--ease-out);
+}
+
+.md-image-toolbar button {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--lac-text-secondary);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: background var(--anim-hover), color var(--anim-hover);
+}
+
+.md-image-toolbar button:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+.md-image-toolbar button.is-active {
+  background: var(--lac-accent-soft);
+  color: var(--lac-accent);
+}
+
+.md-image-toolbar button:last-child:hover {
+  background: var(--lac-danger-soft);
+  color: var(--lac-danger);
+}
+
+/* 编辑浮层：alt + 路径 + 替换图片文件 */
+.md-image-edit-popover {
+  position: fixed;
+  z-index: var(--z-popover);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  padding: 14px;
+  background: var(--lac-bg-elevated);
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--sh-2);
+  animation: lac-pop-in var(--dur-1) var(--ease-out);
+}
+
+.md-image-edit-popover label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: var(--fs-caption);
+  color: var(--lac-text-secondary);
+}
+
+.md-image-edit-popover input {
+  height: var(--ctl-sm);
+  padding: 0 8px;
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  background: var(--lac-bg);
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-caption);
+  outline: none;
+}
+
+.md-image-edit-popover input:focus {
+  border-color: var(--lac-accent);
+  box-shadow: 0 0 0 3px var(--lac-accent-soft);
+}
+
+.md-image-edit-src-row {
+  display: flex;
+  gap: 6px;
+}
+
+.md-image-edit-src-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.md-image-edit-src-row button {
+  flex: none;
+  width: var(--ctl-sm);
+  height: var(--ctl-sm);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--lac-text-secondary);
+  cursor: pointer;
+  transition: background var(--anim-hover), color var(--anim-hover);
+}
+
+.md-image-edit-src-row button:hover:not(:disabled) {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+.md-image-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.md-image-edit-actions button {
+  height: var(--ctl-sm);
+  padding: 0 14px;
+  border: 1px solid var(--lac-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-caption);
+  cursor: pointer;
+  transition: background var(--anim-hover), color var(--anim-hover);
+}
+
+.md-image-edit-actions button:hover {
+  background: var(--lac-hover);
+}
+
+.md-image-edit-actions button.is-primary {
+  background: var(--lac-accent);
+  border-color: var(--lac-accent);
+  color: var(--lac-accent-contrast);
+}
+
+.md-image-edit-actions button.is-primary:hover {
+  background: var(--lac-accent-hover);
+  border-color: var(--lac-accent-hover);
+  color: var(--lac-accent-contrast);
 }
 
 /* 校样样张 hr：发丝线 + 中心校对红圆点；上下留白由相邻块折叠间距提供 */
@@ -3917,75 +4005,110 @@ body {
   color: var(--lac-text-secondary);
 }
 
-/* ---------- 围栏语言切换菜单（书写面 md-lang-tag 点击弹出） ---------- */
+/* ---------- 代码块头部（语言标签 + 复制按钮）与语言搜索浮层 ---------- */
 
-.md-lang-menu {
+/* 头部容器：绝对定位在 fence 行右上，随代码块 hover 淡入（墨记 mu-code-copy 纪律） */
+.md-code-head {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+
+.cm-line.md-code-fence:hover .md-code-head {
+  opacity: 1;
+}
+
+.md-lang-tag {
+  color: var(--lac-text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+.md-lang-tag:hover {
+  color: var(--lac-text);
+}
+
+.md-code-copy {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--lac-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--anim-hover), color var(--anim-hover);
+}
+
+.md-code-copy:hover {
+  background: var(--lac-hover);
+  color: var(--lac-text);
+}
+
+.md-code-copy.is-copied {
+  color: var(--lac-success);
+}
+
+/* 语言搜索浮层：搜索框 + 过滤列表（↑↓/Enter/Esc，当前语言高亮） */
+.md-lang-picker {
   position: fixed;
   z-index: var(--z-popover);
-  width: 200px;
-  max-height: 290px;
+  width: 208px;
   padding: 6px;
   background: var(--lac-bg-elevated);
   border: 1px solid var(--lac-border);
   border-radius: 8px;
   box-shadow: var(--sh-2);
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  animation: md-menu-fade-in 100ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: lac-pop-in var(--dur-1) var(--ease-out);
 }
 
-@keyframes md-menu-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.md-lang-search-wrap {
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--lac-border);
-  margin-bottom: 4px;
-}
-
-.md-lang-search {
+.md-lang-picker input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-family: inherit;
-  color: var(--lac-text);
-  background: var(--lac-bg);
+  height: var(--ctl-sm);
+  margin-bottom: 4px;
+  padding: 0 8px;
   border: 1px solid var(--lac-border);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
+  background: var(--lac-bg);
+  color: var(--lac-text);
+  font-family: inherit;
+  font-size: var(--fs-caption);
   outline: none;
-  transition: border-color var(--dur-1) var(--ease-out);
-}
-.md-lang-search:focus {
-  border-color: var(--lac-accent);
 }
 
-.md-lang-options-list {
+.md-lang-picker input:focus {
+  border-color: var(--lac-accent);
+  box-shadow: 0 0 0 3px var(--lac-accent-soft);
+}
+
+.md-lang-picker-list {
+  max-height: 240px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  max-height: 230px;
-  gap: 2px;
+  gap: 1px;
 }
 
-.md-lang-menu button {
+.md-lang-picker-list button {
   border: none;
   background: transparent;
   color: var(--lac-text);
   font-family: inherit;
   font-size: 12px;
   text-align: left;
-  padding: 5px 8px;
-  border-radius: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -3994,11 +4117,12 @@ body {
   user-select: none;
 }
 
-.md-lang-menu button:hover {
+.md-lang-picker-list button:hover,
+.md-lang-picker-list button.highlighted {
   background: var(--lac-hover);
 }
 
-.md-lang-menu button.current {
+.md-lang-picker-list button.current {
   color: var(--lac-accent);
   font-weight: 600;
   background: var(--lac-accent-soft);
@@ -4007,6 +4131,18 @@ body {
 .md-lang-menu button.custom {
   color: var(--lac-accent);
   font-style: italic;
+}
+
+/* 代码块行号（设置开关）：装饰下发 --code-ln，::before 定宽右对齐显示 */
+.cm-line.md-code-ln::before {
+  content: var(--code-ln);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 14px;
+  text-align: right;
+  color: var(--lac-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
 }
 
 /* ---------- 快速打开（Ctrl+P） ---------- */

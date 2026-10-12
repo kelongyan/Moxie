@@ -28,6 +28,8 @@ const en: Record<string, string> = {
   "超出编辑区宽度时自动折行": "Wrap lines wider than the editor",
   "显示行号": "Line numbers",
   "在编辑区左侧显示行号列": "Show the line-number column",
+  "代码块行号": "Code block line numbers",
+  "书写面代码块左侧显示行号": "Show line numbers inside code blocks",
   "专注模式": "Focus mode",
   "段落外的行降低透明度": "Dim lines outside the paragraph",
   "打字机模式": "Typewriter mode",

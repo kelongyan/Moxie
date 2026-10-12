@@ -383,6 +383,12 @@ export function SettingsWindow() {
                 onChange={(v) => set({ lineNumbers: v })}
               />
               <SwitchRow
+                title={t("代码块行号")}
+                description={t("书写面代码块左侧显示行号")}
+                checked={prefs.codeBlockLineNumbers}
+                onChange={(v) => set({ codeBlockLineNumbers: v })}
+              />
+              <SwitchRow
                 title={t("专注模式")}
                 description={t("段落外的行降低透明度")}
                 checked={prefs.focusMode}

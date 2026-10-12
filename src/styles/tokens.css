@@ -188,7 +188,7 @@
 }
 
 :root {
-  /* 结构尺寸：顶栏与标签合并为一行，状态栏减薄 */
+  /* 结构尺寸：顶栏单行 38px（标签栏 + 右角按钮簇），状态栏减薄 */
   --lac-window-min-w: 900px;
   --lac-window-min-h: 560px;
   --lac-header-height: 38px;
@@ -265,6 +265,8 @@
   --dur-3: 220ms;
   --ease-out: cubic-bezier(0.2, 0.8, 0.25, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 标签底部滑轨：S 型轻微回弹（墨记 tab-indicator 同族曲线） */
+  --ease-tab-slide: cubic-bezier(0.22, 1, 0.36, 1);
   --anim-hover: var(--dur-1) var(--ease-out);
   --anim-structural: var(--dur-3) var(--ease-out);
 

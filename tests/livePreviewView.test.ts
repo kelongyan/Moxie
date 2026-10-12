@@ -66,7 +66,7 @@ describe("livePreview · 真实视图渲染", () => {
     host.remove();
   });
 
-  it("代码块顶栏：渲染现代 Header 工具条（语言胶囊与复制代码按钮）", () => {
+  it("代码块顶栏：渲染现代 Header 工具条（语言标签与复制代码按钮）", () => {
     const state = EditorState.create({
       doc: DOC,
       selection: { anchor: DOC.length },
@@ -76,14 +76,14 @@ describe("livePreview · 真实视图渲染", () => {
     document.body.appendChild(host);
     const view = new EditorView({ state, parent: host });
 
-    const header = host.querySelector(".cm-content .md-code-header");
+    const header = host.querySelector(".cm-content .md-code-head");
     expect(header).not.toBeNull();
 
-    const langBadge = header?.querySelector(".md-lang-badge");
+    const langBadge = header?.querySelector(".md-lang-tag");
     expect(langBadge).not.toBeNull();
-    expect(langBadge?.querySelector(".md-lang-text")?.textContent).toBe("js");
+    expect(langBadge?.textContent).toBe("js");
 
-    const copyBtn = header?.querySelector(".md-code-copy-btn") as HTMLButtonElement | null;
+    const copyBtn = header?.querySelector(".md-code-copy") as HTMLButtonElement | null;
     expect(copyBtn).not.toBeNull();
     expect(copyBtn?.getAttribute("title")).toBe("复制代码");
 

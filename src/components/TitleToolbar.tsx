@@ -1,13 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import {
-  Copy,
-  Minus,
-  PanelLeft,
-  Square,
-  X,
-} from "lucide-react";
+import { Copy, Menu, Minus, PanelLeft, Square, X } from "lucide-react";
 import { EditorDocument, useDocuments } from "../state/documents";
 import { ContextMenu, MenuItem } from "./ContextMenu";
 import { Tooltip } from "./Tooltip";
@@ -35,7 +29,7 @@ interface TitleToolbarProps {
   onSidebarToggle: () => void;
   onSidebarHoverStart: () => void;
   onSidebarHoverEnd: () => void;
-  /** 顶栏中段内容（标签栏）；菜单栏与窗口控制之间的可用宽度 */
+  /** 顶栏中段内容（标签栏）；右角按钮簇与标签栏之间的可用宽度 */
   children?: ReactNode;
 }
 
@@ -89,17 +83,6 @@ function WindowControls() {
   );
 }
 
-// Typora 经典菜单项定义
-const TYPORA_MENUS = [
-  { key: "file", label: "文件(F)" },
-  { key: "edit", label: "编辑(E)" },
-  { key: "paragraph", label: "段落(P)" },
-  { key: "format", label: "格式(O)" },
-  { key: "view", label: "视图(V)" },
-  { key: "theme", label: "主题(T)" },
-  { key: "help", label: "帮助(H)" },
-];
-
 export function TitleToolbar({
   activeDoc,
   sidebarPinned,
@@ -108,12 +91,9 @@ export function TitleToolbar({
   onSidebarHoverEnd,
   children,
 }: TitleToolbarProps) {
-  const [openMenu, setOpenMenu] = useState<{
-    key: string;
-    x: number;
-    y: number;
-    items: MenuItem[];
-  } | null>(null);
+  const [openMenu, setOpenMenu] = useState<{ x: number; y: number; items: MenuItem[] } | null>(
+    null
+  );
 
   const runExport = async (
     fn: (opts: Parameters<typeof exportPreviewHtml>[0]) => Promise<boolean>,
@@ -161,170 +141,94 @@ export function TitleToolbar({
     );
   };
 
-  const getMenuItems = (key: string): MenuItem[] => {
-    switch (key) {
-      case "file":
-        return [
-          {
-            label: "新建标签页",
-            shortcut: "Ctrl+T",
-            onClick: () => newTabAction(),
-          },
-          {
-            label: "新建窗口",
-            onClick: () => void createEmptyWindow(),
-          },
-          {
-            label: "打开文件…",
-            shortcut: "Ctrl+O",
-            onClick: () => void openFileAction(),
-          },
-          {
-            label: "保存",
-            shortcut: "Ctrl+S",
-            disabled: !activeDoc,
-            onClick: () => void saveActiveAction(),
-          },
-          {
-            label: "另存为…",
-            shortcut: "Ctrl+Shift+S",
-            disabled: !activeDoc,
-            onClick: () => void saveAsAction(),
-          },
-          {
-            label: "导出为独立 HTML…",
-            separatorBefore: true,
-            disabled: !activeDoc,
-            onClick: () => void runExport(exportPreviewHtml, "已导出为 HTML"),
-          },
-          {
-            label: "导出为 Word 文档 (.doc)…",
-            disabled: !activeDoc,
-            onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
-          },
-          {
-            label: "复制为富文本",
-            shortcut: "Ctrl+Shift+C",
-            disabled: !activeDoc,
-            onClick: () => void copyRichTextAction(),
-          },
-          {
-            label: "偏好设置…",
-            shortcut: "Ctrl+,",
-            separatorBefore: true,
-            onClick: () => void openSettingsWindow(),
-          },
-        ];
-      case "edit":
-        return [
-          {
-            label: "撤销",
-            shortcut: "Ctrl+Z",
-            disabled: !activeDoc,
-            onClick: () => activeDoc && undoFor(activeDoc.id),
-          },
-          {
-            label: "重做",
-            shortcut: "Ctrl+Shift+Z",
-            disabled: !activeDoc,
-            onClick: () => activeDoc && redoFor(activeDoc.id),
-          },
-          {
-            label: "查找/替换",
-            shortcut: "Ctrl+F",
-            separatorBefore: true,
-            onClick: () => void openFindWindow("find"),
-          },
-          {
-            label: "插入表格…",
-            shortcut: "Ctrl+Shift+T",
-            disabled: !activeDoc,
-            onClick: () =>
-              void import("../state/tableInsert").then((m) => m.openTableInsert()),
-          },
-          {
-            label: "编码转换",
-            shortcut: "Alt+D",
-            onClick: () => void openCodecWindow("smart-decode"),
-          },
-        ];
-      case "view":
-        return [
-          {
-            label: sidebarPinned ? "收起侧边栏" : "展开侧边栏",
-            shortcut: "Ctrl+Shift+B",
-            onClick: onSidebarToggle,
-          },
-        ];
-      case "help":
-        return [
-          {
-            label: "关于 Moxie…",
-            onClick: () => void handleAbout(),
-          },
-        ];
-      default:
-        return [
-          {
-            label: "功能占位 (开发中)",
-            disabled: true,
-            onClick: () => {},
-          },
-        ];
-    }
-  };
+  // 汉堡菜单：原七菜单的全部可用项收进一个弹层
+  const buildAppMenu = (): MenuItem[] => [
+    { label: "新建标签页", shortcut: "Ctrl+T", onClick: () => newTabAction() },
+    { label: "新建窗口", onClick: () => void createEmptyWindow() },
+    { label: "打开文件…", shortcut: "Ctrl+O", onClick: () => void openFileAction() },
+    {
+      label: "保存",
+      shortcut: "Ctrl+S",
+      disabled: !activeDoc,
+      onClick: () => void saveActiveAction(),
+    },
+    {
+      label: "另存为…",
+      shortcut: "Ctrl+Shift+S",
+      disabled: !activeDoc,
+      onClick: () => void saveAsAction(),
+    },
+    {
+      label: "导出为独立 HTML…",
+      separatorBefore: true,
+      disabled: !activeDoc,
+      onClick: () => void runExport(exportPreviewHtml, "已导出为 HTML"),
+    },
+    {
+      label: "导出为 Word 文档 (.doc)…",
+      disabled: !activeDoc,
+      onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
+    },
+    {
+      label: "复制为富文本",
+      shortcut: "Ctrl+Shift+C",
+      disabled: !activeDoc,
+      onClick: () => void copyRichTextAction(),
+    },
+    { label: "撤销", shortcut: "Ctrl+Z", separatorBefore: true, disabled: !activeDoc, onClick: () => activeDoc && undoFor(activeDoc.id) },
+    { label: "重做", shortcut: "Ctrl+Shift+Z", disabled: !activeDoc, onClick: () => activeDoc && redoFor(activeDoc.id) },
+    { label: "查找/替换", shortcut: "Ctrl+F", onClick: () => void openFindWindow("find") },
+    {
+      label: "插入表格…",
+      shortcut: "Ctrl+Shift+T",
+      disabled: !activeDoc,
+      onClick: () => void import("../state/tableInsert").then((m) => m.openTableInsert()),
+    },
+    { label: "编码转换", shortcut: "Alt+D", onClick: () => void openCodecWindow("smart-decode") },
+    {
+      label: sidebarPinned ? "收起侧边栏" : "弹出侧边栏",
+      shortcut: "Ctrl+Shift+B",
+      separatorBefore: true,
+      onClick: onSidebarToggle,
+    },
+    { label: "偏好设置…", shortcut: "Ctrl+,", separatorBefore: true, onClick: () => void openSettingsWindow() },
+    { label: "关于 Moxie…", separatorBefore: true, onClick: () => void handleAbout() },
+  ];
 
-  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>, key: string) => {
+  const openAppMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setOpenMenu({
-      key,
-      x: rect.left,
-      y: rect.bottom + 2,
-      items: getMenuItems(key),
-    });
+    setOpenMenu({ x: rect.left, y: rect.bottom + 2, items: buildAppMenu() });
   };
 
   return (
-    <header className="title-toolbar typora-header" data-tauri-drag-region>
-      {/* 1. 左侧：侧栏切换按钮 + Typora 经典菜单栏（各功能已规范移入对应菜单） */}
-      <div className="titlebar-left" data-tauri-drag-region>
-        <Tooltip label={sidebarPinned ? "收起侧栏" : "展开侧栏"} shortcut="Ctrl+Shift+B">
-          <button
-            className={"tool-icon-btn sidebar-toggle" + (sidebarPinned ? " active" : "")}
-            aria-label="显示/隐藏侧边栏"
-            onClick={onSidebarToggle}
-            onMouseEnter={onSidebarHoverStart}
-            onMouseLeave={onSidebarHoverEnd}
-          >
-            <PanelLeft size={14} />
-          </button>
-        </Tooltip>
+    <header className="title-toolbar" data-tauri-drag-region>
+      {/* 单行顶栏：左上角侧栏弹出/隐藏开关，标签栏随后占满中段，右角 应用菜单 / 窗口控制 */}
+      <Tooltip label={sidebarPinned ? "收起侧栏" : "弹出侧栏"} shortcut="Ctrl+Shift+B">
+        <button
+          className={"tool-icon-btn sidebar-toggle" + (sidebarPinned ? " active" : "")}
+          aria-label="显示/隐藏侧边栏"
+          onClick={onSidebarToggle}
+          onMouseEnter={onSidebarHoverStart}
+          onMouseLeave={onSidebarHoverEnd}
+        >
+          <PanelLeft size={14} />
+        </button>
+      </Tooltip>
 
-        <div className="typora-menu-bar" data-tauri-drag-region>
-          {TYPORA_MENUS.map((menu) => (
-            <button
-              key={menu.key}
-              className={
-                "typora-menu-placeholder-btn" +
-                (openMenu?.key === menu.key ? " is-active" : "")
-              }
-              onClick={(e) => handleMenuClick(e, menu.key)}
-            >
-              {menu.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 2. 中间：标签栏（无文档时仅剩新建按钮与拖拽留白） */}
       <div className="titlebar-center">{children}</div>
 
-      {/* 3. 右侧：彻底清除多余下载与点阵按钮，仅保留 Windows 原生窗口控制 */}
-      <div className="titlebar-right" data-tauri-drag-region>
-        <WindowControls />
-      </div>
+      <Tooltip label="应用菜单">
+        <button
+          className="tool-icon-btn app-menu-btn"
+          aria-label="应用菜单"
+          onClick={openAppMenu}
+        >
+          <Menu size={15} />
+        </button>
+      </Tooltip>
 
-      {/* 统一菜单弹出层 */}
+      <WindowControls />
+
       {openMenu && (
         <ContextMenu
           x={openMenu.x}

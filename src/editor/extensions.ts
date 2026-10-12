@@ -41,6 +41,7 @@ import {
   makeWrapHandler,
 } from "./formatting";
 import { pasteImageExtension } from "./pasteImage";
+import { setImageToolbarHost } from "./imageNav";
 import { focusMode, typewriterMode } from "./focusMode";
 import { searchHighlightField } from "./searchHighlight";
 import { PT_TO_PX } from "../state/preferences";
@@ -66,6 +67,13 @@ export interface EditorOptions {
   onOpenLink?: (url: string) => void;
   /** 粘贴图片时回调（落盘与插入见 actions.insertImageFileAction）；未提供则不拦截粘贴 */
   onImagePaste?: (file: File) => void;
+  /** 图片工具条宿主回调（在资源管理器中显示 / 替换图片文件，见 actions.revealImageAction 等） */
+  imageToolbarHost?: {
+    revealInExplorer(rawSrc: string): void;
+    pickAndSaveImage(): Promise<string | null>;
+  };
+  /** 书写面代码块行号（设置开关；仅 livePreview 使用） */
+  codeBlockLineNumbers?: boolean;
   /** 专注模式：当前顶层块之外降透明度（仅书写面） */
   focusMode?: boolean;
   /** 打字机模式：光标行保持垂直居中（仅书写面） */
@@ -519,7 +527,8 @@ export function buildEditorState(options: EditorOptions): EditorState {
     extensions.push(
       livePreview(
         options.imageSrcResolver,
-        spacingScale(fontSizePx, options.blockSpacing ?? "standard")
+        spacingScale(fontSizePx, options.blockSpacing ?? "standard"),
+        options.codeBlockLineNumbers ?? false
       )
     );
   }
@@ -531,6 +540,9 @@ export function buildEditorState(options: EditorOptions): EditorState {
   }
   if (options.onImagePaste) {
     extensions.push(pasteImageExtension(options.onImagePaste));
+  }
+  if (options.imageToolbarHost) {
+    setImageToolbarHost(options.imageToolbarHost);
   }
   if (editable && options.focusMode) {
     extensions.push(focusMode());

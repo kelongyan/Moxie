@@ -48,11 +48,25 @@ import {
   openTableMenu,
   setActiveEdit,
 } from "./tableNav";
+import {
+  imageInteraction,
+  parseImageToken,
+  resizeImageTo,
+  selectImageRange,
+  setSelectedImageEffect,
+  selectedImageField,
+  type ImageTokenInfo,
+  type SelectedImageRange,
+} from "./imageNav";
+import { openLangPicker } from "./codeNav";
 import { renderKatex } from "../preview/math";
-import { FENCE_LANGUAGE_OPTIONS } from "./languages";
 // eslint-disable-next-line import/no-relative-packages -- 该子路径是 emoji 短代码映射表
 import EMOJI_MAP from "markdown-it-emoji/lib/data/light.mjs";
 import { spaceBefore, type BlockKind } from "../preview/typography";
+
+/** 复制按钮图标（内联 SVG，与表格/图片工具条同一套描边语言） */
+const CODE_COPY_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const CODE_COPIED_ICON = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 
 /**
  * Typora 风格所见即所得：光标不在的语法即时"渲染"——
@@ -67,21 +81,6 @@ export type ImageSrcResolver = (rawSrc: string) => string | null;
 let imageResolver: ImageSrcResolver | null = null;
 
 const HIDE = Decoration.replace({});
-
-/** 开 fence 行的语言标签（当代码块头部显示），点击弹出语言切换菜单 */
-let openLangMenu: HTMLElement | null = null;
-
-function closeLangMenu() {
-  openLangMenu?.remove();
-  openLangMenu = null;
-}
-
-document.addEventListener("mousedown", (e) => {
-  if (openLangMenu && !openLangMenu.contains(e.target as Node)) closeLangMenu();
-});
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeLangMenu();
-});
 
 /** 标注块（Callout）类型切换菜单 */
 let openCalloutMenu: HTMLElement | null = null;
@@ -189,201 +188,55 @@ class CalloutBadgeWidget extends WidgetType {
   }
 }
 
-const ICON_CODE_SVG =
-  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md-lang-icon"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
-const ICON_CHEVRON_SVG =
-  '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="md-lang-arrow"><polyline points="6 9 12 15 18 9"/></svg>';
-const ICON_COPY_SVG =
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
-const ICON_CHECK_SVG =
-  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-
-function getCodeBlockContent(view: EditorView, pos: number): string {
-  const doc = view.state.doc;
-  const tree = syntaxTree(view.state);
-  let node: SyntaxNode | null = tree.resolveInner(pos, 1);
-  while (node && node.name !== "FencedCode") {
-    node = node.parent;
-  }
-  if (node) {
-    const firstLine = doc.lineAt(node.from);
-    const lastLine = doc.lineAt(node.to);
-    const hasClosing =
-      lastLine.number > firstLine.number && /^\s*(`{3,}|~{3,})\s*$/.test(lastLine.text);
-    const endLineNumber = hasClosing ? lastLine.number - 1 : lastLine.number;
-    const lines: string[] = [];
-    for (let ln = firstLine.number + 1; ln <= endLineNumber; ln++) {
-      lines.push(doc.line(ln).text);
-    }
-    return lines.join("\n");
-  }
-  const curLine = doc.lineAt(pos);
-  const lines: string[] = [];
-  for (let ln = curLine.number + 1; ln <= doc.lines; ln++) {
-    const l = doc.line(ln);
-    if (/^\s*(`{3,}|~{3,})\s*$/.test(l.text)) break;
-    lines.push(l.text);
-  }
-  return lines.join("\n");
-}
-
-function applyFenceLanguage(view: EditorView, widgetEl: HTMLElement, newLang: string) {
-  closeLangMenu();
-  const pos = view.posAtDOM(widgetEl);
-  const line = view.state.doc.lineAt(pos);
-  const m = /^(\s*(?:`{3,}|~{3,}))( ?)(\S*)/.exec(line.text);
-  if (!m) return;
-  const from = line.from + m[1].length;
-  const to = line.from + m[1].length + m[2].length + m[3].length;
-  const insert = newLang ? ` ${newLang}` : "";
-  view.dispatch({
-    changes: { from, to, insert },
-    selection: { anchor: line.to },
-    userEvent: "input",
-  });
-  view.focus();
-}
-
-function openLanguageMenu(view: EditorView, triggerEl: HTMLElement, currentLang: string) {
-  closeLangMenu();
-  const menu = document.createElement("div");
-  menu.className = "md-lang-menu";
-  menu.setAttribute("role", "menu");
-
-  const searchWrap = document.createElement("div");
-  searchWrap.className = "md-lang-search-wrap";
-  const searchInput = document.createElement("input");
-  searchInput.className = "md-lang-search";
-  searchInput.placeholder = "搜索或输入语言...";
-  searchWrap.appendChild(searchInput);
-  menu.appendChild(searchWrap);
-
-  const listWrap = document.createElement("div");
-  listWrap.className = "md-lang-options-list";
-  menu.appendChild(listWrap);
-
-  const renderOptions = (filter: string) => {
-    listWrap.innerHTML = "";
-    const q = filter.trim().toLowerCase();
-    const matched = FENCE_LANGUAGE_OPTIONS.filter(
-      (opt) => !q || opt.label.toLowerCase().includes(q) || opt.key.toLowerCase().includes(q)
-    );
-
-    for (const opt of matched) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = opt.label;
-      if (opt.key === currentLang) btn.classList.add("current");
-      btn.addEventListener("mousedown", (ev) => ev.stopPropagation());
-      btn.addEventListener("click", () => {
-        applyFenceLanguage(view, triggerEl, opt.key);
-      });
-      listWrap.appendChild(btn);
-    }
-
-    if (q && !FENCE_LANGUAGE_OPTIONS.some((o) => o.key.toLowerCase() === q)) {
-      const customBtn = document.createElement("button");
-      customBtn.type = "button";
-      customBtn.textContent = `使用 "${filter.trim()}"`;
-      customBtn.classList.add("custom");
-      customBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
-      customBtn.addEventListener("click", () => {
-        applyFenceLanguage(view, triggerEl, filter.trim());
-      });
-      listWrap.appendChild(customBtn);
-    }
-  };
-
-  renderOptions("");
-
-  searchInput.addEventListener("mousedown", (ev) => ev.stopPropagation());
-  searchInput.addEventListener("input", () => {
-    renderOptions(searchInput.value);
-  });
-  searchInput.addEventListener("keydown", (ev) => {
-    ev.stopPropagation();
-    if (ev.key === "Enter") {
-      ev.preventDefault();
-      const val = searchInput.value.trim();
-      applyFenceLanguage(view, triggerEl, val);
-    } else if (ev.key === "Escape") {
-      closeLangMenu();
-    }
-  });
-
-  const rect = triggerEl.getBoundingClientRect();
-  menu.style.left = `${Math.max(4, Math.min(rect.left, window.innerWidth - 210))}px`;
-  menu.style.top = `${Math.min(rect.bottom + 6, window.innerHeight - 300)}px`;
-  document.body.appendChild(menu);
-  openLangMenu = menu;
-  setTimeout(() => searchInput.focus(), 20);
-}
-
+/** 代码块头部 widget：语言标签（点击 → 模糊搜索切换）+ 复制按钮（hover 淡显，墨记同款） */
 class FenceWidget extends WidgetType {
-  constructor(readonly lang: string) {
+  constructor(
+    readonly lang: string,
+    readonly code: string
+  ) {
     super();
   }
   eq(other: FenceWidget) {
-    return other.lang === this.lang;
+    return other.lang === this.lang && other.code === this.code;
   }
   toDOM(view: EditorView) {
-    const wrap = document.createElement("div");
-    wrap.className = "md-code-header";
+    const wrap = document.createElement("span");
+    wrap.className = "md-code-head";
 
-    const langBtn = document.createElement("button");
-    langBtn.type = "button";
-    langBtn.className = "md-lang-tag md-lang-badge";
-    langBtn.innerHTML = `${ICON_CODE_SVG}<span class="md-lang-text">${this.lang}</span>${ICON_CHEVRON_SVG}`;
-    langBtn.addEventListener("mousedown", (e) => {
+    const tag = document.createElement("span");
+    tag.className = "md-lang-tag";
+    tag.textContent = this.lang || "代码";
+    tag.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      openLanguageMenu(view, langBtn, this.lang);
+      openLangPicker(view, tag, this.lang);
     });
-    wrap.appendChild(langBtn);
 
-    const copyBtn = document.createElement("button");
-    copyBtn.type = "button";
-    copyBtn.className = "md-code-copy-btn";
-    copyBtn.title = "复制代码";
-    copyBtn.setAttribute("aria-label", "复制代码");
-    copyBtn.innerHTML = ICON_COPY_SVG;
-
-    copyBtn.addEventListener("mousedown", (e) => {
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "md-code-copy";
+    copy.title = "复制代码";
+    copy.setAttribute("aria-label", "复制代码");
+    copy.innerHTML = CODE_COPY_ICON;
+    copy.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
     });
-    copyBtn.addEventListener("click", (e) => {
-      e.preventDefault();
+    copy.addEventListener("click", (e) => {
       e.stopPropagation();
-      const text = getCodeBlockContent(view, view.posAtDOM(wrap));
-      const write =
-        navigator.clipboard && navigator.clipboard.writeText
-          ? navigator.clipboard.writeText(text)
-          : Promise.resolve().then(() => {
-              const ta = document.createElement("textarea");
-              ta.value = text;
-              ta.style.position = "fixed";
-              ta.style.opacity = "0";
-              document.body.appendChild(ta);
-              ta.select();
-              document.execCommand("copy");
-              ta.remove();
-            });
-      write
-        .then(() => {
-          copyBtn.innerHTML = ICON_CHECK_SVG;
-          copyBtn.classList.add("copied");
-          copyBtn.title = "已复制";
-          setTimeout(() => {
-            copyBtn.innerHTML = ICON_COPY_SVG;
-            copyBtn.classList.remove("copied");
-            copyBtn.title = "复制代码";
-          }, 1500);
-        })
-        .catch(() => {});
+      void navigator.clipboard.writeText(this.code);
+      copy.classList.add("is-copied");
+      copy.innerHTML = CODE_COPIED_ICON;
+      copy.title = "已复制";
+      window.setTimeout(() => {
+        copy.classList.remove("is-copied");
+        copy.innerHTML = CODE_COPY_ICON;
+        copy.title = "复制代码";
+      }, 1500);
     });
-    wrap.appendChild(copyBtn);
 
+    wrap.appendChild(tag);
+    wrap.appendChild(copy);
     return wrap;
   }
   ignoreEvent() {
@@ -403,20 +256,48 @@ function selectionOnLine(state: EditorState, lineFrom: number, lineTo: number): 
   return selectionTouches(state, lineFrom, lineTo);
 }
 
+/**
+ * 行内图片 widget：恒渲染（墨记式）——光标进不进入都不露源码，
+ * 点击进入「选中态」（高亮 + 浮动工具条），选中后两侧出现缩放手柄。
+ * 源码编辑走工具条或紧邻键删除；缩放/对齐后源码为 HTML `<img>` 形式。
+ */
 class ImageWidget extends WidgetType {
-  constructor(readonly src: string, readonly alt: string) {
+  constructor(
+    readonly src: string,
+    readonly alt: string,
+    readonly from: number,
+    readonly to: number,
+    readonly selected: boolean,
+    readonly width?: string,
+    readonly align?: string,
+    readonly uploading?: boolean
+  ) {
     super();
   }
   eq(other: ImageWidget) {
-    return other.src === this.src && other.alt === this.alt;
+    return (
+      other.src === this.src &&
+      other.alt === this.alt &&
+      other.from === this.from &&
+      other.to === this.to &&
+      other.selected === this.selected &&
+      other.width === this.width &&
+      other.align === this.align &&
+      other.uploading === this.uploading
+    );
   }
-  toDOM() {
+  toDOM(view: EditorView) {
     const wrap = document.createElement("span");
-    wrap.className = "md-image";
+    wrap.className =
+      "md-image" +
+      (this.selected ? " md-image-selected" : "") +
+      (this.align ? ` md-image-align-${this.align}` : "") +
+      (this.uploading ? " md-image-uploading" : "");
     const img = document.createElement("img");
     img.src = this.src;
     img.alt = this.alt;
     img.draggable = false;
+    if (this.width) img.setAttribute("width", this.width);
     img.addEventListener("error", () => {
       if (wrap.classList.contains("broken")) return;
       wrap.classList.add("broken");
@@ -424,10 +305,55 @@ class ImageWidget extends WidgetType {
       wrap.textContent = `图片不可用:${name}`;
     });
     wrap.appendChild(img);
+    // 点击 = 选中图片（工具条 + 高亮）；只读视图不进入选中态
+    wrap.addEventListener("mousedown", (e) => {
+      if (view.state.readOnly) return;
+      e.preventDefault();
+      e.stopPropagation();
+      selectImageRange(view, this.from, this.to);
+    });
+    if (this.selected && !view.state.readOnly) {
+      wrap.appendChild(this.buildResizeHandle(view, "left", img));
+      wrap.appendChild(this.buildResizeHandle(view, "right", img));
+    }
     return wrap;
   }
+  /** 缩放手柄：拖拽实时改 img 宽度，松手把 width 写回源码（一个事务，保持选中） */
+  private buildResizeHandle(
+    view: EditorView,
+    side: "left" | "right",
+    img: HTMLImageElement
+  ): HTMLSpanElement {
+    const handle = document.createElement("span");
+    handle.className = "md-image-resize-handle";
+    handle.dataset.side = side;
+    handle.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const startX = e.clientX;
+      const startWidth = img.getBoundingClientRect().width;
+      let lastWidth = Math.max(40, Math.round(startWidth));
+      const onMove = (ev: MouseEvent) => {
+        const dx = ev.clientX - startX;
+        lastWidth = Math.max(40, Math.round(startWidth + (side === "right" ? dx : -dx)));
+        img.style.width = `${lastWidth}px`;
+        img.style.height = "auto";
+      };
+      const onUp = () => {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+        img.style.width = "";
+        img.style.height = "";
+        resizeImageTo(view, this.from, this.to, lastWidth);
+      };
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+    return handle;
+  }
   ignoreEvent() {
-    return false;
+    return true;
   }
 }
 
@@ -1855,20 +1781,30 @@ function codeInfoOf(node: SyntaxNode, doc: Text): string {
   return "";
 }
 
-/** 行内图片 `![alt](src)` → widget；解析不出可用地址时保持原文 */
+/** 行内图片（Markdown 或 HTML `<img>` 形式）→ widget；解析不出可用地址时保持原文 */
 function imageReplace(
   state: EditorState,
   from: number,
   to: number,
-  resolveImageSrc: ImageSrcResolver
+  resolveImageSrc: ImageSrcResolver,
+  selected: SelectedImageRange | null
 ): Range<Decoration> | null {
   const raw = state.doc.sliceString(from, to);
-  const m = /^!\[([\s\S]*?)\]\(\s*<?([^)\s>]*)>?(?:\s+"[^"]*")?\s*\)$/.exec(raw);
-  if (!m) return null;
-  const src = resolveImageSrc(m[2]);
+  const info: ImageTokenInfo | null = parseImageToken(raw);
+  if (!info) return null;
+  const src = resolveImageSrc(info.src);
   if (!src) return null;
   return Decoration.replace({
-    widget: new ImageWidget(src, m[1]),
+    widget: new ImageWidget(
+      src,
+      info.alt,
+      from,
+      to,
+      selected?.from === from && selected?.to === to,
+      info.width,
+      info.align,
+      info.uploading
+    ),
   }).range(from, to);
 }
 
@@ -1876,12 +1812,16 @@ function imageReplace(
  * 计算即时渲染的全部装饰区间（纯函数，便于单测）。
  * parseTo：要求语法树解析到的位置（编辑器里传视口末端，测试里传文档全长）。
  * scale：块间距缩放系数（见 typography.spacingScale），1 = 16px 正文 + 标准档。
+ * selectedImage：当前选中的图片范围（选中态给 widget 加高亮，来自 imageNav）。
+ * codeLineNumbers：代码块行号开关（设置项），内容行下发 --code-ln 变量。
  */
 export function computeLiveRanges(
   state: EditorState,
   parseTo: number,
   resolveImageSrc: ImageSrcResolver,
-  scale = 1
+  scale = 1,
+  selectedImage: SelectedImageRange | null = null,
+  codeLineNumbers = false
 ): Range<Decoration>[] {
   const doc = state.doc;
   const tree =
@@ -1893,6 +1833,8 @@ export function computeLiveRanges(
   interface LineInfo {
     classes: Set<string>;
     spaceBefore: number;
+    /** 代码块行号（设置开启时写入 --code-ln，::before 显示） */
+    ln?: string;
   }
   const lineMap = new Map<number, LineInfo>();
   const calloutEmptyDecls = new Set<number>();
@@ -2042,14 +1984,42 @@ export function computeLiveRanges(
         return;
       }
 
-      // —— 图片：整体替换为图片 widget（光标进入即显示原文） ——
+      // —— 图片：整体替换为图片 widget（恒渲染；点击=选中，源码经工具条编辑） ——
       if (node.name === "Image") {
-        if (!selectionTouches(state, from, to)) {
-          const replace = imageReplace(state, from, to, resolveImageSrc);
-          if (replace) {
-            ranges.push(replace);
-            return false;
+        const replace = imageReplace(
+          state,
+          from,
+          to,
+          resolveImageSrc,
+          selectedImage
+        );
+        if (replace) {
+          ranges.push(replace);
+          return false;
+        }
+        return;
+      }
+
+      // —— 行内 HTML `<img>`：缩放/对齐后源码为此形式（墨记同款），渲染同一 widget；
+      //    data-align 时给所在行加对齐类（text-align 方式兼容图行混排） ——
+      if (node.name === "HTMLTag") {
+        const raw = doc.sliceString(from, to);
+        if (!/^<img[\s>]/i.test(raw.trimStart())) return;
+        const info = parseImageToken(raw);
+        if (!info) return;
+        const replace = imageReplace(
+          state,
+          from,
+          to,
+          resolveImageSrc,
+          selectedImage
+        );
+        if (replace) {
+          ranges.push(replace);
+          if (info.align === "center" || info.align === "right") {
+            pushLineClass(doc.lineAt(from).from, `md-image-align-${info.align}`);
           }
+          return false;
         }
         return;
       }
@@ -2074,6 +2044,12 @@ export function computeLiveRanges(
                 ? "md-code-fence md-code-fence-close"
                 : "md-code-block";
           pushLineClass(line.from, cls);
+          // 行号（设置开启）：跳过 fence 行，块内从 1 计；CM 虚拟渲染会打断
+          // CSS counter，故由装饰直接下发 --code-ln 变量
+          if (codeLineNumbers && ln > first.number && (!hasClosing || ln < last.number)) {
+            lineInfo(line.from).ln = String(ln - first.number);
+            pushLineClass(line.from, "md-code-ln");
+          }
         }
         const lang = codeInfoOf(node, doc);
         // mermaid 围栏：整块替换为渲染后的 SVG（StateField 允许跨行 block replace）
@@ -2098,11 +2074,17 @@ export function computeLiveRanges(
         } else {
           // 常规代码块（Typora 风格代码卡片）：首尾围栏常驻隐藏与卡片化，光标在代码内编辑时不展开首尾 ``` 围栏
           if (hasClosing || !active) {
+            // 代码文本从 fence 行下一行行首起切（first.to 是行尾换行符位置），
+            // 复制按钮拿到的是纯代码内容
+            const codeText = doc.sliceString(
+              last.number > first.number ? doc.line(first.number + 1).from : first.to,
+              hasClosing ? doc.line(last.number - 1).to : last.to
+            );
             ranges.push(
-              Decoration.replace({ widget: new FenceWidget(lang) }).range(
-                first.from,
-                first.to
-              )
+              (lang
+                ? Decoration.replace({ widget: new FenceWidget(lang, codeText) })
+                : HIDE
+              ).range(first.from, first.to)
             );
           }
         }
@@ -2415,16 +2397,17 @@ export function computeLiveRanges(
     }
   }
 
-  // —— 汇总：每行一个行装饰（class + 行内 --md-space-before） ——
+  // —— 汇总：每行一个行装饰（class + 行内自定义属性） ——
   const lineStarts = [...lineMap.keys()].sort((a, b) => a - b);
   for (const lineStart of lineStarts) {
     const info = lineMap.get(lineStart)!;
     const cls = [...info.classes].join(" ");
     if (!cls) continue;
+    const styles: string[] = [];
+    if (info.spaceBefore > 0) styles.push(`--md-space-before:${info.spaceBefore}px`);
+    if (info.ln) styles.push(`--code-ln:"${info.ln}"`);
     const spec: { class: string; attributes?: { style: string } } = { class: cls };
-    if (info.spaceBefore > 0) {
-      spec.attributes = { style: `--md-space-before:${info.spaceBefore}px` };
-    }
+    if (styles.length > 0) spec.attributes = { style: styles.join(";") };
     ranges.push(Decoration.line(spec).range(lineStart));
   }
 
@@ -2445,7 +2428,8 @@ export function computeLiveRanges(
  */
 export function livePreview(
   resolveImageSrc: ImageSrcResolver,
-  scale = 1
+  scale = 1,
+  codeLineNumbers = false
 ): Extension {
   // 渲染态表格单元格里的本地图片需要走同一解析器（窗口内各文档闭包等价）
   imageResolver = resolveImageSrc;
@@ -2453,11 +2437,17 @@ export function livePreview(
 
   const field = StateField.define<DecorationSet>({
     create(state) {
-      return safeCompute(state, resolveImageSrc, scale);
+      return safeCompute(state, resolveImageSrc, scale, codeLineNumbers);
     },
     update(value, tr) {
-      if (tr.docChanged || tr.selection || tr.effects.some((e) => e.is(recompute))) {
-        return safeCompute(tr.state, resolveImageSrc, scale);
+      if (
+        tr.docChanged ||
+        tr.selection ||
+        tr.effects.some(
+          (e) => e.is(recompute) || e.is(setSelectedImageEffect)
+        )
+      ) {
+        return safeCompute(tr.state, resolveImageSrc, scale, codeLineNumbers);
       }
       return value;
     },
@@ -2486,18 +2476,29 @@ export function livePreview(
     }
   );
 
-  return [field, viewportDriver];
+  // imageInteraction 提供 selectedImageField（须先于装饰字段注册，
+  // safeCompute 读它取选中态）+ atomicRanges + 键位 + 工具条同步
+  return [imageInteraction(), field, viewportDriver];
 }
 
 /** 装饰计算出错绝不能炸掉视图（前车之鉴：跨行 replace 直接让 EditorView 创建失败） */
 function safeCompute(
   state: EditorState,
   resolver: ImageSrcResolver,
-  scale = 1
+  scale = 1,
+  codeLineNumbers = false
 ): DecorationSet {
   try {
+    const selected = state.field(selectedImageField, false) ?? null;
     return Decoration.set(
-      computeLiveRanges(state, state.doc.length, resolver, scale),
+      computeLiveRanges(
+        state,
+        state.doc.length,
+        resolver,
+        scale,
+        selected,
+        codeLineNumbers
+      ),
       true
     );
   } catch {
