@@ -261,7 +261,6 @@ function selectionTouches(state: EditorState, from: number, to: number): boolean
   }
   return false;
 }
-
 function selectionOnLine(state: EditorState, lineFrom: number, lineTo: number): boolean {
   return selectionTouches(state, lineFrom, lineTo);
 }
@@ -2193,7 +2192,8 @@ export function computeLiveRanges(
         return;
       }
 
-      // —— 代码围栏：fence 行压低成"代码块头部/尾部"（行内替换，不跨行），内容行上代码块样式 ——
+      // —— 代码围栏：fence 行折叠为"纸卡"的顶/底内衬（0 高隐形行 + ::before/背景绘卡），
+      //    内容行成卡身。围栏原文仅在编辑场合（未闭合块 / mermaid 源码）以 md-code-fence-raw 可读回显。
       // 不用整行 block 替换：block 装饰与"跨行 replace"在 ViewPlugin/边界归属上有一堆坑
       // （行首点装饰恰在 block 替换结束边界上会被吞掉，实测 CodeMirror 6.43）。
       if (node.name === "FencedCode") {
@@ -2203,16 +2203,23 @@ export function computeLiveRanges(
         const hasClosing =
           last.number > first.number && /^\s*(`{3,}|~{3,})\s*$/.test(last.text);
         excluded.push({ from, to });
+        const lang = codeInfoOf(node, doc);
+        // 开围栏保持原文可见的场合：末闭合未写全的编辑态 / mermaid 源码编辑态
+        const rawOpen = active && (lang === "mermaid" || !hasClosing);
 
         for (let ln = first.number; ln <= last.number; ln++) {
           const line = doc.line(ln);
           const cls =
             ln === first.number
-              ? "md-code-fence md-code-fence-open"
+              ? `md-code-fence md-code-fence-open${rawOpen ? " md-code-fence-raw" : ""}${active ? " md-code-active" : ""}`
               : hasClosing && ln === last.number
                 ? "md-code-fence md-code-fence-close"
                 : "md-code-block";
           pushLineClass(line.from, cls);
+          // 卡底归属：无闭合围栏时由末内容行兼任；仅开围栏的空块由开行独立成卡
+          if (!hasClosing && ln === last.number) {
+            pushLineClass(line.from, last.number > first.number ? "md-code-tail" : "md-code-solo");
+          }
           // 行号（设置开启）：跳过 fence 行，块内从 1 计；CM 虚拟渲染会打断
           // CSS counter，故由装饰直接下发 --code-ln 变量
           if (codeLineNumbers && ln > first.number && (!hasClosing || ln < last.number)) {
@@ -2220,7 +2227,6 @@ export function computeLiveRanges(
             pushLineClass(line.from, "md-code-ln");
           }
         }
-        const lang = codeInfoOf(node, doc);
         // mermaid 围栏：整块替换为渲染后的 SVG（StateField 允许跨行 block replace）
         if (lang === "mermaid") {
           if (!active) {
@@ -2241,7 +2247,8 @@ export function computeLiveRanges(
             return false;
           }
         } else {
-          // 常规代码块（Typora 风格代码卡片）：首尾围栏常驻隐藏与卡片化，光标在代码内编辑时不展开首尾 ``` 围栏
+          // 常规代码块（Typora 风格代码卡片）：围栏常驻隐藏与卡片化，光标在代码内编辑时
+          // 不展开围栏；语言缺省时仍渲染 FenceWidget（标签兜底"代码"），保证复制入口常备
           if (hasClosing || !active) {
             // 代码文本从 fence 行下一行行首起切（first.to 是行尾换行符位置），
             // 复制按钮拿到的是纯代码内容
@@ -2250,10 +2257,10 @@ export function computeLiveRanges(
               hasClosing ? doc.line(last.number - 1).to : last.to
             );
             ranges.push(
-              (lang
-                ? Decoration.replace({ widget: new FenceWidget(lang, codeText) })
-                : HIDE
-              ).range(first.from, first.to)
+              Decoration.replace({ widget: new FenceWidget(lang, codeText) }).range(
+                first.from,
+                first.to
+              )
             );
           }
         }
@@ -2635,6 +2642,42 @@ export function livePreview(
 
   const viewportDriver = ViewPlugin.fromClass(
     class {
+      /** 悬停桥：当前点亮的卡头控件（悬停卡片任意行 → 点亮右上角语言/复制） */
+      hoverHead: HTMLElement | null = null;
+
+      /** 由悬停行解析所属代码卡的卡头（开围栏行自身，或向前回溯本块开围栏行） */
+      headForLine(line: HTMLElement | null): HTMLElement | null {
+        if (!line) return null;
+        let fenceLine: HTMLElement | null = null;
+        if (line.classList.contains("md-code-fence-open")) {
+          fenceLine = line;
+        } else if (
+          line.classList.contains("md-code-block") ||
+          line.classList.contains("md-code-fence-close")
+        ) {
+          let prev = line.previousElementSibling as HTMLElement | null;
+          while (prev) {
+            if (prev.classList.contains("md-code-fence-open")) {
+              fenceLine = prev;
+              break;
+            }
+            if (prev.classList.contains("md-code-block")) {
+              prev = prev.previousElementSibling as HTMLElement | null;
+              continue;
+            }
+            break;
+          }
+        }
+        return fenceLine?.querySelector<HTMLElement>(".md-code-head") ?? null;
+      }
+
+      syncHead(head: HTMLElement | null) {
+        if (this.hoverHead === head) return;
+        this.hoverHead?.classList.remove("is-visible");
+        head?.classList.add("is-visible");
+        this.hoverHead = head;
+      }
+
       update(update: ViewUpdate) {
         // 表格结构操作/落盘后：文档已变，在重建出的最新 widget 实例上恢复单元格编辑
         if (update.docChanged) {
@@ -2652,6 +2695,22 @@ export function livePreview(
           if (view.dom.isConnected) view.dispatch({ effects: recompute.of(null) });
         });
       }
+
+      destroy() {
+        this.syncHead(null);
+      }
+    },
+    {
+      eventHandlers: {
+        mousemove(event: MouseEvent) {
+          const el = event.target instanceof HTMLElement ? event.target : null;
+          const line = (el?.closest(".cm-line") as HTMLElement | null) ?? null;
+          this.syncHead(this.headForLine(line));
+        },
+        mouseleave() {
+          this.syncHead(null);
+        },
+      },
     }
   );
 

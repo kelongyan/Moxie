@@ -189,6 +189,49 @@ describe("livePreview · 代码围栏", () => {
     const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
     expect(ws[0].widget.code).toBe("const x = 1;\nconst y = 2;");
   });
+
+  it("未闭合围栏（光标在块外）：末内容行带 md-code-tail 兼任卡底，无闭围栏类", () => {
+    // 未闭合围栏按其语义吞到文档末尾，光标须在块之前才算"块外"
+    const doc2 = "前文\n\n```js\nconst x = 1;";
+    const ranges = rangesOf(doc2, 0);
+    // 开围栏（from4）照常折叠为头部 widget
+    expect(hasClass(ranges, 4, "md-code-fence-open")).toBe(true);
+    expect(hasClass(ranges, 4, "md-code-fence-raw")).toBe(false);
+    // 末内容行（from10）兼任卡底
+    expect(hasClass(ranges, 10, "md-code-block")).toBe(true);
+    expect(hasClass(ranges, 10, "md-code-tail")).toBe(true);
+    expect(hasClass(ranges, 4, "md-code-tail")).toBe(false);
+    expect(hasClass(ranges, 4, "md-code-solo")).toBe(false);
+  });
+
+  it("未闭合围栏（光标在块内）：开围栏带 md-code-fence-raw 原地可读，末行仍是卡底", () => {
+    const doc2 = "前文\n\n```js\nconst x = 1;";
+    const ranges = rangesOf(doc2, 15);
+    expect(hasClass(ranges, 4, "md-code-fence-raw")).toBe(true);
+    // raw 态不折叠为 widget（源码原地可编辑）
+    const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
+    expect(ws).toEqual([]);
+    expect(hasClass(ranges, 10, "md-code-tail")).toBe(true);
+  });
+
+  it("闭合围栏 + 光标在块内：开围栏带 md-code-active（控件半显常驻）", () => {
+    const ranges = rangesOf(doc, 8);
+    expect(hasClass(ranges, 0, "md-code-active")).toBe(true);
+    expect(hasClass(ranges, 0, "md-code-fence-raw")).toBe(false);
+  });
+
+  it("光标在块外：开围栏不带 md-code-active", () => {
+    const ranges = rangesOf(doc, 24);
+    expect(hasClass(ranges, 0, "md-code-active")).toBe(false);
+  });
+
+  it("空块（仅开围栏一行、光标在块外）：开行兼任整卡 md-code-solo", () => {
+    // "前文\n\n```js"：FencedCode 只含开围栏行（from4）
+    const doc2 = "前文\n\n```js";
+    const ranges = rangesOf(doc2, 0);
+    expect(hasClass(ranges, 4, "md-code-solo")).toBe(true);
+    expect(hasClass(ranges, 4, "md-code-tail")).toBe(false);
+  });
 });
 
 describe("livePreview · 代码块行号", () => {

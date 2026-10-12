@@ -2456,39 +2456,93 @@ body {
   background: color-mix(in srgb, rgb(var(--lac-alert-caution)) 10%, transparent);
 }
 
-/* 代码块「打纸稿」：与行内代码同底融入纸面，整块 1px 边框圆角 6（对标 Typora 紧凑代码卡片） */
+/* 代码块「纸卡」：三行协同成卡——首围栏行只承载外部间距 + 卡顶内衬（::before 绘
+   卡顶背景与圆角），内容行成卡身，尾围栏行成卡底内衬；围栏原文折叠为 0 高隐形行，
+   杜绝头尾空白带（对标墨记 mu-code-block 的紧凑均匀内衬）。外部折叠间距留在卡外，
+   保持段落节奏不被画进卡片 */
+.cm-host .cm-line.md-code-fence {
+  font-size: 0;
+  line-height: 0;
+  position: relative;
+  z-index: 1; /* 独立绘制层：卡顶/悬浮控件可压在相邻内容行之上 */
+}
+/* 围栏行整行隐藏后，CM 的光标定位 buffer（height:1em）不得把行盒撑回来 */
+.cm-host .cm-line.md-code-fence .cm-widgetBuffer {
+  height: 0;
+}
+.cm-host .cm-line.md-code-fence-open {
+  padding-top: calc(var(--md-space-before, 0px) + 12px);
+}
+/* 卡顶：外间距段透明（留在卡外），仅卡内衬区绘背景、顶边与圆角 */
+.cm-host .cm-line.md-code-fence-open::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--md-space-before, 0px);
+  bottom: 0;
+  background: var(--lac-code-bg);
+  border: 1px solid var(--lac-code-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+.cm-host .cm-line.md-code-fence-close {
+  padding-bottom: 12px;
+  background: var(--lac-code-bg);
+  border-left: 1px solid var(--lac-code-border);
+  border-right: 1px solid var(--lac-code-border);
+  border-bottom: 1px solid var(--lac-code-border);
+  border-radius: 0 0 8px 8px;
+}
+/* 围栏原文可见态（光标落在围栏行 / 未闭合块编辑 / mermaid 源码编辑）：灰字回显在
+   卡内顶部；背景同样走 ::before（z -1）垫底，正文绘制序不被覆盖 */
+.cm-host .cm-line.md-code-fence.md-code-fence-raw {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--lac-text-tertiary);
+  padding: calc(var(--md-space-before, 0px) + 6px) 16px 4px;
+}
+.cm-host .cm-line.md-code-fence.md-code-fence-raw::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--md-space-before, 0px);
+  bottom: 0;
+  z-index: -1; /* 父行已建层（z-index:1），负层垫底不遮围栏文字 */
+  background: var(--lac-code-bg);
+  border: 1px solid var(--lac-code-border);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+}
+/* 未闭合空块（刚敲下 ``` 尚无换行）：开围栏行独立成卡，卡底收在 ::before 上 */
+.cm-host .cm-line.md-code-fence.md-code-solo,
+.cm-host .cm-line.md-code-fence.md-code-fence-raw.md-code-solo {
+  padding-bottom: 12px;
+}
+.cm-host .cm-line.md-code-fence.md-code-solo::before,
+.cm-host .cm-line.md-code-fence.md-code-fence-raw.md-code-solo::before {
+  border-bottom: 1px solid var(--lac-code-border);
+  border-radius: 8px;
+}
+
+/* 代码块内容行：卡身（等宽小字，1px 发丝边与卡首尾相接） */
 .cm-host .cm-line.md-code-block {
   font-family: var(--font-mono);
   font-size: 0.86em;
   line-height: 1.5;
-  background: var(--lac-bg-inset);
-  border-left: 1px solid var(--lac-border);
-  border-right: 1px solid var(--lac-border);
+  background: var(--lac-code-bg);
+  border-left: 1px solid var(--lac-code-border);
+  border-right: 1px solid var(--lac-code-border);
   padding-left: 16px;
   padding-right: 16px;
 }
-
-/* fence 行充当代码块卡片的头部/尾部；光标进入代码块时类被移除，还原完整高度 */
-.cm-host .cm-line.md-code-fence {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 1.4;
-  background: var(--lac-bg-inset);
-  border-left: 1px solid var(--lac-border);
-  border-right: 1px solid var(--lac-border);
-  position: relative;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-.cm-host .cm-line.md-code-fence-open {
-  padding-top: calc(var(--md-space-before, 0px) + 8px);
-  border-top: 1px solid var(--lac-border);
-  border-radius: 6px 6px 0 0;
-}
-.cm-host .cm-line.md-code-fence-close {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--lac-border);
-  border-radius: 0 0 6px 6px;
+/* 未闭合块的末内容行兼任卡底（补内衬、底边与圆角） */
+.cm-host .cm-line.md-code-block.md-code-tail {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--lac-code-border);
+  border-radius: 0 0 8px 8px;
 }
 
 /* 列表项间距：项间 4px（列表末项除外，末项下方交给列表块间距） */
@@ -3540,33 +3594,51 @@ body {
 
 /* ---------- 代码块头部（语言标签 + 复制按钮）与语言搜索浮层 ---------- */
 
-/* 头部容器：绝对定位在 fence 行右上，随代码块 hover 淡入（墨记 mu-code-copy 纪律） */
+/* 头部容器：绝对定位在卡片右上（外间距段之下、压于代码首行之上），三层显形纪律：
+   ① 悬停卡头条（12px 内衬带）→ 淡入；② JS 悬停桥（悬停卡片任意行）→ is-visible；
+   ③ 编辑态（光标在块内）→ 半显常驻，悬停控件本身即实显（墨记 mu-code-copy 纪律） */
 .md-code-head {
   position: absolute;
-  top: 6px;
-  right: 12px;
+  top: calc(var(--md-space-before, 0px) + 6px);
+  right: 14px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   z-index: 2;
   opacity: 0;
+  pointer-events: none;
   transition: opacity var(--dur-2) var(--ease-out);
 }
 
-.cm-line.md-code-fence:hover .md-code-head {
-  opacity: 1;
+/* 编辑态（光标在块内）：控件半显常驻（墨记 mu-active 纪律） */
+.cm-line.md-code-fence-open.md-code-active .md-code-head {
+  opacity: 0.5;
+  pointer-events: auto;
 }
 
+/* 悬停卡头 / JS 悬停桥（悬停卡片任意行 → is-visible）→ 实显 */
+.cm-line.md-code-fence-open:hover .md-code-head,
+.cm-line.md-code-fence-open .md-code-head.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 语言标签：胶囊小签，hover 加深（点击 → 模糊搜索切换语言） */
 .md-lang-tag {
-  color: var(--lac-text-tertiary);
+  color: var(--lac-text-secondary);
   font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1.2;
-  letter-spacing: 0.14em;
+  font-size: 10.5px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  background: var(--lac-button-bg);
   cursor: pointer;
+  transition: background var(--anim-hover), color var(--anim-hover);
 }
 
 .md-lang-tag:hover {
+  background: var(--lac-button-bg-hover);
   color: var(--lac-text);
 }
 
