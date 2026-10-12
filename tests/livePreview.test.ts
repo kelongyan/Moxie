@@ -50,7 +50,17 @@ function widgets(ranges: Range<Decoration>[]) {
     }));
 }
 
-type WidgetLike = { src?: string; checked?: boolean; lang?: string; level?: number; text?: string };
+type WidgetLike = {
+  src?: string;
+  checked?: boolean;
+  lang?: string;
+  level?: number;
+  text?: string;
+  selected?: boolean;
+  width?: string;
+  align?: string;
+  code?: string;
+};
 function spec2widget(spec: unknown): WidgetLike {
   return (spec as { widget: WidgetLike }).widget;
 }
@@ -152,11 +162,11 @@ describe("livePreview · 链接", () => {
 describe("livePreview · 代码围栏", () => {
   const doc = "```js\nconst x = 1;\n```\n尾行";
 
-  it("光标在块外时：开 fence 变语言标签，闭 fence 隐藏，内容行带代码块类", () => {
+  it("光标在块外时：开 fence 变代码块头部（语言标签+复制），闭 fence 隐藏，内容行带代码块类", () => {
     const ranges = rangesOf(doc, 24);
-    // 开 fence（```js [0,5)）→ FenceWidget("js")
+    // 开 fence（```js [0,5)）→ FenceWidget("js", 代码文本)
     const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
-    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js" } }]);
+    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js", code: "const x = 1;" } }]);
     // 闭 fence（``` [19,22)）→ 纯隐藏
     expect(plainHides(ranges)).toContainEqual([19, 22]);
     expect(hasClass(ranges, 0, "md-code-fence")).toBe(true);
@@ -170,7 +180,50 @@ describe("livePreview · 代码围栏", () => {
     const ranges = rangesOf(doc, 8);
     expect(plainHides(ranges)).toContainEqual([19, 22]);
     const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
-    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js" } }]);
+    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js", code: "const x = 1;" } }]);
+  });
+
+  it("代码文本随编辑更新（复制按钮永远拿到最新内容）", () => {
+    const doc2 = "```js\nconst x = 1;\nconst y = 2;\n```\n尾行";
+    const ranges = rangesOf(doc2, 30);
+    const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
+    expect(ws[0].widget.code).toBe("const x = 1;\nconst y = 2;");
+  });
+});
+
+describe("livePreview · 代码块行号", () => {
+  const doc = "```js\nconst x = 1;\nlet y = 2;\n```\n尾行";
+
+  it("开启开关：内容行带 md-code-ln 类与 --code-ln 变量，fence 行不参与", () => {
+    const state = stateOf(doc, 30);
+    const ranges = computeLiveRanges(
+      state,
+      state.doc.length,
+      RESOLVE_ALL,
+      1,
+      null,
+      true
+    );
+    expect(hasClass(ranges, 6, "md-code-ln")).toBe(true);
+    expect(hasClass(ranges, 19, "md-code-ln")).toBe(true);
+    expect(hasClass(ranges, 0, "md-code-ln")).toBe(false);
+    expect(hasClass(ranges, 30, "md-code-ln")).toBe(false);
+    const attrs = lineAttrs(ranges);
+    expect(
+      attrs.find((a) => a.from === 6)?.style
+    ).toContain('--code-ln:"1"');
+    expect(
+      attrs.find((a) => a.from === 19)?.style
+    ).toContain('--code-ln:"2"');
+  });
+
+  it("默认关闭：无行号类与变量", () => {
+    const state = stateOf(doc, 30);
+    const ranges = computeLiveRanges(state, state.doc.length, RESOLVE_ALL);
+    expect(hasClass(ranges, 6, "md-code-ln")).toBe(false);
+    expect(
+      lineAttrs(ranges).some((a) => a.style.includes("--code-ln"))
+    ).toBe(false);
   });
 });
 
@@ -191,9 +244,52 @@ describe("livePreview · 图片", () => {
     expect(widgets(ranges)).toHaveLength(0);
   });
 
-  it("光标进入图片范围时显示原始语法", () => {
+  it("光标进入图片范围时仍渲染图片（墨记式恒渲染，点击走选中态）", () => {
     const ranges = rangesOf(doc, 8);
-    expect(widgets(ranges)).toHaveLength(0);
+    const ws = widgets(ranges);
+    expect(ws).toHaveLength(1);
+    expect(ws[0].from).toBe(0);
+    expect(ws[0].to).toBe(16);
+    expect(ws[0].widget.src).toBe("asset://./a.png");
+    expect(ws[0].widget.selected).toBe(false);
+  });
+
+  it("选中态传入时 widget 带选中标记", () => {
+    const state = stateOf(doc, 16);
+    const ranges = computeLiveRanges(state, state.doc.length, RESOLVE_ALL, 1, {
+      from: 0,
+      to: 16,
+    });
+    const ws = widgets(ranges);
+    expect(ws).toHaveLength(1);
+    expect(ws[0].widget.selected).toBe(true);
+  });
+
+  it("HTML <img> 源码（缩放/对齐后）渲染同一 widget 并携带宽高", () => {
+    const doc2 = '前文 <img src="./a.png" alt="徽标" width="600" /> 后文';
+    const state = stateOf(doc2, 2);
+    const ws = widgets(computeLiveRanges(state, state.doc.length, RESOLVE_ALL));
+    expect(ws).toHaveLength(1);
+    expect(ws[0].widget.src).toBe("asset://./a.png");
+    expect(ws[0].widget.width).toBe("600");
+    expect(ws[0].widget.align).toBeUndefined();
+  });
+
+  it("data-align=center 时所在行获得对齐行类", () => {
+    const state = stateOf('<img src="./a.png" data-align="center" />', 2);
+    const ranges = computeLiveRanges(state, state.doc.length, RESOLVE_ALL);
+    expect(hasClass(ranges, 0, "md-image-align-center")).toBe(true);
+  });
+
+  it("data-align=right 时行类为 right，left 不加行类", () => {
+    const state = stateOf('<img src="./a.png" data-align="right" />', 2);
+    expect(
+      hasClass(computeLiveRanges(state, state.doc.length, RESOLVE_ALL), 0, "md-image-align-right")
+    ).toBe(true);
+    const state2 = stateOf('<img src="./a.png" data-align="left" />', 2);
+    const ranges2 = computeLiveRanges(state2, state2.doc.length, RESOLVE_ALL);
+    expect(hasClass(ranges2, 0, "md-image-align-center")).toBe(false);
+    expect(hasClass(ranges2, 0, "md-image-align-right")).toBe(false);
   });
 });
 

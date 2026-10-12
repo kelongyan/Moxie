@@ -497,6 +497,8 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   }
 
   img { max-width: 100%; height: auto; border: 1px solid ${tokens.border}; border-radius: 8px; }
+  img[data-align="center"] { display: block; margin-inline: auto; }
+  img[data-align="right"] { display: block; margin-left: auto; }
   .img-broken {
     display: inline-block;
     max-width: 100%;

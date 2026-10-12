@@ -324,6 +324,8 @@ exports[`preview snapshot > dark theme 1`] = `
   }
 
   img { max-width: 100%; height: auto; border: 1px solid #e4e5e8; border-radius: 8px; }
+  img[data-align="center"] { display: block; margin-inline: auto; }
+  img[data-align="right"] { display: block; margin-left: auto; }
   .img-broken {
     display: inline-block;
     max-width: 100%;
@@ -821,6 +823,8 @@ exports[`preview snapshot > light theme 1`] = `
   }
 
   img { max-width: 100%; height: auto; border: 1px solid #e4e5e8; border-radius: 8px; }
+  img[data-align="center"] { display: block; margin-inline: auto; }
+  img[data-align="right"] { display: block; margin-left: auto; }
   .img-broken {
     display: inline-block;
     max-width: 100%;

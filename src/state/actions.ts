@@ -328,12 +328,9 @@ export async function closeTabAction(docId: string): Promise<void> {
     }
   }
   useDocuments.getState().close(docId);
-  // 渲染进程在销毁最后一个编辑器视图时会崩溃（v1.0.0 既有问题，与 UI 改动无关）。
-  // 关闭最后一个标签后同步重建空白标签，使 React 永远看不到空文档中间态；
-  // 兜底模式与 windows.ts 的"移入新窗口"路径一致。
-  if (useDocuments.getState().documents.length === 0) {
-    useDocuments.getState().createUntitled();
-  }
+  // 龙哥拍板（2026-10-11）：关闭最后一个标签直接返回主页（空状态），不再重建空白标签。
+  // EditorPane 对零文档是一等路径（EditorEmptyState）；视图回收对已脱离 DOM 的
+  // cm-host 只清注册表不 destroy，避开 v1.0.0 渲染进程崩溃的触发点（见 EditorPane）。
 }
 
 export async function closeOtherTabsAction(keepId: string): Promise<void> {
@@ -418,6 +415,8 @@ async function insertImageIntoActiveDoc(
   ext: string,
   displayName: string
 ): Promise<boolean> {
+  const rel = await saveImageToDocFolder(base64, ext, displayName);
+  if (!rel) return false;
   const store = useDocuments.getState();
   const doc = activeDocument();
   const view = doc ? viewFor(doc.id) : undefined;
@@ -425,10 +424,29 @@ async function insertImageIntoActiveDoc(
     store.setStatus({ text: "没有可插入图片的文档", kind: "error" });
     return false;
   }
+  view.dispatch(view.state.replaceSelection(`![${displayName}](${rel})`), {
+    scrollIntoView: true,
+    userEvent: "input",
+  });
+  return true;
+}
+
+/** 图片落盘到文档图片目录；返回可写进 Markdown 的相对路径（assets/xxx.png），失败/未保存文档返回 null */
+async function saveImageToDocFolder(
+  base64: string,
+  ext: string,
+  displayName: string
+): Promise<string | null> {
+  const store = useDocuments.getState();
+  const doc = activeDocument();
+  if (!doc) {
+    store.setStatus({ text: "没有可插入图片的文档", kind: "error" });
+    return null;
+  }
   const baseDir = doc.path ? directoryOf(doc.path) : null;
   if (!baseDir) {
     store.setStatus({ text: "请先保存文档，再插入图片", kind: "error" });
-    return false;
+    return null;
   }
   const folder = (usePreferences.getState().imageFolder || "assets")
     .replace(/[\\/]+/g, "\\")
@@ -439,21 +457,117 @@ async function insertImageIntoActiveDoc(
     await invoke("write_file_base64", { path: target, dataBase64: base64 });
   } catch (error) {
     store.setStatus({ text: `图片保存失败:${error}`, kind: "error" });
+    return null;
+  }
+  return `${folder.replace(/\\/g, "/")}/${name}`;
+}
+
+/** 粘贴图片（P2 墨记式占位链路）：先在光标处插入 base64 预览占位
+ *  `![upload-<id>](data:…)`（即时可见、转圈角标），落盘完成后原位替换为
+ *  最终路径；落盘失败则移除占位恢复原状。占位替换按完整 token 文本查找，
+ *  用户在等待期间继续编辑不影响定位。 */
+export async function insertImageFileAction(file: File): Promise<boolean> {
+  const store = useDocuments.getState();
+  const doc = activeDocument();
+  const view = doc ? viewFor(doc.id) : undefined;
+  if (!doc || !view) {
+    store.setStatus({ text: "没有可插入图片的文档", kind: "error" });
     return false;
   }
-  const rel = `${folder.replace(/\\/g, "/")}/${name}`;
-  view.dispatch(view.state.replaceSelection(`![${displayName}](${rel})`), {
+  const mime = file.type || "image/png";
+  const dataUrl = `data:${mime};base64,${await fileToBase64(file)}`;
+  const id = `upload-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 6)}`;
+  const placeholder = `![${id}](${dataUrl})`;
+  view.dispatch(view.state.replaceSelection(placeholder), {
     scrollIntoView: true,
     userEvent: "input",
   });
+  const ext = IMAGE_EXT_BY_MIME[mime] ?? "png";
+  const rel = await saveImageToDocFolder(
+    dataUrl.slice(dataUrl.indexOf(",") + 1),
+    ext,
+    "图片"
+  );
+  if (!rel) {
+    removeImagePlaceholder(view, placeholder);
+    return false;
+  }
+  replaceImagePlaceholder(view, placeholder, `![图片](${rel})`);
   return true;
 }
 
-/** 粘贴图片：落盘到文档图片目录并在光标处插入引用 */
-export async function insertImageFileAction(file: File): Promise<boolean> {
-  const ext = IMAGE_EXT_BY_MIME[file.type] ?? "png";
-  const base64 = await fileToBase64(file);
-  return insertImageIntoActiveDoc(base64, ext, "图片");
+function removeImagePlaceholder(view: EditorView, token: string): void {
+  const idx = view.state.doc.toString().indexOf(token);
+  if (idx < 0) return;
+  view.dispatch({
+    changes: { from: idx, to: idx + token.length },
+    userEvent: "delete",
+  });
+}
+
+function replaceImagePlaceholder(
+  view: EditorView,
+  token: string,
+  next: string
+): void {
+  const idx = view.state.doc.toString().indexOf(token);
+  if (idx < 0) return;
+  view.dispatch({
+    changes: { from: idx, to: idx + token.length, insert: next },
+    userEvent: "input",
+  });
+}
+
+const IMAGE_FILTER = [
+  {
+    name: "图片文件",
+    extensions: ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif"],
+  },
+];
+
+/** 图片工具条「替换图片文件」：选择图片 → 落盘 → 返回相对路径（取消返回 null） */
+export async function pickImageAndSaveAction(): Promise<string | null> {
+  const picked = await open({
+    multiple: false,
+    directory: false,
+    filters: IMAGE_FILTER,
+  });
+  if (typeof picked !== "string") return null;
+  const ext = (picked.split(".").pop() ?? "png").toLowerCase();
+  let base64: string;
+  try {
+    base64 = await invoke<string>("read_file_base64", { path: picked });
+  } catch (error) {
+    useDocuments.getState().setStatus({ text: `无法读取图片:${error}`, kind: "error" });
+    return null;
+  }
+  const name = (picked.split(/[\\/]/).pop() ?? "图片").replace(/\.[^.]+$/, "");
+  return saveImageToDocFolder(base64, ext, name);
+}
+
+/** 图片工具条「在资源管理器中显示」：相对路径按当前文档目录解析为绝对路径 */
+export async function revealImageAction(rawSrc: string): Promise<void> {
+  let absolute = rawSrc;
+  if (!/^[A-Za-z]:[\\/]/.test(rawSrc) && !rawSrc.startsWith("\\\\")) {
+    const doc = activeDocument();
+    const baseDir = doc?.path ? directoryOf(doc.path) : null;
+    if (!baseDir) {
+      useDocuments
+        .getState()
+        .setStatus({ text: "请先保存文档，再定位图片文件", kind: "error" });
+      return;
+    }
+    absolute = `${baseDir}\\${rawSrc.replace(/\//g, "\\")}`;
+  }
+  try {
+    await invoke("explorer_select", { path: absolute });
+  } catch (error) {
+    useDocuments
+      .getState()
+      .setStatus({ text: `无法打开资源管理器:${error}`, kind: "error" });
+  }
 }
 
 /** 拖入磁盘图片：复制到文档图片目录并在光标处插入引用 */

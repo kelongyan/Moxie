@@ -16,7 +16,7 @@ import {
 import { EditorDocument, useDocuments } from "../state/documents";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
-import { insertImageFileAction } from "../state/actions";
+import { insertImageFileAction, pickImageAndSaveAction, revealImageAction } from "../state/actions";
 import { directoryOf, resolveLocalImageSrc } from "../preview/markdownCore";
 import { EditorEmptyState } from "./EditorEmptyState";
 
@@ -91,6 +91,7 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     enableFold: features.fold,
     enableLivePreview: features.livePreview,
     imageSrcResolver: features.livePreview ? imageSrcResolverFor(baseDir) : null,
+    codeBlockLineNumbers: prefs.codeBlockLineNumbers,
     onOpenLink: (url) => {
       void invoke("open_external", { url }).catch((error) => {
         useDocuments.getState().setStatus({ text: `无法打开链接:${error}`, kind: "error" });
@@ -98,6 +99,12 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     },
     onImagePaste: (file) => {
       void insertImageFileAction(file);
+    },
+    imageToolbarHost: {
+      revealInExplorer: (rawSrc) => {
+        void revealImageAction(rawSrc);
+      },
+      pickAndSaveImage: () => pickImageAndSaveAction(),
     },
     focusMode: prefs.focusMode,
     typewriterMode: prefs.typewriterMode,
@@ -150,7 +157,9 @@ export function EditorPane() {
         signatureRef.current.delete(id);
         const oi = accessOrderRef.current.indexOf(id);
         if (oi >= 0) accessOrderRef.current.splice(oi, 1);
-        view?.destroy();
+        // cm-host 已随空状态卸载时（关闭最后一个标签回主页），视图 DOM 已整体
+        // 脱离文档——此时 destroy 正是 v1.0.0 渲染进程崩溃的触发点，交给 GC 回收
+        if (containerRef.current) view?.destroy();
       }
     }
 

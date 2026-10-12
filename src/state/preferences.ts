@@ -12,6 +12,8 @@ export const PT_TO_PX = 4 / 3;
 interface PreferencesState {
   wordWrap: boolean;
   lineNumbers: boolean;
+  /** 书写面代码块行号（与导出侧行号开关各自独立） */
+  codeBlockLineNumbers: boolean;
   statusBarVisible: boolean;
   fontSizePt: number;
   lineSpacingPt: number;
@@ -55,6 +57,7 @@ interface PreferencesState {
 const EDITOR_KEYS = new Set([
   "wordWrap",
   "lineNumbers",
+  "codeBlockLineNumbers",
   "fontSizePt",
   "lineSpacingPt",
   "blockSpacing",
@@ -87,6 +90,7 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     exportTheme: state.exportTheme,
     isExportNarrow: state.exportNarrow,
     isExportCodeLineNumbers: state.exportCodeLineNumbers,
+    isCodeBlockLineNumbers: state.codeBlockLineNumbers,
     autosaveMode: state.autosave,
     appLang: state.lang,
     findStyle: state.findStyle,
@@ -119,6 +123,7 @@ export const usePreferences = create<PreferencesState>((set) => ({
   wordWrap: true,
   // 所见即所得对标 Typora：默认不显示行号（设置里可开）
   lineNumbers: false,
+  codeBlockLineNumbers: false,
   statusBarVisible: true,
   /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
   fontSizePt: 12,
@@ -213,6 +218,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
     }
     if (typeof disk.isExportCodeLineNumbers === "boolean") {
       patch.exportCodeLineNumbers = disk.isExportCodeLineNumbers;
+    }
+    if (typeof disk.isCodeBlockLineNumbers === "boolean") {
+      patch.codeBlockLineNumbers = disk.isCodeBlockLineNumbers;
     }
     if (
       disk.autosaveMode === "off" ||

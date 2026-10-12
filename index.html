@@ -300,6 +300,9 @@ $$\\hat{f}(\\xi) = \\int_{-\\infty}^{\\infty} f(x) e^{-2\\pi i x \\xi} \\, dx$$
               rename_file: empty,
               explorer_select: empty,
               write_text_file: empty,
+              // 粘贴占位链路：延迟解析让「转圈占位→原位替换」在浏览器里可观察
+              write_file_base64: () =>
+                new Promise((resolve) => setTimeout(() => resolve(null), 800)),
               recovery_load: empty,
               recovery_read_marker: empty,
               settings_load: () => Promise.resolve({}),
