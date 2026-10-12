@@ -230,10 +230,11 @@ export function TabBar() {
   const count = documents.length;
 
   return (
-    <div className="tab-bar" ref={barRef}>
+    <div className="tab-bar" ref={barRef} data-tauri-drag-region>
       <div
         className="tab-scroll"
         ref={scrollRef}
+        data-tauri-drag-region
         onDragOver={(e) => {
           if (dragIndex !== null) e.preventDefault();
         }}

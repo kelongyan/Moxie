@@ -200,8 +200,22 @@ export function TitleToolbar({
     setOpenMenu({ x: rect.left, y: rect.bottom + 2, items: buildAppMenu() });
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest("button, input, select, textarea, .tab, .context-menu, [data-no-drag]")) {
+      return;
+    }
+    if (e.detail === 2) {
+      void getCurrentWindow().toggleMaximize().catch(() => {});
+      return;
+    }
+    void getCurrentWindow().startDragging().catch(() => {});
+  };
+
   return (
-    <header className="title-toolbar" data-tauri-drag-region>
+    <header className="title-toolbar" data-tauri-drag-region onMouseDown={handleMouseDown}>
       {/* 单行顶栏：左上角侧栏弹出/隐藏开关，标签栏随后占满中段，右角 应用菜单 / 窗口控制 */}
       <Tooltip label={sidebarPinned ? "收起侧栏" : "弹出侧栏"} shortcut="Ctrl+Shift+B">
         <button

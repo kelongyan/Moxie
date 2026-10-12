@@ -2857,6 +2857,8 @@ body {
 
 /* 表头：渐变冷灰背景（对标 marktable_studio.html 现代仪表盘风格） */
 .md-table th {
+  padding: 5px 14px;
+  line-height: 1.4;
   font-weight: 600;
   font-size: 12.5px;
   letter-spacing: 0.03em;
@@ -3023,13 +3025,14 @@ body {
   outline: none;
 }
 
-/* 列头手柄：悬停列头出现，点击弹列操作菜单 */
+/* 列头手柄：悬停列头出现，点击弹列操作菜单（垂直居中对齐） */
 .md-table-handle {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  width: 18px;
-  height: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 4px;
+  width: 16px;
+  height: 16px;
   display: none;
   align-items: center;
   justify-content: center;
@@ -3044,8 +3047,8 @@ body {
 
 .md-table-handle::after {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
   transform: translateY(-1px) rotate(45deg);
@@ -3085,6 +3088,15 @@ body {
   white-space: pre;
   overflow: hidden;
   caret-color: var(--lac-accent);
+}
+
+/* 表头原位编辑覆盖物：与压缩后的表头完全对齐 */
+.md-table th .md-cell-editor {
+  padding: 5px 14px;
+  line-height: 1.4;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 /* 表格菜单（列头手柄 / 右键）：浮于文档层 */

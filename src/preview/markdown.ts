@@ -460,6 +460,8 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     position: sticky;
     top: 0;
     z-index: 1;
+    padding: 5px 14px;
+    line-height: 1.4;
     font-weight: 600;
     font-size: 12.5px;
     letter-spacing: 0.03em;
