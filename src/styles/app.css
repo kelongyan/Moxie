@@ -2500,7 +2500,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1.5;
-  color: var(--lac-text-tertiary);
+  color: var(--lac-code-ln);
   padding: calc(var(--md-space-before, 0px) + 6px) 16px 4px;
 }
 .cm-host .cm-line.md-code-fence.md-code-fence-raw::before {
@@ -2527,16 +2527,18 @@ body {
   border-radius: 8px;
 }
 
-/* 代码块内容行：卡身（等宽小字，1px 发丝边与卡首尾相接） */
+/* 代码块内容行：卡身（Dracula 深卡，等宽小字，1px 发丝边与卡首尾相接） */
 .cm-host .cm-line.md-code-block {
   font-family: var(--font-mono);
   font-size: 0.86em;
   line-height: 1.5;
+  color: var(--lac-code-fg);
   background: var(--lac-code-bg);
   border-left: 1px solid var(--lac-code-border);
   border-right: 1px solid var(--lac-code-border);
   padding-left: 16px;
   padding-right: 16px;
+  font-variant-ligatures: none; /* 关连字：光标落点与列宽在编辑态保持可预测 */
 }
 /* 未闭合块的末内容行兼任卡底（补内衬、底边与圆角） */
 .cm-host .cm-line.md-code-block.md-code-tail {
@@ -3623,23 +3625,23 @@ body {
   pointer-events: auto;
 }
 
-/* 语言标签：胶囊小签，hover 加深（点击 → 模糊搜索切换语言） */
+/* 语言标签：胶囊小签（Dracula 卡内深底配色），hover 提亮（点击 → 模糊搜索切换语言） */
 .md-lang-tag {
-  color: var(--lac-text-secondary);
+  color: var(--lac-code-chip-fg);
   font-family: var(--font-mono);
   font-size: 10.5px;
   line-height: 1;
   letter-spacing: 0.06em;
   padding: 4px 8px;
   border-radius: var(--radius-full);
-  background: var(--lac-button-bg);
+  background: var(--lac-code-chip-bg);
   cursor: pointer;
   transition: background var(--anim-hover), color var(--anim-hover);
 }
 
 .md-lang-tag:hover {
-  background: var(--lac-button-bg-hover);
-  color: var(--lac-text);
+  background: var(--lac-code-chip-bg-hover);
+  color: var(--lac-code-chip-fg-hover);
 }
 
 .md-code-copy {
@@ -3650,19 +3652,19 @@ body {
   border: none;
   border-radius: var(--radius-xs);
   background: transparent;
-  color: var(--lac-text-secondary);
+  color: var(--lac-code-chip-fg);
   cursor: pointer;
   padding: 0;
   transition: background var(--anim-hover), color var(--anim-hover);
 }
 
 .md-code-copy:hover {
-  background: var(--lac-hover);
-  color: var(--lac-text);
+  background: var(--lac-code-chip-bg-hover);
+  color: var(--lac-code-chip-fg-hover);
 }
 
 .md-code-copy.is-copied {
-  color: var(--lac-success);
+  color: var(--lac-code-copied);
 }
 
 /* 语言搜索浮层：搜索框 + 过滤列表（↑↓/Enter/Esc，当前语言高亮） */
@@ -3734,7 +3736,7 @@ body {
   width: 2ch;
   margin-right: 14px;
   text-align: right;
-  color: var(--lac-text-tertiary);
+  color: var(--lac-code-ln);
   font-variant-numeric: tabular-nums;
   user-select: none;
 }

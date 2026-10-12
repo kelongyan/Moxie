@@ -1,7 +1,9 @@
 /* 设计令牌 v5：「校样样张」白蓝配色（docs/UI重构方案书.md 变更记录 v10）。
    蓝墨 / 纸白 / 高亮黄三色基因；纸面层次（chrome=面白、画布=冷纸灰）不变；
    令牌名保持 --lac-* 体系不变，仅换值——书写面、chrome、导出（collectPreviewTokens）
-   三侧自动跟随。语法高亮 --syn-* 以蓝墨为锚降饱和；danger 与 callout 语义色保持不变。 */
+   三侧自动跟随。代码块与语法高亮（--lac-code-* / --syn-*）走 Dracula 主题：
+   深色模式 = Dracula 经典（#282a36 + 官方 8 色板），浅色模式 = Dracula 官方浅色
+   变体 Alucard（暖纸底 + 同族深墨）。其余 danger 与 callout 语义色保持不变。 */
 
 :root,
 [data-theme="light"] {
@@ -13,9 +15,20 @@
   --lac-bg-sidebar: #f4f6f9;
   --lac-bg-elevated: #ffffff;
   --lac-bg-inset: #eceff4;
-  --lac-code-bg: #edf1f6;
-  --lac-code-header-bg: #f1f5f9;
-  --lac-code-border: #d8dfe9;
+  /* —— 代码卡（Dracula 家族）——
+     深色模式 = Dracula 经典深紫卡；浅色模式 = 中性冷灰卡：底色与边框刻意贴着
+     纸面色阶走（画布 #f4f6f9 → 卡面 #edf0f5 → 边框 #d9dfe8），靠"灰阶下沉"成卡，
+     不用色相区分，避免暖黄卡在白蓝纸面上割裂。语法色仍为 Dracula 浅色变体 Alucard。 */
+  --lac-code-bg: #edf0f5;
+  --lac-code-header-bg: #e7ebf1;
+  --lac-code-border: #d9dfe8;
+  --lac-code-fg: #24292e;
+  --lac-code-ln: #98a1ad;
+  --lac-code-chip-bg: rgba(0, 0, 0, 0.05);
+  --lac-code-chip-bg-hover: rgba(0, 0, 0, 0.1);
+  --lac-code-chip-fg: #616a76;
+  --lac-code-chip-fg-hover: #24292e;
+  --lac-code-copied: #177a3d;
   --lac-overlay: rgba(0, 0, 0, 0.32);
 
   /* 文本三级：纸墨炭黑 / mute / 辅助灰（对标 Typora 舒适沉稳的纸面阅读对比度） */
@@ -57,18 +70,19 @@
   --lac-tree-line-hover: #a9b4c4;
   --lac-preview-shadow: rgba(0, 0, 0, 0.1);
 
-  /* 语法高亮（以蓝墨为锚降饱和：keyword 深一档、type 转深青、meta 转雾紫；heading 随 accent 蓝） */
-  --syn-keyword: #2e629e;
-  --syn-string: #4a7a52;
-  --syn-number: #a8722c;
-  --syn-comment: #78859a;
-  --syn-function: #46688c;
-  --syn-type: #1a6e7e;
-  --syn-property: #46688c;
-  --syn-heading: #2b6cb0;
-  --syn-meta: #825a9e;
-  --syn-punct: #6e7681;
-  --syn-link: #46688c;
+  /* 语法高亮（Dracula 浅色变体 Alucard 色板：同族色相，加深提对比，落冷灰卡 ≥4.5:1。
+     注释一项例外——Alucard 原值 #6c664b 是暖褐，压在冷灰卡上显脏，故中性化为冷灰） */
+  --syn-keyword: #a3144d;
+  --syn-string: #846e15;
+  --syn-number: #644ac9;
+  --syn-comment: #6b7280;
+  --syn-function: #14710a;
+  --syn-type: #036a96;
+  --syn-property: #a34d14;
+  --syn-heading: #644ac9;
+  --syn-meta: #a3144d;
+  --syn-punct: #24292e;
+  --syn-link: #036a96;
 
   /* 语义色（≥4.5:1，小号文字可读；success/warning/danger 不变，danger 红与蓝 accent 语义分离） */
   --lac-success: #177a3d;
@@ -108,9 +122,19 @@
   --lac-bg-sidebar: #14181e;
   --lac-bg-elevated: #212831;
   --lac-bg-inset: rgba(255, 255, 255, 0.07);
-  --lac-code-bg: #181e27;
-  --lac-code-header-bg: #1a2029;
-  --lac-code-border: #2c3745;
+  /* —— 代码卡（Dracula 经典）——
+     #282a36 卡面比画布 #14181e 亮一档，靠 #44475a 边框与页面分离；
+     卡内文字 #f8f8f2，语法色见下方 --syn-* 官方 8 色板 */
+  --lac-code-bg: #282a36;
+  --lac-code-header-bg: #21222c;
+  --lac-code-border: #44475a;
+  --lac-code-fg: #f8f8f2;
+  --lac-code-ln: #6272a4;
+  --lac-code-chip-bg: rgba(248, 248, 242, 0.1);
+  --lac-code-chip-bg-hover: rgba(248, 248, 242, 0.2);
+  --lac-code-chip-fg: #9aa2c4;
+  --lac-code-chip-fg-hover: #f8f8f2;
+  --lac-code-copied: #50fa7b;
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
   --lac-text: #e6edf3;
@@ -147,17 +171,19 @@
   --lac-tree-line-hover: #4e5c6e;
   --lac-preview-shadow: rgba(0, 0, 0, 0.3);
 
-  --syn-keyword: #8db5e3;
-  --syn-string: #8fc49e;
-  --syn-number: #d6a65e;
-  --syn-comment: #8494aa;
-  --syn-function: #85a8c8;
-  --syn-type: #74c7d8;
-  --syn-property: #85a8c8;
-  --syn-heading: #63b3ed;
-  --syn-meta: #c4a5e0;
-  --syn-punct: #9aa8ba;
-  --syn-link: #85a8c8;
+  /* 语法高亮（Dracula 官方 8 色板：粉 keyword / 黄 string / 紫 number / 绿 function /
+     青 type / 橙 property / #6272a4 注释 / #f8f8f2 标点与正文） */
+  --syn-keyword: #ff79c6;
+  --syn-string: #f1fa8c;
+  --syn-number: #bd93f9;
+  --syn-comment: #6272a4;
+  --syn-function: #50fa7b;
+  --syn-type: #8be9fd;
+  --syn-property: #ffb86c;
+  --syn-heading: #bd93f9;
+  --syn-meta: #ff79c6;
+  --syn-punct: #f8f8f2;
+  --syn-link: #8be9fd;
 
   --lac-success: #5cd68a;
   --lac-warning: #e3b341;
@@ -223,11 +249,12 @@
   --radius-full: 999px;
 
   /* 字体：拉丁走 Segoe 系；中文统一走内置的 Frex Sans GB，
-     缺字回退到系统 CJK 字体（雅黑 / 更纱等宽） */
+     缺字回退到系统 CJK 字体（雅黑 / 更纱等宽）；
+     代码（围栏块 / 行内码 / 等宽 UI）走内置 JetBrains Mono，中文同样回退 Frex */
   --font-ui: "Segoe UI", "Segoe UI Variable Text", "Frex Sans GB",
     "Microsoft YaHei UI", system-ui, sans-serif;
-  --font-mono: "Cascadia Code", "Cascadia Mono", "Consolas", "Frex Sans GB",
-    "Sarasa Mono SC", "Microsoft YaHei UI", monospace;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Cascadia Mono", "Consolas",
+    "Frex Sans GB", "Sarasa Mono SC", "Microsoft YaHei UI", monospace;
   --font-content: -apple-system, BlinkMacSystemFont, "Segoe UI", "Frex Sans GB",
     "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
 

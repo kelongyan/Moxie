@@ -15,9 +15,24 @@ const LIGHT: PreviewTokens = {
   warning: "#96590a",
   fontUi: "sans-serif",
   fontMono: "monospace",
+  // 代码卡：浅色为中性冷灰卡（贴纸面色阶），语法色走 Dracula 浅色变体 Alucard
+  codeBg: "#edf0f5",
+  codeFg: "#24292e",
+  codeBorder: "#d9dfe8",
+  codeLn: "#98a1ad",
 };
 
-const DARK: PreviewTokens = { ...LIGHT, scheme: "dark", bg: "#1c1c1f", fg: "#e9eaee" };
+const DARK: PreviewTokens = {
+  ...LIGHT,
+  scheme: "dark",
+  bg: "#1c1c1f",
+  fg: "#e9eaee",
+  // 代码卡：深色走 Dracula 经典
+  codeBg: "#282a36",
+  codeFg: "#f8f8f2",
+  codeBorder: "#44475a",
+  codeLn: "#6272a4",
+};
 
 function makeDoc(paragraphs: number): string {
   const parts: string[] = [];

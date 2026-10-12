@@ -195,12 +195,13 @@ exports[`preview snapshot > dark theme 1`] = `
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：Dracula 深卡（与书写面同源令牌 + 官方 8 色语法板），右上语言标签 */
   pre {
     position: relative;
     padding: 14px 16px;
-    background: color-mix(in srgb, #e9eaee 6%, #1c1c1f);
-    border: 1px solid #e4e5e8;
+    color: #f8f8f2;
+    background: #282a36;
+    border: 1px solid #44475a;
     border-radius: 6px;
     margin: 18px 0;
   }
@@ -211,7 +212,7 @@ exports[`preview snapshot > dark theme 1`] = `
     right: 16px;
     font: 10px monospace;
     letter-spacing: 0.14em;
-    color: #5c6068;
+    color: #6272a4;
   }
   pre code {
     background: transparent;
@@ -229,8 +230,7 @@ exports[`preview snapshot > dark theme 1`] = `
     width: 3em;
     text-align: right;
     padding-right: 0.8em;
-    color: #5c6068;
-    opacity: 0.75;
+    color: #6272a4;
     user-select: none;
     display: none;
   }
@@ -694,12 +694,13 @@ exports[`preview snapshot > light theme 1`] = `
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：Dracula 深卡（与书写面同源令牌 + 官方 8 色语法板），右上语言标签 */
   pre {
     position: relative;
     padding: 14px 16px;
-    background: color-mix(in srgb, #1a1b1f 6%, #ffffff);
-    border: 1px solid #e4e5e8;
+    color: #24292e;
+    background: #edf0f5;
+    border: 1px solid #d9dfe8;
     border-radius: 6px;
     margin: 18px 0;
   }
@@ -710,7 +711,7 @@ exports[`preview snapshot > light theme 1`] = `
     right: 16px;
     font: 10px monospace;
     letter-spacing: 0.14em;
-    color: #5c6068;
+    color: #98a1ad;
   }
   pre code {
     background: transparent;
@@ -728,8 +729,7 @@ exports[`preview snapshot > light theme 1`] = `
     width: 3em;
     text-align: right;
     padding-right: 0.8em;
-    color: #5c6068;
-    opacity: 0.75;
+    color: #98a1ad;
     user-select: none;
     display: none;
   }

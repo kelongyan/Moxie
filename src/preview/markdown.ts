@@ -38,6 +38,11 @@ export interface PreviewTokens {
   fontMono: string;
   /** 语法高亮 CSS 变量（--syn-*）声明，供预览代码块使用；缺省时不着色 */
   synVars?: string;
+  /** 代码块（Dracula 卡）底/字/边/行号色；缺省回落到 fg×bg 混合的轻底 */
+  codeBg?: string;
+  codeFg?: string;
+  codeBorder?: string;
+  codeLn?: string;
   /** Callout 五色 RGB 三元组声明（--alert-*-rgb），缺省时走浅色 fallback */
   alertVars?: string;
   /** h2 标题专用色（略柔主色），缺省用 fg */
@@ -107,6 +112,10 @@ export function collectPreviewTokens(opts?: {
     fontMono: v("--font-mono"),
     synVars,
     alertVars,
+    codeBg: v("--lac-code-bg") || undefined,
+    codeFg: v("--lac-code-fg") || undefined,
+    codeBorder: v("--lac-code-border") || undefined,
+    codeLn: v("--lac-code-ln") || undefined,
     heading2: v("--lac-heading-2"),
     markBg: v("--lac-mark-bg") || undefined,
     markFg: v("--lac-mark-fg") || undefined,
@@ -148,7 +157,13 @@ export function renderShell(
   title: string,
   fontFaceUrl?: string
 ): string {
+  // 行内代码 / 键帽的轻底（跟随正文纸面，不做成深卡）
   const codeBg = `color-mix(in srgb, ${tokens.fg} 6%, ${tokens.bg})`;
+  // 代码块（Dracula 卡）：取主题令牌，缺失时回落到轻底以保证老调用不崩
+  const cardBg = tokens.codeBg || codeBg;
+  const cardFg = tokens.codeFg || tokens.fg;
+  const cardBorder = tokens.codeBorder || tokens.border;
+  const cardLn = tokens.codeLn || tokens.secondary;
   // 表头与斑马纹底（TizuMark bg-secondary 的 fg 混合等效）
   const thBg = `color-mix(in srgb, ${tokens.fg} 4%, ${tokens.bg})`;
   const fontFaceBlock = fontFaceUrl
@@ -368,12 +383,13 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     transform: rotate(45deg);
   }
 
-  /* 代码块：打纸稿——与行内代码同底、1px 边框、6px 圆角、右上语言标签；300px 按需滚动 */
+  /* 代码块：Dracula 深卡（与书写面同源令牌 + 官方 8 色语法板），右上语言标签 */
   pre {
     position: relative;
     padding: 14px 16px;
-    background: ${codeBg};
-    border: 1px solid ${tokens.border};
+    color: ${cardFg};
+    background: ${cardBg};
+    border: 1px solid ${cardBorder};
     border-radius: 6px;
     margin: ${MD_MARGIN.pre.top}px 0;
   }
@@ -384,7 +400,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     right: 16px;
     font: 10px ${tokens.fontMono};
     letter-spacing: 0.14em;
-    color: ${tokens.secondary};
+    color: ${cardLn};
   }
   pre code {
     background: transparent;
@@ -402,8 +418,7 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
     width: 3em;
     text-align: right;
     padding-right: 0.8em;
-    color: ${tokens.secondary};
-    opacity: 0.75;
+    color: ${cardLn};
     user-select: none;
     display: none;
   }

@@ -5,7 +5,9 @@ import { Extension } from "@codemirror/state";
 /**
  * 书写面配色：正文语法走"纸墨"色板（对齐 TizuMark 渲染规格——
  * 标题近黑分级、列表符号中性灰、链接 accent 无下划线），
- * 代码编辑器色板（--syn-*）只服务于围栏代码与降级源码模式。
+ * 代码编辑器色板（--syn-*）只服务于围栏代码与降级源码模式，
+ * 现取值 Dracula：深色模式 = 官方 8 色板，浅色模式 = 官方浅色变体 Alucard
+ * （两模式都是"同色系底色配同色系字色"，故降级源码模式在浅底上也不会糊）。
  */
 const lacHighlightStyle = HighlightStyle.define([
   // —— 代码（围栏内嵌语言 / 降级源码模式） ——
