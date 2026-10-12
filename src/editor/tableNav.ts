@@ -1,5 +1,6 @@
 import { EditorView } from "@codemirror/view";
 import {
+  buildTable,
   clearCellEdit,
   deleteColEdit,
   deleteRowEdit,
@@ -130,11 +131,60 @@ interface MenuSpec {
   danger?: boolean;
 }
 
-function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
+interface ShowMenuOptions {
+  colAlignHeader?: {
+    activeAlign: string;
+    onAlign: (align: "left" | "center" | "right") => void;
+  };
+}
+
+const MENU_SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
+const MENU_SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+const MENU_SVG_ALIGN_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+
+function showMenu(
+  view: EditorView,
+  items: MenuSpec[],
+  x: number,
+  y: number,
+  opts?: ShowMenuOptions
+) {
   closeTableMenu();
   const menu = document.createElement("div");
   menu.className = "md-table-menu";
   menu.setAttribute("role", "menu");
+
+  if (opts?.colAlignHeader) {
+    const alignBar = document.createElement("div");
+    alignBar.className = "md-table-menu-align-bar";
+
+    const aligns: Array<{ key: "left" | "center" | "right"; title: string; svg: string }> = [
+      { key: "left", title: "左对齐", svg: MENU_SVG_ALIGN_LEFT },
+      { key: "center", title: "居中对齐", svg: MENU_SVG_ALIGN_CENTER },
+      { key: "right", title: "右对齐", svg: MENU_SVG_ALIGN_RIGHT },
+    ];
+
+    for (const al of aligns) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `md-table-menu-align-btn${opts.colAlignHeader.activeAlign === al.key ? " is-active" : ""}`;
+      btn.title = al.title;
+      btn.innerHTML = al.svg;
+      btn.addEventListener("mousedown", (e) => e.stopPropagation());
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeTableMenu();
+        opts.colAlignHeader?.onAlign(al.key);
+      });
+      alignBar.appendChild(btn);
+    }
+
+    menu.appendChild(alignBar);
+    const divider = document.createElement("div");
+    divider.className = "md-table-menu-divider";
+    menu.appendChild(divider);
+  }
+
   for (const item of items) {
     if (item.separatorBefore) {
       const divider = document.createElement("div");
@@ -163,14 +213,15 @@ function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
 
 /**
  * 表格菜单：col/at 未指定的右键全量菜单（行 + 列 + 对齐 + 整理），
- * 指定 col 时为列头手柄的列菜单，at 可显式指定操作目标格（右键不必先移动光标）。
+ * 指定 col 时为列头手柄的列菜单，at 可显式指定操作目标格（右键不必先移动光标），
+ * rowOnly 时仅行三项（行缘拖拽条点击弹出的行专属菜单，墨记 tableRowColumMenu 同构）。
  */
 export function openTableMenu(
   view: EditorView,
   tableFrom: number,
   x: number,
   y: number,
-  opts: { col?: number; at?: { row: number; col: number } } = {}
+  opts: { col?: number; at?: { row: number; col: number }; rowOnly?: boolean } = {}
 ) {
   const state = view.state;
   const model = findTableAt(state, tableFrom);
@@ -185,7 +236,7 @@ export function openTableMenu(
   const currentColAlign = model.aligns[activeCol] ?? "left";
   const items: MenuSpec[] = [];
 
-  if (opts.col === undefined) {
+  if (opts.col === undefined || opts.rowOnly) {
     items.push(
       {
         label: "在上方插入行",
@@ -208,6 +259,11 @@ export function openTableMenu(
     );
   }
 
+  if (opts.rowOnly) {
+    showMenu(view, items, x, y);
+    return;
+  }
+
   items.push(
     {
       label: "在左侧插入列",
@@ -223,17 +279,27 @@ export function openTableMenu(
       run: () => runTableEdit(view, tableFrom, (m) => deleteColEdit(m, activeCol)),
     },
     {
+      // 再点同一种对齐 = 取消（墨记 alignColumn toggle 语义）
       label: `${currentColAlign === "left" ? "✓ " : "   "}左对齐`,
       separatorBefore: true,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "left")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "left" ? null : "left")
+        ),
     },
     {
       label: `${currentColAlign === "center" ? "✓ " : "   "}居中对齐`,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "center")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "center" ? null : "center")
+        ),
     },
     {
       label: `${currentColAlign === "right" ? "✓ " : "   "}右对齐`,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "right")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "right" ? null : "right")
+        ),
     }
   );
 
@@ -249,6 +315,12 @@ export function openTableMenu(
         run: () => runTableEdit(view, tableFrom, (m) => formatTableChange(m)),
       },
       {
+        // 常驻底部「复制表格」按钮移除后的去处（右键直达，能力不丢）
+        label: "复制表格 Markdown",
+        separatorBefore: true,
+        run: () => void navigator.clipboard.writeText(buildTable(model)),
+      },
+      {
         label: "删除表格",
         separatorBefore: true,
         danger: true,
@@ -257,7 +329,16 @@ export function openTableMenu(
     );
   }
 
-  showMenu(view, items, x, y);
+  showMenu(view, items, x, y, {
+    colAlignHeader:
+      opts.col !== undefined
+        ? {
+            activeAlign: currentColAlign,
+            onAlign: (align) =>
+              runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, align)),
+          }
+        : undefined,
+  });
 }
 
 /** 行插入不允许越过表头（新空行不能当表头） */

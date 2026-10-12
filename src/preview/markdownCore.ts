@@ -511,6 +511,10 @@ export function renderInlineMarkdown(
   try {
     let html = md.renderInline(text, {});
 
+    // 表格单元格软换行（Shift+Enter 写入源码的 <br>）：html 恒关下的定向放行——
+    // 只把转义后的 br 标签还原，无属性可注入，安全
+    html = html.replace(/&lt;br\s*\/?&gt;/gi, "<br>");
+
     // 参考 marktable_studio：支持单元格内复选框 [x] 与 [ ]
     html = html.replace(
       /\[x\]/gi,

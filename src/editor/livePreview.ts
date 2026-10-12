@@ -26,12 +26,13 @@ import {
   buildTable,
   deleteColEdit,
   deleteRowEdit,
-  deleteTableEdit,
   escapeCell,
   findTableAt,
   formatTableChange,
   insertColEdit,
   insertRowEdit,
+  moveColEdit,
+  moveRowEdit,
   resizeTableEdit,
   setAlignEdit,
   type TableEdit,
@@ -81,6 +82,22 @@ export type ImageSrcResolver = (rawSrc: string) => string | null;
 let imageResolver: ImageSrcResolver | null = null;
 
 const HIDE = Decoration.replace({});
+
+// —— 表格浮动工具条轻量 SVG 图标定义 ——
+const SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
+const SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+const SVG_ALIGN_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
+
+const SVG_ROW_ABOVE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16"/><path d="M4 20h16"/><path d="M12 4v6"/><path d="m8 6 4-4 4 4"/></svg>`;
+const SVG_ROW_BELOW = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 10h16"/><path d="M12 14v6"/><path d="m8 18 4 4 4-4"/></svg>`;
+const SVG_ROW_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="m14 8-4 8"/><path d="m10 8 4 8"/></svg>`;
+
+const SVG_COL_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v16"/><path d="M20 4v16"/><path d="M4 12h6"/><path d="m6 8-4 4 4 4"/></svg>`;
+const SVG_COL_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"/><path d="M10 4v16"/><path d="M14 12h6"/><path d="m18 8 4 4-4 4"/></svg>`;
+const SVG_COL_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="m8 14 8-4"/><path d="m8 10 8 4"/></svg>`;
+
+const SVG_GRID = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`;
+const SVG_FORMAT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
 
 /** 标注块（Callout）类型切换菜单 */
 let openCalloutMenu: HTMLElement | null = null;
@@ -384,23 +401,6 @@ class BulletWidget extends WidgetType {
   }
 }
 
-// —— 表格浮动工具条轻量 SVG 图标定义 ——
-const SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
-const SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
-const SVG_ALIGN_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
-
-const SVG_ROW_ABOVE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16"/><path d="M4 20h16"/><path d="M12 4v6"/><path d="m8 6 4-4 4 4"/></svg>`;
-const SVG_ROW_BELOW = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 10h16"/><path d="M12 14v6"/><path d="m8 18 4 4 4-4"/></svg>`;
-const SVG_ROW_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="m14 8-4 8"/><path d="m10 8 4 8"/></svg>`;
-
-const SVG_COL_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v16"/><path d="M20 4v16"/><path d="M4 12h6"/><path d="m6 8-4 4 4 4"/></svg>`;
-const SVG_COL_RIGHT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"/><path d="M10 4v16"/><path d="M14 12h6"/><path d="m18 8 4 4-4 4"/></svg>`;
-const SVG_COL_DELETE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="m8 14 8-4"/><path d="m8 10 8 4"/></svg>`;
-
-const SVG_GRID = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>`;
-const SVG_FORMAT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
-const SVG_TRASH = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
-
 /**
  * 表格（GFM，Typora 式）：始终渲染为带对齐与行内 markdown 的真实表格。
  * - 顶部浮动悬停/编辑工具条：对齐切换、行列增删、规模调整、整理与整表删除；
@@ -417,8 +417,22 @@ class TableWidget extends WidgetType {
   private activeCol = -1;
   private view: EditorView | null = null;
   private wrapEl: HTMLElement | null = null;
+  private tableEl: HTMLTableElement | null = null;
   private toolbarEl: HTMLElement | null = null;
   private sizePopupEl: HTMLElement | null = null;
+  // —— 行列拖拽重排（墨记 tableDragBar 同款交互，见 onMouseMoveTable） ——
+  private dragBarEl: HTMLElement | null = null;
+  private dragPressTimer: number | null = null;
+  private dragMoved = false;
+  private dragInfo: {
+    barType: "bottom" | "right";
+    index: number;
+    curIndex: number;
+    start: number;
+    offset: number;
+    aspects: number[];
+    dragCells: HTMLElement[];
+  } | null = null;
 
   constructor(readonly data: TableModel, readonly gap: number) {
     super();
@@ -467,9 +481,6 @@ class TableWidget extends WidgetType {
       });
     });
 
-    // 顶部悬浮工具条（Typora 风格：绝对定位悬浮于表格上方，绝不占用文档流或产生空白带）
-    wrap.appendChild(this.buildToolbar());
-
     // 内部独立横向滚动卡片
     const scrollBox = document.createElement("div");
     scrollBox.className = "md-table-scroll";
@@ -477,6 +488,7 @@ class TableWidget extends WidgetType {
     // 实体表格
     const table = document.createElement("table");
     table.className = "md-table";
+    this.tableEl = table;
     const alignOf = (c: number) => this.data.aligns[c] ?? "left";
 
     this.cellEls = this.data.rows.map((row, r) => {
@@ -507,68 +519,322 @@ class TableWidget extends WidgetType {
       });
     });
 
-    // 底部规格与便捷操作条 (参考 marktable_studio.html)
-    const footer = document.createElement("div");
-    footer.className = "md-table-footer";
-
-    const stat = document.createElement("div");
-    stat.className = "md-table-footer-stat";
-    stat.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg><span>表格规格: ${this.rowCount} 行 × ${this.colCount} 列</span>`;
-
-    const actions = document.createElement("div");
-    actions.className = "md-table-footer-actions";
-
-    const copyBtn = document.createElement("button");
-    copyBtn.type = "button";
-    copyBtn.className = "md-table-footer-btn";
-    copyBtn.title = "复制此表格 Markdown 源码";
-    copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
-    copyBtn.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-    });
-    copyBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const model = this.modelWithPending() ?? this.data;
-      const text = buildTable(model);
-      void navigator.clipboard.writeText(text);
-      copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><span style="color:var(--lac-success)">已复制!</span>`;
-      setTimeout(() => {
-        copyBtn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制表格</span>`;
-      }, 1500);
-    });
-
-    actions.appendChild(copyBtn);
-    footer.appendChild(stat);
-    footer.appendChild(actions);
-
+    // 编辑态工具条：仅当存在活动格（has-active-cell）时浮现——hover 不打扰，
+    // 点进表格 = 明确编辑意图（2026-10-12 设计拍板）；危险操作（删表）只在右键
+    wrap.appendChild(this.buildToolbar());
     scrollBox.appendChild(table);
-    scrollBox.appendChild(footer);
     wrap.appendChild(scrollBox);
+    // 行列拖拽：表格上缘/左缘悬停探测（墨记 tableDragBar），条元素挂 scrollBox 随内容滚动
+    table.addEventListener("mousemove", (e) => this.onMouseMoveTable(e));
+    table.addEventListener("mouseleave", () => this.hideDragBar());
     liveTableWidgets.set(this.data.from, this);
     return wrap;
   }
 
   destroy(dom: HTMLElement) {
+    if (this.dragPressTimer !== null) {
+      window.clearTimeout(this.dragPressTimer);
+      this.dragPressTimer = null;
+    }
+    this.dragBarEl?.remove();
+    this.dragBarEl = null;
+    this.dragInfo = null;
+    this.toolbarEl = null;
     this.closeSizePopover();
     if (liveTableWidgets.get(this.data.from) === this) {
       liveTableWidgets.delete(this.data.from);
     }
     this.overlay = null;
     this.wrapEl = null;
-    this.toolbarEl = null;
+    this.tableEl = null;
     super.destroy(dom);
   }
+
+  // —— 行列拖拽重排 ——
+
+  /** 表格上缘/左缘 6px 探测带：悬停浮现拖拽条（列=顶缘横条，行=左缘竖条） */
+  private onMouseMoveTable(e: MouseEvent): void {
+    if (this.dragInfo || !this.tableEl) return;
+    const rect = this.tableEl.getBoundingClientRect();
+    if (rect.height === 0 || rect.width === 0) return;
+    const nearTop = e.clientY - rect.top <= 6;
+    const nearLeft = e.clientX - rect.left <= 6;
+    if (nearTop) {
+      const index = this.headerIndexOf(e.clientX);
+      if (index >= 0) {
+        this.showDragBar("bottom", index);
+        return;
+      }
+    }
+    if (nearLeft) {
+      const index = this.rowIndexOf(e.clientY);
+      if (index >= 0) {
+        this.showDragBar("right", index);
+        return;
+      }
+    }
+    this.hideDragBar();
+  }
+
+  private headerIndexOf(clientX: number): number {
+    const cells = this.cellEls[0] ?? [];
+    for (let c = 0; c < cells.length; c++) {
+      const r = cells[c].getBoundingClientRect();
+      if (clientX >= r.left && clientX <= r.right) return c;
+    }
+    return -1;
+  }
+
+  private rowIndexOf(clientY: number): number {
+    for (let r = 0; r < this.cellEls.length; r++) {
+      const cell = this.cellEls[r]?.[0];
+      if (!cell) continue;
+      const rect = cell.getBoundingClientRect();
+      if (clientY >= rect.top && clientY <= rect.bottom) return r;
+    }
+    return -1;
+  }
+
+  private showDragBar(barType: "bottom" | "right", index: number): void {
+    const scrollBox = this.tableEl?.parentElement;
+    if (!scrollBox) return;
+    let bar = this.dragBarEl;
+    if (!bar || bar.dataset.drag !== barType) {
+      bar?.remove();
+      bar = document.createElement("div");
+      bar.className = "md-table-drag-bar";
+      bar.dataset.drag = barType;
+      scrollBox.appendChild(bar);
+      this.dragBarEl = bar;
+      bar.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        this.beginDragPress(barType, index, e);
+      });
+      bar.addEventListener("mouseup", (e) => this.onDragBarUp(e));
+    }
+    const boxRect = scrollBox.getBoundingClientRect();
+    if (barType === "bottom") {
+      const cell = this.cellEls[0]?.[index];
+      if (!cell) return;
+      const r = cell.getBoundingClientRect();
+      bar.style.left = `${r.left - boxRect.left + scrollBox.scrollLeft}px`;
+      bar.style.top = `${r.top - boxRect.top + scrollBox.scrollTop}px`;
+      bar.style.width = `${r.width}px`;
+      bar.style.height = "4px";
+    } else {
+      const cell = this.cellEls[index]?.[0];
+      if (!cell) return;
+      const r = cell.getBoundingClientRect();
+      bar.style.left = `${r.left - boxRect.left + scrollBox.scrollLeft}px`;
+      bar.style.top = `${r.top - boxRect.top + scrollBox.scrollTop}px`;
+      bar.style.width = "4px";
+      bar.style.height = `${r.height}px`;
+    }
+    bar.style.display = "block";
+  }
+
+  private hideDragBar(): void {
+    if (this.dragInfo) return;
+    if (this.dragBarEl) this.dragBarEl.style.display = "none";
+  }
+
+  /** 按住 300ms 才进入拖拽（区分「点手柄弹菜单」与「拖动」）；按住期间移出把手即取消 */
+  private beginDragPress(
+    barType: "bottom" | "right",
+    index: number,
+    e: MouseEvent
+  ): void {
+    this.dragMoved = false;
+    if (this.dragPressTimer !== null) window.clearTimeout(this.dragPressTimer);
+    const cancel = () => {
+      if (this.dragPressTimer !== null) {
+        window.clearTimeout(this.dragPressTimer);
+        this.dragPressTimer = null;
+      }
+      document.removeEventListener("mouseup", cancel);
+    };
+    document.addEventListener("mouseup", cancel);
+    this.dragPressTimer = window.setTimeout(() => {
+      this.dragPressTimer = null;
+      document.removeEventListener("mouseup", cancel);
+      this.startDrag(barType, index, e);
+    }, 300);
+  }
+
+  private onDragBarUp(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.dragPressTimer !== null) {
+      // 未达到长按时长 = 点击手柄 → 行/列专属菜单
+      window.clearTimeout(this.dragPressTimer);
+      this.dragPressTimer = null;
+      const barType = this.dragBarEl?.dataset.drag as "bottom" | "right";
+      const view = this.view;
+      if (!view) return;
+      const rect = this.dragBarEl!.getBoundingClientRect();
+      if (barType === "right") {
+        openTableMenu(view, this.data.from, rect.left + 8, rect.top, {
+          rowOnly: true,
+          at: { row: this.dragIndexCache, col: 0 },
+        });
+      } else {
+        openTableMenu(view, this.data.from, rect.left + 8, rect.top, {
+          col: this.dragIndexCache,
+        });
+      }
+    }
+  }
+
+  private dragIndexCache = 0;
+
+  private startDrag(
+    barType: "bottom" | "right",
+    index: number,
+    e: MouseEvent
+  ): void {
+    if (!this.tableEl) return;
+    this.dragIndexCache = index;
+    // 拖拽前收起编辑会话（内容并入 pending，提交时一起重写）
+    this.stashActiveCell();
+    const aspects =
+      barType === "bottom"
+        ? (this.cellEls[0] ?? []).map((c) => c.getBoundingClientRect().width)
+        : this.cellEls.map((row) => row[0]?.getBoundingClientRect().height ?? 0);
+    this.dragInfo = {
+      barType,
+      index,
+      curIndex: index,
+      start: barType === "bottom" ? e.clientX : e.clientY,
+      offset: 0,
+      aspects,
+      dragCells:
+        barType === "bottom"
+          ? this.cellEls.map((row) => row[index]).filter(Boolean)
+          : [...(this.cellEls[index] ?? [])],
+    };
+    this.tableEl.classList.add("md-table-dragging");
+    document.addEventListener("mousemove", this.onDragMove);
+    document.addEventListener("mouseup", this.onDragUp);
+  }
+
+  private onDragMove = (e: MouseEvent): void => {
+    const info = this.dragInfo;
+    if (!info) return;
+    const axis = info.barType === "bottom" ? "clientX" : "clientY";
+    info.offset = e[axis] - info.start;
+    if (Math.abs(info.offset) < 5) return;
+    this.dragMoved = true;
+    this.dragBarEl && (this.dragBarEl.style.opacity = "0.9");
+    // 落点：按格宽/高累加推进（墨记 _calculateCurIndex 同一算法）
+    const { aspects, index } = info;
+    let cur = index;
+    let rest = info.offset;
+    if (rest > 0) {
+      for (let i = index; i < aspects.length; i++) {
+        rest -= Math.floor(aspects[i] / (i === index ? 2 : 1));
+        if (rest < 0) break;
+        cur++;
+      }
+    } else {
+      for (let i = index; i >= 0; i--) {
+        rest += Math.floor(aspects[i] / (i === index ? 2 : 1));
+        if (rest > 0) break;
+        cur--;
+      }
+    }
+    info.curIndex = Math.max(0, Math.min(cur, aspects.length - 1));
+    const axisName = info.barType === "bottom" ? "translateX" : "translateY";
+    const aspect = aspects[index];
+    const positive = info.offset > 0;
+    // 被拖行/列跟随鼠标；跨越区间反向让位一格
+    for (const cell of info.dragCells) {
+      cell.classList.add("md-cell-dragging");
+      cell.style.transform = `${axisName}(${info.offset}px)`;
+    }
+    const inRange = (i: number) =>
+      positive ? i > index && i <= info.curIndex : i >= info.curIndex && i < index;
+    if (info.barType === "bottom") {
+      for (const row of this.cellEls) {
+        row.forEach((cell, i) => {
+          if (info.dragCells.includes(cell)) return;
+          cell.style.transform = inRange(i) ? `${axisName}(${-aspect}px)` : "";
+        });
+      }
+    } else {
+      this.cellEls.forEach((row, i) => {
+        if (info.dragCells.includes(row[0])) return;
+        const t = inRange(i) ? `${axisName}(${-aspect}px)` : "";
+        row.forEach((cell) => (cell.style.transform = t));
+      });
+    }
+  };
+
+  private onDragUp = (): void => {
+    const info = this.dragInfo;
+    if (!info) return;
+    document.removeEventListener("mousemove", this.onDragMove);
+    document.removeEventListener("mouseup", this.onDragUp);
+    this.tableEl?.classList.remove("md-table-dragging");
+    if (!this.dragMoved) {
+      this.dragInfo = null;
+      return;
+    }
+    // 落定动画：被拖行/列滑到最终位置，300ms 后提交
+    const { barType, index, curIndex, aspects, offset } = info;
+    const axisName = barType === "bottom" ? "translateX" : "translateY";
+    let move = 0;
+    if (offset > 0) {
+      for (let i = index + 1; i <= curIndex; i++) move += aspects[i];
+    } else {
+      for (let i = curIndex; i < index; i++) move -= aspects[i];
+    }
+    for (const cell of info.dragCells) {
+      cell.classList.remove("md-cell-dragging");
+      cell.style.transform = `${axisName}(${move}px)`;
+    }
+    const view = this.view;
+    const hadSession = this.activeRow >= 0;
+    const from = { row: this.activeRow, col: this.activeCol };
+    this.dragInfo = null;
+    window.setTimeout(() => {
+      if (index === curIndex || !view) {
+        // 未跨格：只清掉动画痕迹（widget 重建前手动还原）
+        return;
+      }
+      if (hadSession) {
+        // 编辑会话/光标跟随：被拖行/列随迁，跨越区间 ±1（墨记 _switchTableData 规则）
+        const migrate = (i: number) => {
+          if (i === index) return curIndex;
+          if (i >= Math.min(index, curIndex) && i <= Math.max(index, curIndex)) {
+            return i + (offset > 0 ? -1 : 1);
+          }
+          return i;
+        };
+        const target =
+          barType === "bottom"
+            ? { row: from.row, col: migrate(from.col) }
+            : { row: migrate(from.row), col: from.col };
+        // pending 键跟随迁移，restoreCellEdit 才能取到编辑中内容
+        const key = `${from.row},${from.col}`;
+        if (this.pending.has(key)) {
+          const text = this.pending.get(key)!;
+          this.pending.delete(key);
+          this.pending.set(`${target.row},${target.col}`, text);
+        }
+        setActiveEdit({ tableFrom: this.data.from, row: target.row, col: target.col });
+      }
+      this.applyEdit((m) =>
+        barType === "bottom" ? moveColEdit(m, index, curIndex) : moveRowEdit(m, index, curIndex)
+      );
+    }, 300);
+  };
 
   restoreCellEdit(row: number, col: number) {
     if (this.wrapConnected() && this.cellEls[row]?.[col]) {
       this.openEditor(row, col, { caretMode: "select" });
     }
-  }
-
-  private wrapConnected(): boolean {
-    return this.cellEls[0]?.[0]?.isConnected ?? false;
   }
 
   /** 构建顶部 Typora 风格悬浮快捷工具条 */
@@ -703,11 +969,7 @@ class TableWidget extends WidgetType {
       this.applyEdit((m) => formatTableChange(m));
     });
 
-    const btnDelete = makeBtn("删除表格", SVG_TRASH, () => {
-      this.applyEdit((m) => deleteTableEdit(m));
-    }, "btn-table-danger");
-
-    metaGroup.append(btnSize, btnFormat, btnDelete);
+    metaGroup.append(btnSize, btnFormat);
 
     bar.append(alignGroup, makeDivider(), structGroup, makeDivider(), metaGroup);
     return bar;
@@ -803,6 +1065,10 @@ class TableWidget extends WidgetType {
     this.sizePopupEl = null;
   }
 
+  private wrapConnected(): boolean {
+    return this.cellEls[0]?.[0]?.isConnected ?? false;
+  }
+
   /** 打开单元格原位编辑器 */
   private openEditor(
     r: number,
@@ -894,6 +1160,34 @@ class TableWidget extends WidgetType {
       return;
     }
 
+    // Shift+Enter: 格内软换行——源码写 <br>（渲染层对表格单元格定向放行该标签）
+    if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+      this.overlay.setRangeText("<br>", this.overlay.selectionStart, this.overlay.selectionEnd, "end");
+      return;
+    }
+
+    // Backspace 在格首（空选区）：跳上一格末尾；首格再按退出表格到上文
+    if (
+      e.key === "Backspace" &&
+      this.overlay.selectionStart === 0 &&
+      this.overlay.selectionEnd === 0
+    ) {
+      e.preventDefault();
+      if (this.activeRow > 0 || this.activeCol > 0) {
+        this.moveBy(0, -1, "end");
+      } else {
+        this.finish(false);
+        const view = this.view;
+        if (view && this.data.from > 0) {
+          const pos = view.state.doc.lineAt(Math.max(0, this.data.from - 1)).to;
+          view.dispatch({ selection: { anchor: pos } });
+        }
+        view?.focus();
+      }
+      return;
+    }
+
     // Enter: 下移行格，末行自动追加
     if (e.key === "Enter") {
       e.preventDefault();
@@ -907,11 +1201,34 @@ class TableWidget extends WidgetType {
       if (this.activeRow > 0) {
         e.preventDefault();
         this.moveBy(-1, 0, "select");
+      } else if (this.overlay.selectionStart === 0 && this.overlay.selectionEnd === 0) {
+        // 首行首端 ↑：退出表格，光标到上文末尾（墨记同款）
+        e.preventDefault();
+        this.finish(false);
+        const view = this.view;
+        if (view && this.data.from > 0) {
+          const pos = view.state.doc.lineAt(Math.max(0, this.data.from - 1)).to;
+          view.dispatch({ selection: { anchor: pos } });
+        }
+        view?.focus();
       }
     } else if (e.key === "ArrowDown") {
       if (this.activeRow < this.rowCount - 1) {
         e.preventDefault();
         this.moveBy(1, 0, "select");
+      } else if (
+        this.overlay.selectionStart === this.overlay.value.length &&
+        this.overlay.selectionEnd === this.overlay.value.length
+      ) {
+        // 末行末端 ↓：退出表格到下文（墨记同款；表格后必有可落点 = 文档末尾）
+        e.preventDefault();
+        this.finish(false);
+        const view = this.view;
+        if (view) {
+          const pos = Math.min(this.data.to, view.state.doc.length);
+          view.dispatch({ selection: { anchor: pos } });
+        }
+        view?.focus();
       }
     } else if (e.key === "ArrowLeft") {
       // 光标位于最左端时，按左箭头平滑移入前一格末尾
@@ -1054,7 +1371,6 @@ class TableWidget extends WidgetType {
   }
 
   private teardown() {
-    this.closeSizePopover();
     this.overlay?.remove();
     this.overlay = null;
     this.wrapEl?.classList.remove("has-active-cell");
@@ -1241,20 +1557,384 @@ function hideRange(
 }
 
 /** 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span，渲染失败回退原文） */
+let activeMathBubble: HTMLElement | null = null;
+let activeMathTarget: HTMLElement | null = null;
+let closeMathBubbleCleanup: (() => void) | null = null;
+
+function closeMathBubble() {
+  if (closeMathBubbleCleanup) {
+    closeMathBubbleCleanup();
+    closeMathBubbleCleanup = null;
+  }
+  if (activeMathTarget) {
+    activeMathTarget.classList.remove("is-editing");
+    activeMathTarget = null;
+  }
+  if (activeMathBubble) {
+    activeMathBubble.classList.add("is-closing");
+    const el = activeMathBubble;
+    activeMathBubble = null;
+    setTimeout(() => {
+      el.remove();
+    }, 100);
+  }
+}
+
+document.addEventListener("mousedown", (e) => {
+  if (activeMathBubble && !activeMathBubble.contains(e.target as Node)) {
+    closeMathBubble();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && activeMathBubble) {
+    closeMathBubble();
+  }
+});
+
+function positionMathBubble(bubble: HTMLElement, targetEl: HTMLElement) {
+  const rect = targetEl.getBoundingClientRect();
+  const bubbleWidth = bubble.offsetWidth || 380;
+  const bubbleHeight = bubble.offsetHeight || 160;
+
+  let left = rect.left + rect.width / 2 - bubbleWidth / 2;
+  left = Math.max(12, Math.min(left, window.innerWidth - bubbleWidth - 12));
+
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const placeAbove = spaceBelow < bubbleHeight + 16 && rect.top > bubbleHeight + 16;
+
+  const top = placeAbove ? rect.top - bubbleHeight - 10 : rect.bottom + 10;
+
+  bubble.style.left = `${left}px`;
+  bubble.style.top = `${top}px`;
+  bubble.dataset.placement = placeAbove ? "top" : "bottom";
+
+  const arrow = bubble.querySelector(".md-math-bubble-arrow") as HTMLElement | null;
+  if (arrow) {
+    const arrowLeft = Math.max(16, Math.min(rect.left + rect.width / 2 - left, bubbleWidth - 16));
+    arrow.style.left = `${arrowLeft}px`;
+  }
+}
+
+function resolveInlineMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const text = line.text;
+  const relPos = pos - line.from;
+  let i = 0;
+  while (i < text.length - 1) {
+    if (text[i] !== "$" || text[i + 1] === "$" || (i > 0 && text[i - 1] === "\\")) {
+      i++;
+      continue;
+    }
+    let close = -1;
+    for (let j = i + 1; j < text.length; j++) {
+      if (text[j] === "\\") {
+        j++;
+        continue;
+      }
+      if (text[j] === "$") {
+        close = j;
+        break;
+      }
+    }
+    if (close > i + 1) {
+      if (relPos >= i && relPos <= close + 1) {
+        return { from: line.from + i, to: line.from + close + 1 };
+      }
+      i = close + 1;
+    } else {
+      i++;
+    }
+  }
+  return null;
+}
+
+function resolveBlockMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const trimmed = line.text.trim();
+  if (trimmed.startsWith("$$")) {
+    const second = trimmed.indexOf("$$", 2);
+    if (second > 2) {
+      return { from: line.from, to: line.to };
+    }
+    for (let j = line.number + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: line.from, to: doc.line(j).to };
+      }
+    }
+  }
+  let startLine = -1;
+  for (let j = line.number; j >= 1; j--) {
+    if (doc.line(j).text.trim().startsWith("$$")) {
+      startLine = j;
+      break;
+    }
+  }
+  if (startLine > 0) {
+    for (let j = startLine + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: doc.line(startLine).from, to: doc.line(j).to };
+      }
+    }
+  }
+  return null;
+}
+
+function openMathBubble(
+  view: EditorView,
+  targetEl: HTMLElement,
+  initialTex: string,
+  display: boolean,
+  from: number,
+  to: number
+) {
+  closeMathBubble();
+
+  activeMathTarget = targetEl;
+  targetEl.classList.add("is-editing");
+
+  const bubble = document.createElement("div");
+  bubble.className = "md-math-bubble";
+  bubble.setAttribute("role", "dialog");
+  bubble.setAttribute("aria-label", "编辑 LaTeX 公式");
+
+  let currentRange = { from, to };
+  let currentTex = initialTex;
+
+  const arrow = document.createElement("div");
+  arrow.className = "md-math-bubble-arrow";
+  bubble.appendChild(arrow);
+
+  const header = document.createElement("div");
+  header.className = "md-math-bubble-header";
+
+  const titleWrap = document.createElement("div");
+  titleWrap.className = "md-math-bubble-title";
+  titleWrap.innerHTML = `
+    <svg class="md-math-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19h4a8 8 0 0 0 8-8V4"/>
+      <path d="M12 4h6"/>
+      <path d="M8 11h8"/>
+    </svg>
+    <span>${display ? "块级 LaTeX 公式" : "行内 LaTeX 公式"}</span>
+  `;
+  header.appendChild(titleWrap);
+
+  const actions = document.createElement("div");
+  actions.className = "md-math-bubble-actions";
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.type = "button";
+  confirmBtn.className = "md-math-confirm-btn";
+  confirmBtn.textContent = "完成";
+  confirmBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  confirmBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(confirmBtn);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.type = "button";
+  copyBtn.className = "md-math-action-btn md-math-copy-btn";
+  copyBtn.title = "复制 LaTeX 源码";
+  copyBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+    </svg>
+  `;
+  copyBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  copyBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    void navigator.clipboard?.writeText(currentTex);
+    copyBtn.classList.add("copied");
+    setTimeout(() => copyBtn.classList.remove("copied"), 1200);
+  });
+  actions.appendChild(copyBtn);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "md-math-action-btn md-math-close-btn";
+  closeBtn.title = "关闭 (Esc)";
+  closeBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  `;
+  closeBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  closeBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(closeBtn);
+  header.appendChild(actions);
+  bubble.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "md-math-bubble-body";
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "md-math-input";
+  textarea.value = initialTex;
+  textarea.rows = display ? 3 : 1;
+  textarea.placeholder = display ? "输入 LaTeX 公式源码 (多行)..." : "输入 LaTeX 公式源码...";
+  body.appendChild(textarea);
+  bubble.appendChild(body);
+
+  const footer = document.createElement("div");
+  footer.className = "md-math-bubble-footer";
+
+  const quickSymbols = document.createElement("div");
+  quickSymbols.className = "md-math-quick-symbols";
+  const SYMBOLS = [
+    { label: "\\frac", insert: "\\frac{a}{b}" },
+    { label: "\\sqrt", insert: "\\sqrt{x}" },
+    { label: "\\sum", insert: "\\sum_{i=1}^{n}" },
+    { label: "\\int", insert: "\\int_{a}^{b}" },
+    { label: "\\alpha", insert: "\\alpha" },
+    { label: "\\infty", insert: "\\infty" },
+    { label: "\\pm", insert: "\\pm" },
+    { label: "\\leq", insert: "\\leq" },
+    { label: "\\geq", insert: "\\geq" },
+  ];
+  for (const s of SYMBOLS) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "md-math-chip";
+    chip.textContent = s.label;
+    chip.title = `插入 ${s.insert}`;
+    chip.addEventListener("mousedown", (ev) => ev.stopPropagation());
+    chip.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      textarea.value = val.slice(0, start) + s.insert + val.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + s.insert.length;
+      textarea.focus();
+      handleTexChange(textarea.value);
+    });
+    quickSymbols.appendChild(chip);
+  }
+  footer.appendChild(quickSymbols);
+  bubble.appendChild(footer);
+  bubble.appendChild(footer);
+
+  const handleTexChange = (newVal: string) => {
+    currentTex = newVal;
+    const trimmed = newVal.trim();
+    const newInsert = display
+      ? `$$\n${trimmed || " "}\n$$`
+      : `$${trimmed || " "}$`;
+
+    if (
+      currentRange.from <= view.state.doc.length &&
+      currentRange.to <= view.state.doc.length
+    ) {
+      view.dispatch({
+        changes: {
+          from: currentRange.from,
+          to: currentRange.to,
+          insert: newInsert,
+        },
+        userEvent: "input",
+      });
+      currentRange.to = currentRange.from + newInsert.length;
+    }
+  };
+
+  textarea.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  textarea.addEventListener("input", () => {
+    handleTexChange(textarea.value);
+  });
+  textarea.addEventListener("keydown", (ev) => {
+    ev.stopPropagation();
+    if (ev.key === "Escape") {
+      closeMathBubble();
+      view.focus();
+    } else if (
+      (display && ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) ||
+      (!display && ev.key === "Enter" && !ev.shiftKey)
+    ) {
+      ev.preventDefault();
+      closeMathBubble();
+      view.focus();
+    }
+  });
+
+  document.body.appendChild(bubble);
+  activeMathBubble = bubble;
+
+  positionMathBubble(bubble, targetEl);
+
+  setTimeout(() => {
+    textarea.focus();
+    textarea.select();
+  }, 30);
+
+  const reposition = () => {
+    if (activeMathBubble && activeMathTarget) {
+      positionMathBubble(activeMathBubble, activeMathTarget);
+    }
+  };
+  window.addEventListener("scroll", reposition, true);
+  window.addEventListener("resize", reposition);
+
+  closeMathBubbleCleanup = () => {
+    window.removeEventListener("scroll", reposition, true);
+    window.removeEventListener("resize", reposition);
+  };
+}
+
+
+
+/**
+ * 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span）。
+ * 常驻渲染；点击进入「气泡编辑」（墨记同款）：浮动气泡内编辑 LaTeX 源码，
+ * 文档内实时重渲染；来自 2a6345f 的设计恢复。
+ */
 class MathWidget extends WidgetType {
   constructor(
     readonly tex: string,
-    readonly display: boolean
+    readonly display: boolean,
+    readonly mathFrom?: number,
+    readonly mathTo?: number
   ) {
     super();
   }
   eq(other: MathWidget) {
     return other.tex === this.tex && other.display === this.display;
   }
-  toDOM() {
+  toDOM(view: EditorView) {
     const el = document.createElement(this.display ? "div" : "span");
     el.className = this.display ? "md-math-block" : "md-math-inline";
     el.innerHTML = renderKatex(this.tex, this.display);
+
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const pos = view.posAtDOM(el);
+      let from = this.mathFrom ?? pos;
+      let to = this.mathTo ?? pos + this.tex.length + (this.display ? 4 : 2);
+
+      const resolved = this.display
+        ? resolveBlockMathRange(view.state.doc, pos)
+        : resolveInlineMathRange(view.state.doc, pos);
+      if (resolved) {
+        from = resolved.from;
+        to = resolved.to;
+      }
+
+      openMathBubble(view, el, this.tex, this.display, from, to);
+    });
+
     return el;
   }
   ignoreEvent() {
@@ -1712,14 +2392,18 @@ export function computeLiveRanges(
     if (!t.startsWith("$$")) continue;
     const sameLineClose = t.indexOf("$$", 2);
     if (sameLineClose > 2) {
-      if (!selectionTouches(state, line.from, line.to)) {
-        mathRanges.push(
-          Decoration.replace({
-            widget: new MathWidget(t.slice(2, sameLineClose).trim(), true),
-            block: true,
-          }).range(line.from, line.to)
-        );
-      }
+      // 恒渲染（墨记式）：光标进入不露源码，编辑走气泡
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(
+            t.slice(2, sameLineClose).trim(),
+            true,
+            line.from,
+            line.to
+          ),
+          block: true,
+        }).range(line.from, line.to)
+      );
       blockMathLines.add(ln);
       excluded.push({ from: line.from, to: line.to });
       continue;
@@ -1733,17 +2417,17 @@ export function computeLiveRanges(
     }
     if (endLine > 0) {
       const absTo = doc.line(endLine).to;
-      if (selectionTouches(state, line.from, absTo)) {
-        for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
-        continue;
-      }
       mathRanges.push(
         Decoration.replace({
-          widget: new MathWidget(doc.sliceString(line.to, doc.line(endLine).from).trim(), true),
+          widget: new MathWidget(
+            doc.sliceString(line.to, doc.line(endLine).from).trim(),
+            true,
+            line.from,
+            absTo
+          ),
           block: true,
         }).range(line.from, absTo)
       );
-      for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
       excluded.push({ from: line.from, to: absTo });
     }
   }
@@ -1779,11 +2463,11 @@ export function computeLiveRanges(
       }
       const absFrom = line.from + i;
       const absTo = line.from + close + 1;
-      if (!selectionTouches(state, absFrom, absTo)) {
-        mathRanges.push(
-          Decoration.replace({ widget: new MathWidget(content, false) }).range(absFrom, absTo)
-        );
-      }
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(content, false, absFrom, absTo),
+        }).range(absFrom, absTo)
+      );
       i = close + 1;
     }
   }

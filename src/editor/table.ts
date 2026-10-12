@@ -309,6 +309,44 @@ export function setAlignEdit(
   return editOf(model, model.rows, aligns, { row: 0, col });
 }
 
+/** 移动行（墨记 tableDragBar 落点语义）：from 行拔出后插到 to 位置，光标落移动后的行首 */
+export function moveRowEdit(
+  model: TableModel,
+  from: number,
+  to: number
+): TableEdit | null {
+  if (from < 0 || from >= model.rows.length) return null;
+  const target = Math.max(0, Math.min(to, model.rows.length - 1));
+  if (target === from) return null;
+  const rows = [...model.rows];
+  const [moved] = rows.splice(from, 1);
+  rows.splice(target, 0, moved);
+  return editOf(model, rows, model.aligns, { row: target, col: 0 });
+}
+
+/** 移动列（对齐标记随列走），光标落表头移动后的列 */
+export function moveColEdit(
+  model: TableModel,
+  from: number,
+  to: number
+): TableEdit | null {
+  const colCount = Math.max(model.aligns.length, ...model.rows.map((r) => r.length));
+  if (from < 0 || from >= colCount) return null;
+  const target = Math.max(0, Math.min(to, colCount - 1));
+  if (target === from) return null;
+  const rows = model.rows.map((row) => {
+    const cells = [...row];
+    const [moved] = cells.splice(from, 1);
+    cells.splice(target, 0, moved ?? rawCell(""));
+    return cells;
+  });
+  const aligns = [...model.aligns];
+  while (aligns.length < colCount) aligns.push(null);
+  const [movedAlign] = aligns.splice(from, 1);
+  aligns.splice(target, 0, movedAlign ?? null);
+  return editOf(model, rows, aligns, { row: 0, col: target });
+}
+
 /** 调整表格规模（行数与列数），对标 Typora 快捷调整表格大小 */
 export function resizeTableEdit(
   model: TableModel,
