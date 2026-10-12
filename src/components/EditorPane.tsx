@@ -216,7 +216,12 @@ export function EditorPane() {
     if (activeView) {
       // 视图在隐藏期间量到的是 0 尺寸，重新显示后必须再测一次
       activeView.requestMeasure();
-      activeView.focus();
+      // 表格原位编辑中不打断：文本同步（350ms 防抖）引发的本次重跑会
+      // 无条件 focus CM，把焦点从表格 widget 的 textarea 抢走 → blur 关编辑器
+      const focused = document.activeElement as HTMLElement | null;
+      if (!focused || !focused.closest(".md-table-wrap")) {
+        activeView.focus();
+      }
     }
 
     // 兜底：快速切换或视图重建后可能残留旧的可见态，下一帧按 store 最新 activeId

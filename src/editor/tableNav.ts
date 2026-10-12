@@ -1,5 +1,6 @@
 import { EditorView } from "@codemirror/view";
 import {
+  buildTable,
   clearCellEdit,
   deleteColEdit,
   deleteRowEdit,
@@ -163,14 +164,15 @@ function showMenu(view: EditorView, items: MenuSpec[], x: number, y: number) {
 
 /**
  * 表格菜单：col/at 未指定的右键全量菜单（行 + 列 + 对齐 + 整理），
- * 指定 col 时为列头手柄的列菜单，at 可显式指定操作目标格（右键不必先移动光标）。
+ * 指定 col 时为列头手柄的列菜单，at 可显式指定操作目标格（右键不必先移动光标），
+ * rowOnly 时仅行三项（行缘拖拽条点击弹出的行专属菜单，墨记 tableRowColumMenu 同构）。
  */
 export function openTableMenu(
   view: EditorView,
   tableFrom: number,
   x: number,
   y: number,
-  opts: { col?: number; at?: { row: number; col: number } } = {}
+  opts: { col?: number; at?: { row: number; col: number }; rowOnly?: boolean } = {}
 ) {
   const state = view.state;
   const model = findTableAt(state, tableFrom);
@@ -185,7 +187,7 @@ export function openTableMenu(
   const currentColAlign = model.aligns[activeCol] ?? "left";
   const items: MenuSpec[] = [];
 
-  if (opts.col === undefined) {
+  if (opts.col === undefined || opts.rowOnly) {
     items.push(
       {
         label: "在上方插入行",
@@ -208,6 +210,11 @@ export function openTableMenu(
     );
   }
 
+  if (opts.rowOnly) {
+    showMenu(view, items, x, y);
+    return;
+  }
+
   items.push(
     {
       label: "在左侧插入列",
@@ -223,17 +230,27 @@ export function openTableMenu(
       run: () => runTableEdit(view, tableFrom, (m) => deleteColEdit(m, activeCol)),
     },
     {
+      // 再点同一种对齐 = 取消（墨记 alignColumn toggle 语义）
       label: `${currentColAlign === "left" ? "✓ " : "   "}左对齐`,
       separatorBefore: true,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "left")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "left" ? null : "left")
+        ),
     },
     {
       label: `${currentColAlign === "center" ? "✓ " : "   "}居中对齐`,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "center")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "center" ? null : "center")
+        ),
     },
     {
       label: `${currentColAlign === "right" ? "✓ " : "   "}右对齐`,
-      run: () => runTableEdit(view, tableFrom, (m) => setAlignEdit(m, activeCol, "right")),
+      run: () =>
+        runTableEdit(view, tableFrom, (m) =>
+          setAlignEdit(m, activeCol, currentColAlign === "right" ? null : "right")
+        ),
     }
   );
 
@@ -247,6 +264,12 @@ export function openTableMenu(
       {
         label: "整理表格",
         run: () => runTableEdit(view, tableFrom, (m) => formatTableChange(m)),
+      },
+      {
+        // 常驻底部「复制表格」按钮移除后的去处（右键直达，能力不丢）
+        label: "复制表格 Markdown",
+        separatorBefore: true,
+        run: () => void navigator.clipboard.writeText(buildTable(model)),
       },
       {
         label: "删除表格",

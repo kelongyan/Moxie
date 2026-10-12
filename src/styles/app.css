@@ -2537,7 +2537,8 @@ body {
   overflow: visible;
 }
 
-/* 顶部浮动悬停/编辑工具条（Typora 风格：绝对定位悬浮于卡片外侧上方） */
+/* 表格编辑态工具条：仅当存在活动格（has-active-cell）时浮现——hover 不打扰、
+   编辑才服务；随编辑会话收起（点外部/Esc）；危险操作（删表）只在右键 */
 .md-table-toolbar {
   position: absolute;
   bottom: calc(100% + 6px);
@@ -2559,14 +2560,14 @@ body {
 }
 
 /* 当鼠标悬停表格卡片，或当前单元格处于编辑态时平滑显现 */
-.md-table-wrap:hover .md-table-toolbar,
 .md-table-wrap.has-active-cell .md-table-toolbar {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
 }
 
-/* 内部表格独立滚动容器：边框与背景在此承载，表头紧贴顶端绝无空白带 */
+/* 内部表格独立滚动容器：边框与背景在此承载，表头紧贴顶端绝无空白带；
+   position:relative 供拖拽条/规格气泡绝对定位 */
 .md-table-scroll {
   display: block;
   max-width: 100%;
@@ -2574,6 +2575,7 @@ body {
   border: 1px solid var(--lac-border);
   border-radius: 8px;
   background: var(--lac-bg-chrome);
+  position: relative;
 }
 
 .md-table-tool-group {
@@ -2719,6 +2721,39 @@ body {
   color: #ffffff;
 }
 
+
+
+/* 行列拖拽条（墨记 tableDragBar）：顶缘横条=列、左缘竖条=行；按住长拖重排。
+   显隐由 JS 按边缘探测控制（display），此处只管观感 */
+.md-table-drag-bar {
+  position: absolute;
+  z-index: 5;
+  border-radius: 3px;
+  background: var(--lac-accent);
+  opacity: 0.75;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.md-table-drag-bar:hover {
+  opacity: 1;
+}
+
+.md-table-drag-bar:active {
+  cursor: grabbing;
+}
+
+/* 拖拽期间的换位动画：被拖行/列直接跟随（无过渡），其余格反向让位带过渡 */
+.md-table td,
+.md-table th {
+  transition: transform 0.18s var(--ease-out);
+}
+
+.md-table td.md-cell-dragging,
+.md-table th.md-cell-dragging {
+  transition: none;
+}
+
 .md-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -2780,52 +2815,6 @@ body {
 }
 .md-table th:last-child {
   border-top-right-radius: 7px;
-}
-
-/* 表格底部信息与操作栏（参考 marktable_studio.html 底部栏） */
-.md-table-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 14px;
-  background: color-mix(in srgb, var(--lac-bg-inset) 60%, transparent);
-  border-top: 1px solid var(--lac-border);
-  font-size: 11px;
-  font-family: var(--font-mono);
-  color: var(--lac-text-tertiary);
-  user-select: none;
-}
-
-.md-table-footer-stat {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.md-table-footer-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.md-table-footer-btn {
-  border: none;
-  background: transparent;
-  color: var(--lac-text-secondary);
-  font-family: inherit;
-  font-size: 11px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
-  border-radius: var(--radius-xs);
-  transition: color var(--anim-hover), background var(--anim-hover);
-}
-
-.md-table-footer-btn:hover {
-  background: var(--lac-hover);
-  color: var(--lac-accent);
 }
 
 /* 单元格状态徽标体系 (参考 marktable_studio.html) */

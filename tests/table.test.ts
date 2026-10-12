@@ -15,6 +15,8 @@ import {
   insertRowEdit,
   locateCell,
   parseAlignments,
+  moveColEdit,
+  moveRowEdit,
   resizeTableEdit,
   setAlignEdit,
   type TableModel,
@@ -253,5 +255,42 @@ describe("table · 空表格生成", () => {
   it("行列数下限钳制为 1", () => {
     const { text } = emptyTable(0, 0);
     expect(text.split("\n")).toHaveLength(2);
+  });
+});
+
+describe("table · 行列移动（墨记拖拽落点）", () => {
+  it("moveRowEdit 行拔出插到目标位，光标随行", () => {
+    const model = modelOf(TABLE, 0);
+    const edit = moveRowEdit(model, 2, 0);
+    // 往返解析断言（buildTable 输出按列宽对齐，不逐字符比对）
+    const moved = modelOf(edit!.insert);
+    expect(moved.rows.map((r) => r.map((c) => c.text))).toEqual([
+      ["c", "d"],
+      ["列一", "列二"],
+      ["a", "b"],
+    ]);
+    expect(edit!.caretRow).toBe(0);
+    expect(moveRowEdit(model, 1, 1)).toBeNull();
+    expect(moveRowEdit(model, 5, 0)).toBeNull();
+  });
+
+  it("moveColEdit 单元格与对齐标记随列走", () => {
+    const model = modelOf("| 列一 | 列二 |\n| :---: | --- |\n| a | b |", 0);
+    const edit = moveColEdit(model, 0, 1);
+    const moved = modelOf(edit!.insert);
+    expect(moved.rows.map((r) => r.map((c) => c.text))).toEqual([
+      ["列二", "列一"],
+      ["b", "a"],
+    ]);
+    expect(moved.aligns).toEqual([null, "center"]);
+    expect(edit!.caretCol).toBe(1);
+    expect(moveColEdit(model, 0, 0)).toBeNull();
+  });
+
+  it("setAlignEdit 传 null 取消对齐标记", () => {
+    const model = modelOf("| 列一 | 列二 |\n| :---: | --- |\n| a | b |", 0);
+    const edit = setAlignEdit(model, 0, null);
+    const parsed = modelOf(edit!.insert);
+    expect(parsed.aligns).toEqual([null, null]);
   });
 });
