@@ -113,8 +113,8 @@ export function markdownExtensions(): Extension[] {
   return [markdown({ codeLanguages: CODE_LANGUAGES, extensions: [GFM] }), markdownHeadingFold];
 }
 
-/** fence 语言切换菜单可选项（优先匹配主流开发语言） */
-export const FENCE_LANGUAGE_OPTIONS: { key: string; label: string }[] = [
+/** fence 语言词典：供语言标注输入归一化使用的规范条目（优先匹配主流开发语言） */
+export const FENCE_LANGUAGE_DICTIONARY: { key: string; label: string }[] = [
   { key: "", label: "无标注 (纯文本)" },
   { key: "javascript", label: "JavaScript" },
   { key: "typescript", label: "TypeScript" },
@@ -132,3 +132,66 @@ export const FENCE_LANGUAGE_OPTIONS: { key: string; label: string }[] = [
   { key: "bash", label: "Shell / Bash" },
   { key: "markdown", label: "Markdown" },
 ];
+
+/** 词典外的常见写法（各渲染器习惯用名），并入归一化查表 */
+const EXTRA_FENCE_ALIASES: [string, string][] = [
+  ["text", ""],
+  ["txt", ""],
+  ["plain", ""],
+  ["plaintext", ""],
+  ["none", ""],
+  ["sh", "bash"],
+  ["shell", "bash"],
+  ["zsh", "bash"],
+  ["shellscript", "bash"],
+  ["console", "bash"],
+  ["terminal", "bash"],
+  ["c#", "csharp"],
+  ["cs", "csharp"],
+  ["dotnet", "csharp"],
+  ["golang", "go"],
+  ["md", "markdown"],
+  ["rs", "rust"],
+  ["htm", "html"],
+  ["html5", "html"],
+  ["nodejs", "javascript"],
+  ["ecmascript", "javascript"],
+  ["cplusplus", "cpp"],
+  ["clang", "cpp"],
+  ["postgres", "sql"],
+  ["postgresql", "sql"],
+  ["mysql", "sql"],
+  ["sqlite", "sql"],
+  ["mariadb", "sql"],
+  ["py3", "python"],
+  ["yml", "yaml"],
+];
+
+/** 别名 / 名称 / 大小写 → 规范 key 的单一查表：词典条目 + 常见写法，两处都不认的写法不登记 */
+const FENCE_ALIAS_TO_KEY: Map<string, string> = (() => {
+  const map = new Map<string, string>();
+  const put = (alias: string, key: string) => {
+    const norm = alias.trim().toLowerCase();
+    if (norm && !map.has(norm)) map.set(norm, key);
+  };
+  for (const item of FENCE_LANGUAGE_DICTIONARY) {
+    if (!item.key) continue;
+    put(item.key, item.key);
+    put(item.label, item.key);
+  }
+  for (const [alias, key] of EXTRA_FENCE_ALIASES) put(alias, key);
+  return map;
+})();
+
+/**
+ * 归一化围栏语言标注：大小写不敏感、别名与常见写法统一到规范 key
+ * （如 "JS"/"TypeScript"/"C++"/"Shell" → "javascript"/"typescript"/"cpp"/"bash"），
+ * 清空或纯文本写法归一为无标注（""）。未收录的语言保留小写原样，不做删改。
+ */
+export function normalizeFenceLanguage(input: string): string {
+  const raw = input.trim().replace(/\s+/g, " ");
+  if (!raw) return "";
+  const hit = FENCE_ALIAS_TO_KEY.get(raw.toLowerCase());
+  if (hit !== undefined) return hit;
+  return raw.toLowerCase().replace(/\s+/g, "");
+}

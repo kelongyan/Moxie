@@ -29,6 +29,10 @@
   --lac-code-chip-fg: #616a76;
   --lac-code-chip-fg-hover: #24292e;
   --lac-code-copied: #177a3d;
+  /* 卡内输入框（语言标注编辑）：比卡面亮一档、正中够尺寸，站得住又不喧宾夺主 */
+  --lac-code-field-bg: #ffffff;
+  --lac-code-field-border: #cfd7e3;
+  --lac-code-field-placeholder: #8c959f;
   --lac-overlay: rgba(0, 0, 0, 0.32);
 
   /* 文本三级：纸墨炭黑 / mute / 辅助灰（对标 Typora 舒适沉稳的纸面阅读对比度） */
@@ -135,6 +139,10 @@
   --lac-code-chip-fg: #9aa2c4;
   --lac-code-chip-fg-hover: #f8f8f2;
   --lac-code-copied: #50fa7b;
+  /* 卡内输入框：Dracula 抬起层（#44475a 族），边框取注释蓝紫，深卡上边界清楚 */
+  --lac-code-field-bg: #343746;
+  --lac-code-field-border: #6272a4;
+  --lac-code-field-placeholder: #8b95c0;
   --lac-overlay: rgba(0, 0, 0, 0.5);
 
   --lac-text: #e6edf3;

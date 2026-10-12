@@ -59,7 +59,7 @@ import {
   type ImageTokenInfo,
   type SelectedImageRange,
 } from "./imageNav";
-import { openLangPicker } from "./codeNav";
+import { openLangInput } from "./codeNav";
 import { renderKatex } from "../preview/math";
 // eslint-disable-next-line import/no-relative-packages -- 该子路径是 emoji 短代码映射表
 import EMOJI_MAP from "markdown-it-emoji/lib/data/light.mjs";
@@ -216,10 +216,11 @@ class FenceWidget extends WidgetType {
     const tag = document.createElement("span");
     tag.className = "md-lang-tag";
     tag.textContent = this.lang || "代码";
+    tag.title = "点击输入语言标注";
     tag.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      openLangPicker(view, tag, this.lang);
+      openLangInput(view, tag, this.lang);
     });
 
     const copy = document.createElement("button");

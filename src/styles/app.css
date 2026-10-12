@@ -3667,66 +3667,65 @@ body {
   color: var(--lac-code-copied);
 }
 
-/* 语言搜索浮层：搜索框 + 过滤列表（↑↓/Enter/Esc，当前语言高亮） */
-.md-lang-picker {
+/* 语言标注输入框：点击标签后原位浮出的单行输入（无候选列表），Enter / 失焦提交、Esc 取消。
+   尺寸刻意收在标签与控件标准档之间（26px 高、12px 等宽字）：比卡内小签实一档，
+   又不至于在卡上"占地"。底色取卡内抬起层 + 聚焦柔光环，不引入独立面板观感 */
+.md-code-lang-input {
   position: fixed;
   z-index: var(--z-popover);
-  width: 208px;
-  padding: 6px;
-  background: var(--lac-bg-elevated);
-  border: 1px solid var(--lac-border);
+  width: 128px; /* 收窄到语言名够用的长度（12px 等宽字约容 15 字符），不再横占卡片 */
+  height: 26px;
+  visibility: hidden; /* 坐标算好前不显示，避免在左上角闪一下 */
+  padding: 0 10px;
+  border: 1px solid var(--lac-code-field-border);
   border-radius: var(--radius-sm);
-  box-shadow: var(--sh-2);
-  animation: lac-pop-in var(--dur-1) var(--ease-out);
-}
-
-.md-lang-picker input {
-  width: 100%;
-  height: var(--ctl-sm);
-  margin-bottom: 4px;
-  padding: 0 8px;
-  border: 1px solid var(--lac-border);
-  border-radius: var(--radius-xs);
-  background: var(--lac-bg);
-  color: var(--lac-text);
-  font-family: inherit;
-  font-size: var(--fs-caption);
+  background: var(--lac-code-field-bg);
+  color: var(--lac-code-fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
   outline: none;
+  box-shadow: var(--sh-1);
+  transition: border-color var(--anim-hover), box-shadow var(--anim-hover);
 }
 
-.md-lang-picker input:focus {
-  border-color: var(--lac-accent);
+/* 入场：自右缘（标签所在处）轻微推开 + 上浮淡入，140ms 轻出，与菜单浮层同一套动效语言 */
+.md-code-lang-input.is-open {
+  visibility: visible;
+  transform-origin: right center;
+  animation: lac-code-field-in var(--dur-2) var(--ease-out) both;
+}
+
+/* 出场：只做淡出与极轻收拢，避免输入框在视野里"跳"走。
+   animation: none 必须写——入场动画的 fill: both 会以结束帧压过普通声明，导致 opacity 改不动 */
+.md-code-lang-input.is-closing {
+  visibility: visible;
+  transform-origin: right center;
+  animation: none;
+  opacity: 0;
+  transform: scale(0.985);
+  pointer-events: none;
+  transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
+}
+
+@keyframes lac-code-field-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.md-code-lang-input::placeholder {
+  color: var(--lac-code-field-placeholder);
+}
+
+.md-code-lang-input:focus {
+  border-color: var(--lac-code-chip-fg);
   box-shadow: 0 0 0 3px var(--lac-accent-soft);
-}
-
-.md-lang-picker-list {
-  max-height: 240px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.md-lang-picker-list button {
-  border: none;
-  background: transparent;
-  color: var(--lac-text);
-  font-family: inherit;
-  font-size: var(--fs-ui);
-  text-align: left;
-  padding: 4px 8px;
-  border-radius: var(--radius-xs);
-  cursor: pointer;
-}
-
-.md-lang-picker-list button:hover,
-.md-lang-picker-list button.highlighted {
-  background: var(--lac-hover);
-}
-
-.md-lang-picker-list button.current {
-  color: var(--lac-accent);
-  font-weight: 600;
 }
 
 /* 代码块行号（设置开关）：装饰下发 --code-ln，::before 定宽右对齐显示 */
