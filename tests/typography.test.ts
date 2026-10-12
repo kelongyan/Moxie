@@ -22,14 +22,14 @@ const KINDS: BlockKind[] = [
 
 /** 校样样张折叠间距矩阵（对标 Typora 间距规范，h1/h2 走 headingMajor） */
 const MATRIX: Record<BlockKind, Record<BlockKind, number>> = {
-  paragraph:    { paragraph: 16, headingMajor: 28, heading: 20, list: 16, blockquote: 16, pre: 18, hr: 22, table: 16 },
-  headingMajor: { paragraph: 14, headingMajor: 28, heading: 20, list: 14, blockquote: 16, pre: 18, hr: 22, table: 16 },
-  heading:      { paragraph: 10, headingMajor: 28, heading: 20, list: 10, blockquote: 16, pre: 18, hr: 22, table: 16 },
-  list:         { paragraph: 16, headingMajor: 28, heading: 20, list: 16, blockquote: 16, pre: 18, hr: 22, table: 16 },
-  blockquote:   { paragraph: 16, headingMajor: 28, heading: 20, list: 16, blockquote: 16, pre: 18, hr: 22, table: 16 },
-  pre:          { paragraph: 18, headingMajor: 28, heading: 20, list: 18, blockquote: 18, pre: 18, hr: 22, table: 18 },
-  hr:           { paragraph: 22, headingMajor: 28, heading: 22, list: 22, blockquote: 22, pre: 22, hr: 22, table: 22 },
-  table:        { paragraph: 18, headingMajor: 28, heading: 20, list: 18, blockquote: 18, pre: 18, hr: 22, table: 18 },
+  paragraph:    { paragraph: 16, headingMajor: 26, heading: 22, list: 16, blockquote: 16, pre: 18, hr: 24, table: 16 },
+  headingMajor: { paragraph: 14, headingMajor: 26, heading: 22, list: 14, blockquote: 16, pre: 18, hr: 24, table: 16 },
+  heading:      { paragraph: 10, headingMajor: 26, heading: 22, list: 10, blockquote: 16, pre: 18, hr: 24, table: 16 },
+  list:         { paragraph: 16, headingMajor: 26, heading: 22, list: 16, blockquote: 16, pre: 18, hr: 24, table: 16 },
+  blockquote:   { paragraph: 16, headingMajor: 26, heading: 22, list: 16, blockquote: 16, pre: 18, hr: 24, table: 16 },
+  pre:          { paragraph: 18, headingMajor: 26, heading: 22, list: 18, blockquote: 18, pre: 18, hr: 24, table: 18 },
+  hr:           { paragraph: 24, headingMajor: 26, heading: 24, list: 24, blockquote: 24, pre: 24, hr: 24, table: 24 },
+  table:        { paragraph: 18, headingMajor: 26, heading: 22, list: 18, blockquote: 18, pre: 18, hr: 24, table: 18 },
 };
 
 describe("typography · collapsedGap 折叠矩阵", () => {
@@ -51,14 +51,14 @@ describe("typography · collapsedGap 折叠矩阵", () => {
 describe("typography · spaceBefore 空行扣减", () => {
   it("无空行时等于折叠值", () => {
     expect(spaceBefore("paragraph", "paragraph", 0)).toBe(16);
-    expect(spaceBefore("paragraph", "heading", 0)).toBe(20);
-    expect(spaceBefore("paragraph", "headingMajor", 0)).toBe(28);
+    expect(spaceBefore("paragraph", "heading", 0)).toBe(22);
+    expect(spaceBefore("paragraph", "headingMajor", 0)).toBe(26);
   });
 
   it("一个空行扣掉空行高度（间距 = 空行 + padding 合计仍为折叠值）", () => {
     expect(spaceBefore("paragraph", "paragraph", 1)).toBe(16 - BLANK_LINE_HEIGHT);
-    expect(spaceBefore("paragraph", "headingMajor", 1)).toBe(28 - BLANK_LINE_HEIGHT);
-    expect(BLANK_LINE_HEIGHT + spaceBefore("paragraph", "headingMajor", 1)).toBe(28);
+    expect(spaceBefore("paragraph", "headingMajor", 1)).toBe(26 - BLANK_LINE_HEIGHT);
+    expect(BLANK_LINE_HEIGHT + spaceBefore("paragraph", "headingMajor", 1)).toBe(26);
   });
 
   it("空行过多时夹取到 0（保留用户显式留白）", () => {
@@ -73,12 +73,12 @@ describe("typography · spaceBefore 空行扣减", () => {
 
 describe("typography · 常量", () => {
   it("行高与空行高度", () => {
-    expect(CONTENT_LINE_HEIGHT).toBe(1.65);
+    expect(CONTENT_LINE_HEIGHT).toBe(1.625);
     expect(BLANK_LINE_HEIGHT).toBe(8);
     expect(MD_MARGIN.paragraph.bottom).toBe(16);
-    expect(MD_MARGIN.headingMajor.top).toBe(28);
+    expect(MD_MARGIN.headingMajor.top).toBe(26);
     expect(MD_MARGIN.headingMajor.bottom).toBe(14);
-    expect(MD_MARGIN.heading.top).toBe(20);
+    expect(MD_MARGIN.heading.top).toBe(22);
     expect(MD_MARGIN.heading.bottom).toBe(10);
   });
 });
@@ -96,7 +96,7 @@ describe("typography · 块间距缩放（em 化）", () => {
 
   it("collapsedGap/spaceBefore 按 scale 缩放并取整", () => {
     expect(collapsedGap("paragraph", "paragraph", 1.5)).toBe(24);
-    expect(collapsedGap("paragraph", "heading", 1.5)).toBe(30);
+    expect(collapsedGap("paragraph", "heading", 1.5)).toBe(33);
     expect(spaceBefore("paragraph", "paragraph", 0, 1.5)).toBe(24);
     // 空行扣减仍为固定 8px
     expect(spaceBefore("paragraph", "paragraph", 1, 1.5)).toBe(16);

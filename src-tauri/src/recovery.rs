@@ -9,10 +9,6 @@ fn recovery_root() -> PathBuf {
     app_data_dir().join("Recovery")
 }
 
-fn workspace_root() -> PathBuf {
-    app_data_dir().join("Workspace")
-}
-
 fn session_dir(session: &str) -> PathBuf {
     recovery_root().join(format!("Session-{}", session))
 }
@@ -131,71 +127,12 @@ pub fn finish_cleanly(session: &str) {
     let _ = fs::remove_file(recovery_root().join(MARKER_FILE));
 }
 
-// ---------- workspace snapshot ----------
-
-const WORKSPACE_MARKER: &str = "CurrentWorkspace.json";
-
-pub fn workspace_save(manifest: &str, docs: &[(String, String)]) -> std::io::Result<()> {
-    let root = workspace_root();
-    fs::create_dir_all(&root)?;
-    let stamp = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_millis())
-        .unwrap_or(0);
-    let staging = root.join(format!("Workspace-{}.tmp", stamp));
-    fs::create_dir_all(&staging)?;
-    for (doc_id, content) in docs {
-        let id = sanitize_id(doc_id);
-        fs::write(staging.join(format!("{}.utf8", id)), content)?;
+/// 旧版"退出保留工作区"快照目录（功能已按需求移除）：启动时清理遗留数据
+pub fn cleanup_legacy_workspace() {
+    let dir = app_data_dir().join("Workspace");
+    if dir.exists() {
+        let _ = fs::remove_dir_all(dir);
     }
-    fs::write(staging.join("Manifest.json"), manifest)?;
-    let final_dir = root.join(format!("Workspace-{}", stamp));
-    if final_dir.exists() {
-        fs::remove_dir_all(&final_dir)?;
-    }
-    fs::rename(&staging, &final_dir)?;
-    let marker = serde_json::json!({ "workspace": format!("Workspace-{}", stamp) });
-    write_atomic(&root.join(WORKSPACE_MARKER), &serde_json::to_string(&marker)?)
-}
-
-pub struct WorkspaceSnapshot {
-    pub manifest: String,
-    pub docs: Vec<(String, String)>,
-}
-
-pub fn workspace_load_and_consume() -> Option<WorkspaceSnapshot> {
-    let root = workspace_root();
-    let marker_path = root.join(WORKSPACE_MARKER);
-    let marker_text = fs::read_to_string(&marker_path).ok()?;
-    let marker: serde_json::Value = serde_json::from_str(&marker_text).ok()?;
-    let dir_name = marker.get("workspace")?.as_str()?.to_string();
-    let dir = root.join(&dir_name);
-
-    let manifest = fs::read_to_string(dir.join("Manifest.json")).ok()?;
-    let mut docs = Vec::new();
-    if let Ok(entries) = fs::read_dir(&dir) {
-        for entry in entries.flatten() {
-            let name = entry.file_name().to_string_lossy().into_owned();
-            if let Some(doc_id) = name.strip_suffix(".utf8") {
-                if let Ok(content) = fs::read_to_string(entry.path()) {
-                    docs.push((doc_id.to_string(), content));
-                }
-            }
-        }
-    }
-
-    let _ = fs::remove_file(&marker_path);
-    let _ = fs::remove_dir_all(&dir);
-    // remove any stale workspace dirs
-    if let Ok(entries) = fs::read_dir(&root) {
-        for entry in entries.flatten() {
-            if entry.path().is_dir() {
-                let _ = fs::remove_dir_all(entry.path());
-            }
-        }
-    }
-
-    Some(WorkspaceSnapshot { manifest, docs })
 }
 
 #[cfg(test)]
@@ -241,6 +178,16 @@ mod tests {
     }
 
     #[test]
+    fn legacy_workspace_dir_is_cleaned() {
+        let _g = isolate();
+        let dir = app_data_dir().join("Workspace");
+        fs::create_dir_all(dir.join("Workspace-1")).unwrap();
+        fs::write(dir.join("Workspace-1/doc.utf8"), "legacy").unwrap();
+        cleanup_legacy_workspace();
+        assert!(!dir.exists());
+    }
+
+    #[test]
     fn abnormal_exit_leaves_marker_and_content() {
         let _g = isolate();
         write_marker("crash-session").unwrap();
@@ -250,20 +197,6 @@ mod tests {
         let entries = load_session("crash-session");
         assert_eq!(entries.len(), 1);
         assert_eq!(entries[0].content, "unsaved");
-    }
-
-    #[test]
-    fn workspace_save_and_consume_once() {
-        let _g = isolate();
-        let docs = vec![("d1".to_string(), "text1".to_string())];
-        workspace_save(r#"{"version":1}"#, &docs).unwrap();
-
-        let snap = workspace_load_and_consume().expect("snapshot present");
-        assert_eq!(snap.manifest, r#"{"version":1}"#);
-        assert_eq!(snap.docs.len(), 1);
-        assert_eq!(snap.docs[0].1, "text1");
-
-        assert!(workspace_load_and_consume().is_none());
     }
 
     #[test]

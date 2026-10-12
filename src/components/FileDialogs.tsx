@@ -40,7 +40,7 @@ export function EncodingDialog() {
           <div className="modal-head-text">
             <div className="modal-title">选择编码</div>
             <p className="modal-message">
-              无法将“{fileName}”解码为 UTF-8。请选择要使用的编码:
+              无法将“{fileName}”解码为 UTF-8，请选择编码：
             </p>
           </div>
         </div>
@@ -89,7 +89,7 @@ export function ConflictDialog() {
           <div className="modal-head-text">
             <div className="modal-title">外部修改冲突</div>
             <p className="modal-message">
-              “{fileName}”在磁盘上已被其他程序修改。如何处理?
+              “{fileName}”已被其他程序修改，如何处理？
             </p>
           </div>
         </div>
@@ -141,7 +141,7 @@ export function LossyDialog() {
           <div className="modal-head-text">
             <div className="modal-title">编码无法表示的字符</div>
             <p className="modal-message">
-              “{fileName}”包含当前编码无法表示的字符。要改用 UTF-8 保存吗?
+              “{fileName}”含当前编码无法表示的字符，改用 UTF-8 保存？
             </p>
           </div>
         </div>

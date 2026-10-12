@@ -83,7 +83,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
             }}
           >
             <span className="cm-check">
-              {item.checked && <Check size={13} strokeWidth={2.5} />}
+              {item.checked && <Check size={12} />}
             </span>
             <span className="cm-label">{item.label}</span>
             {item.shortcut && <span className="cm-shortcut">{item.shortcut}</span>}

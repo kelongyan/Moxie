@@ -17,7 +17,7 @@ export interface SidebarGroup {
   paths: string[];
 }
 
-/** 最近文件条目（与 Rust RecentEntryDto 对应） */
+/** 会话内最近文件条目（仅本次运行有效，不落盘） */
 export interface RecentEntry {
   path: string;
   lastOpenedMs: number;
@@ -29,7 +29,7 @@ export interface SectionsExpanded {
   outline: boolean;
 }
 
-export type SidebarTab = "files" | "outline" | "tabs";
+export type SidebarTab = "files" | "outline";
 
 interface SidebarState {
   activeTab: SidebarTab;
@@ -53,7 +53,8 @@ interface SidebarState {
   deleteWorkspaceItem: (path: string) => Promise<boolean>;
   renameWorkspaceItem: (oldPath: string, newPath: string) => Promise<boolean>;
   refresh: () => Promise<void>;
-  refreshRecent: () => Promise<void>;
+  /** 会话内最近文件：仅在本次运行中记录，不落盘、不跨启动恢复 */
+  pushRecent: (path: string) => void;
   refreshMissing: () => Promise<void>;
   toggleSection: (key: keyof SectionsExpanded) => void;
   addGroup: (name: string) => void;
@@ -63,9 +64,10 @@ interface SidebarState {
   addToGroup: (groupId: string, path: string) => void;
   removeFromGroup: (groupId: string, path: string) => void;
   replacePath: (oldPath: string, newPath: string) => void;
-  clearRecent: () => Promise<void>;
-  removeRecent: (path: string) => Promise<void>;
 }
+
+/** 会话内最近文件上限（与旧版落盘上限一致） */
+const RECENT_LIMIT = 12;
 
 let groupSeq = 0;
 function newGroupId(): string {
@@ -90,14 +92,13 @@ export function parentDirPath(path: string): string {
 }
 
 async function persist(get: () => SidebarState) {
-  const { groups, sectionsExpanded, workspacePath, expandedDirs, activeTab } = get();
+  // 只持久化界面偏好；工作区文件夹与展开状态属会话内状态，不写入磁盘、不跨启动恢复
+  const { groups, sectionsExpanded, activeTab } = get();
   try {
     await invoke("sidebar_save", {
       value: {
         groups,
         sections: sectionsExpanded,
-        workspacePath,
-        expandedDirs,
         activeTab,
       },
     });
@@ -268,14 +269,11 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           }))
         : [];
       const sections = (value.sections ?? {}) as Partial<SectionsExpanded>;
-      const workspacePath = typeof value.workspacePath === "string" ? value.workspacePath : null;
-      const activeTab = (value.activeTab === "files" || value.activeTab === "outline" || value.activeTab === "tabs")
+      const activeTab = (value.activeTab === "files" || value.activeTab === "outline")
         ? value.activeTab
         : "files";
-      const expandedDirs = (typeof value.expandedDirs === "object" && value.expandedDirs !== null)
-        ? (value.expandedDirs as Record<string, boolean>)
-        : {};
 
+      // 工作区文件夹与最近文件均不跨启动恢复：磁盘上的历史值一律忽略
       set({
         groups,
         sectionsExpanded: {
@@ -283,34 +281,23 @@ export const useSidebar = create<SidebarState>((set, get) => ({
           recent: sections.recent !== false,
           outline: sections.outline !== false,
         },
-        workspacePath,
         activeTab,
-        expandedDirs,
         loaded: true,
       });
-
-      if (workspacePath) {
-        void get().refreshWorkspace();
-      }
     } catch {
       set({ loaded: true });
     }
-    await get().refreshRecent();
+    await get().refreshMissing();
   },
 
-  refreshRecent: async () => {
-    try {
-      const list = await invoke<RecentEntry[]>("recent_list");
-      set({
-        recent: (list ?? []).map((e) => ({
-          path: String(e?.path ?? ""),
-          lastOpenedMs: Number(e?.lastOpenedMs ?? 0),
-        })),
-      });
-    } catch {
-      // ignore
-    }
-    await get().refreshMissing();
+  pushRecent: (path) => {
+    set((s) => ({
+      recent: [
+        { path, lastOpenedMs: Date.now() },
+        ...s.recent.filter((e) => e.path !== path),
+      ].slice(0, RECENT_LIMIT),
+      missing: { ...s.missing, [path]: false },
+    }));
   },
 
   refreshMissing: async () => {
@@ -397,22 +384,67 @@ export const useSidebar = create<SidebarState>((set, get) => ({
         ...g,
         paths: g.paths.map((p) => (p === oldPath ? newPath : p)),
       })),
+      recent: s.recent.map((e) => (e.path === oldPath ? { ...e, path: newPath } : e)),
     }));
-    void invoke("recent_replace", { old: oldPath, new: newPath }).catch(() => {});
     void persist(get);
-    void get().refreshRecent();
-  },
-
-  clearRecent: async () => {
-    await invoke("recent_clear").catch(() => {});
-    await get().refreshRecent();
-  },
-
-  removeRecent: async (path) => {
-    await invoke("recent_remove", { path }).catch(() => {});
-    await get().refreshRecent();
+    void get().refreshMissing();
   },
 }));
+
+/* ---------- 文件树"祖先链追踪"悬停状态 ---------- */
+
+/** 链上每一级：path + 同级序号（判定"位于目标分支之前/之后"用） */
+export interface ChainEntry {
+  path: string;
+  index: number;
+}
+
+/**
+ * 当前悬停行的祖先链（含悬停行自身的 path 与序号）。独立小 store：挂在 useSidebar 上会让
+ * 整棵树在每次悬停切换时重渲染；独立后只有链上/链外的行按各自的布尔选择器重渲染。
+ */
+interface TreeHoverState {
+  chain: ChainEntry[] | null;
+  setChain: (chain: ChainEntry[] | null) => void;
+}
+
+export const useTreeHover = create<TreeHoverState>((set) => ({
+  chain: null,
+  setChain: (chain) => set({ chain }),
+}));
+
+/**
+ * 祖先链追踪：计算一行应点亮的贯穿线级数（0..vlines-1）与是否点亮本行树枝（onChain）。
+ * `self` 为本行"根 → 自身"的链；与悬停链逐级比对：
+ * - 完全命中（本行在链上）→ 全列贯穿线 + 本行树枝点亮；
+ * - 分叉处按同级序号判定：位于目标分支之前（如目标上方的前序兄弟）→ 点亮共享祖先列，
+ *   使"根 → 目标"的路径在列线上连续不断链；位于之后或为悬停行后代 → 不点亮。
+ */
+export function chainHighlight(
+  chain: ChainEntry[] | null,
+  self: ChainEntry[]
+): { vlines: number; onChain: boolean } {
+  if (!chain || chain.length === 0 || self.length === 0) {
+    return { vlines: 0, onChain: false };
+  }
+  let matched = 0;
+  while (
+    matched < self.length &&
+    matched < chain.length &&
+    self[matched].path === chain[matched].path
+  ) {
+    matched += 1;
+  }
+  if (matched === self.length) {
+    return { vlines: self.length - 1, onChain: true };
+  }
+  if (matched === chain.length) {
+    return { vlines: 0, onChain: false };
+  }
+  return self[matched].index < chain[matched].index
+    ? { vlines: matched, onChain: false }
+    : { vlines: 0, onChain: false };
+}
 
 export function dirName(path: string): string {
   const normalized = path.replace(/\\/g, "/");
@@ -421,4 +453,52 @@ export function dirName(path: string): string {
   const dir = normalized.slice(0, idx);
   const slash = dir.lastIndexOf("/");
   return slash >= 0 ? dir.slice(slash + 1) : dir;
+}
+
+/* ---------- 大纲导航缩进（纯几何计算）---------- */
+
+/** 大纲每级缩进：基准 10px + 每级 8px，压缩深层留白保证窄侧栏可读 */
+export const OUTLINE_INDENT_BASE = 10;
+export const OUTLINE_INDENT_STEP = 8;
+
+export function outlineIndent(level: number): number {
+  const depth = Math.max(0, Math.min(level - 1, 5));
+  return OUTLINE_INDENT_BASE + depth * OUTLINE_INDENT_STEP;
+}
+
+/* ---------- 文件树引导线（树形"树干 + 分支"的纯几何计算）---------- */
+
+/** 每级缩进步长（px），与行的 paddingLeft 保持同一节奏 */
+export const TREE_INDENT = 14;
+/** 引导线相对级定位的水平偏移（px） */
+export const TREE_GUIDE_X = 4;
+
+export interface TreeGuides {
+  /** 祖先贯穿竖线（级层级 + x 位置；该祖先后面还有同级项时存在） */
+  vlines: { level: number; x: number }[];
+  /** 本行的拐弯线：x 位置 + 是否向下延伸（"├" vs "└"） */
+  elbow: { x: number; stem: boolean };
+}
+
+/**
+ * 计算一行需要绘制的引导线。
+ * - 祖先级：该祖先后面还有同级项时贯穿（`ancestorContinues[i]`）；
+ * - 本级：始终画拐弯线，末项为"└"（不延伸）、非末项为"├"（延伸到底）。
+ * 根级同样适用（depth = 0）：得到自上而下的树干与各文件的分支。
+ */
+export function treeGuideLines(
+  depth: number,
+  ancestorContinues: boolean[],
+  isLast: boolean
+): TreeGuides {
+  const vlines: { level: number; x: number }[] = [];
+  for (let i = 0; i < depth; i += 1) {
+    if (ancestorContinues[i]) {
+      vlines.push({ level: i, x: i * TREE_INDENT + TREE_GUIDE_X });
+    }
+  }
+  return {
+    vlines,
+    elbow: { x: depth * TREE_INDENT + TREE_GUIDE_X, stem: !isLast },
+  };
 }

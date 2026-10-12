@@ -41,6 +41,7 @@ import {
   makeWrapHandler,
 } from "./formatting";
 import { pasteImageExtension } from "./pasteImage";
+import { setImageToolbarHost } from "./imageNav";
 import { focusMode, typewriterMode } from "./focusMode";
 import { searchHighlightField } from "./searchHighlight";
 import { PT_TO_PX } from "../state/preferences";
@@ -66,6 +67,13 @@ export interface EditorOptions {
   onOpenLink?: (url: string) => void;
   /** 粘贴图片时回调（落盘与插入见 actions.insertImageFileAction）；未提供则不拦截粘贴 */
   onImagePaste?: (file: File) => void;
+  /** 图片工具条宿主回调（在资源管理器中显示 / 替换图片文件，见 actions.revealImageAction 等） */
+  imageToolbarHost?: {
+    revealInExplorer(rawSrc: string): void;
+    pickAndSaveImage(): Promise<string | null>;
+  };
+  /** 书写面代码块行号（设置开关；仅 livePreview 使用） */
+  codeBlockLineNumbers?: boolean;
   /** 专注模式：当前顶层块之外降透明度（仅书写面） */
   focusMode?: boolean;
   /** 打字机模式：光标行保持垂直居中（仅书写面） */
@@ -387,7 +395,7 @@ export function buildEditorState(options: EditorOptions): EditorState {
           ? "var(--font-content, var(--font-ui))"
           : "var(--font-mono)",
         // 基准行高（typography.CONTENT_LINE_HEIGHT，与导出 renderShell 同源）+ 行距偏离量；
-        // 默认 lineSpacingPt=4 → 恰好 1.65em（16px 正文 ≈ 26.4px 行盒）
+        // 默认 lineSpacingPt=4 → 恰好 1.625em（16px 正文 = 26px 整数网格行盒）
         lineHeight: `calc(${CONTENT_LINE_HEIGHT}em + ${lineSpacingPx}px)`,
         // 中文排版增强，与导出 renderShell 对齐（markdown.ts）：全角标点挤压、
         // 等宽数字、kern/liga；旧 WebView2 不识别时无害回落
@@ -519,7 +527,8 @@ export function buildEditorState(options: EditorOptions): EditorState {
     extensions.push(
       livePreview(
         options.imageSrcResolver,
-        spacingScale(fontSizePx, options.blockSpacing ?? "standard")
+        spacingScale(fontSizePx, options.blockSpacing ?? "standard"),
+        options.codeBlockLineNumbers ?? false
       )
     );
   }
@@ -531,6 +540,9 @@ export function buildEditorState(options: EditorOptions): EditorState {
   }
   if (options.onImagePaste) {
     extensions.push(pasteImageExtension(options.onImagePaste));
+  }
+  if (options.imageToolbarHost) {
+    setImageToolbarHost(options.imageToolbarHost);
   }
   if (editable && options.focusMode) {
     extensions.push(focusMode());

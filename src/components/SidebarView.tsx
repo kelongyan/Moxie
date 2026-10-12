@@ -1,42 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ChevronRight,
-  File,
   FilePlus,
-  Files,
-  FileText,
   Folder,
   FolderOpen,
   FolderPlus,
   ListTree,
-  Plus,
   RotateCw,
   Search,
   X,
-  XCircle,
 } from "lucide-react";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { syntaxTree } from "@codemirror/language";
 import { EditorView } from "@codemirror/view";
 import { baseName } from "../models/markdown";
-import {
-  closeOtherTabsAction,
-  closeTabAction,
-  closeTabsToRightAction,
-  newTabAction,
-  openPathAction,
-} from "../state/actions";
+import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { promptConfirm, promptInput } from "../state/prompts";
 import {
+  chainHighlight,
   dirName,
   joinPath,
+  outlineIndent,
   parentDirPath,
-  type DirEntry,
+  treeGuideLines,
+  TREE_INDENT,
   useSidebar,
+  useTreeHover,
+  type ChainEntry,
+  type DirEntry,
 } from "../state/sidebar";
-import { moveDocToNewWindow } from "../state/windows";
 import { subscribeTextChange, viewFor } from "../editor/registry";
 import { Tooltip } from "./Tooltip";
 import { ContextMenu, type MenuItem } from "./ContextMenu";
@@ -161,9 +155,9 @@ function OutlineView({ activeId }: { activeId: string | null }) {
   if (!activeId) {
     return (
       <div className="sidebar-empty-state">
-        <ListTree size={28} className="empty-icon" />
+        <ListTree size={24} className="empty-icon" />
         <div className="empty-title">暂无活动文档</div>
-        <div className="empty-desc">在编辑器中打开或新建文档后，此处将自动呈现层级大纲。</div>
+        <div className="empty-desc">打开或新建文档后自动生成</div>
       </div>
     );
   }
@@ -191,7 +185,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
               onClick={() => setFilterQuery("")}
               title="清除过滤"
             >
-              <X size={11} />
+              <X size={12} />
             </button>
           )}
         </div>
@@ -200,7 +194,7 @@ function OutlineView({ activeId }: { activeId: string | null }) {
       {items.length === 0 ? (
         <div className="sidebar-empty-state compact">
           <div className="empty-title">当前文档暂无标题</div>
-          <div className="empty-desc">键入 # 一级标题、## 二级标题 即可生成导航</div>
+          <div className="empty-desc">用 # 号书写标题即可生成</div>
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="sidebar-empty-state compact">
@@ -210,13 +204,12 @@ function OutlineView({ activeId }: { activeId: string | null }) {
         <div className="outline-tree" role="list">
           {filteredItems.map((item, idx) => {
             const isActive = item.from === activeFrom;
-            const indentLevel = Math.max(0, Math.min(item.level - 1, 5));
             return (
               <button
                 key={`${item.from}-${idx}`}
                 role="listitem"
                 className={`outline-node lvl-${item.level}` + (isActive ? " is-active" : "")}
-                style={{ paddingLeft: `${indentLevel * 12 + 12}px` }}
+                style={{ paddingLeft: `${outlineIndent(item.level)}px` }}
                 onClick={() => jump(item)}
                 title={item.text}
               >
@@ -234,16 +227,64 @@ function OutlineView({ activeId }: { activeId: string | null }) {
 // 2. 工作区文件目录树 (Workspace File Tree View)
 // ============================================================================
 
+/** 树内文件图标：极简"折角页"，替代通用文档图标；
+    Markdown 文件的折角带一点强调色（注释感），其他文件保持纯灰阶 */
+function FileGlyph({ className, accent }: { className?: string; accent: boolean }) {
+  return (
+    <svg
+      className={className}
+      width={14}
+      height={14}
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M8.6 1.8H4.5a.9.9 0 0 0-.9.9v10.6a.9.9 0 0 0 .9.9h7a.9.9 0 0 0 .9-.9V5.6Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.6 1.8v3.8h3.8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {accent && (
+        <path d="M8.6 1.8 12.4 5.6H8.6Z" fill="var(--lac-accent)" fillOpacity="0.3" />
+      )}
+    </svg>
+  );
+}
+
 function FileTreeItem({
   entry,
+  index,
   depth,
+  isLast,
+  ancestorContinues,
+  ancestorChain,
   onMenu,
 }: {
   entry: DirEntry;
+  /** 同级序号（祖先链追踪判定"之前/之后"用） */
+  index: number;
   depth: number;
+  /** 是否同级最后一项（决定本行拐弯线为 "└" 还是 "├"） */
+  isLast: boolean;
+  /** 各祖先级是否还有后继同级项（决定贯穿竖线的位置） */
+  ancestorContinues: boolean[];
+  /** 从根到本行父级的链（祖先链追踪悬停用） */
+  ancestorChain: ChainEntry[];
   onMenu: (x: number, y: number, items: MenuItem[]) => void;
 }) {
   const sidebar = useSidebar();
+  const setHoverChain = useTreeHover((s) => s.setChain);
+  const selfChain = [...ancestorChain, { path: entry.path, index }];
+  const litVlines = useTreeHover((s) => chainHighlight(s.chain, selfChain).vlines);
+  const onHoverChain = useTreeHover((s) => chainHighlight(s.chain, selfChain).onChain);
   const documents = useDocuments((s) => s.documents);
   const activeId = useDocuments((s) => s.activeId);
 
@@ -383,6 +424,8 @@ function FileTreeItem({
     onMenu(e.clientX, e.clientY, items);
   };
 
+  const guides = treeGuideLines(depth, ancestorContinues, isLast);
+
   return (
     <div className="tree-node-wrapper">
       <div
@@ -390,14 +433,27 @@ function FileTreeItem({
           "tree-node" +
           (entry.isDir ? " is-dir" : " is-file") +
           (isOpen ? " is-open" : "") +
-          (isActive ? " is-active" : "")
+          (isActive ? " is-active" : "") +
+          (onHoverChain ? " is-chain" : "")
         }
-        style={{ paddingLeft: `${depth * 14 + 10}px` }}
+        style={{ paddingLeft: `${depth * TREE_INDENT + 12}px` }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
+        onMouseEnter={() => setHoverChain(selfChain)}
+        onMouseLeave={() => setHoverChain(null)}
         title={entry.path}
       >
-        {depth > 0 && <span className="tree-guide" />}
+        {guides.vlines.map((v) => (
+          <span
+            key={`v-${v.level}`}
+            className={"tree-vline" + (v.level < litVlines ? " is-lit" : "")}
+            style={{ left: v.x }}
+          />
+        ))}
+        <span className="tree-elbow" style={{ left: guides.elbow.x }} />
+        {guides.elbow.stem && (
+          <span className="tree-elbow-stem" style={{ left: guides.elbow.x }} />
+        )}
 
         {entry.isDir ? (
           <>
@@ -414,11 +470,10 @@ function FileTreeItem({
         ) : (
           <>
             <span className="node-indent-spacer" />
-            {entry.isMarkdown ? (
-              <FileText size={14} className="node-icon file-md" />
-            ) : (
-              <File size={14} className="node-icon file-plain" />
-            )}
+            <FileGlyph
+              className={"node-icon " + (entry.isMarkdown ? "file-md" : "file-plain")}
+              accent={entry.isMarkdown}
+            />
           </>
         )}
 
@@ -454,16 +509,20 @@ function FileTreeItem({
           {children.length === 0 ? (
             <div
               className="tree-empty-children"
-              style={{ paddingLeft: `${(depth + 1) * 14 + 14}px` }}
+              style={{ paddingLeft: `${(depth + 1) * TREE_INDENT + 16}px` }}
             >
               (空文件夹)
             </div>
           ) : (
-            children.map((child) => (
+            children.map((child, childIndex) => (
               <FileTreeItem
                 key={child.path}
                 entry={child}
+                index={childIndex}
                 depth={depth + 1}
+                isLast={childIndex === children.length - 1}
+                ancestorContinues={[...ancestorContinues, !isLast]}
+                ancestorChain={selfChain}
                 onMenu={onMenu}
               />
             ))
@@ -518,11 +577,9 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
     return (
       <div className="workspace-empty-container">
         <div className="sidebar-empty-state">
-          <FolderOpen size={32} className="empty-icon" />
+          <FolderOpen size={24} className="empty-icon" />
           <div className="empty-title">工作区未开启</div>
-          <div className="empty-desc">
-            打开本地文件夹作为工作区，可快速浏览、组织与创建 Markdown 笔记。
-          </div>
+          <div className="empty-desc">打开文件夹，开始整理笔记</div>
           <button className="primary-open-btn" onClick={handleOpenFolder}>
             打开文件夹…
           </button>
@@ -530,7 +587,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
 
         {activeDoc?.path && (
           <div className="quick-open-current">
-            <span className="quick-label">当前文档目录：</span>
+            <span className="quick-label">当前目录：</span>
             <button
               className="quick-link-btn"
               onClick={handleOpenCurrentFileDir}
@@ -567,28 +624,28 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
             title="新建文件"
             onClick={handleCreateRootFile}
           >
-            <FilePlus size={13} />
+            <FilePlus size={14} />
           </button>
           <button
             className="action-btn"
             title="新建文件夹"
             onClick={handleCreateRootDir}
           >
-            <FolderPlus size={13} />
+            <FolderPlus size={14} />
           </button>
           <button
             className="action-btn"
             title="刷新目录"
             onClick={() => void sidebar.refreshWorkspace()}
           >
-            <RotateCw size={13} className={sidebar.workspaceLoading ? "spin" : ""} />
+            <RotateCw size={14} className={sidebar.workspaceLoading ? "spin" : ""} />
           </button>
           <button
             className="action-btn"
             title="关闭工作区"
             onClick={() => sidebar.closeWorkspace()}
           >
-            <X size={13} />
+            <X size={14} />
           </button>
         </div>
       </div>
@@ -609,7 +666,7 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
               onClick={() => setFilterQuery("")}
               title="清除过滤"
             >
-              <X size={11} />
+              <X size={12} />
             </button>
           )}
         </div>
@@ -628,163 +685,19 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
             )}
           </div>
         ) : (
-          filteredChildren.map((entry) => (
+          filteredChildren.map((entry, index) => (
             <FileTreeItem
               key={entry.path}
               entry={entry}
+              index={index}
               depth={0}
+              isLast={index === filteredChildren.length - 1}
+              ancestorContinues={[]}
+              ancestorChain={[]}
               onMenu={onMenu}
             />
           ))
         )}
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// 3. 打开的标签页视图 (Open Documents / Tabs List View)
-// ============================================================================
-
-function TabsListView({ onMenu }: { onMenu: (x: number, y: number, items: MenuItem[]) => void }) {
-  const documents = useDocuments((s) => s.documents);
-  const activeId = useDocuments((s) => s.activeId);
-  const setActive = useDocuments((s) => s.setActive);
-
-  const handleCreateNew = () => {
-    newTabAction();
-  };
-
-  const handleCloseAll = async () => {
-    if (documents.length === 0) return;
-    const ok = await promptConfirm(
-      "关闭全部标签",
-      "确定要关闭所有已打开的标签页吗？未保存内容将提示保存。",
-      "关闭全部",
-      false
-    );
-    if (!ok) return;
-    for (const doc of [...documents]) {
-      await closeTabAction(doc.id);
-    }
-  };
-
-  if (documents.length === 0) {
-    return (
-      <div className="sidebar-empty-state">
-        <Files size={28} className="empty-icon" />
-        <div className="empty-title">暂无打开的标签</div>
-        <div className="empty-desc">打开或新建文档后，此处将集中呈现并管理所有标签页。</div>
-        <button className="primary-open-btn" onClick={handleCreateNew}>
-          新建标签页
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="tabs-list-view">
-      <div className="view-sub-header">
-        <span className="sub-title">打开的标签</span>
-        <div className="sub-actions">
-          <span className="sub-badge">{documents.length}</span>
-          <button
-            className="action-btn"
-            title="新建标签页 (Ctrl+T)"
-            onClick={handleCreateNew}
-          >
-            <Plus size={13} />
-          </button>
-          <button
-            className="action-btn-danger"
-            title="关闭所有标签"
-            onClick={handleCloseAll}
-          >
-            <XCircle size={13} />
-          </button>
-        </div>
-      </div>
-
-      <div className="sidebar-tabs-container">
-        {documents.map((doc) => {
-          const isActive = doc.id === activeId;
-          const dir = doc.path ? dirName(doc.path) : "未保存新文档";
-
-          const handleContextMenu = (e: React.MouseEvent) => {
-            e.preventDefault();
-            const items: MenuItem[] = [
-              {
-                label: "关闭",
-                shortcut: "Ctrl+W",
-                onClick: () => void closeTabAction(doc.id),
-              },
-              {
-                label: "关闭其他标签",
-                onClick: () => void closeOtherTabsAction(doc.id),
-              },
-              {
-                label: "关闭右侧标签",
-                onClick: () => void closeTabsToRightAction(doc.id),
-              },
-              {
-                label: "移入新窗口",
-                separatorBefore: true,
-                onClick: () => void moveDocToNewWindow(doc.id),
-              },
-              ...(doc.path
-                ? [
-                    {
-                      label: "在资源管理器中显示",
-                      separatorBefore: true,
-                      onClick: () => void invoke("explorer_select", { path: doc.path }),
-                    },
-                    {
-                      label: "复制文件路径",
-                      onClick: () => void navigator.clipboard.writeText(doc.path!),
-                    },
-                  ]
-                : []),
-            ];
-            onMenu(e.clientX, e.clientY, items);
-          };
-
-          return (
-            <div
-              key={doc.id}
-              className={"sidebar-tab-row" + (isActive ? " is-active" : "")}
-              onClick={() => setActive(doc.id)}
-              onContextMenu={handleContextMenu}
-              title={doc.path ?? doc.name}
-            >
-              <div className="tab-row-left">
-                <FileText
-                  size={14}
-                  className={"tab-row-icon" + (isActive ? " is-active" : "")}
-                />
-                <div className="tab-row-info">
-                  <span className="tab-row-name">{doc.name}</span>
-                  <span className="tab-row-path">{dir}</span>
-                </div>
-              </div>
-
-              <div className="tab-row-right">
-                {doc.isDirty && (
-                  <span className="node-dirty-dot" title="有未保存更改" />
-                )}
-                <button
-                  className="tab-row-close-btn"
-                  title="关闭标签页"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void closeTabAction(doc.id);
-                  }}
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -806,7 +719,7 @@ export function SidebarView() {
 
   return (
     <div className="sidebar-content">
-      {/* 顶部分段切换器 (文件 / 大纲 / 标签) */}
+      {/* 顶部分段切换器 (文件 / 大纲) */}
       <div className="sidebar-nav-tabs" role="tablist">
         <button
           role="tab"
@@ -815,7 +728,7 @@ export function SidebarView() {
           onClick={() => setActiveTab("files")}
           title="工作区文件树"
         >
-          <Folder size={13} />
+          <Folder size={14} />
           <span>文件</span>
         </button>
 
@@ -826,19 +739,8 @@ export function SidebarView() {
           onClick={() => setActiveTab("outline")}
           title="当前文档大纲"
         >
-          <ListTree size={13} />
+          <ListTree size={14} />
           <span>大纲</span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={activeTab === "tabs"}
-          className={"nav-tab-btn" + (activeTab === "tabs" ? " is-active" : "")}
-          onClick={() => setActiveTab("tabs")}
-          title="已打开的标签页"
-        >
-          <Files size={13} />
-          <span>标签</span>
         </button>
       </div>
 
@@ -846,7 +748,6 @@ export function SidebarView() {
       <div className="sidebar-main-pane">
         {activeTab === "files" && <WorkspaceView onMenu={openMenu} />}
         {activeTab === "outline" && <OutlineView activeId={activeId} />}
-        {activeTab === "tabs" && <TabsListView onMenu={openMenu} />}
       </div>
 
       {/* 上下文右键菜单 */}

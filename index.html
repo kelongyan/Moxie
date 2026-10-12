@@ -51,10 +51,12 @@
           plugins: {},
           invoke(cmd, args) {
             const empty = () => Promise.resolve(null);
-            // 默认打开全功能语法与排版样张文档，供排版、间距与组件效果视觉检验
+            // 默认打开全功能语法与排版样张文档，供排版、间距与组件效果视觉检验；
+            // ?welcome=1 模拟"图标启动零文件"进入欢迎页
             const launchArgs = () => {
-              const doc = new URLSearchParams(location.search).get("doc");
-              if (doc) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
+              const params = new URLSearchParams(location.search);
+              if (params.get("welcome")) return [];
+              if (params.get("doc")) return ["F:\\Moxie\\work\\ui-baseline\\对照样张.md"];
               return ["C:\\Workspace\\我的笔记\\Markdown语法与排版样张.md"];
             };
             const mockDocText = `# Moxie 排版与全语法渲染样张
@@ -66,16 +68,16 @@
 ## 1. 标题分级与字体比例 (Headings)
 
 ### 1.1 三级标题演示 (H3 Heading)
-正文紧跟三级标题，用于检验三级标题（20px，字重 650）与正文之间的紧密亲合度以及段间距。
+正文紧跟三级标题，用于检验三级标题（20px / 1.25em，字重 600）与正文之间的紧密亲合度以及段间距。
 
 #### 1.1.1 四级标题演示 (H4 Heading)
-四级标题字号（17.6px / 1.1em，字重 700），可清晰从普通正文中凸显出来。
+四级标题（16px / 1.0em，字重 600），与正文基准同号但依靠半粗字重自然区分。
 
 ##### 1.1.1.1 五级标题演示 (H5 Heading)
-五级标题字号（16px / 1.0em，字重 600，次级灰色）。
+五级标题字号（14px / 0.875em，字重 600，次级灰色）。
 
 ###### 1.1.1.1.1 六级标题演示 (H6 Heading)
-六级标题字号（14.4px / 0.9em，字重 600，次级灰色带微小字距）。
+六级标题字号（13px / 0.8125em，字重 600，次级灰色带微小字距）。
 
 ---
 
@@ -268,7 +270,13 @@ $$\\hat{f}(\\xi) = \\int_{-\\infty}^{\\infty} f(x) e^{-2\\pi i x \\xi} \\, dx$$
                 if (p === "C:\\Workspace\\我的笔记\\项目规划") {
                   return Promise.resolve([
                     { name: "产品迭代排期.md", path: "C:\\Workspace\\我的笔记\\项目规划\\产品迭代排期.md", isDir: false, isMarkdown: true, size: 1024, modifiedMs: Date.now() },
+                    { name: "周报存档", path: "C:\\Workspace\\我的笔记\\项目规划\\周报存档", isDir: true, isMarkdown: false, size: 0, modifiedMs: Date.now() },
                     { name: "需求清单.md", path: "C:\\Workspace\\我的笔记\\项目规划\\需求清单.md", isDir: false, isMarkdown: true, size: 3072, modifiedMs: Date.now() },
+                  ]);
+                }
+                if (p === "C:\\Workspace\\我的笔记\\项目规划\\周报存档") {
+                  return Promise.resolve([
+                    { name: "十月周报.md", path: "C:\\Workspace\\我的笔记\\项目规划\\周报存档\\十月周报.md", isDir: false, isMarkdown: true, size: 4096, modifiedMs: Date.now() },
                   ]);
                 }
                 if (p === "C:\\Workspace\\我的笔记\\灵感随笔") {
@@ -292,13 +300,14 @@ $$\\hat{f}(\\xi) = \\int_{-\\infty}^{\\infty} f(x) e^{-2\\pi i x \\xi} \\, dx$$
               rename_file: empty,
               explorer_select: empty,
               write_text_file: empty,
+              // 粘贴占位链路：延迟解析让「转圈占位→原位替换」在浏览器里可观察
+              write_file_base64: () =>
+                new Promise((resolve) => setTimeout(() => resolve(null), 800)),
               recovery_load: empty,
               recovery_read_marker: empty,
               settings_load: () => Promise.resolve({}),
               settings_save: empty,
               sidebar_save: empty,
-              workspace_save: empty,
-              workspace_load_and_consume: empty,
               fs_watch: empty,
               timeline_save: empty,
               timeline_list: () => Promise.resolve([]),

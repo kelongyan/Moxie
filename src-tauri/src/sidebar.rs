@@ -21,6 +21,30 @@ pub fn save(value: serde_json::Value) -> std::io::Result<()> {
     std::fs::rename(&temp, &path)
 }
 
+/// 旧版遗留键清理：工作区文件夹与展开状态属会话内状态，不再落盘（含磁盘上的历史值）
+pub fn cleanup_legacy_keys() {
+    let path = app_data_dir().join(FILE_NAME);
+    let text = match std::fs::read_to_string(&path) {
+        Ok(text) => text,
+        Err(_) => return,
+    };
+    let mut value = match serde_json::from_str::<serde_json::Value>(&text) {
+        Ok(value) => value,
+        Err(_) => return,
+    };
+    let changed = match value.as_object_mut() {
+        Some(obj) => {
+            let had_workspace = obj.remove("workspacePath").is_some();
+            let had_expanded = obj.remove("expandedDirs").is_some();
+            had_workspace || had_expanded
+        }
+        None => false,
+    };
+    if changed {
+        let _ = save(value);
+    }
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct DirEntryDto {
@@ -192,6 +216,22 @@ mod tests {
         });
         save(value.clone()).unwrap();
         assert_eq!(load(), value);
+    }
+
+    #[test]
+    fn legacy_workspace_keys_are_cleaned() {
+        let _guard = isolate();
+        save(serde_json::json!({
+            "activeTab": "files",
+            "workspacePath": "C:\\Users\\x\\Desktop\\notes",
+            "expandedDirs": {"C:\\Users\\x\\Desktop\\notes": true}
+        }))
+        .unwrap();
+        cleanup_legacy_keys();
+        let value = load();
+        assert!(value.get("workspacePath").is_none());
+        assert!(value.get("expandedDirs").is_none());
+        assert_eq!(value.get("activeTab").and_then(|v| v.as_str()), Some("files"));
     }
 
     #[test]

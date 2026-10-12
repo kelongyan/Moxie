@@ -6,20 +6,20 @@ import { ThemeMode, useThemeStore } from "./theme";
 import type { BlockSpacing } from "../preview/typography";
 
 export type IndentStyle = "spaces" | "tabs";
-export type ExitBehavior = "preserveWorkspace" | "askToSave";
 
 export const PT_TO_PX = 4 / 3;
 
 interface PreferencesState {
   wordWrap: boolean;
   lineNumbers: boolean;
+  /** 书写面代码块行号（与导出侧行号开关各自独立） */
+  codeBlockLineNumbers: boolean;
   statusBarVisible: boolean;
   fontSizePt: number;
   lineSpacingPt: number;
   blockSpacing: BlockSpacing;
   indentStyle: IndentStyle;
   tabWidth: 2 | 4 | 8;
-  exitBehavior: ExitBehavior;
   sidebarPinned: boolean;
   sidebarWidth: number;
   markdownBreaks: boolean;
@@ -57,6 +57,7 @@ interface PreferencesState {
 const EDITOR_KEYS = new Set([
   "wordWrap",
   "lineNumbers",
+  "codeBlockLineNumbers",
   "fontSizePt",
   "lineSpacingPt",
   "blockSpacing",
@@ -79,8 +80,6 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     editorIndentationStyle: state.indentStyle,
     editorTabWidth: state.tabWidth,
     appTheme: useThemeStore.getState().mode,
-    workspaceExitBehavior: state.exitBehavior,
-    sidebarPinned: state.sidebarPinned,
     sidebarWidth: state.sidebarWidth,
     markdownBreaks: state.markdownBreaks,
     markdownTypographer: state.markdownTypographer,
@@ -91,6 +90,7 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     exportTheme: state.exportTheme,
     isExportNarrow: state.exportNarrow,
     isExportCodeLineNumbers: state.exportCodeLineNumbers,
+    isCodeBlockLineNumbers: state.codeBlockLineNumbers,
     autosaveMode: state.autosave,
     appLang: state.lang,
     findStyle: state.findStyle,
@@ -104,6 +104,8 @@ export async function persistPreferences() {
   try {
     const current = await invoke<Record<string, unknown>>("settings_load");
     const merged = { ...(current ?? {}), ...toDisk(usePreferences.getState()) };
+    // 侧栏展开状态属会话内状态：不持久化，并顺带清除磁盘上的历史值
+    delete merged.sidebarPinned;
     await invoke("settings_save", { value: merged });
   } catch {
     // 存储失败不阻断交互
@@ -121,6 +123,7 @@ export const usePreferences = create<PreferencesState>((set) => ({
   wordWrap: true,
   // 所见即所得对标 Typora：默认不显示行号（设置里可开）
   lineNumbers: false,
+  codeBlockLineNumbers: false,
   statusBarVisible: true,
   /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
   fontSizePt: 12,
@@ -128,8 +131,8 @@ export const usePreferences = create<PreferencesState>((set) => ({
   blockSpacing: "standard",
   indentStyle: "spaces",
   tabWidth: 4,
-  exitBehavior: "preserveWorkspace",
-  sidebarPinned: true,
+  // 启动默认隐藏侧栏（会话内可展开；不持久化、不跨启动恢复）
+  sidebarPinned: false,
   sidebarWidth: 240,
   markdownBreaks: false,
   // Typora 风格的灵魂：直引号 → 弯引号、-- → —、... → …
@@ -184,10 +187,6 @@ export const usePreferences = create<PreferencesState>((set) => ({
     if (disk.editorTabWidth === 2 || disk.editorTabWidth === 4 || disk.editorTabWidth === 8) {
       patch.tabWidth = disk.editorTabWidth;
     }
-    if (disk.workspaceExitBehavior === "preserveWorkspace" || disk.workspaceExitBehavior === "askToSave") {
-      patch.exitBehavior = disk.workspaceExitBehavior;
-    }
-    if (typeof disk.sidebarPinned === "boolean") patch.sidebarPinned = disk.sidebarPinned;
     if (typeof disk.sidebarWidth === "number") {
       patch.sidebarWidth = Math.min(480, Math.max(180, disk.sidebarWidth));
     }
@@ -219,6 +218,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
     }
     if (typeof disk.isExportCodeLineNumbers === "boolean") {
       patch.exportCodeLineNumbers = disk.isExportCodeLineNumbers;
+    }
+    if (typeof disk.isCodeBlockLineNumbers === "boolean") {
+      patch.codeBlockLineNumbers = disk.isCodeBlockLineNumbers;
     }
     if (
       disk.autosaveMode === "off" ||
