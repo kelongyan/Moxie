@@ -1,10 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { FileText, Search, X } from "lucide-react";
 import { baseName } from "../models/markdown";
 import { openPathAction } from "../state/actions";
 import { useDocuments } from "../state/documents";
 import { dirName, useSidebar } from "../state/sidebar";
 import { useQuickOpen } from "../state/quickOpen";
+
+/** 关键字匹配高亮 */
+function highlightMatch(text: string, query: string): React.ReactNode {
+  const q = query.trim().toLowerCase();
+  if (!q) return text;
+  const lower = text.toLowerCase();
+  const idx = lower.indexOf(q);
+  if (idx < 0) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="quick-open-match">{text.slice(idx, idx + q.length)}</mark>
+      {text.slice(idx + q.length)}
+    </>
+  );
+}
 
 /** 名称前缀 > 名称包含 > 路径子序列；null = 不命中 */
 function scoreOf(name: string, path: string, query: string): number | null {
@@ -91,37 +107,68 @@ export function QuickOpen() {
     >
       <div className="quick-open" role="dialog" aria-label="快速打开">
         <div className="quick-open-search">
-          <Search size={14} />
+          <Search size={15} className="quick-open-search-icon" />
           <input
             ref={inputRef}
             value={query}
-            placeholder="搜索最近文件…"
+            placeholder="键入文件名搜索最近文档…"
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
           />
+          {query && (
+            <button
+              type="button"
+              className="quick-open-clear-btn"
+              title="清空搜索"
+              onClick={() => {
+                setQuery("");
+                inputRef.current?.focus();
+              }}
+            >
+              <X size={13} />
+            </button>
+          )}
         </div>
         <div className="quick-open-list" ref={listRef}>
           {results.length === 0 ? (
-            <div className="quick-open-empty">没有匹配的文件</div>
+            <div className="quick-open-empty">
+              <FileText size={24} className="quick-open-empty-icon" />
+              <span>没有找到匹配的文档</span>
+            </div>
           ) : (
-            results.map(({ entry }, idx) => (
-              <button
-                key={entry.path}
-                data-idx={idx}
-                className={
-                  "quick-open-item" +
-                  (idx === selected ? " selected" : "") +
-                  (entry.path === activePath ? " is-open" : "")
-                }
-                title={entry.path}
-                onMouseEnter={() => setSelected(idx)}
-                onClick={() => open(entry.path)}
-              >
-                <span className="quick-open-name">{baseName(entry.path)}</span>
-                <span className="quick-open-dir">{dirName(entry.path)}</span>
-              </button>
-            ))
+            results.map(({ entry }, idx) => {
+              const name = baseName(entry.path);
+              const dir = dirName(entry.path);
+              const isOpen = entry.path === activePath;
+              return (
+                <button
+                  key={entry.path}
+                  data-idx={idx}
+                  className={
+                    "quick-open-item" +
+                    (idx === selected ? " selected" : "") +
+                    (isOpen ? " is-open" : "")
+                  }
+                  title={entry.path}
+                  onMouseEnter={() => setSelected(idx)}
+                  onClick={() => open(entry.path)}
+                >
+                  <FileText size={14} className="quick-open-file-icon" />
+                  <span className="quick-open-name">{highlightMatch(name, query)}</span>
+                  {isOpen && <span className="quick-open-tag">当前</span>}
+                  <span className="quick-open-dir">{dir}</span>
+                </button>
+              );
+            })
           )}
+        </div>
+        <div className="quick-open-footer">
+          <div className="quick-open-hints">
+            <span><kbd>↑</kbd><kbd>↓</kbd> 移动</span>
+            <span><kbd>↵</kbd> 打开</span>
+            <span><kbd>Esc</kbd> 退出</span>
+          </div>
+          <div className="quick-open-count">{results.length} 项</div>
         </div>
       </div>
     </div>

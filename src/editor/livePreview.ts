@@ -1557,20 +1557,384 @@ function hideRange(
 }
 
 /** 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span，渲染失败回退原文） */
+let activeMathBubble: HTMLElement | null = null;
+let activeMathTarget: HTMLElement | null = null;
+let closeMathBubbleCleanup: (() => void) | null = null;
+
+function closeMathBubble() {
+  if (closeMathBubbleCleanup) {
+    closeMathBubbleCleanup();
+    closeMathBubbleCleanup = null;
+  }
+  if (activeMathTarget) {
+    activeMathTarget.classList.remove("is-editing");
+    activeMathTarget = null;
+  }
+  if (activeMathBubble) {
+    activeMathBubble.classList.add("is-closing");
+    const el = activeMathBubble;
+    activeMathBubble = null;
+    setTimeout(() => {
+      el.remove();
+    }, 100);
+  }
+}
+
+document.addEventListener("mousedown", (e) => {
+  if (activeMathBubble && !activeMathBubble.contains(e.target as Node)) {
+    closeMathBubble();
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && activeMathBubble) {
+    closeMathBubble();
+  }
+});
+
+function positionMathBubble(bubble: HTMLElement, targetEl: HTMLElement) {
+  const rect = targetEl.getBoundingClientRect();
+  const bubbleWidth = bubble.offsetWidth || 380;
+  const bubbleHeight = bubble.offsetHeight || 160;
+
+  let left = rect.left + rect.width / 2 - bubbleWidth / 2;
+  left = Math.max(12, Math.min(left, window.innerWidth - bubbleWidth - 12));
+
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const placeAbove = spaceBelow < bubbleHeight + 16 && rect.top > bubbleHeight + 16;
+
+  const top = placeAbove ? rect.top - bubbleHeight - 10 : rect.bottom + 10;
+
+  bubble.style.left = `${left}px`;
+  bubble.style.top = `${top}px`;
+  bubble.dataset.placement = placeAbove ? "top" : "bottom";
+
+  const arrow = bubble.querySelector(".md-math-bubble-arrow") as HTMLElement | null;
+  if (arrow) {
+    const arrowLeft = Math.max(16, Math.min(rect.left + rect.width / 2 - left, bubbleWidth - 16));
+    arrow.style.left = `${arrowLeft}px`;
+  }
+}
+
+function resolveInlineMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const text = line.text;
+  const relPos = pos - line.from;
+  let i = 0;
+  while (i < text.length - 1) {
+    if (text[i] !== "$" || text[i + 1] === "$" || (i > 0 && text[i - 1] === "\\")) {
+      i++;
+      continue;
+    }
+    let close = -1;
+    for (let j = i + 1; j < text.length; j++) {
+      if (text[j] === "\\") {
+        j++;
+        continue;
+      }
+      if (text[j] === "$") {
+        close = j;
+        break;
+      }
+    }
+    if (close > i + 1) {
+      if (relPos >= i && relPos <= close + 1) {
+        return { from: line.from + i, to: line.from + close + 1 };
+      }
+      i = close + 1;
+    } else {
+      i++;
+    }
+  }
+  return null;
+}
+
+function resolveBlockMathRange(doc: Text, pos: number): { from: number; to: number } | null {
+  const line = doc.lineAt(pos);
+  const trimmed = line.text.trim();
+  if (trimmed.startsWith("$$")) {
+    const second = trimmed.indexOf("$$", 2);
+    if (second > 2) {
+      return { from: line.from, to: line.to };
+    }
+    for (let j = line.number + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: line.from, to: doc.line(j).to };
+      }
+    }
+  }
+  let startLine = -1;
+  for (let j = line.number; j >= 1; j--) {
+    if (doc.line(j).text.trim().startsWith("$$")) {
+      startLine = j;
+      break;
+    }
+  }
+  if (startLine > 0) {
+    for (let j = startLine + 1; j <= doc.lines; j++) {
+      if (doc.line(j).text.trim().startsWith("$$")) {
+        return { from: doc.line(startLine).from, to: doc.line(j).to };
+      }
+    }
+  }
+  return null;
+}
+
+function openMathBubble(
+  view: EditorView,
+  targetEl: HTMLElement,
+  initialTex: string,
+  display: boolean,
+  from: number,
+  to: number
+) {
+  closeMathBubble();
+
+  activeMathTarget = targetEl;
+  targetEl.classList.add("is-editing");
+
+  const bubble = document.createElement("div");
+  bubble.className = "md-math-bubble";
+  bubble.setAttribute("role", "dialog");
+  bubble.setAttribute("aria-label", "编辑 LaTeX 公式");
+
+  let currentRange = { from, to };
+  let currentTex = initialTex;
+
+  const arrow = document.createElement("div");
+  arrow.className = "md-math-bubble-arrow";
+  bubble.appendChild(arrow);
+
+  const header = document.createElement("div");
+  header.className = "md-math-bubble-header";
+
+  const titleWrap = document.createElement("div");
+  titleWrap.className = "md-math-bubble-title";
+  titleWrap.innerHTML = `
+    <svg class="md-math-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 19h4a8 8 0 0 0 8-8V4"/>
+      <path d="M12 4h6"/>
+      <path d="M8 11h8"/>
+    </svg>
+    <span>${display ? "块级 LaTeX 公式" : "行内 LaTeX 公式"}</span>
+  `;
+  header.appendChild(titleWrap);
+
+  const actions = document.createElement("div");
+  actions.className = "md-math-bubble-actions";
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.type = "button";
+  confirmBtn.className = "md-math-confirm-btn";
+  confirmBtn.textContent = "完成";
+  confirmBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  confirmBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(confirmBtn);
+
+  const copyBtn = document.createElement("button");
+  copyBtn.type = "button";
+  copyBtn.className = "md-math-action-btn md-math-copy-btn";
+  copyBtn.title = "复制 LaTeX 源码";
+  copyBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+    </svg>
+  `;
+  copyBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  copyBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    void navigator.clipboard?.writeText(currentTex);
+    copyBtn.classList.add("copied");
+    setTimeout(() => copyBtn.classList.remove("copied"), 1200);
+  });
+  actions.appendChild(copyBtn);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.type = "button";
+  closeBtn.className = "md-math-action-btn md-math-close-btn";
+  closeBtn.title = "关闭 (Esc)";
+  closeBtn.innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  `;
+  closeBtn.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  closeBtn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    closeMathBubble();
+    view.focus();
+  });
+  actions.appendChild(closeBtn);
+  header.appendChild(actions);
+  bubble.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "md-math-bubble-body";
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "md-math-input";
+  textarea.value = initialTex;
+  textarea.rows = display ? 3 : 1;
+  textarea.placeholder = display ? "输入 LaTeX 公式源码 (多行)..." : "输入 LaTeX 公式源码...";
+  body.appendChild(textarea);
+  bubble.appendChild(body);
+
+  const footer = document.createElement("div");
+  footer.className = "md-math-bubble-footer";
+
+  const quickSymbols = document.createElement("div");
+  quickSymbols.className = "md-math-quick-symbols";
+  const SYMBOLS = [
+    { label: "\\frac", insert: "\\frac{a}{b}" },
+    { label: "\\sqrt", insert: "\\sqrt{x}" },
+    { label: "\\sum", insert: "\\sum_{i=1}^{n}" },
+    { label: "\\int", insert: "\\int_{a}^{b}" },
+    { label: "\\alpha", insert: "\\alpha" },
+    { label: "\\infty", insert: "\\infty" },
+    { label: "\\pm", insert: "\\pm" },
+    { label: "\\leq", insert: "\\leq" },
+    { label: "\\geq", insert: "\\geq" },
+  ];
+  for (const s of SYMBOLS) {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "md-math-chip";
+    chip.textContent = s.label;
+    chip.title = `插入 ${s.insert}`;
+    chip.addEventListener("mousedown", (ev) => ev.stopPropagation());
+    chip.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      textarea.value = val.slice(0, start) + s.insert + val.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + s.insert.length;
+      textarea.focus();
+      handleTexChange(textarea.value);
+    });
+    quickSymbols.appendChild(chip);
+  }
+  footer.appendChild(quickSymbols);
+  bubble.appendChild(footer);
+  bubble.appendChild(footer);
+
+  const handleTexChange = (newVal: string) => {
+    currentTex = newVal;
+    const trimmed = newVal.trim();
+    const newInsert = display
+      ? `$$\n${trimmed || " "}\n$$`
+      : `$${trimmed || " "}$`;
+
+    if (
+      currentRange.from <= view.state.doc.length &&
+      currentRange.to <= view.state.doc.length
+    ) {
+      view.dispatch({
+        changes: {
+          from: currentRange.from,
+          to: currentRange.to,
+          insert: newInsert,
+        },
+        userEvent: "input",
+      });
+      currentRange.to = currentRange.from + newInsert.length;
+    }
+  };
+
+  textarea.addEventListener("mousedown", (ev) => ev.stopPropagation());
+  textarea.addEventListener("input", () => {
+    handleTexChange(textarea.value);
+  });
+  textarea.addEventListener("keydown", (ev) => {
+    ev.stopPropagation();
+    if (ev.key === "Escape") {
+      closeMathBubble();
+      view.focus();
+    } else if (
+      (display && ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) ||
+      (!display && ev.key === "Enter" && !ev.shiftKey)
+    ) {
+      ev.preventDefault();
+      closeMathBubble();
+      view.focus();
+    }
+  });
+
+  document.body.appendChild(bubble);
+  activeMathBubble = bubble;
+
+  positionMathBubble(bubble, targetEl);
+
+  setTimeout(() => {
+    textarea.focus();
+    textarea.select();
+  }, 30);
+
+  const reposition = () => {
+    if (activeMathBubble && activeMathTarget) {
+      positionMathBubble(activeMathBubble, activeMathTarget);
+    }
+  };
+  window.addEventListener("scroll", reposition, true);
+  window.addEventListener("resize", reposition);
+
+  closeMathBubbleCleanup = () => {
+    window.removeEventListener("scroll", reposition, true);
+    window.removeEventListener("resize", reposition);
+  };
+}
+
+
+
+/**
+ * 数学公式 → KaTeX 渲染 widget（块级 div / 行内 span）。
+ * 常驻渲染；点击进入「气泡编辑」（墨记同款）：浮动气泡内编辑 LaTeX 源码，
+ * 文档内实时重渲染；来自 2a6345f 的设计恢复。
+ */
 class MathWidget extends WidgetType {
   constructor(
     readonly tex: string,
-    readonly display: boolean
+    readonly display: boolean,
+    readonly mathFrom?: number,
+    readonly mathTo?: number
   ) {
     super();
   }
   eq(other: MathWidget) {
     return other.tex === this.tex && other.display === this.display;
   }
-  toDOM() {
+  toDOM(view: EditorView) {
     const el = document.createElement(this.display ? "div" : "span");
     el.className = this.display ? "md-math-block" : "md-math-inline";
     el.innerHTML = renderKatex(this.tex, this.display);
+
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const pos = view.posAtDOM(el);
+      let from = this.mathFrom ?? pos;
+      let to = this.mathTo ?? pos + this.tex.length + (this.display ? 4 : 2);
+
+      const resolved = this.display
+        ? resolveBlockMathRange(view.state.doc, pos)
+        : resolveInlineMathRange(view.state.doc, pos);
+      if (resolved) {
+        from = resolved.from;
+        to = resolved.to;
+      }
+
+      openMathBubble(view, el, this.tex, this.display, from, to);
+    });
+
     return el;
   }
   ignoreEvent() {
@@ -2028,14 +2392,18 @@ export function computeLiveRanges(
     if (!t.startsWith("$$")) continue;
     const sameLineClose = t.indexOf("$$", 2);
     if (sameLineClose > 2) {
-      if (!selectionTouches(state, line.from, line.to)) {
-        mathRanges.push(
-          Decoration.replace({
-            widget: new MathWidget(t.slice(2, sameLineClose).trim(), true),
-            block: true,
-          }).range(line.from, line.to)
-        );
-      }
+      // 恒渲染（墨记式）：光标进入不露源码，编辑走气泡
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(
+            t.slice(2, sameLineClose).trim(),
+            true,
+            line.from,
+            line.to
+          ),
+          block: true,
+        }).range(line.from, line.to)
+      );
       blockMathLines.add(ln);
       excluded.push({ from: line.from, to: line.to });
       continue;
@@ -2049,17 +2417,17 @@ export function computeLiveRanges(
     }
     if (endLine > 0) {
       const absTo = doc.line(endLine).to;
-      if (selectionTouches(state, line.from, absTo)) {
-        for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
-        continue;
-      }
       mathRanges.push(
         Decoration.replace({
-          widget: new MathWidget(doc.sliceString(line.to, doc.line(endLine).from).trim(), true),
+          widget: new MathWidget(
+            doc.sliceString(line.to, doc.line(endLine).from).trim(),
+            true,
+            line.from,
+            absTo
+          ),
           block: true,
         }).range(line.from, absTo)
       );
-      for (let j = ln; j <= endLine; j++) blockMathLines.add(j);
       excluded.push({ from: line.from, to: absTo });
     }
   }
@@ -2095,11 +2463,11 @@ export function computeLiveRanges(
       }
       const absFrom = line.from + i;
       const absTo = line.from + close + 1;
-      if (!selectionTouches(state, absFrom, absTo)) {
-        mathRanges.push(
-          Decoration.replace({ widget: new MathWidget(content, false) }).range(absFrom, absTo)
-        );
-      }
+      mathRanges.push(
+        Decoration.replace({
+          widget: new MathWidget(content, false, absFrom, absTo),
+        }).range(absFrom, absTo)
+      );
       i = close + 1;
     }
   }

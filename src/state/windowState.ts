@@ -44,11 +44,11 @@ function save(state: WindowState) {
 /** 主窗口启动时恢复上次尺寸/最大化；非主窗口不生效 */
 export function restoreWindowState(): void {
   void (async () => {
-    const win = getCurrentWindow();
-    if (win.label !== "main") return;
-    const state = load();
-    if (!state) return;
     try {
+      const win = getCurrentWindow();
+      if (win.label !== "main") return;
+      const state = load();
+      if (!state) return;
       if (state.maximized) {
         await win.maximize();
       } else {
@@ -64,50 +64,54 @@ export function restoreWindowState(): void {
 
 /** 主窗口挂载后跟踪尺寸变化（防抖 600ms）；返回清理函数 */
 export function trackWindowState(): () => void {
-  const win = getCurrentWindow();
-  if (win.label !== "main") return () => {};
-  let timer: number | null = null;
+  try {
+    const win = getCurrentWindow();
+    if (win.label !== "main") return () => {};
+    let timer: number | null = null;
 
-  const capture = async () => {
-    try {
-      const maximized = await win.isMaximized();
-      const prev = load();
-      if (maximized) {
+    const capture = async () => {
+      try {
+        const maximized = await win.isMaximized();
+        const prev = load();
+        if (maximized) {
+          save({
+            width: prev?.width ?? window.innerWidth,
+            height: prev?.height ?? window.innerHeight,
+            maximized: true,
+          });
+          return;
+        }
+        // 从最大化还原后 innerWidth/innerHeight 即新的常规尺寸
         save({
-          width: prev?.width ?? window.innerWidth,
-          height: prev?.height ?? window.innerHeight,
-          maximized: true,
+          width: window.innerWidth,
+          height: window.innerHeight,
+          maximized: false,
         });
-        return;
+      } catch {
+        // ignore
       }
-      // 从最大化还原后 innerWidth/innerHeight 即新的常规尺寸
-      save({
-        width: window.innerWidth,
-        height: window.innerHeight,
-        maximized: false,
-      });
-    } catch {
-      // ignore
-    }
-  };
+    };
 
-  const onResize = () => {
-    if (timer !== null) window.clearTimeout(timer);
-    timer = window.setTimeout(() => {
-      timer = null;
-      void capture();
-    }, 600);
-  };
+    const onResize = () => {
+      if (timer !== null) window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        timer = null;
+        void capture();
+      }, 600);
+    };
 
-  window.addEventListener("resize", onResize);
-  let unlisten: (() => void) | null = null;
-  void win.onResized(onResize).then((fn) => {
-    unlisten = fn;
-  });
+    window.addEventListener("resize", onResize);
+    let unlisten: (() => void) | null = null;
+    void win.onResized(onResize).then((fn) => {
+      unlisten = fn;
+    });
 
-  return () => {
-    if (timer !== null) window.clearTimeout(timer);
-    window.removeEventListener("resize", onResize);
-    unlisten?.();
-  };
+    return () => {
+      if (timer !== null) window.clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+      unlisten?.();
+    };
+  } catch {
+    return () => {};
+  }
 }
