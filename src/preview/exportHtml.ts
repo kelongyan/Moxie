@@ -27,25 +27,30 @@ function mimeOf(path: string): string {
   return MIME_BY_EXT[ext] ?? "application/octet-stream";
 }
 
-/** 将正文中的 moxieimg:// 占位替换为内联 base64 data URL */
+/** 将正文中的 moxieimg:// 占位替换为内联 base64 data URL。
+ *  去重后并行读取、单趟替换（原实现串行 IPC 逐张读 + split/join 逐张替换，
+ *  图片多的文档明显偏慢）；读取失败的占位替换为空 src（与旧行为一致）。 */
 export async function inlineLocalImages(html: string): Promise<string> {
   const encoded = new Set<string>();
   for (const match of html.matchAll(/src="moxieimg:\/\/([^"]+)"/g)) {
     encoded.add(match[1]);
   }
-  let result = html;
-  for (const value of encoded) {
-    const path = decodeURIComponent(value);
-    let replacement: string;
-    try {
-      const b64 = await invoke<string>("read_file_base64", { path });
-      replacement = `src="data:${mimeOf(path)};base64,${b64}"`;
-    } catch {
-      replacement = `src=""`;
-    }
-    result = result.split(`src="moxieimg://${value}"`).join(replacement);
-  }
-  return result;
+  if (encoded.size === 0) return html;
+  const replacements = new Map<string, string>();
+  await Promise.all(
+    [...encoded].map(async (value) => {
+      const path = decodeURIComponent(value);
+      try {
+        const b64 = await invoke<string>("read_file_base64", { path });
+        replacements.set(value, `src="data:${mimeOf(path)};base64,${b64}"`);
+      } catch {
+        replacements.set(value, 'src=""');
+      }
+    })
+  );
+  return html.replace(/src="moxieimg:\/\/([^"]+)"/g, (whole, value: string) => {
+    return replacements.get(value) ?? whole;
+  });
 }
 
 /** 组装独立 HTML：外壳样式内联，KaTeX 样式内联，正文注入 */
