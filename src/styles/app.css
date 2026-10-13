@@ -1745,38 +1745,6 @@ body {
   flex-direction: column;
 }
 
-.quick-open-current {
-  margin: 10px 12px;
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--lac-border);
-  background: var(--lac-hover);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.quick-label {
-  font-size: var(--fs-badge);
-  color: var(--lac-text-tertiary);
-}
-
-.quick-link-btn {
-  border: none;
-  background: transparent;
-  text-align: left;
-  color: var(--lac-accent);
-  font-size: var(--fs-caption);
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .text-action-btn {
   border: none;
   background: transparent;

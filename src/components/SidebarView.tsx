@@ -547,7 +547,6 @@ function FileTreeItem({
 
 function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuItem[]) => void }) {
   const sidebar = useSidebar();
-  const activeDoc = useDocuments((s) => s.documents.find((d) => d.id === s.activeId));
   const [filterQuery, setFilterQuery] = useState("");
 
   const handleOpenFolder = async () => {
@@ -558,14 +557,6 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
     });
     if (!selected || Array.isArray(selected)) return;
     await sidebar.openWorkspace(selected);
-  };
-
-  const handleOpenCurrentFileDir = async () => {
-    if (!activeDoc?.path) return;
-    const parent = parentDirPath(activeDoc.path);
-    if (parent) {
-      await sidebar.openWorkspace(parent);
-    }
   };
 
   const handleCreateRootFile = async () => {
@@ -596,19 +587,6 @@ function WorkspaceView({ onMenu }: { onMenu: (x: number, y: number, items: MenuI
             打开文件夹…
           </button>
         </div>
-
-        {activeDoc?.path && (
-          <div className="quick-open-current">
-            <span className="quick-label">当前目录：</span>
-            <button
-              className="quick-link-btn"
-              onClick={handleOpenCurrentFileDir}
-              title={parentDirPath(activeDoc.path)}
-            >
-              打开 “{dirName(activeDoc.path) || "所在文件夹"}”
-            </button>
-          </div>
-        )}
       </div>
     );
   }
