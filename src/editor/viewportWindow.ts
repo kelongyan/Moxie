@@ -1,4 +1,4 @@
-import { StateEffect, StateField, Text } from "@codemirror/state";
+import { EditorState, StateEffect, StateField, Text } from "@codemirror/state";
 import { ViewPlugin, ViewUpdate } from "@codemirror/view";
 
 /**
@@ -10,7 +10,9 @@ import { ViewPlugin, ViewUpdate } from "@codemirror/view";
  * 视口外内容不渲染、无需装饰；滚动时由 windowDriver 在微任务里更新窗口补算
  * （窗口边界处的间距/空行近似都在屏幕外，滚入屏幕前会被重算修正）。
  *
- * 窗口为 null = 尚未测量（视图创建瞬间 / 无真实视口的隐藏视图）→ 调用方按全量计算。
+ * 窗口字段在创建时即按"光标附近"初始化（initialWindowFor）——视图创建瞬间不再
+ * 全量计算；null 仅出现在"直接调用 computeLiveRanges 不传窗口"的场景（测试/脚本），
+ * 此时按全量计算兼容。
  */
 
 export interface DecorationWindow {
@@ -23,10 +25,22 @@ export const WINDOW_MARGIN_LINES = 500;
 
 export const setWindowEffect = StateEffect.define<DecorationWindow | null>();
 
-/** 当前计算窗口。编辑时经 mapPos 跟随漂移（窗口边缘的少量误差由下一次
- *  视口测量覆盖，不影响视口内渲染）。 */
+/** 视图创建瞬间的初始窗口：以选区（光标）为中心 ±WINDOW_MARGIN_LINES 行。
+ *  打开文档时首帧只计算这一窗口（大文档打开不再全量——原全量是打开卡顿的主因），
+ *  视图挂载测量后由 windowDriver 用真实视口覆盖。 */
+export function initialWindowFor(state: EditorState): DecorationWindow {
+  const doc = state.doc;
+  const head = Math.max(0, Math.min(state.selection.main.head, doc.length));
+  const line = doc.lineAt(head).number;
+  const firstLine = Math.max(1, line - WINDOW_MARGIN_LINES);
+  const lastLine = Math.min(doc.lines, line + WINDOW_MARGIN_LINES);
+  return { from: doc.line(firstLine).from, to: doc.line(lastLine).to };
+}
+
+/** 当前计算窗口。创建时按光标附近初始化（initialWindowFor）；编辑时经 mapPos
+ *  跟随漂移（窗口边缘的少量误差由下一次视口测量覆盖，不影响视口内渲染）。 */
 export const windowField = StateField.define<DecorationWindow | null>({
-  create: () => null,
+  create: (state) => initialWindowFor(state),
   update(value, tr) {
     for (const effect of tr.effects) {
       if (effect.is(setWindowEffect)) return effect.value;

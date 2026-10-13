@@ -3,7 +3,12 @@ import { EditorState, Range } from "@codemirror/state";
 import { Decoration } from "@codemirror/view";
 import { markdownExtensions } from "../src/editor/languages";
 import { computeLiveRanges } from "../src/editor/livePreview";
-import { WINDOW_MARGIN_LINES, windowForViewport } from "../src/editor/viewportWindow";
+import {
+  WINDOW_MARGIN_LINES,
+  initialWindowFor,
+  windowField,
+  windowForViewport,
+} from "../src/editor/viewportWindow";
 
 /**
  * 视口窗口化计算（docs/渲染优化方案.md O-4）：
@@ -167,5 +172,47 @@ describe("windowForViewport", () => {
 
     const tail = windowForViewport(doc, doc.length - 5, doc.length);
     expect(tail.to).toBe(doc.length);
+  });
+});
+
+describe("initialWindowFor（视图创建瞬间的初始窗口）", () => {
+  it("以光标为中心 ±MARGIN 行，并在文档边界夹取", () => {
+    const doc = buildDoc(500);
+    const base = stateOf(doc);
+    const midState = EditorState.create({
+      doc,
+      selection: { anchor: base.doc.line(900).from },
+      extensions: [markdownExtensions()],
+    });
+    const midWin = initialWindowFor(midState);
+    expect(midState.doc.lineAt(midWin.from).number).toBe(900 - WINDOW_MARGIN_LINES);
+    expect(midState.doc.lineAt(midWin.to).number).toBe(900 + WINDOW_MARGIN_LINES);
+
+    // 光标在文档头部 → from 夹到 0
+    const headState = EditorState.create({
+      doc,
+      selection: { anchor: 0 },
+      extensions: [markdownExtensions()],
+    });
+    expect(initialWindowFor(headState).from).toBe(0);
+
+    // 小文档 → 全文档（等价全量）
+    const small = stateOf("hello\n\nworld");
+    const smallWin = initialWindowFor(small);
+    expect(smallWin.from).toBe(0);
+    expect(smallWin.to).toBe(small.doc.length);
+  });
+
+  it("windowField 创建时即持有初始窗口（不再是 null）", () => {
+    const doc = buildDoc(500);
+    const state = EditorState.create({
+      doc,
+      extensions: [windowField, markdownExtensions()],
+    });
+    const win = state.field(windowField);
+    expect(win).not.toBeNull();
+    // 光标（anchor 0 → 行 1）在文档头部：向前夹取到行 1，向后仅 500 行余量
+    expect(state.doc.lineAt(win!.from).number).toBe(1);
+    expect(state.doc.lineAt(win!.to).number).toBe(1 + WINDOW_MARGIN_LINES);
   });
 });
