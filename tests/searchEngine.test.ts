@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  expandReplacement,
   findMatchRanges,
   selectionMatchesQuery,
 } from "../src/editor/searchEngine";
@@ -82,5 +83,38 @@ describe("searchEngine · selectionMatchesQuery", () => {
   it("正则模式要求整体命中", () => {
     expect(selectionMatchesQuery("abc123", "a\\d+", OPT({ useRegex: true }))).toBe(false);
     expect(selectionMatchesQuery("a123", "a\\d+", OPT({ useRegex: true }))).toBe(true);
+  });
+});
+
+describe("searchEngine · expandReplacement（替换捕获组，F-16）", () => {
+  const RE = () => OPT({ useRegex: true });
+
+  it("正则模式展开 $1 / $2", () => {
+    expect(expandReplacement("john 25", "(\\w+) (\\d+)", RE(), "$2-$1")).toBe("25-john");
+  });
+
+  it("$&（整个匹配）与 $$（字面 $）", () => {
+    expect(expandReplacement("abc", "a.c", RE(), "[$&]")).toBe("[abc]");
+    expect(expandReplacement("abc", "a.c", RE(), "$$100")).toBe("$100");
+  });
+
+  it("字面量模式不做展开（$1 原样保留）", () => {
+    expect(expandReplacement("abc", "abc", OPT(), "$1")).toBe("$1");
+  });
+
+  it("整体匹配失败或表达式无效时回退原样替换文本", () => {
+    expect(expandReplacement("xyz", "a(\\d+)", RE(), "$1")).toBe("$1");
+    expect(expandReplacement("abc", "a(", RE(), "$1")).toBe("$1");
+  });
+
+  it("全词模式下同样展开", () => {
+    expect(
+      expandReplacement(
+        "foo9",
+        "foo(\\d)",
+        OPT({ useRegex: true, wholeWord: true }),
+        "n$1"
+      )
+    ).toBe("n9");
   });
 });

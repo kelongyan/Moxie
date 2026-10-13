@@ -197,3 +197,26 @@ export function selectionMatchesQuery(
   if (options.caseSensitive) return selected === prepared;
   return selected.toLowerCase() === prepared.toLowerCase();
 }
+
+/**
+ * 展开替换文本中的捕获组引用（F-16）：正则模式下 $1..$99、$&、$$ 按 JS 原生
+ * String.prototype.replace 语义展开；字面量模式、匹配失败或表达式无效时返回原样
+ * 替换文本（不做展开）。
+ */
+export function expandReplacement(
+  matched: string,
+  prepared: string,
+  options: FindOptions,
+  replacement: string
+): string {
+  if (!options.useRegex || !prepared) return replacement;
+  try {
+    let source = prepared;
+    if (options.wholeWord) source = `(?<![\\w])(?:${source})(?![\\w])`;
+    const re = new RegExp(`^(?:${source})$`, options.caseSensitive ? "" : "i");
+    if (!re.test(matched)) return replacement;
+    return matched.replace(re, replacement);
+  } catch {
+    return replacement;
+  }
+}

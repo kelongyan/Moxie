@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { EditorView } from "@codemirror/view";
 import {
   cachedMatches,
+  expandReplacement,
   MatchRange,
   prepareQuery,
   selectionMatchesQuery,
@@ -187,9 +188,16 @@ async function replaceCurrent() {
     prepared &&
     selectionMatchesQuery(selectedText, prepared, optionsOf(session))
   ) {
+    // 正则模式：替换文本支持 $1..$9 / $& / $$ 捕获组引用（F-16）
+    const insert = expandReplacement(
+      selectedText,
+      prepared,
+      optionsOf(session),
+      session.replaceText
+    );
     target.view.dispatch({
-      changes: { from: sel.from, to: sel.to, insert: session.replaceText },
-      selection: { anchor: sel.from, head: sel.from + session.replaceText.length },
+      changes: { from: sel.from, to: sel.to, insert },
+      selection: { anchor: sel.from, head: sel.from + insert.length },
       userEvent: "input",
     });
   }
@@ -209,10 +217,19 @@ async function replaceAll() {
     return;
   }
   const count = session.ranges.length;
+  // 正则模式：逐条展开捕获组引用（基于区间切片重匹配，替换文本可含 $1 等）
+  const opts = optionsOf(session);
+  const prepared = preparedOf(session);
+  const docText = target.view.state.doc.toString();
   const changes = session.ranges.map((r) => ({
     from: r.from,
     to: r.to,
-    insert: session!.replaceText,
+    insert: expandReplacement(
+      docText.slice(r.from, r.to),
+      prepared,
+      opts,
+      session!.replaceText
+    ),
   }));
   target.view.dispatch({ changes, userEvent: "input" });
   session.index = -1;
