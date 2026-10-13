@@ -11,16 +11,9 @@ import { promptInput } from "../state/prompts";
 import { usePreferences } from "../state/preferences";
 import { useSidebar } from "../state/sidebar";
 import { markSelfWrite, syncWatchedDirs } from "../state/externalWatch";
-import {
-  buildExportHtml,
-  inlineLocalImages,
-} from "../preview/exportHtml";
-import {
-  collectPreviewTokens,
-  renderBody,
-  renderShell,
-} from "../preview/markdown";
-import { directoryOf, localImagePlaceholder } from "../preview/markdownCore";
+import { buildFullHtml } from "../preview/exportHtml";
+import { collectPreviewTokens } from "../preview/markdown";
+import { directoryOf } from "../preview/markdownCore";
 import {
   promptConflictChoice,
   promptEncodingChoice,
@@ -607,6 +600,7 @@ async function writeClipboardRich(html: string, plainText: string): Promise<void
 /**
  * 复制为富文本：当前文档（或选区）渲染为 HTML，本地图片内联 base64，
  * 连同 shell 样式一起写入剪贴板，粘贴到 Word/微信等保留排版。
+ * 与导出共用 buildFullHtml 管线（含 mermaid 预渲染为内联 SVG）。
  */
 export async function copyRichTextAction(): Promise<boolean> {
   const doc = activeDocument();
@@ -618,27 +612,21 @@ export async function copyRichTextAction(): Promise<boolean> {
     ? view.state.doc.toString()
     : view.state.sliceDoc(sel.from, sel.to);
   const baseDir = doc.path ? directoryOf(doc.path) : null;
-  const body = renderBody(text, {
+  const full = await buildFullHtml({
+    tokens: collectPreviewTokens({
+      theme: prefs.exportTheme,
+      codeLineNumbers: prefs.exportCodeLineNumbers,
+      narrow: prefs.exportNarrow,
+    }),
+    title: doc.name,
+    text,
     baseDir,
-    assetUrl: localImagePlaceholder,
     breaks: prefs.markdownBreaks,
     typographer: prefs.markdownTypographer,
     allowHtml: prefs.markdownAllowHtml,
   });
-  const withImages = await inlineLocalImages(body);
-  const full = buildExportHtml(
-    renderShell(
-      collectPreviewTokens({
-        theme: prefs.exportTheme,
-        codeLineNumbers: prefs.exportCodeLineNumbers,
-        narrow: prefs.exportNarrow,
-      }),
-      doc.name
-    ),
-    withImages
-  );
   const styles = (full.match(/<style>[\s\S]*?<\/style>/g) ?? []).join("\n");
-  const article = /<article>[\s\S]*?<\/article>/.exec(full)?.[0] ?? withImages;
+  const article = /<article>[\s\S]*?<\/article>/.exec(full)?.[0] ?? full;
   try {
     await writeClipboardRich(`${styles}${article}`, text);
   } catch (error) {

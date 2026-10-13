@@ -425,6 +425,14 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   article.code-line-numbers .code-line-num { display: inline; }
   .code-line-text { white-space: pre; flex: 1 1 auto; min-width: 0; }
 
+  /* mermaid 渲染块（导出/复制时预渲染为内联 SVG，O-7） */
+  .mermaid-block {
+    margin: ${MD_MARGIN.pre.top}px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .mermaid-block svg { max-width: 100%; height: auto; }
+
   /* 语法高亮：与编辑器同源的 --syn-* 变量（见 collectPreviewTokens） */
   .tok-keyword { color: var(--syn-keyword); }
   .tok-string, .tok-string2 { color: var(--syn-string); }

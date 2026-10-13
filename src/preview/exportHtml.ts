@@ -73,18 +73,123 @@ export interface ExportOptions {
   allowHtml: boolean;
 }
 
-/** 渲染完整独立 HTML（正文 + 图片内联 + 外壳） */
-async function buildFullHtml(opts: ExportOptions): Promise<string> {
-  const body = renderBody(opts.text, {
+/** 渲染完整独立 HTML（正文 + 图片内联 + 外壳）；mermaid 围栏预渲染为内联 SVG */
+export async function buildFullHtml(opts: ExportOptions): Promise<string> {
+  const mermaidPrep = await preRenderMermaid(opts.text, opts.tokens.scheme);
+  const body = renderBody(mermaidPrep.text, {
     baseDir: opts.baseDir,
     assetUrl: localImagePlaceholder,
     breaks: opts.breaks,
     typographer: opts.typographer,
     allowHtml: opts.allowHtml,
   });
-  const withImages = await inlineLocalImages(body);
+  const withMermaid = mermaidPrep.restore(body);
+  const withImages = await inlineLocalImages(withMermaid);
   const shell = renderShell(opts.tokens, opts.title);
   return buildExportHtml(shell, withImages);
+}
+
+// ---------- mermaid 预渲染（O-7 / F-18 遗留）：导出与复制富文本的内联 SVG ----------
+
+export interface MermaidBlock {
+  from: number;
+  to: number;
+  source: string;
+}
+
+/**
+ * 提取文档中的 mermaid 围栏块（``` / ~~~ 开头、info 首词为 mermaid）。
+ * 未闭合块取到文档尾（渲染失败时回退原样，与旧行为一致）。
+ */
+export function extractMermaidBlocks(text: string): MermaidBlock[] {
+  const lines = text.split("\n");
+  const lineStarts: number[] = [0];
+  for (let k = 0; k < lines.length; k++) {
+    lineStarts.push(lineStarts[k] + lines[k].length + 1);
+  }
+  const blocks: MermaidBlock[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^\s*(`{3,}|~{3,})\s*(\S+)?/.exec(lines[i]);
+    if (!m || (m[2] ?? "").toLowerCase() !== "mermaid") continue;
+    const fenceChar = m[1][0];
+    const fenceLen = m[1].length;
+    let j = i + 1;
+    while (j < lines.length) {
+      const cm = /^\s*(`{3,}|~{3,})\s*$/.exec(lines[j]);
+      if (cm && cm[1][0] === fenceChar && cm[1].length >= fenceLen) break;
+      j += 1;
+    }
+    const closed = j < lines.length;
+    const source = lines.slice(i + 1, closed ? j : lines.length).join("\n").trim();
+    const from = lineStarts[i];
+    const to = closed ? lineStarts[j] + lines[j].length : text.length;
+    blocks.push({ from, to, source });
+    i = closed ? j : lines.length;
+  }
+  return blocks;
+}
+
+/** 占位行（独占一段：渲染为 <p>占位</p> 后回填为 mermaid SVG 块） */
+function mermaidPlaceholder(index: number): string {
+  return `MOXIEMERMAIDBLOCK${index}XYZ`;
+}
+
+interface MermaidPrepass {
+  text: string;
+  restore(html: string): string;
+}
+
+/** 预渲染 mermaid：源码替换为占位行 → 渲染后回填 <div class="mermaid-block">SVG</div>。
+ *  失败块不替换（渲染为普通代码块）。渲染前后切换 mermaid 主题并恢复书写面主题。 */
+async function preRenderMermaid(
+  text: string,
+  scheme: "light" | "dark"
+): Promise<MermaidPrepass> {
+  const blocks = extractMermaidBlocks(text);
+  if (blocks.length === 0) {
+    return { text, restore: (html) => html };
+  }
+
+  const mermaid = (await import("mermaid")).default;
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    theme: scheme === "dark" ? "dark" : "default",
+  });
+
+  const svgs = new Map<number, string>();
+  for (let i = 0; i < blocks.length; i++) {
+    try {
+      const id = `moxie-export-${i}-${Math.random().toString(36).slice(2, 8)}`;
+      const { svg } = await mermaid.render(id, blocks[i].source);
+      svgs.set(i, svg);
+    } catch {
+      // 渲染失败：该块保持原样（随后渲染为普通代码块）
+    }
+  }
+
+  // 恢复书写面主题，避免影响编辑器内 mermaid 的后续渲染
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    theme: document.documentElement.dataset.theme === "dark" ? "dark" : "default",
+  });
+
+  let replaced = text;
+  for (let i = blocks.length - 1; i >= 0; i--) {
+    if (!svgs.has(i)) continue;
+    const block = blocks[i];
+    replaced =
+      replaced.slice(0, block.from) + mermaidPlaceholder(i) + replaced.slice(block.to);
+  }
+
+  const restore = (html: string): string =>
+    html.replace(/<p>MOXIEMERMAIDBLOCK(\d+)XYZ<\/p>/g, (whole, n: string) => {
+      const svg = svgs.get(Number(n));
+      return svg ? `<div class="mermaid-block">${svg}</div>` : whole;
+    });
+
+  return { text: replaced, restore };
 }
 
 async function saveHtmlFile(
