@@ -33,14 +33,34 @@ function resolveTheme(mode: ThemeMode, systemDark: boolean): "light" | "dark" {
 /** index.html 启动脚本与此键约定一致，两处修改需同步 */
 export const THEME_STORAGE_KEY = "moxie.theme";
 
+type ThemeChangeListener = (resolved: "light" | "dark") => void;
+const listeners = new Set<ThemeChangeListener>();
+
+/**
+ * 订阅"解析后的主题实际发生变化"（含 system 模式下的系统偏好跟随切换）。
+ * 供编辑器侧刷新仅主题相关的渲染产物（当前为 mermaid 配色，docs/渲染优化方案.md O-6）；
+ * 同值重复 apply（如重设相同模式）不会触发。
+ */
+export function onThemeChange(listener: ThemeChangeListener): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 function applyTheme(mode: ThemeMode) {
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const resolved = resolveTheme(mode, systemDark);
+  const changed = document.documentElement.dataset.theme !== resolved;
   document.documentElement.dataset.theme = resolved;
   try {
     localStorage.setItem(THEME_STORAGE_KEY, resolved);
   } catch {
     // 存储不可用时仅失去启动优化，不影响主题生效
+  }
+  if (changed) {
+    // 注意：collectPreviewTokens 的导出临时翻转直接改 dataset、不走这里，不会误触发
+    for (const listener of listeners) listener(resolved);
   }
 }
 

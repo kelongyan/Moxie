@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { convertFileSrc, invoke, isTauri } from "@tauri-apps/api/core";
 import { EditorView } from "@codemirror/view";
 import { buildEditorState } from "../editor/extensions";
+import { refreshLivePreview } from "../editor/livePreview";
 import {
   allViewIds,
   flushDocument,
@@ -14,6 +15,7 @@ import {
   viewFor,
 } from "../editor/registry";
 import { EditorDocument, useDocuments } from "../state/documents";
+import { onThemeChange } from "../state/theme";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
 import { insertImageFileAction, pickImageAndSaveAction, revealImageAction } from "../state/actions";
@@ -135,6 +137,18 @@ export function EditorPane() {
     setContentFactory((docId, text) => {
       const doc = useDocuments.getState().documents.find((d) => d.id === docId);
       return doc ? createViewFor(doc, text) : new EditorView({ doc: text });
+    });
+  }, []);
+
+  // 主题切换 → 刷新全部编辑器的主题相关装饰（当前为 mermaid 配色；颜色类样式多由
+  // CSS 变量自动跟随，无需重建视图）。每窗口的 EditorPane 订阅本窗口的主题变更
+  // （docs/渲染优化方案.md O-6）。
+  useEffect(() => {
+    return onThemeChange(() => {
+      for (const id of allViewIds()) {
+        const view = viewFor(id);
+        if (view) refreshLivePreview(view);
+      }
     });
   }, []);
 

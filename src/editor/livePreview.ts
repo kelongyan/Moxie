@@ -1486,6 +1486,19 @@ async function getMermaid(dark: boolean) {
   return mermaid;
 }
 
+/** mermaid SVG 结果缓存（key = 主题|源码）：滚动离开再回来 / 装饰重建时避免重复
+ *  render（复杂图每次数百 ms，docs/渲染优化方案.md O-5）。上限内 FIFO 驱逐。 */
+const MERMAID_CACHE_MAX = 100;
+const mermaidSvgCache = new Map<string, string>();
+
+function cacheMermaidSvg(key: string, svg: string): void {
+  if (mermaidSvgCache.size >= MERMAID_CACHE_MAX) {
+    const first = mermaidSvgCache.keys().next().value;
+    if (first !== undefined) mermaidSvgCache.delete(first);
+  }
+  mermaidSvgCache.set(key, svg);
+}
+
 /** mermaid 围栏 → SVG 图（渲染失败回退错误提示，光标进入显示源码） */
 class MermaidWidget extends WidgetType {
   constructor(
@@ -1497,19 +1510,31 @@ class MermaidWidget extends WidgetType {
   eq(other: MermaidWidget) {
     return other.source === this.source && other.dark === this.dark;
   }
+  private inject(el: HTMLElement, svg: string) {
+    const holder = document.createElement("div");
+    holder.innerHTML = svg;
+    el.replaceChildren(...Array.from(holder.childNodes));
+    el.classList.add("done");
+  }
   toDOM() {
     const el = document.createElement("div");
     el.className = "md-mermaid";
+    const key = `${this.dark ? "d" : "l"}|${this.source}`;
+    const cached = mermaidSvgCache.get(key);
+    if (cached !== undefined) {
+      // 命中缓存：同步注入，不再重渲染
+      this.inject(el, cached);
+      return el;
+    }
     el.textContent = "mermaid 渲染中…";
     void (async () => {
       try {
         const mermaid = await getMermaid(this.dark);
         const id = `mmd-${Math.random().toString(36).slice(2)}`;
         const { svg } = await mermaid.render(id, this.source);
-        const holder = document.createElement("div");
-        holder.innerHTML = svg;
-        el.replaceChildren(...Array.from(holder.childNodes));
-        el.classList.add("done");
+        cacheMermaidSvg(key, svg);
+        // 异步期间 widget 可能已被替换/移除：仅在仍挂载时注入（缓存照常保留）
+        if (el.isConnected) this.inject(el, svg);
       } catch {
         el.textContent = "mermaid 语法错误";
         el.classList.add("error");
@@ -2681,6 +2706,18 @@ export function computeLiveRanges(
  * - 视口变化（滚动到未解析区域）→ ViewPlugin 在微任务里 dispatch recompute effect 补算，
  *   不能在 update 循环内直接 dispatch。
  */
+/** 装饰重算触发 effect（模块单例）：doc/selection 之外的"外部原因"重算用它 dispatch
+ *  —— 视口补算（滚动到未解析区域）与主题切换刷新（refreshLivePreview）。 */
+const recomputeEffect = StateEffect.define<null>();
+
+/** 请求某视图立即重算即时渲染装饰（当前用途：主题切换后 mermaid 配色跟随，
+ *  docs/渲染优化方案.md O-6）。由 EditorPane 在 onThemeChange 时对全部编辑器视图调用；
+ *  已销毁/脱离 DOM 的视图跳过（对销毁视图 dispatch 会抛错）。 */
+export function refreshLivePreview(view: EditorView): void {
+  if (!view.dom.isConnected) return;
+  view.dispatch({ effects: recomputeEffect.of(null) });
+}
+
 export function livePreview(
   resolveImageSrc: ImageSrcResolver,
   scale = 1,
@@ -2688,7 +2725,6 @@ export function livePreview(
 ): Extension {
   // 渲染态表格单元格里的本地图片需要走同一解析器（窗口内各文档闭包等价）
   imageResolver = resolveImageSrc;
-  const recompute = StateEffect.define<null>();
 
   const field = StateField.define<DecorationSet>({
     create(state) {
@@ -2699,7 +2735,7 @@ export function livePreview(
         tr.docChanged ||
         tr.selection ||
         tr.effects.some(
-          (e) => e.is(recompute) || e.is(setSelectedImageEffect)
+          (e) => e.is(recomputeEffect) || e.is(setSelectedImageEffect)
         )
       ) {
         return safeCompute(tr.state, resolveImageSrc, scale, codeLineNumbers);
@@ -2761,7 +2797,7 @@ export function livePreview(
         const view = update.view;
         queueMicrotask(() => {
           // 视图可能已销毁（destroyed 为私有属性，用 DOM 脱离判断）
-          if (view.dom.isConnected) view.dispatch({ effects: recompute.of(null) });
+          if (view.dom.isConnected) view.dispatch({ effects: recomputeEffect.of(null) });
         });
       }
 

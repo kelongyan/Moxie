@@ -21,10 +21,19 @@ function escapeHtml(text: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/** KaTeX 渲染；失败时回退为带标记的原文 */
+/** KaTeX 渲染结果缓存（key = display|tex）：书写面滚动离开再回来 / 装饰重建
+ *  与导出共用，避免重复渲染同一公式（docs/渲染优化方案.md O-5）。上限内 FIFO 驱逐。 */
+const MATH_CACHE_MAX = 500;
+const mathCache = new Map<string, string>();
+
+/** KaTeX 渲染；失败时回退为带标记的原文（失败结果不入缓存，允许重试） */
 export function renderKatex(tex: string, displayMode: boolean): string {
+  const key = `${displayMode ? "b" : "i"}|${tex}`;
+  const cached = mathCache.get(key);
+  if (cached !== undefined) return cached;
+  let html: string;
   try {
-    return katex.renderToString(tex, {
+    html = katex.renderToString(tex, {
       displayMode,
       throwOnError: false,
       strict: false,
@@ -33,6 +42,12 @@ export function renderKatex(tex: string, displayMode: boolean): string {
   } catch {
     return `<span class="math-error">${escapeHtml(tex)}</span>`;
   }
+  if (mathCache.size >= MATH_CACHE_MAX) {
+    const first = mathCache.keys().next().value;
+    if (first !== undefined) mathCache.delete(first);
+  }
+  mathCache.set(key, html);
+  return html;
 }
 
 // 行内 $...$：不换行、内容不以空白开头/结尾（降低把价格符号误判为公式的概率）
