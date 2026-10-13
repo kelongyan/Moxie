@@ -53,14 +53,83 @@ export async function inlineLocalImages(html: string): Promise<string> {
   });
 }
 
-/** 组装独立 HTML：外壳样式内联，KaTeX 样式内联，正文注入 */
-export function buildExportHtml(shell: string, bodyHtml: string): string {
-  let out = shell.replace(/<link rel="stylesheet"[^>]*>/g, () => `<style>${katexCssInline}</style>`);
+/** 组装独立 HTML：外壳样式内联，KaTeX 样式内联（可传入已内联字体的版本），正文注入 */
+export function buildExportHtml(
+  shell: string,
+  bodyHtml: string,
+  katexCss: string = katexCssInline
+): string {
+  let out = shell.replace(
+    /<link rel="stylesheet"[^>]*>/g,
+    () => `<style>${katexCss}</style>`
+  );
   out = out.replace(
     /<article([^>]*)><\/article>/,
     (_m, attrs: string) => `<article${attrs}>${bodyHtml}</article>`
   );
   return out;
+}
+
+// ---------- KaTeX 字体导出内联（O-10，方案 B：按需内联） ----------
+// 独立 HTML 里 KaTeX CSS 的字体 url 是构建产物绝对路径（/assets/KaTeX_*.woff2），
+// 离开本机即失效、公式回退系统字体。导出 HTML 文件时按需把字体转 data URI 内联
+// （仅文档含公式时；复制富文本与导出 .doc 不内联——Word/剪贴板用不上 web 字体）。
+
+/** ArrayBuffer → base64（分块避免参数展开超限） */
+export function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const CHUNK = 0x2000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(binary);
+}
+
+/** 把 KaTeX CSS 中 src 声明的 woff2 引用替换为 data URI（并去掉同 src 的
+ *  woff/ttf 后备——data URI 已优先命中）。dataUris 中没有的路径保持原样。 */
+export function inlineKatexFonts(css: string, dataUris: Map<string, string>): string {
+  return css.replace(/src:url\(([^)]+\.woff2)\)[^;]*/g, (whole, path: string) => {
+    const uri = dataUris.get(path);
+    if (!uri) return whole;
+    return `src:url(${uri}) format("woff2")`;
+  });
+}
+
+/** 字体 data URI 会话缓存（同一会话多次导出复用，避免重复读取） */
+const katexFontCache = new Map<string, string>();
+
+async function fetchFontDataUri(path: string): Promise<string | null> {
+  const cached = katexFontCache.get(path);
+  if (cached) return cached;
+  // 构建产物为 /assets/...（同源可取）；dev 下为字体包内相对路径，回退 node_modules
+  const url =
+    path.startsWith("/") || /^https?:/i.test(path)
+      ? path
+      : `/node_modules/katex/dist/${path.replace(/^\.\//, "")}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const uri = `data:font/woff2;base64,${arrayBufferToBase64(await res.arrayBuffer())}`;
+    katexFontCache.set(path, uri);
+    return uri;
+  } catch {
+    return null;
+  }
+}
+
+/** 提取 CSS 中的 woff2 路径并并行取回 data URI（失败的路径不入表） */
+async function katexFontDataUris(css: string): Promise<Map<string, string>> {
+  const paths = new Set<string>();
+  for (const m of css.matchAll(/url\(([^)]+\.woff2)\)/g)) paths.add(m[1]);
+  const map = new Map<string, string>();
+  await Promise.all(
+    [...paths].map(async (path) => {
+      const uri = await fetchFontDataUri(path);
+      if (uri) map.set(path, uri);
+    })
+  );
+  return map;
 }
 
 export interface ExportOptions {
@@ -71,9 +140,12 @@ export interface ExportOptions {
   breaks: boolean;
   typographer: boolean;
   allowHtml: boolean;
+  /** 内联 KaTeX 字体（导出 HTML 文件用；仅文档含公式时生效，见 O-10） */
+  embedFonts?: boolean;
 }
 
-/** 渲染完整独立 HTML（正文 + 图片内联 + 外壳）；mermaid 围栏预渲染为内联 SVG */
+/** 渲染完整独立 HTML（正文 + 图片内联 + 外壳）；mermaid 围栏预渲染为内联 SVG；
+ *  opts.embedFonts 且文档含公式时，KaTeX 字体按需内联为 data URI（O-10） */
 export async function buildFullHtml(opts: ExportOptions): Promise<string> {
   const mermaidPrep = await preRenderMermaid(opts.text, opts.tokens.scheme);
   const body = renderBody(mermaidPrep.text, {
@@ -85,8 +157,12 @@ export async function buildFullHtml(opts: ExportOptions): Promise<string> {
   });
   const withMermaid = mermaidPrep.restore(body);
   const withImages = await inlineLocalImages(withMermaid);
+  let katexCss = katexCssInline;
+  if (opts.embedFonts && /class="katex/.test(withImages)) {
+    katexCss = inlineKatexFonts(katexCssInline, await katexFontDataUris(katexCssInline));
+  }
   const shell = renderShell(opts.tokens, opts.title);
-  return buildExportHtml(shell, withImages);
+  return buildExportHtml(shell, withImages, katexCss);
 }
 
 // ---------- mermaid 预渲染（O-7 / F-18 遗留）：导出与复制富文本的内联 SVG ----------
@@ -214,9 +290,9 @@ async function saveHtmlFile(
   return true;
 }
 
-/** 导出当前预览为独立 HTML 文件（内联样式与本地图片），返回是否完成保存 */
+/** 导出当前预览为独立 HTML 文件（内联样式、本地图片与 KaTeX 字体），返回是否完成保存 */
 export async function exportPreviewHtml(opts: ExportOptions): Promise<boolean> {
-  const full = await buildFullHtml(opts);
+  const full = await buildFullHtml({ ...opts, embedFonts: true });
   const base = (opts.title || "预览").replace(/\.md$/i, "");
   const saved = await saveHtmlFile(
     "导出预览为 HTML",
