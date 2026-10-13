@@ -61,6 +61,12 @@ import {
 } from "./imageNav";
 import { openLangInput } from "./codeNav";
 import { renderKatex } from "../preview/math";
+import {
+  setWindowEffect,
+  windowDriver,
+  windowField,
+  type DecorationWindow,
+} from "./viewportWindow";
 // eslint-disable-next-line import/no-relative-packages -- 该子路径是 emoji 短代码映射表
 import EMOJI_MAP from "markdown-it-emoji/lib/data/light.mjs";
 import { spaceBefore, type BlockKind } from "../preview/typography";
@@ -2059,6 +2065,10 @@ function imageReplace(
  * scale：块间距缩放系数（见 typography.spacingScale），1 = 16px 正文 + 标准档。
  * selectedImage：当前选中的图片范围（选中态给 widget 加高亮，来自 imageNav）。
  * codeLineNumbers：代码块行号开关（设置项），内容行下发 --code-ln 变量。
+ * window：视口窗口（viewport ± 行数余量，见 viewportWindow）——只计算与窗口相交的
+ *   内容；null/缺省 = 尚未测量，按全量计算（兼容直接调用的测试与脚本）。
+ *   窗口边界处的块间距/空行压缩为近似值：它们都在屏幕外，滚入屏幕前会被重算修正
+ *   （docs/渲染优化方案.md O-4）。
  */
 export function computeLiveRanges(
   state: EditorState,
@@ -2066,12 +2076,20 @@ export function computeLiveRanges(
   resolveImageSrc: ImageSrcResolver,
   scale = 1,
   selectedImage: SelectedImageRange | null = null,
-  codeLineNumbers = false
+  codeLineNumbers = false,
+  window: DecorationWindow | null = null
 ): Range<Decoration>[] {
   const doc = state.doc;
   const tree =
     ensureSyntaxTree(state, Math.min(parseTo, doc.length), 120) ?? syntaxTree(state);
   const ranges: Range<Decoration>[] = [];
+  // 窗口行界（null = 全量）：行内扫描、块级循环与空行填充都夹取到这个范围
+  const winFirstLine = window
+    ? doc.lineAt(Math.max(0, Math.min(window.from, doc.length))).number
+    : 1;
+  const winLastLine = window
+    ? doc.lineAt(Math.max(0, Math.min(window.to, doc.length))).number
+    : doc.lines;
 
   /** 行级装饰累加器：每行只发一个 Decoration.line，把 class 与行内自定义属性合并，
    *  避免同一行多个行装饰的 style 互相覆盖。 */
@@ -2148,6 +2166,8 @@ export function computeLiveRanges(
   };
 
   tree.iterate({
+    from: window?.from,
+    to: window?.to,
     enter: (iter) => {
       const node = iter.node;
       const parent = node.parent;
@@ -2295,7 +2315,12 @@ export function computeLiveRanges(
         // 开围栏保持原文可见的场合：末闭合未写全的编辑态 / mermaid 源码编辑态
         const rawOpen = active && (lang === "mermaid" || !hasClosing);
 
-        for (let ln = first.number; ln <= last.number; ln++) {
+        // 夹取到窗口：整块可能只有一部分可见（窗口外行不发装饰，避免无效装饰堆积）
+        for (
+          let ln = Math.max(first.number, winFirstLine);
+          ln <= Math.min(last.number, winLastLine);
+          ln++
+        ) {
           const line = doc.line(ln);
           const cls =
             ln === first.number
@@ -2369,7 +2394,11 @@ export function computeLiveRanges(
           const lastLine = doc.lineAt(to > from ? to - 1 : from);
           const hasEmptyDecl = cm[3].trim() === "" && lastLine.number > firstLine.number;
 
-          for (let ln = firstLine.number; ln <= lastLine.number; ln++) {
+          for (
+            let ln = Math.max(firstLine.number, winFirstLine);
+            ln <= Math.min(lastLine.number, winLastLine);
+            ln++
+          ) {
             pushLineClass(doc.line(ln).from, `md-callout md-callout-${kind}`);
           }
 
@@ -2483,7 +2512,7 @@ export function computeLiveRanges(
   // 行内 $..$ 内容非空、首尾无空白（降低把价格符号误判为公式的概率）。
   const mathRanges: Range<Decoration>[] = [];
   const blockMathLines = new Set<number>();
-  for (let ln = 1; ln <= doc.lines; ln++) {
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     if (inExcluded(line.from)) continue;
@@ -2534,7 +2563,7 @@ export function computeLiveRanges(
   excluded.push(...blockExcluded);
   blockExcluded.length = 0;
   rebuildExcludedIdx();
-  for (let ln = 1; ln <= doc.lines; ln++) {
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
@@ -2577,7 +2606,7 @@ export function computeLiveRanges(
   }
   // —— emoji 短代码：:name: → unicode（语法树不认识，单独扫描，与公式同一禁区） ——
   const emojiRanges: Range<Decoration>[] = [];
-  for (let ln = 1; ln <= doc.lines; ln++) {
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
@@ -2599,7 +2628,7 @@ export function computeLiveRanges(
   }
   // —— ==高亮==:荧光标记（语法树不认识,单独扫描,与公式/emoji 同一禁区） ——
   const markRanges: Range<Decoration>[] = [];
-  for (let ln = 1; ln <= doc.lines; ln++) {
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
@@ -2647,7 +2676,7 @@ export function computeLiveRanges(
       pushLineClass(doc.line(block.lastLine).from, "md-quote-last");
     }
 
-    const blankFrom = prev ? prev.lastLine + 1 : 1;
+    const blankFrom = prev ? prev.lastLine + 1 : winFirstLine;
     for (let ln = blankFrom; ln < block.firstLine; ln++) {
       pushLineClass(doc.line(ln).from, "md-blank");
     }
@@ -2672,14 +2701,21 @@ export function computeLiveRanges(
   }
   if (blocks.length > 0) {
     const lastBlockLine = blocks[blocks.length - 1].lastLine;
-    for (let ln = lastBlockLine + 1; ln <= doc.lines; ln++) {
+    for (let ln = lastBlockLine + 1; ln <= winLastLine; ln++) {
       pushLineClass(doc.line(ln).from, "md-blank");
+    }
+  } else if (window) {
+    // 窗口落在纯空行区（前后顶层块都在窗口外）：窗口内空行按压缩行处理
+    for (let ln = winFirstLine; ln <= winLastLine; ln++) {
+      const line = doc.line(ln);
+      if (line.text.trim() === "") pushLineClass(line.from, "md-blank");
     }
   }
 
-  // —— 汇总：每行一个行装饰（class + 行内自定义属性） ——
+  // —— 汇总：每行一个行装饰（class + 行内自定义属性）；窗口外行不生成 ——
   const lineStarts = [...lineMap.keys()].sort((a, b) => a - b);
   for (const lineStart of lineStarts) {
+    if (window && (lineStart < window.from || lineStart > window.to)) continue;
     const info = lineMap.get(lineStart)!;
     const cls = [...info.classes].join(" ");
     if (!cls) continue;
@@ -2691,7 +2727,9 @@ export function computeLiveRanges(
     ranges.push(Decoration.line(spec).range(lineStart));
   }
 
-  return ranges;
+  if (!window) return ranges;
+  // 窗口化：只保留与窗口相交的装饰（跨窗口边界的整块 widget 与窗口相交，保留）
+  return ranges.filter((r) => r.to >= window.from && r.from <= window.to);
 }
 
 /**
@@ -2701,13 +2739,15 @@ export function computeLiveRanges(
  * 1. ViewPlugin 提供的装饰不允许包含"跨换行的 replace"（fence 行整行隐藏需要它）；
  * 2. ViewPlugin 提供的装饰也不允许包含 block 装饰。
  * 因此装饰必须经由 StateField 提供：
- * - doc / selection 变化 → update 里同步全量重算（区间收集是 O(文档) 的轻量遍历，毫秒级；
- *   且 livePreview 本身只在 standard 档（<20MB）启用）；
- * - 视口变化（滚动到未解析区域）→ ViewPlugin 在微任务里 dispatch recompute effect 补算，
- *   不能在 update 循环内直接 dispatch。
+ * - doc / selection 变化 → update 里按"视口窗口"重算（见 viewportWindow）；
+ *   窗口未测量（视图创建瞬间/隐藏视图）与直接调用（测试/脚本）时全量计算；
+ * - 视口变化（滚动）→ windowDriver 在微任务里更新窗口并触发重算（窗口未变跳过），
+ *   不能在 update 循环内直接 dispatch；
+ * - 主题切换等外部原因 → refreshLivePreview 经 recomputeEffect 触发。
  */
 /** 装饰重算触发 effect（模块单例）：doc/selection 之外的"外部原因"重算用它 dispatch
- *  —— 视口补算（滚动到未解析区域）与主题切换刷新（refreshLivePreview）。 */
+ *  —— 主题切换刷新（refreshLivePreview）。滚动补算由 windowField/windowDriver 的
+ *  窗口更新承担（见 viewportWindow）。 */
 const recomputeEffect = StateEffect.define<null>();
 
 /** 请求某视图立即重算即时渲染装饰（当前用途：主题切换后 mermaid 配色跟随，
@@ -2735,7 +2775,10 @@ export function livePreview(
         tr.docChanged ||
         tr.selection ||
         tr.effects.some(
-          (e) => e.is(recomputeEffect) || e.is(setSelectedImageEffect)
+          (e) =>
+            e.is(recomputeEffect) ||
+            e.is(setSelectedImageEffect) ||
+            e.is(setWindowEffect)
         )
       ) {
         return safeCompute(tr.state, resolveImageSrc, scale, codeLineNumbers);
@@ -2745,7 +2788,7 @@ export function livePreview(
     provide: (f) => EditorView.decorations.from(f),
   });
 
-  const viewportDriver = ViewPlugin.fromClass(
+  const codeCardHover = ViewPlugin.fromClass(
     class {
       /** 悬停桥：当前点亮的卡头控件（悬停卡片任意行 → 点亮右上角语言/复制） */
       hoverHead: HTMLElement | null = null;
@@ -2793,12 +2836,6 @@ export function livePreview(
             });
           }
         }
-        if (!update.viewportChanged) return;
-        const view = update.view;
-        queueMicrotask(() => {
-          // 视图可能已销毁（destroyed 为私有属性，用 DOM 脱离判断）
-          if (view.dom.isConnected) view.dispatch({ effects: recomputeEffect.of(null) });
-        });
       }
 
       destroy() {
@@ -2819,9 +2856,10 @@ export function livePreview(
     }
   );
 
-  // imageInteraction 提供 selectedImageField（须先于装饰字段注册，
-  // safeCompute 读它取选中态）+ atomicRanges + 键位 + 工具条同步
-  return [imageInteraction(), field, viewportDriver];
+  // imageInteraction 提供 selectedImageField（须先于装饰字段注册，safeCompute 读它取
+  // 选中态）；windowField/windowDriver 维护视口窗口（同样须先于装饰字段注册——
+  // safeCompute 读它取计算范围）。滚动补算职责已由窗口机制接管（docs/渲染优化方案.md O-4）。
+  return [imageInteraction(), windowField, windowDriver(), field, codeCardHover];
 }
 
 /** 装饰计算出错绝不能炸掉视图（前车之鉴：跨行 replace 直接让 EditorView 创建失败） */
@@ -2833,14 +2871,16 @@ function safeCompute(
 ): DecorationSet {
   try {
     const selected = state.field(selectedImageField, false) ?? null;
+    const window = state.field(windowField, false) ?? null;
     return Decoration.set(
       computeLiveRanges(
         state,
-        state.doc.length,
+        window ? Math.min(window.to, state.doc.length) : state.doc.length,
         resolver,
         scale,
         selected,
-        codeLineNumbers
+        codeLineNumbers,
+        window
       ),
       true
     );

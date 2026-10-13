@@ -1,20 +1,26 @@
 import { syntaxTree } from "@codemirror/language";
-import { EditorState, Extension, Range, StateEffect, StateField } from "@codemirror/state";
+import { EditorState, Extension, Range, StateField } from "@codemirror/state";
 import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate } from "@codemirror/view";
+import { setWindowEffect, windowField } from "./viewportWindow";
 
 /**
  * 专注模式：当前顶层块之外的行降透明度（Typora 式）。
  * 行装饰只加 class、不带 style 属性，可与 livePreview 的行装饰安全叠加。
+ * 降透明度只发窗口内（viewport ± 行数余量，见 viewportWindow）的非当前块行——
+ * 视口外不渲染、无需装饰；窗口由 livePreview 注册的 windowField/windowDriver
+ * 维护，未注册时（独立使用本扩展）回退全量。滚动补算随窗口更新（setWindowEffect）触发。
  */
 export function focusMode(): Extension {
-  const recompute = StateEffect.define<null>();
-
   const field = StateField.define<DecorationSet>({
     create(state) {
       return computeDim(state);
     },
     update(value, tr) {
-      if (tr.docChanged || tr.selection || tr.effects.some((e) => e.is(recompute))) {
+      if (
+        tr.docChanged ||
+        tr.selection ||
+        tr.effects.some((e) => e.is(setWindowEffect))
+      ) {
         return computeDim(tr.state);
       }
       return value;
@@ -22,19 +28,7 @@ export function focusMode(): Extension {
     provide: (f) => EditorView.decorations.from(f),
   });
 
-  const viewportDriver = ViewPlugin.fromClass(
-    class {
-      update(update: ViewUpdate) {
-        if (!update.viewportChanged) return;
-        const view = update.view;
-        queueMicrotask(() => {
-          if (view.dom.isConnected) view.dispatch({ effects: recompute.of(null) });
-        });
-      }
-    }
-  );
-
-  return [field, viewportDriver];
+  return [field];
 }
 
 /** 光标所在顶层块之外的行 → md-dim；拖选（非折叠选区）与空白区不降透明度 */
@@ -54,8 +48,15 @@ function computeDim(state: EditorState): DecorationSet {
     if (!block) return Decoration.none;
     const firstLine = doc.lineAt(block.from).number;
     const lastLine = doc.lineAt(Math.max(block.from, block.to - 1)).number;
+    const window = state.field(windowField, false) ?? null;
+    const startLine = window
+      ? doc.lineAt(Math.max(0, Math.min(window.from, doc.length))).number
+      : 1;
+    const endLine = window
+      ? doc.lineAt(Math.max(0, Math.min(window.to, doc.length))).number
+      : doc.lines;
     const ranges: Range<Decoration>[] = [];
-    for (let ln = 1; ln <= doc.lines; ln++) {
+    for (let ln = startLine; ln <= endLine; ln++) {
       if (ln >= firstLine && ln <= lastLine) continue;
       ranges.push(Decoration.line({ class: "md-dim" }).range(doc.line(ln).from));
     }
