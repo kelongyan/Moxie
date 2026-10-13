@@ -2075,6 +2075,17 @@ body {
   height: 100%;
 }
 
+/* 代码块有不透明背景，选区层须在内容之上；背景保持半透明，避免盖住文字。
+   CodeMirror 聚焦态的默认规则用高权重 background 简写设置不透明色，
+   必须在此覆盖，不能只依赖 extensions.ts 中的 backgroundColor。 */
+.cm-host .cm-scroller > .cm-selectionLayer {
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+.cm-host .cm-scroller > .cm-selectionLayer .cm-selectionBackground {
+  background: var(--lac-selection) !important;
+}
+
 /* 非当前标签的编辑器用 data 属性隐藏，而不是 class：
    CodeMirror 的 EditorView.updateAttrs() 会在 focus/blur 时整体重写 .cm-editor 的
    class（cm-focused + 主题类），挂在同一 class 列表上的标记会被冲掉。
@@ -2098,6 +2109,31 @@ body {
 /* 分隔用空行压缩（与 src/preview/typography.ts 的 BLANK_LINE_HEIGHT 保持一致） */
 .cm-host .cm-line.md-blank {
   line-height: 8px;
+}
+
+/* YAML frontmatter（文档开头的 --- 块）：lezer 不认识它，会把键值对连同收尾 ---
+   解析成 Setext 二级标题（语法高亮按 heading2 上 1.5em/600 字号）。这里整块弱化为
+   元信息样式——等宽小字、次级灰、左侧竖线，与正文明确区分。
+   语法高亮是行内 span 上的类，故用后代选择器覆盖字号字重。 */
+.cm-host .cm-line.md-frontmatter {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  line-height: 1.5;
+  color: var(--lac-text-tertiary);
+  border-left: 2px solid var(--lac-border);
+  padding-left: 10px;
+  background: color-mix(in srgb, var(--lac-bg-inset) 60%, transparent);
+}
+.cm-host .cm-line.md-frontmatter span {
+  font-size: inherit;
+  font-weight: 400;
+  color: inherit;
+}
+.cm-host .cm-line.md-frontmatter:first-child {
+  border-top-left-radius: var(--radius-xs);
+}
+.cm-host .cm-line.md-frontmatter:last-child {
+  border-bottom-left-radius: var(--radius-xs);
 }
 /* 引用内的压缩空行带有隐藏 ">" 的 replace 装饰，行内 cm-widgetBuffer（height:1em）
    会把行盒撑回 16px——参照 md-hr-line 用 font-size:0 消除。只限引用行：
@@ -2495,7 +2531,7 @@ body {
   border-radius: 8px;
 }
 
-/* 代码块内容行：卡身（Dracula 深卡，等宽小字，1px 发丝边与卡首尾相接） */
+/* 代码块内容行：卡身（Dracula 深卡，等宽小字，1px 发丝边与卡首尾相接）。 */
 .cm-host .cm-line.md-code-block {
   font-family: var(--font-mono);
   font-size: 0.86em;
@@ -2587,7 +2623,8 @@ body {
   display: block;
   position: relative;
   max-width: 100%;
-  margin: 16px 0 18px;
+  margin: 0;
+  padding-bottom: 18px;
   overflow: visible;
 }
 
@@ -3989,10 +4026,10 @@ body {
 .md-math-block {
   display: block;
   text-align: center;
-  margin: 6px 0;
+  margin: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 2px 0;
+  padding: 8px 0;
 }
 
 

@@ -14,7 +14,6 @@ interface PreferencesState {
   lineNumbers: boolean;
   /** 书写面代码块行号（与导出侧行号开关各自独立） */
   codeBlockLineNumbers: boolean;
-  statusBarVisible: boolean;
   fontSizePt: number;
   lineSpacingPt: number;
   blockSpacing: BlockSpacing;
@@ -73,7 +72,6 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
   return {
     isWordWrapEnabled: state.wordWrap,
     isLineNumbersVisible: state.lineNumbers,
-    isStatusBarVisible: state.statusBarVisible,
     editorFontSize: state.fontSizePt,
     editorLineSpacing: state.lineSpacingPt,
     editorBlockSpacing: state.blockSpacing,
@@ -106,6 +104,8 @@ export async function persistPreferences() {
     const merged = { ...(current ?? {}), ...toDisk(usePreferences.getState()) };
     // 侧栏展开状态属会话内状态：不持久化，并顺带清除磁盘上的历史值
     delete merged.sidebarPinned;
+    // 状态栏已无条件渲染，旧版的可见性开关（死键）随保存清除
+    delete merged.isStatusBarVisible;
     await invoke("settings_save", { value: merged });
   } catch {
     // 存储失败不阻断交互
@@ -124,7 +124,6 @@ export const usePreferences = create<PreferencesState>((set) => ({
   // 所见即所得对标 Typora：默认不显示行号（设置里可开）
   lineNumbers: false,
   codeBlockLineNumbers: false,
-  statusBarVisible: true,
   /** 12pt = 16px，与预览正文同号（源码/渲染切换不产生字号跳跃） */
   fontSizePt: 12,
   lineSpacingPt: 4,
@@ -167,7 +166,6 @@ export const usePreferences = create<PreferencesState>((set) => ({
     const patch: Partial<PreferencesState> = {};
     if (typeof disk.isWordWrapEnabled === "boolean") patch.wordWrap = disk.isWordWrapEnabled;
     if (typeof disk.isLineNumbersVisible === "boolean") patch.lineNumbers = disk.isLineNumbersVisible;
-    if (typeof disk.isStatusBarVisible === "boolean") patch.statusBarVisible = disk.isStatusBarVisible;
     if (typeof disk.editorFontSize === "number") {
       patch.fontSizePt = Math.min(32, Math.max(9, disk.editorFontSize));
     }

@@ -19,10 +19,18 @@ function stateOf(doc: string, anchor: number) {
 function rangesOf(
   doc: string,
   anchor: number,
+  headOrResolver?: number | ((raw: string) => string | null),
   resolver: (raw: string) => string | null = RESOLVE_ALL
 ) {
-  const state = stateOf(doc, anchor);
-  return computeLiveRanges(state, state.doc.length, resolver);
+  const head = typeof headOrResolver === "number" ? headOrResolver : anchor;
+  const resolve =
+    typeof headOrResolver === "function" ? headOrResolver : resolver;
+  const state = EditorState.create({
+    doc,
+    selection: { anchor, head: head ?? anchor },
+    extensions: [markdownExtensions()],
+  });
+  return computeLiveRanges(state, state.doc.length, resolve);
 }
 
 type AnySpec = { class?: string; widget?: unknown; attributes?: { style?: string } };
@@ -223,6 +231,25 @@ describe("livePreview · 代码围栏", () => {
   it("光标在块外：开围栏不带 md-code-active", () => {
     const ranges = rangesOf(doc, 24);
     expect(hasClass(ranges, 0, "md-code-active")).toBe(false);
+  });
+
+  it("拖选代码内容时保持代码卡片，不把围栏源码抖出来", () => {
+    const from = doc.indexOf("const x");
+    const to = doc.indexOf("```", from);
+    const ranges = rangesOf(doc, from, to);
+    const ws = widgets(ranges).filter((w) => w.widget.lang !== undefined);
+
+    expect(ws).toEqual([{ from: 0, to: 5, widget: { lang: "js", code: "const x = 1;" } }]);
+    expect(plainHides(ranges)).toContainEqual([19, 22]);
+    expect(hasClass(ranges, 0, "md-code-fence-raw")).toBe(false);
+  });
+
+  it("拖选开头围栏时才回显围栏源码", () => {
+    const ranges = rangesOf(doc, 0, doc.indexOf("const x"));
+
+    expect(widgets(ranges).filter((w) => w.widget.lang !== undefined)).toEqual([]);
+    expect(plainHides(ranges)).not.toContainEqual([0, 5]);
+    expect(hasClass(ranges, 0, "md-code-fence-raw")).toBe(true);
   });
 
   it("空块（仅开围栏一行、光标在块外）：开行兼任整卡 md-code-solo", () => {

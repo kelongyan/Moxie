@@ -319,6 +319,12 @@ function selectionTouches(state: EditorState, from: number, to: number): boolean
   }
   return false;
 }
+
+/** 拖选代码时保留源码 DOM，避免 replace 装饰改变鼠标选区的定位。 */
+function selectionHasText(state: EditorState): boolean {
+  return state.selection.ranges.some((range) => range.from !== range.to);
+}
+
 function selectionOnLine(state: EditorState, lineFrom: number, lineTo: number): boolean {
   return selectionTouches(state, lineFrom, lineTo);
 }
@@ -2071,6 +2077,29 @@ function codeInfoOf(node: SyntaxNode, doc: Text): string {
   return "";
 }
 
+/**
+ * 文档开头的 YAML frontmatter 范围（含首尾 --- 行，不含收尾行后的换行）。
+ * 判定与导出侧的 markdownCore.splitFrontmatter 保持一致：首行必须是 `---`，
+ * 之后某一行以 `---` 或 `...` 收尾，且该收尾行不能在首行紧随其后（空头不算）。
+ * 返回 null 表示没有 frontmatter。
+ *
+ * 逐行扫描（不用 doc.toString()）：大文档下避免整篇复制。
+ */
+export function frontmatterRange(doc: Text): { from: number; to: number } | null {
+  if (doc.lines < 2) return null;
+  const first = doc.line(1).text;
+  // 允许 BOM 与行尾空白
+  if (!/^\uFEFF?---[ \t]*$/.test(first)) return null;
+  for (let n = 2; n <= doc.lines; n++) {
+    const text = doc.line(n).text;
+    if (!/^(?:---|\.\.\.)[ \t]*$/.test(text)) continue;
+    // 收尾行紧随首行（`---\n---`）：内容为空，按无 frontmatter 处理
+    if (n === 2) return null;
+    return { from: 0, to: doc.line(n).to };
+  }
+  return null;
+}
+
 /** 行内图片（Markdown 或 HTML `<img>` 形式）→ widget；解析不出可用地址时保持原文 */
 function imageReplace(
   state: EditorState,
@@ -2129,6 +2158,17 @@ export function computeLiveRanges(
   const winLastLine = window
     ? doc.lineAt(Math.max(0, Math.min(window.to, doc.length))).number
     : doc.lines;
+
+  /**
+   * YAML frontmatter（文档开头的 --- 包裹块）：lezer 不认识它，会把首行 `---`
+   * 当分割线、把键值对连同收尾 `---` 当 Setext 二级标题（实测见
+   * tests/editorSyntaxGaps.test.ts）。这里先探出范围，整块弱化显示（md-frontmatter），
+   * 并跳过其内部的 HR / Setext 装饰——导出侧本就剥离 frontmatter
+   * （markdownCore.splitFrontmatter），书写面据此对齐。
+   */
+  const frontmatter = frontmatterRange(doc);
+  const inFrontmatter = (pos: number): boolean =>
+    frontmatter !== null && pos >= frontmatter.from && pos < frontmatter.to;
 
   /** 行级装饰累加器：每行只发一个 Decoration.line，把 class 与行内自定义属性合并，
    *  避免同一行多个行装饰的 style 互相覆盖。 */
@@ -2195,6 +2235,16 @@ export function computeLiveRanges(
   const rebuildExcludedIdx = () => {
     excludedIdx = buildIntervalIndex(excluded);
   };
+  // frontmatter 是公式 / emoji / mark 扫描的禁区（YAML 值里的 $ 与 : 不该被渲染），
+  // 同时也整块弱化显示。行类按视口窗口夹取（与其余装饰一致——窗口外不产生装饰）
+  if (frontmatter) {
+    excluded.push(frontmatter);
+    const fmFirst = doc.lineAt(frontmatter.from).number;
+    const fmLast = doc.lineAt(frontmatter.to).number;
+    for (let n = Math.max(fmFirst, winFirstLine); n <= Math.min(fmLast, winLastLine); n++) {
+      pushLineClass(doc.line(n).from, "md-frontmatter");
+    }
+  }
   const inExcluded = (pos: number): boolean => {
     if (excludedIdx?.contains(pos)) return true;
     // 暂存区仅在块级 $$ 扫描期间非空（块级公式极少，线性查几个元素即可）
@@ -2224,6 +2274,8 @@ export function computeLiveRanges(
 
       // 顶层块：收集用于折叠间距与空行压缩
       if (parent && parent.name === "Document") {
+        // frontmatter 整块跳过：它既不是分割线也不是 Setext 标题（见 frontmatterRange）
+        if (inFrontmatter(from)) return false;
         const kind = blockKindOf(node.name);
         if (kind) {
           blocks.push({
@@ -2350,12 +2402,17 @@ export function computeLiveRanges(
         const first = doc.lineAt(from);
         const last = doc.lineAt(to);
         const active = selectionTouches(state, from, to);
+        // 选中代码内容时仍保持代码卡片；只有选区实际碰到围栏行，才需要回显围栏源码。
+        // 否则拖选正文会把 ```python 之类的 Markdown 标记突然显示出来。
+        const selectingFence =
+          selectionHasText(state) && selectionTouches(state, first.from, first.to);
         const hasClosing =
           last.number > first.number && /^\s*(`{3,}|~{3,})\s*$/.test(last.text);
         excluded.push({ from, to });
         const lang = codeInfoOf(node, doc);
         // 开围栏保持原文可见的场合：末闭合未写全的编辑态 / mermaid 源码编辑态
-        const rawOpen = active && (lang === "mermaid" || !hasClosing);
+        const rawOpen =
+          selectingFence || (active && (lang === "mermaid" || !hasClosing));
 
         // 夹取到窗口：整块可能只有一部分可见（窗口外行不发装饰，避免无效装饰堆积）
         for (
@@ -2404,7 +2461,7 @@ export function computeLiveRanges(
         } else {
           // 常规代码块（Typora 风格代码卡片）：围栏常驻隐藏与卡片化，光标在代码内编辑时
           // 不展开围栏；语言缺省时仍渲染 FenceWidget（标签兜底"代码"），保证复制入口常备
-          if (hasClosing || !active) {
+          if (!rawOpen && (hasClosing || !active)) {
             // 代码文本从 fence 行下一行行首起切（first.to 是行尾换行符位置），
             // 复制按钮拿到的是纯代码内容
             const codeText = doc.sliceString(
@@ -2420,7 +2477,7 @@ export function computeLiveRanges(
           }
         }
         // 闭 fence 无条件隐藏；开 fence 保持右上角语言标签卡片
-        if (hasClosing) {
+        if (hasClosing && !rawOpen) {
           const r = hideRange(state, last.from, last.to);
           if (r) ranges.push(r);
         }
@@ -2486,6 +2543,8 @@ export function computeLiveRanges(
 
       // —— 分割线：整行替换为 hr（无条件，Typora 式） ——
       if (node.name === "HorizontalRule") {
+        // frontmatter 的首行 --- 不是分割线（见 frontmatterRange）
+        if (inFrontmatter(from)) return false;
         const line = doc.lineAt(from);
         pushLineClass(line.from, "md-hr-line");
         ranges.push(

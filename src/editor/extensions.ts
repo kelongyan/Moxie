@@ -402,15 +402,19 @@ export function buildEditorState(options: EditorOptions): EditorState {
         textSpacingTrim: "space-first",
         fontVariantNumeric: "tabular-nums",
         fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
-        // 书写面：正文区限宽居中（--measure-writing），两端留白；内边距由 .cm-content padding 提供
+        // 书写面：正文区限宽居中（--measure-writing），两端留白。左右 36px 内边距并入此处
+        // （而非常规的 .cm-content padding）——CodeMirror 的跨行选区整行高亮按 .cm-content
+        // 全宽绘制，若 content 带左右 padding，高亮会横向溢出代码卡片 / 正文边界；移到
+        // scroller 后「行宽 == content 宽」，整行高亮与行严丝合缝，同时视觉留白不变。
         // 源码视图：整块（行号 + 正文）居中并限制列宽；56px 是行号槽的预留宽度
         paddingInline: editable
-          ? "max(0px, calc((100% - var(--measure-writing)) / 2))"
+          ? "calc(max(0px, (100% - var(--measure-writing)) / 2) + 36px)"
           : "max(0px, calc((100% - var(--measure) - 56px) / 2))",
       },
       ".cm-content": {
         caretColor: "var(--lac-accent)",
-        padding: editable ? "32px 36px 80px" : "24px 0 32px",
+        // 左右内边距为 0：横向留白已并入 .cm-scroller（见上），令选区整行高亮与行宽一致
+        padding: editable ? "32px 0 80px" : "24px 0 32px",
       },
       "&.cm-focused": { outline: "none" },
       ".cm-cursor, .cm-dropCursor": {

@@ -9,6 +9,7 @@ import { openSettingsWindow } from "../state/settingsWindow";
 import { openFindWindow } from "../state/findWindow";
 import { openCodecWindow } from "../state/codecWindow";
 import { createEmptyWindow } from "../state/windows";
+import { openHistoryOverlay } from "../state/historyOverlay";
 import { promptConfirm } from "../state/prompts";
 import {
   copyRichTextAction,
@@ -157,6 +158,11 @@ export function TitleToolbar({
       shortcut: "Ctrl+Shift+S",
       disabled: !activeDoc,
       onClick: () => void saveAsAction(),
+    },
+    {
+      label: "历史版本…",
+      disabled: !activeDoc?.path,
+      onClick: () => openHistoryOverlay(),
     },
     {
       label: "导出为独立 HTML…",

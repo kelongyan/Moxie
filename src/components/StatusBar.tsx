@@ -7,6 +7,12 @@ import { usePreferences } from "../state/preferences";
 import { openSettingsWindow } from "../state/settingsWindow";
 import { openCodecWindow } from "../state/codecWindow";
 import { gotoLineAction } from "../state/actions";
+import {
+  nextStatMode,
+  STAT_LABELS,
+  useDocStats,
+  type StatMode,
+} from "../hooks/useDocStats";
 
 interface StatusBarProps {
   activeDoc: EditorDocument | null;
@@ -76,6 +82,16 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
   const statusMessage = useDocuments((s) => s.statusMessage);
   const sidebarPinned = usePreferences((s) => s.sidebarPinned);
   const sidebarWidth = usePreferences((s) => s.sidebarWidth ?? 240);
+  const stats = useDocStats();
+  const [statMode, setStatMode] = useState<StatMode>("words");
+
+  const statValue = stats
+    ? statMode === "words"
+      ? stats.words
+      : statMode === "paragraphs"
+        ? stats.paragraphs
+        : stats.characters
+    : null;
 
   return (
     <footer className="status-bar">
@@ -116,6 +132,18 @@ export function StatusBar({ activeDoc }: StatusBarProps) {
 
         {activeDoc && (
           <div className="status-right">
+            {statValue !== null && (
+              <>
+                <button
+                  className="status-item status-action-item"
+                  onClick={() => setStatMode(nextStatMode(statMode))}
+                  title={`${STAT_LABELS[statMode]}（点击切换统计口径）`}
+                >
+                  {STAT_LABELS[statMode]} {statValue.toLocaleString()}
+                </button>
+                <span className="status-divider">·</span>
+              </>
+            )}
             <button
               className="status-item status-action-item"
               onClick={() => void gotoLineAction()}
