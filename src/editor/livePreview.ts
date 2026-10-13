@@ -83,6 +83,57 @@ let imageResolver: ImageSrcResolver | null = null;
 
 const HIDE = Decoration.replace({});
 
+/**
+ * 升序区间索引：contains / overlaps 与原"逐一线性回扫"语义严格等价
+ * （含区间嵌套——前缀最大 to 保证"任一区间包含点 / 任一区间相交"不变）。
+ * computeLiveRanges 的公式禁区（docs/渲染优化方案.md O-1）与重叠过滤（O-2）共用；
+ * 独立导出以便"二分 ≡ 线性"随机对照单测（tests/livePreviewExclusion.test.ts）。
+ */
+export interface IntervalIndex {
+  contains(pos: number): boolean;
+  overlaps(from: number, to: number): boolean;
+}
+
+export function buildIntervalIndex(
+  ranges: { from: number; to: number }[]
+): IntervalIndex {
+  const sorted = [...ranges].sort((a, b) => a.from - b.from);
+  const prefixMaxTo: number[] = new Array(sorted.length);
+  let mx = -1;
+  for (let i = 0; i < sorted.length; i++) {
+    mx = Math.max(mx, sorted[i].to);
+    prefixMaxTo[i] = mx;
+  }
+  return {
+    contains(pos) {
+      let lo = 0;
+      let hi = sorted.length - 1;
+      let idx = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (sorted[mid].from <= pos) {
+          idx = mid;
+          lo = mid + 1;
+        } else hi = mid - 1;
+      }
+      return idx >= 0 && prefixMaxTo[idx] > pos;
+    },
+    overlaps(from, to) {
+      let lo = 0;
+      let hi = sorted.length - 1;
+      let idx = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (sorted[mid].from < to) {
+          idx = mid;
+          lo = mid + 1;
+        } else hi = mid - 1;
+      }
+      return idx >= 0 && prefixMaxTo[idx] > from;
+    },
+  };
+}
+
 // —— 表格浮动工具条轻量 SVG 图标定义 ——
 const SVG_ALIGN_LEFT = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`;
 const SVG_ALIGN_CENTER = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="19" y1="12" x2="5" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg>`;
@@ -2051,10 +2102,21 @@ export function computeLiveRanges(
     if (r) ranges.push(r);
   };
 
-  /** 数学公式扫描的禁区（代码块/行内代码/表格/HTML 块/已识别的块级公式） */
+  /** 数学公式扫描的禁区（代码块/行内代码/表格/HTML 块/已识别的块级公式）。
+   *  查询走区间索引（二分 + 前缀最大 to）：原"逐一线性扫描"在大文档上是
+   *  O(行数×禁区数)，实测 500KB 文档单次重算最大头 76~150ms（docs/渲染优化方案.md
+   *  O-1）。块级 $$ 扫描期间追加的新禁区暂存 blockExcluded（升序天然有序），
+   *  扫描结束后并入 excluded 并重建索引。 */
   const excluded: { from: number; to: number }[] = [];
+  const blockExcluded: { from: number; to: number }[] = [];
+  let excludedIdx: IntervalIndex | null = null;
+  const rebuildExcludedIdx = () => {
+    excludedIdx = buildIntervalIndex(excluded);
+  };
   const inExcluded = (pos: number): boolean => {
-    for (const r of excluded) {
+    if (excludedIdx?.contains(pos)) return true;
+    // 暂存区仅在块级 $$ 扫描期间非空（块级公式极少，线性查几个元素即可）
+    for (const r of blockExcluded) {
       if (pos >= r.from && pos < r.to) return true;
     }
     return false;
@@ -2387,6 +2449,10 @@ export function computeLiveRanges(
     },
   });
 
+  // 树遍历入列完成：建区间索引（块级 $$ 扫描期间新禁区追加进 blockExcluded 暂存，
+  // 扫描结束后并入并重建——否则查询与追加交错会让二分基于乱序数组）
+  rebuildExcludedIdx();
+
   // —— 数学公式：语法树不认识 $...$，单独线性扫描 ——
   // 块级 $$..$$（单行或跨行）整块替换（StateField 允许跨行 replace）；
   // 行内 $..$ 内容非空、首尾无空白（降低把价格符号误判为公式的概率）。
@@ -2413,7 +2479,7 @@ export function computeLiveRanges(
         }).range(line.from, line.to)
       );
       blockMathLines.add(ln);
-      excluded.push({ from: line.from, to: line.to });
+      blockExcluded.push({ from: line.from, to: line.to });
       continue;
     }
     let endLine = -1;
@@ -2436,13 +2502,18 @@ export function computeLiveRanges(
           block: true,
         }).range(line.from, absTo)
       );
-      excluded.push({ from: line.from, to: absTo });
+      blockExcluded.push({ from: line.from, to: absTo });
     }
   }
+  // 块级公式禁区并入并重建索引：行内公式/emoji/mark 扫描统一走二分
+  excluded.push(...blockExcluded);
+  blockExcluded.length = 0;
+  rebuildExcludedIdx();
   for (let ln = 1; ln <= doc.lines; ln++) {
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
+    if (!text.includes("$")) continue;
     let i = 0;
     while (i < text.length - 1) {
       if (text[i] !== "$" || text[i + 1] === "$" || (i > 0 && text[i - 1] === "\\")) {
@@ -2485,6 +2556,7 @@ export function computeLiveRanges(
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
+    if (!text.includes(":")) continue;
     const re = /(^|[^\\]):([a-zA-Z0-9_+-]+):/g;
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
@@ -2506,6 +2578,7 @@ export function computeLiveRanges(
     if (blockMathLines.has(ln)) continue;
     const line = doc.line(ln);
     const text = line.text;
+    if (!text.includes("==")) continue;
     // 内容两端不留空白、不含 =（==a==b== 场景放弃）、不跨行
     const re = /(^|[^\\])==([^=\s](?:[^=\n]*[^=\s])?)==/g;
     let m: RegExpExecArray | null;
@@ -2522,17 +2595,12 @@ export function computeLiveRanges(
   }
   // 与其他替换/隐藏区间（强调标记、图片、fence 标签等）重叠的公式放弃渲染
   if (mathRanges.length > 0 || emojiRanges.length > 0 || markRanges.length > 0) {
-    const taken = [...ranges].sort((a, b) => a.from - b.from);
-    const overlaps = (from: number, to: number): boolean => {
-      for (const r of taken) {
-        if (r.to <= from) continue;
-        if (r.from >= to) break;
-        return true;
-      }
-      return false;
-    };
+    // 区间索引（二分 + 前缀最大 to）：原"从头线性回扫"在重负载文档上 O(候选×装饰)，
+    // 实测 58~61ms → 3~5ms（docs/渲染优化方案.md O-2）；语义与线性等价
+    // （对照单测 tests/livePreviewExclusion.test.ts）。
+    const takenIdx = buildIntervalIndex([...ranges]);
     for (const r of [...mathRanges, ...emojiRanges, ...markRanges]) {
-      if (!overlaps(r.from, r.to)) ranges.push(r);
+      if (!takenIdx.overlaps(r.from, r.to)) ranges.push(r);
     }
   }
 
