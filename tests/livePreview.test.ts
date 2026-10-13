@@ -770,3 +770,62 @@ describe("livePreview · 标注块（Callout）", () => {
   });
 });
 
+
+describe("livePreview · 上下标与脚注（O-11 / F-29）", () => {
+  it("~sub~ 隐藏两端标记、内容加 md-sub 装饰", () => {
+    const ranges = rangesOf("text ~sub~ end", 0);
+    expect(plainHides(ranges)).toContainEqual([5, 6]);
+    expect(plainHides(ranges)).toContainEqual([9, 10]);
+    expect(hasClass(ranges, 6, "md-sub")).toBe(true);
+  });
+
+  it("x^2^ 隐藏两端标记、内容加 md-sup 装饰", () => {
+    const ranges = rangesOf("x^2^ 后文", 0);
+    expect(plainHides(ranges)).toContainEqual([1, 2]);
+    expect(plainHides(ranges)).toContainEqual([3, 4]);
+    expect(hasClass(ranges, 2, "md-sup")).toBe(true);
+  });
+
+  it("光标进入区间时回显原文（不隐藏、不装饰）", () => {
+    const ranges = rangesOf("text ~sub~ end", 7);
+    expect(plainHides(ranges)).not.toContainEqual([5, 6]);
+    expect(hasClass(ranges, 6, "md-sub")).toBe(false);
+  });
+
+  it("~~删除线~~ 不被误渲染为上下标", () => {
+    const ranges = rangesOf("~~gone~~ 文本", 0);
+    expect(lineClasses(ranges).every((l) => !l.classes.includes("md-sub"))).toBe(true);
+  });
+
+  it("行内代码禁区内的上下标不渲染", () => {
+    const ranges = rangesOf("文本 `~x~` 结尾", 0);
+    expect(hasClass(ranges, 5, "md-sub")).toBe(false);
+  });
+
+  it("脚注引用 [^1] 渲染为角标 widget，定义行弱化且不渲染引用", () => {
+    const doc = "see note[^1] here\n\n[^1]: def";
+    const ranges = rangesOf(doc, 0);
+    const refs = widgets(ranges).filter(
+      (w) => (w.widget as { id?: string }).id === "1"
+    );
+    expect(refs).toHaveLength(1);
+    expect(refs[0].from).toBe(8);
+    expect(hasClass(ranges, doc.indexOf("[^1]:"), "md-fn-def")).toBe(true);
+  });
+
+  it("光标贴在脚注引用上时回显原文", () => {
+    const ranges = rangesOf("see note[^1] here\n\n[^1]: def", 9);
+    const refs = widgets(ranges).filter(
+      (w) => (w.widget as { id?: string }).id === "1"
+    );
+    expect(refs).toHaveLength(0);
+  });
+
+  it("行内代码内的脚注引用不渲染", () => {
+    const ranges = rangesOf("代码 `[^1]` 内", 0);
+    const refs = widgets(ranges).filter(
+      (w) => (w.widget as { id?: string }).id === "1"
+    );
+    expect(refs).toHaveLength(0);
+  });
+});

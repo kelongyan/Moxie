@@ -1591,6 +1591,45 @@ class MarkWidget extends WidgetType {
   }
 }
 
+/** 脚注引用 [^id] → 角标 widget（点击跳转到定义行，O-11 / F-29） */
+class FootnoteRefWidget extends WidgetType {
+  constructor(readonly id: string) {
+    super();
+  }
+  eq(other: FootnoteRefWidget) {
+    return other.id === this.id;
+  }
+  toDOM(view: EditorView) {
+    const el = document.createElement("sup");
+    el.className = "md-fn-ref";
+    el.textContent = this.id;
+    el.title = `跳转到脚注定义 [^${this.id}]`;
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const docText = view.state.doc.toString();
+      const needle = `[^${this.id}]:`;
+      const bt = docText.indexOf(`\n${needle}`);
+      const at = bt >= 0 ? bt + 1 : docText.startsWith(needle) ? 0 : -1;
+      if (at >= 0) {
+        view.dispatch({
+          selection: { anchor: at },
+          effects: EditorView.scrollIntoView(at, { y: "center" }),
+        });
+        view.focus();
+      }
+    });
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
 class TaskWidget extends WidgetType {
   constructor(readonly checked: boolean) {
     super();
@@ -2247,7 +2286,8 @@ export function computeLiveRanges(
         return;
       }
 
-      // —— 链接：隐藏 [ ](url)，只剩链接文字（Typora 风格常驻所见即所得） ——
+      // —— 链接：隐藏 [ ](url)，只剩链接文字（Typora 风格常驻所见即所得）。
+      //    脚注引用 [^id]（Lezer 按不完整链接解析）豁免：不隐藏标记，交给脚注渲染 ——
       if (
         (node.name === "LinkMark" ||
           node.name === "URL" ||
@@ -2256,7 +2296,9 @@ export function computeLiveRanges(
         parent &&
         parent.name === "Link"
       ) {
-        hideChild(node);
+        if (!/^\[\^[^\]\s]+\]$/.test(doc.sliceString(parent.from, parent.to))) {
+          hideChild(node);
+        }
         return;
       }
 
@@ -2647,14 +2689,91 @@ export function computeLiveRanges(
       }
     }
   }
+  // —— 上下标（~sub~ / ^sup^）：隐藏两端标记 + 内容 mark 装饰（文本保持连续、可选中编辑）；
+  //    避开 ~~（删除线由语法树处理）；与公式/emoji 同一禁区与重叠过滤 ——
+  const subSupRanges: Range<Decoration>[] = [];
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    const text = line.text;
+    if (!text.includes("~") && !text.includes("^")) continue;
+    if (text.includes("~")) {
+      const re = /(^|[^~\\])~([^~\s](?:[^~\n]*[^~\s])?)~/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text)) !== null) {
+        const open = line.from + m.index + m[1].length;
+        const close = line.from + m.index + m[0].length - 1;
+        if (inExcluded(open) || selectionTouches(state, open, close + 1)) continue;
+        const h1 = hideRange(state, open, open + 1);
+        const h2 = hideRange(state, close, close + 1);
+        if (h1) subSupRanges.push(h1);
+        if (h2) subSupRanges.push(h2);
+        subSupRanges.push(Decoration.mark({ class: "md-sub" }).range(open + 1, close));
+      }
+    }
+    if (text.includes("^")) {
+      const re = /(^|[^\\^])\^([^\s^](?:[^\n^]*[^\s^])?)\^/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text)) !== null) {
+        const open = line.from + m.index + m[1].length;
+        const close = line.from + m.index + m[0].length - 1;
+        if (inExcluded(open) || selectionTouches(state, open, close + 1)) continue;
+        const h1 = hideRange(state, open, open + 1);
+        const h2 = hideRange(state, close, close + 1);
+        if (h1) subSupRanges.push(h1);
+        if (h2) subSupRanges.push(h2);
+        subSupRanges.push(Decoration.mark({ class: "md-sup" }).range(open + 1, close));
+      }
+    }
+  }
+  // —— 脚注：引用 [^id] → 角标 widget（点击跳定义行）；定义行 [^id]: → 弱化样式（F-29） ——
+  const footnoteRanges: Range<Decoration>[] = [];
+  for (let ln = winFirstLine; ln <= winLastLine; ln++) {
+    if (blockMathLines.has(ln)) continue;
+    const line = doc.line(ln);
+    const text = line.text;
+    if (!text.includes("[^")) continue;
+    if (/^\s*\[\^[^\]\s]+\]:/.test(text)) {
+      pushLineClass(line.from, "md-fn-def");
+      continue;
+    }
+    const re = /(^|[^\\])\[\^([^\]\s]+)\]/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text)) !== null) {
+      const absFrom = line.from + m.index + m[1].length;
+      const absTo = absFrom + m[0].length - m[1].length;
+      if (inExcluded(absFrom) || selectionTouches(state, absFrom, absTo)) continue;
+      footnoteRanges.push(
+        Decoration.replace({ widget: new FootnoteRefWidget(m[2]) }).range(absFrom, absTo)
+      );
+    }
+  }
   // 与其他替换/隐藏区间（强调标记、图片、fence 标签等）重叠的公式放弃渲染
-  if (mathRanges.length > 0 || emojiRanges.length > 0 || markRanges.length > 0) {
+  if (
+    mathRanges.length > 0 ||
+    emojiRanges.length > 0 ||
+    markRanges.length > 0 ||
+    subSupRanges.length > 0 ||
+    footnoteRanges.length > 0
+  ) {
     // 区间索引（二分 + 前缀最大 to）：原"从头线性回扫"在重负载文档上 O(候选×装饰)，
     // 实测 58~61ms → 3~5ms（docs/渲染优化方案.md O-2）；语义与线性等价
     // （对照单测 tests/livePreviewExclusion.test.ts）。
     const takenIdx = buildIntervalIndex([...ranges]);
-    for (const r of [...mathRanges, ...emojiRanges, ...markRanges]) {
-      if (!takenIdx.overlaps(r.from, r.to)) ranges.push(r);
+    const accepted: { from: number; to: number }[] = [];
+    for (const r of [
+      ...mathRanges,
+      ...emojiRanges,
+      ...markRanges,
+      ...subSupRanges,
+      ...footnoteRanges,
+    ]) {
+      if (takenIdx.overlaps(r.from, r.to)) continue;
+      // 候选之间也可能互相重叠（如 $:smile:$：公式替换与 emoji 替换同区间）：线性查
+      // 已接受集合（窗口内候选量很小）；原实现不查候选间重叠，理论上会产生重叠 replace
+      if (accepted.some((a) => r.from < a.to && a.from < r.to)) continue;
+      accepted.push({ from: r.from, to: r.to });
+      ranges.push(r);
     }
   }
 
@@ -2678,7 +2797,9 @@ export function computeLiveRanges(
 
     const blankFrom = prev ? prev.lastLine + 1 : winFirstLine;
     for (let ln = blankFrom; ln < block.firstLine; ln++) {
-      pushLineClass(doc.line(ln).from, "md-blank");
+      const line = doc.line(ln);
+      // 只压缩空白行：LinkReference 定义等"未被识别为块的行"保持原样显示
+      if (line.text.trim() === "") pushLineClass(line.from, "md-blank");
     }
     const blankLines = prev ? Math.max(0, block.firstLine - prev.lastLine - 1) : 0;
     if (prev) {
@@ -2702,7 +2823,8 @@ export function computeLiveRanges(
   if (blocks.length > 0) {
     const lastBlockLine = blocks[blocks.length - 1].lastLine;
     for (let ln = lastBlockLine + 1; ln <= winLastLine; ln++) {
-      pushLineClass(doc.line(ln).from, "md-blank");
+      const line = doc.line(ln);
+      if (line.text.trim() === "") pushLineClass(line.from, "md-blank");
     }
   } else if (window) {
     // 窗口落在纯空行区（前后顶层块都在窗口外）：窗口内空行按压缩行处理
