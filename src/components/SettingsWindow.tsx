@@ -400,6 +400,18 @@ export function SettingsWindow() {
                 checked={prefs.typewriterMode}
                 onChange={(v) => set({ typewriterMode: v })}
               />
+              <SwitchRow
+                title={t("自动配对括号")}
+                description={t("输入括号与反引号时自动补全右半，Backspace 可成对删除")}
+                checked={prefs.autoCloseBrackets}
+                onChange={(v) => set({ autoCloseBrackets: v })}
+              />
+              <SwitchRow
+                title={t("拼写检查")}
+                description={t("使用系统拼写检查；中文文档建议关闭")}
+                checked={prefs.spellcheck}
+                onChange={(v) => set({ spellcheck: v })}
+              />
             </SettingsSection>
 
             <SettingsSection title={t("排版")} description={t("正文的字号与间距节奏")}>

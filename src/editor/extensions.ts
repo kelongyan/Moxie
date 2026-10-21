@@ -28,6 +28,12 @@ import {
   syntaxTree,
 } from "@codemirror/language";
 import type { SyntaxNode } from "@lezer/common";
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+} from "@codemirror/autocomplete";
+import { markdownLanguage } from "@codemirror/lang-markdown";
+import { anchorOfHref, isAnchorHref, isRelativeDocHref } from "./docLinks";
 import { highlightExtension } from "./highlightTheme";
 import { markdownExtensions } from "./languages";
 import { livePreview, ImageSrcResolver } from "./livePreview";
@@ -41,6 +47,7 @@ import {
   makeWrapHandler,
 } from "./formatting";
 import { pasteImageExtension } from "./pasteImage";
+import { pastePlainExtension } from "./pastePlain";
 import { setImageToolbarHost } from "./imageNav";
 import { focusMode, typewriterMode } from "./focusMode";
 import { searchHighlightField } from "./searchHighlight";
@@ -65,6 +72,10 @@ export interface EditorOptions {
   imageSrcResolver: ImageSrcResolver | null;
   /** Ctrl+点击书写面链接时回调（仅 http/https；未提供则不响应点击） */
   onOpenLink?: (url: string) => void;
+  /** Ctrl+点击文档内锚点（#标题）时回调 */
+  onOpenAnchor?: (anchor: string) => void;
+  /** Ctrl+点击相对路径文档链接时回调（path 为链接原文，anchor 为 # 之后部分） */
+  onOpenDocLink?: (path: string, anchor: string | null) => void;
   /** 粘贴图片时回调（落盘与插入见 actions.insertImageFileAction）；未提供则不拦截粘贴 */
   onImagePaste?: (file: File) => void;
   /** 图片工具条宿主回调（在资源管理器中显示 / 替换图片文件，见 actions.revealImageAction 等） */
@@ -78,6 +89,10 @@ export interface EditorOptions {
   focusMode?: boolean;
   /** 打字机模式：光标行保持垂直居中（仅书写面） */
   typewriterMode?: boolean;
+  /** 自动配对括号与反引号（设置项，默认开） */
+  autoCloseBrackets?: boolean;
+  /** 拼写检查（设置项，默认关；覆盖 CodeMirror 基础属性里的 spellcheck=false） */
+  spellcheck?: boolean;
   onUpdate: (update: { docChanged: boolean; state: EditorState }) => void;
   onCursor: (line: number, column: number) => void;
 }
@@ -151,8 +166,37 @@ export function makeHeadingLevelHandler(level: number) {
   };
 }
 
-/** Ctrl+点击链接打开：命中 Link / Autolink 节点里的 http(s) URL 时交给 onOpenLink */
-function linkClickExtension(onOpenLink: (url: string) => void): Extension {
+/** 链接目标分流（Ctrl+点击与悬浮气泡共用） */
+interface LinkHandlers {
+  onOpenLink: (url: string) => void;
+  onOpenAnchor?: (anchor: string) => void;
+  onOpenDocLink?: (path: string, anchor: string | null) => void;
+}
+
+/** 按目标类型分发；未匹配（或没有对应回调）返回 false，由调用方放行 */
+function dispatchLink(href: string, handlers: LinkHandlers): boolean {
+  const url = href.trim();
+  if (!url) return false;
+  if (/^https?:\/\//i.test(url)) {
+    handlers.onOpenLink(url);
+    return true;
+  }
+  // 文档内锚点：#标题
+  if (isAnchorHref(url) && handlers.onOpenAnchor) {
+    handlers.onOpenAnchor(url.slice(1));
+    return true;
+  }
+  // 相对路径的本地 Markdown 文档（含 a.md#锚点）
+  if (isRelativeDocHref(url) && handlers.onOpenDocLink) {
+    handlers.onOpenDocLink(url, anchorOfHref(url));
+    return true;
+  }
+  return false;
+}
+
+/** Ctrl+点击链接打开：http(s) 交给 onOpenLink；#锚点与相对 .md 路径走
+ *  onOpenAnchor / onOpenDocLink（见 docLinks.ts 的纯函数解析） */
+function linkClickExtension(handlers: LinkHandlers): Extension {
   return EditorView.domEventHandlers({
     mousedown(event, view) {
       if (event.button !== 0 || !(event.ctrlKey || event.metaKey)) return false;
@@ -182,16 +226,15 @@ function linkClickExtension(onOpenLink: (url: string) => void): Extension {
         }
       }
       url = url?.trim() ?? "";
-      if (!/^https?:\/\//i.test(url)) return false;
+      if (!url || !dispatchLink(url, handlers)) return false;
       event.preventDefault();
-      onOpenLink(url);
       return true;
     },
   });
 }
 
 /** Typora 风格链接悬浮气泡（显示 URL、一键打开与原位编辑，不破坏行内文本排版） */
-function linkPopoverExtension(onOpenLink?: (url: string) => void): Extension {
+function linkPopoverExtension(handlers?: LinkHandlers): Extension {
   let popoverEl: HTMLElement | null = null;
   let activeUrlFrom = 0;
   let activeUrlTo = 0;
@@ -271,7 +314,9 @@ function linkPopoverExtension(onOpenLink?: (url: string) => void): Extension {
     const handleOpen = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (onOpenLink) onOpenLink(url);
+      // 与 Ctrl+点击同一套分流：锚点 / 相对文档 / 外链各走各的回调
+      if (handlers && dispatchLink(url, handlers)) return;
+      if (handlers) handlers.onOpenLink(url);
       else window.open(url, "_blank");
     };
 
@@ -505,7 +550,8 @@ export function buildEditorState(options: EditorOptions): EditorState {
     searchHighlightField,
     indentUnit.of(options.indentUnitText),
     Prec.highest(customKeys),
-    keymap.of([...foldKeymap, ...defaultKeymap, ...historyKeymap]),
+    // Backspace 删除成对括号的键位放在用户键位之后、默认键位之前
+    keymap.of([...closeBracketsKeymap, ...foldKeymap, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((update) => {
       if (update.docChanged || update.selectionSet) {
         const { state } = update;
@@ -527,6 +573,21 @@ export function buildEditorState(options: EditorOptions): EditorState {
     extensions.push(highlightExtension());
     extensions.push(...markdownExtensions());
   }
+  // 括号配对：Markdown 语境只配对括号与反引号，不配对引号——中文书写里
+  // 输入 " 或 ' 时自动补对会打断行文（英文场景的配对收益远小于干扰）
+  if (options.autoCloseBrackets) {
+    extensions.push(
+      markdownLanguage.data.of({
+        closeBrackets: { brackets: ["(", "[", "{", "`"] },
+      }),
+      closeBrackets()
+    );
+  }
+  // 拼写检查：CodeMirror 的 updateAttrs 默认下发 spellcheck="false"，
+  // contentAttributes facet 后应用者覆盖，这是唯一开关点
+  if (options.spellcheck) {
+    extensions.push(EditorView.contentAttributes.of({ spellcheck: "true" }));
+  }
   if (options.enableLivePreview && options.imageSrcResolver) {
     extensions.push(
       livePreview(
@@ -536,15 +597,24 @@ export function buildEditorState(options: EditorOptions): EditorState {
       )
     );
   }
-  if (options.onOpenLink) {
-    extensions.push(linkClickExtension(options.onOpenLink));
+  const linkHandlers: LinkHandlers | null = options.onOpenLink
+    ? {
+        onOpenLink: options.onOpenLink,
+        onOpenAnchor: options.onOpenAnchor,
+        onOpenDocLink: options.onOpenDocLink,
+      }
+    : null;
+  if (linkHandlers) {
+    extensions.push(linkClickExtension(linkHandlers));
   }
   if (editable) {
-    extensions.push(linkPopoverExtension(options.onOpenLink));
+    extensions.push(linkPopoverExtension(linkHandlers ?? undefined));
   }
   if (options.onImagePaste) {
     extensions.push(pasteImageExtension(options.onImagePaste));
   }
+  // Ctrl+Shift+V 纯文本粘贴（与图片粘贴互不冲突：图片走 paste 事件，这里走键位）
+  extensions.push(pastePlainExtension());
   if (options.imageToolbarHost) {
     setImageToolbarHost(options.imageToolbarHost);
   }

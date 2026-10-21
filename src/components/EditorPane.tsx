@@ -18,7 +18,13 @@ import { EditorDocument, useDocuments } from "../state/documents";
 import { onThemeChange } from "../state/theme";
 import { featureEnabled } from "../state/performance";
 import { indentUnitOf, usePreferences } from "../state/preferences";
-import { insertImageFileAction, pickImageAndSaveAction, revealImageAction } from "../state/actions";
+import {
+  insertImageFileAction,
+  jumpToAnchorAction,
+  openDocLinkAction,
+  pickImageAndSaveAction,
+  revealImageAction,
+} from "../state/actions";
 import { directoryOf, resolveLocalImageSrc } from "../preview/markdownCore";
 import { EditorEmptyState } from "./EditorEmptyState";
 
@@ -99,6 +105,12 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
         useDocuments.getState().setStatus({ text: `无法打开链接:${error}`, kind: "error" });
       });
     },
+    onOpenAnchor: (anchor) => {
+      jumpToAnchorAction(doc.id, anchor);
+    },
+    onOpenDocLink: (href, anchor) => {
+      void openDocLinkAction(doc.id, href, anchor);
+    },
     onImagePaste: (file) => {
       void insertImageFileAction(file);
     },
@@ -110,6 +122,8 @@ function createViewFor(doc: EditorDocument, text: string): EditorView {
     },
     focusMode: prefs.focusMode,
     typewriterMode: prefs.typewriterMode,
+    autoCloseBrackets: prefs.autoCloseBrackets,
+    spellcheck: prefs.spellcheck,
     onUpdate: ({ state: nextState }) => {
       reportDirtyState(doc.id, nextState.doc.length, () =>
         nextState.doc.toString()

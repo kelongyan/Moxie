@@ -15,11 +15,13 @@ import {
   copyRichTextAction,
   newTabAction,
   openFileAction,
+  reloadActiveFromDiskAction,
   saveActiveAction,
   saveAsAction,
 } from "../state/actions";
 import { redoFor, undoFor, viewFor } from "../editor/registry";
 import { exportPreviewHtml, exportWordDoc } from "../preview/exportHtml";
+import { printDocument } from "../preview/print";
 import { collectPreviewTokens } from "../preview/markdown";
 import { directoryOf } from "../preview/markdownCore";
 import { usePreferences } from "../state/preferences";
@@ -128,6 +130,40 @@ export function TitleToolbar({
     }
   };
 
+  /** 打印 / 导出 PDF：与导出共用同一渲染管线（含 mermaid、KaTeX、图片内联） */
+  const runPrint = async () => {
+    if (!activeDoc) return;
+    const view = viewFor(activeDoc.id);
+    if (!view) return;
+    try {
+      const prefs = usePreferences.getState();
+      const ok = await printDocument({
+        tokens: collectPreviewTokens({
+          theme: prefs.exportTheme,
+          codeLineNumbers: prefs.exportCodeLineNumbers,
+          narrow: prefs.exportNarrow,
+        }),
+        title: activeDoc.name,
+        text: view.state.doc.toString(),
+        baseDir: activeDoc.path ? directoryOf(activeDoc.path) : null,
+        breaks: prefs.markdownBreaks,
+        typographer: prefs.markdownTypographer,
+        allowHtml: prefs.markdownAllowHtml,
+      });
+      useDocuments
+        .getState()
+        .setStatus(
+          ok
+            ? { text: "已打开打印对话框，可选择「另存为 PDF」", kind: "info" }
+            : { text: "无法打开打印对话框", kind: "error" }
+        );
+    } catch (error) {
+      useDocuments
+        .getState()
+        .setStatus({ text: `打印失败:${String(error)}`, kind: "error" });
+    }
+  };
+
   const handleAbout = async () => {
     let version = "";
     try {
@@ -160,6 +196,11 @@ export function TitleToolbar({
       onClick: () => void saveAsAction(),
     },
     {
+      label: "从磁盘重新载入",
+      disabled: !activeDoc?.path,
+      onClick: () => void reloadActiveFromDiskAction(),
+    },
+    {
       label: "历史版本…",
       disabled: !activeDoc?.path,
       onClick: () => openHistoryOverlay(),
@@ -174,6 +215,11 @@ export function TitleToolbar({
       label: "导出为 Word 文档 (.doc)…",
       disabled: !activeDoc,
       onClick: () => void runExport(exportWordDoc, "已导出为 Word 文档"),
+    },
+    {
+      label: "打印 / 导出 PDF…",
+      disabled: !activeDoc,
+      onClick: () => void runPrint(),
     },
     {
       label: "复制为富文本",

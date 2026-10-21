@@ -71,22 +71,16 @@ function escapeHtmlText(text: string): string {
 
 md.core.ruler.push("moxie_heading_ids", (state) => {
   const env = (state.env ?? {}) as RenderEnv;
-  const used = new Set<string>();
-  env.__headingIds = used;
-  for (const token of state.tokens) {
-    if (token.type !== "heading_open") continue;
-    const idx = state.tokens.indexOf(token) + 1;
-    const inline = state.tokens[idx];
-    const slug = slugify(inline?.content ?? "");
-    let id = slug || "section";
-    let n = 1;
-    while (used.has(id)) {
-      n += 1;
-      id = `${slug || "section"}-${n}`;
-    }
-    used.add(id);
-    token.attrSet("id", id);
+  // 先按文档顺序收集全部标题文本，再用与书写面锚点跳转共用的 headingIdsOf
+  // 统一算 id（含重复标题的 -2/-3 后缀）——两边规则只此一份
+  const headings: { token: (typeof state.tokens)[number]; text: string }[] = [];
+  for (let i = 0; i < state.tokens.length; i++) {
+    if (state.tokens[i].type !== "heading_open") continue;
+    headings.push({ token: state.tokens[i], text: state.tokens[i + 1]?.content ?? "" });
   }
+  const ids = headingIdsOf(headings.map((h) => h.text));
+  env.__headingIds = new Set(ids);
+  headings.forEach((h, i) => h.token.attrSet("id", ids[i]));
 });
 
 // ---------- Callout（GitHub 风提示块，TizuMark 复刻） ----------
@@ -319,7 +313,11 @@ export function taskToggleInLine(lineText: string): { index: number; insert: str
   return { index: match.index, insert: match[0] === "[ ]" ? "[x]" : "[ ]" };
 }
 
-function slugify(text: string): string {
+/**
+ * 标题 → 锚点 id（导出侧 heading id 与书写面 `#anchor` 跳转共用同一套规则）。
+ * 重复标题的去重后缀由调用方按出现顺序追加（`-2`、`-3`…）。
+ */
+export function slugify(text: string): string {
   return text
     .trim()
     .toLowerCase()
@@ -329,19 +327,31 @@ function slugify(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
+/** 在一组标题文本中按导出侧规则算出第 index 个标题的 id（含去重后缀） */
+export function headingIdsOf(titles: string[]): string[] {
+  const used = new Set<string>();
+  return titles.map((title) => {
+    const slug = slugify(title);
+    let id = slug || "section";
+    let n = 1;
+    while (used.has(id)) {
+      n += 1;
+      id = `${slug || "section"}-${n}`;
+    }
+    used.add(id);
+    return id;
+  });
+}
+
+/** renderer 兜底（token 未被 core 规则赋 id 时）：复用 headingIdsOf 的去重规则 */
 function nextHeadingId(env: RenderEnv, base: string): string {
   let used = env.__headingIds as Set<string> | undefined;
   if (!used) {
     used = new Set<string>();
     env.__headingIds = used;
   }
-  const root = base || "section";
-  let id = root;
-  let n = 1;
-  while (used.has(id)) {
-    n += 1;
-    id = `${root}-${n}`;
-  }
+  // headingIdsOf 按"已用集合"推进：把现有 id 作为占位，取本标题的下一可用值
+  const [id] = headingIdsOf([...used, base]).slice(-1);
   used.add(id);
   return id;
 }

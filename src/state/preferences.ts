@@ -30,6 +30,10 @@ interface PreferencesState {
   focusMode: boolean;
   /** 打字机模式：光标行保持屏幕垂直居中 */
   typewriterMode: boolean;
+  /** 自动配对括号与反引号（不配对引号，避免中文书写时被打断） */
+  autoCloseBrackets: boolean;
+  /** 拼写检查（WebView2 原生；默认关，中文文档满屏波浪线） */
+  spellcheck: boolean;
   /** 导出主题：跟随当前 / 固定浅色 / 固定深色 */
   exportTheme: "auto" | "light" | "dark";
   /** 导出正文限宽（960px 居中） */
@@ -64,6 +68,8 @@ const EDITOR_KEYS = new Set([
   "tabWidth",
   "focusMode",
   "typewriterMode",
+  "autoCloseBrackets",
+  "spellcheck",
 ]);
 
 let saveTimer: number | null = null;
@@ -85,6 +91,8 @@ function toDisk(state: PreferencesState): Record<string, unknown> {
     editorImageFolder: state.imageFolder,
     isFocusModeEnabled: state.focusMode,
     isTypewriterModeEnabled: state.typewriterMode,
+    isAutoCloseBracketsEnabled: state.autoCloseBrackets,
+    isSpellcheckEnabled: state.spellcheck,
     exportTheme: state.exportTheme,
     isExportNarrow: state.exportNarrow,
     isExportCodeLineNumbers: state.exportCodeLineNumbers,
@@ -141,6 +149,9 @@ export const usePreferences = create<PreferencesState>((set) => ({
   imageFolder: "assets",
   focusMode: false,
   typewriterMode: false,
+  // 括号配对默认开（输入手感刚需）；拼写检查默认关（中文文档满屏红波浪线）
+  autoCloseBrackets: true,
+  spellcheck: false,
   exportTheme: "auto",
   exportNarrow: false,
   exportCodeLineNumbers: false,
@@ -203,6 +214,12 @@ export const usePreferences = create<PreferencesState>((set) => ({
     }
     if (typeof disk.isTypewriterModeEnabled === "boolean") {
       patch.typewriterMode = disk.isTypewriterModeEnabled;
+    }
+    if (typeof disk.isAutoCloseBracketsEnabled === "boolean") {
+      patch.autoCloseBrackets = disk.isAutoCloseBracketsEnabled;
+    }
+    if (typeof disk.isSpellcheckEnabled === "boolean") {
+      patch.spellcheck = disk.isSpellcheckEnabled;
     }
     if (
       disk.exportTheme === "auto" ||

@@ -672,6 +672,32 @@ ${fontFaceBlock}  html { color-scheme: ${tokens.scheme}; ${tokens.synVars ?? ""}
   sub, sup { font-size: 0.72em; line-height: 0; }
   /* 选中态：随系统颜色，但保证不破坏布局 */
   ::selection { background: color-mix(in srgb, ${tokens.accent} 30%, transparent); }
+
+  /* ---------- 打印 / 导出 PDF（X-02） ----------
+     系统打印对话框走 window.print()，这里的规则同时作用于"打印"和
+     "Microsoft Print to PDF"两条路径：去背景与阴影、分页保护、页边距。 */
+  @media print {
+    @page { margin: 18mm 16mm; }
+    html, body { background: #fff !important; color: #1f2328 !important; }
+    article { padding: 0 !important; max-width: 100% !important; }
+    /* 分页：标题不落页尾、代码块/表格/图片/引用不跨页 */
+    h1, h2, h3, h4, h5, h6 { break-after: avoid; page-break-after: avoid; }
+    pre, table, blockquote, .mermaid-block, figure, img {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    pre { overflow: visible !important; }
+    /* 打印不显示滚动条与交互态 */
+    ::-webkit-scrollbar { display: none; }
+    a { color: inherit !important; text-decoration: none; }
+    /* 外链展开 URL，纸质版可追溯 */
+    a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 0.85em;
+      color: #6b7280;
+      word-break: break-all;
+    }
+  }
 </style>
 </head>
 <body>

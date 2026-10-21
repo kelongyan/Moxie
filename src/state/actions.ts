@@ -3,11 +3,17 @@ import { open, save } from "@tauri-apps/plugin-dialog";
 import { EditorView } from "@codemirror/view";
 import { baseName, isMarkdownPath, MARKDOWN_EXTENSIONS } from "../models/markdown";
 import { LineEnding } from "../models/encoding";
+import {
+  collectHeadingAnchors,
+  findAnchorLine,
+  headingAnchorsFromText,
+  resolveRelativeDocPath,
+} from "../editor/docLinks";
 import { activeDocument, useDocuments } from "../state/documents";
 import { resolveProfile } from "../state/performance";
 import { flushDocument, replaceContent, viewFor } from "../editor/registry";
 import { promptSaveChoice } from "../state/savePrompt";
-import { promptInput } from "../state/prompts";
+import { promptConfirm, promptInput } from "../state/prompts";
 import { usePreferences } from "../state/preferences";
 import { useSidebar } from "../state/sidebar";
 import { markSelfWrite, syncWatchedDirs } from "../state/externalWatch";
@@ -234,6 +240,104 @@ export async function reloadFromDiskAction(
   if (!doc || doc.path !== path) return false;
   await reloadFromDisk(docId, path);
   return true;
+}
+
+// ---------- 文档内跳转（锚点 / 相对路径链接） ----------
+
+/** 把光标移到指定行并居中（锚点跳转与相对链接打开后定位共用） */
+export function jumpToLine(docId: string, line: number): boolean {
+  const view = viewFor(docId);
+  if (!view) return false;
+  const target = Math.min(Math.max(1, line), view.state.doc.lines);
+  const pos = view.state.doc.line(target).from;
+  view.dispatch({
+    selection: { anchor: pos },
+    effects: EditorView.scrollIntoView(pos, { y: "center" }),
+  });
+  view.focus();
+  return true;
+}
+
+/** Ctrl+点击 `#锚点`：按导出侧同款 slug 规则在当前文档定位标题 */
+export function jumpToAnchorAction(docId: string, anchor: string): boolean {
+  const view = viewFor(docId);
+  if (!view) return false;
+  const hit = findAnchorLine(collectHeadingAnchors(view.state), anchor);
+  if (!hit) {
+    useDocuments
+      .getState()
+      .setStatus({ text: `未找到锚点「${anchor}」`, kind: "error" });
+    return false;
+  }
+  return jumpToLine(docId, hit.line);
+}
+
+/** Ctrl+点击相对路径链接：按当前文档目录解析，Markdown 走 openPathAction */
+export async function openDocLinkAction(
+  docId: string,
+  href: string,
+  anchor: string | null
+): Promise<boolean> {
+  const doc = useDocuments.getState().documents.find((d) => d.id === docId);
+  if (!doc) return false;
+  const baseDir = doc.path ? directoryOf(doc.path) : null;
+  const target = resolveRelativeDocPath(baseDir, href);
+  if (!target) {
+    useDocuments.getState().setStatus({
+      text: "请先保存文档，再使用相对路径链接",
+      kind: "error",
+    });
+    return false;
+  }
+  if (!isMarkdownPath(target)) {
+    useDocuments.getState().setStatus({
+      text: "Moxie 仅支持跳转到 Markdown 文档",
+      kind: "error",
+    });
+    return false;
+  }
+  // 目标文档已在标签里打开时 openPathAction 返回 false（只做 setActive），
+  // 此时锚点仍要跳——先按路径找已开文档，没有再走打开流程
+  const alreadyOpen = useDocuments
+    .getState()
+    .documents.find((d) => d.path === target);
+  if (alreadyOpen) {
+    useDocuments.getState().setActive(alreadyOpen.id);
+  } else if (!(await openPathAction(target))) {
+    return false;
+  }
+  if (!anchor) return true;
+  const openedDoc = activeDocument();
+  if (!openedDoc) return true;
+  const view = viewFor(openedDoc.id);
+  if (view) {
+    jumpToAnchorAction(openedDoc.id, anchor);
+  } else {
+    // 视图尚未就绪：先记下光标行，EditorPane 建视图时按 cursorLine 定位
+    const hit = findAnchorLine(headingAnchorsFromText(openedDoc.text), anchor);
+    if (hit) useDocuments.getState().setCursor(openedDoc.id, hit.line, 1);
+  }
+  return true;
+}
+
+/** 菜单「从磁盘重新载入」：脏文档先确认（丢弃本地修改），未保存文档不适用 */
+export async function reloadActiveFromDiskAction(): Promise<boolean> {
+  const doc = activeDocument();
+  if (!doc || !doc.path) return false;
+  flushDocument(doc.id);
+  const current = useDocuments
+    .getState()
+    .documents.find((d) => d.id === doc.id);
+  if (!current) return false;
+  if (current.isDirty) {
+    const ok = await promptConfirm(
+      "从磁盘重新载入",
+      `“${current.name}”有未保存的更改，重新载入将丢弃这些修改。`,
+      "重新载入"
+    );
+    if (!ok) return false;
+  }
+  return reloadFromDiskAction(current.id, current.path!);
 }
 
 export async function saveDocumentAction(docId: string): Promise<boolean> {

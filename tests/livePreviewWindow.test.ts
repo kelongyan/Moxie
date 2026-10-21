@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EditorState, Range } from "@codemirror/state";
 import { Decoration } from "@codemirror/view";
+import { ensureSyntaxTree } from "@codemirror/language";
 import { markdownExtensions } from "../src/editor/languages";
 import { computeLiveRanges } from "../src/editor/livePreview";
 import {
@@ -84,6 +85,10 @@ describe("computeLiveRanges 视口窗口化", () => {
   it("内核区装饰与全量计算完全一致", () => {
     const doc = buildDoc(500);
     const state = stateOf(doc);
+    // 预热语法树：computeLiveRanges 内部 ensureSyntaxTree 有 120ms 预算，
+    // 整套并发跑时可能被截断，导致"全量"反而比窗口少装饰（既有 flaky）。
+    // 先把整棵树解析完，比较的就是纯装饰逻辑。
+    ensureSyntaxTree(state, state.doc.length, 60_000);
     const all = computeLiveRanges(state, state.doc.length, RESOLVE_ALL);
 
     const win = { from: state.doc.line(600).from, to: state.doc.line(1100).to };

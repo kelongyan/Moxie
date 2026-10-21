@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EditorState } from "@codemirror/state";
-import { syntaxTree } from "@codemirror/language";
+import { syntaxTree, ensureSyntaxTree } from "@codemirror/language";
 import { markdownExtensions } from "../src/editor/languages";
 import { highlightExtension } from "../src/editor/highlightTheme";
 import { computeLiveRanges, frontmatterRange } from "../src/editor/livePreview";
@@ -25,6 +25,9 @@ function stateOf(doc: string) {
 /** 顶层节点（Document 直接子节点）名 */
 function topLevelNames(doc: string): string[] {
   const state = stateOf(doc);
+  // syntaxTree() 拿到的是可能被解析预算截断的树；整套并发跑时会被截断，
+  // 导致末尾段落缺失（既有 flaky）。先按充裕预算把整棵树解析完。
+  ensureSyntaxTree(state, state.doc.length, 60_000);
   const names: string[] = [];
   syntaxTree(state).iterate({
     enter: (it) => {

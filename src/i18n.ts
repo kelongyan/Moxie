@@ -33,6 +33,12 @@ const en: Record<string, string> = {
   "专注模式": "Focus mode",
   "段落外的行降低透明度": "Dim lines outside the paragraph",
   "打字机模式": "Typewriter mode",
+  "自动配对括号": "Auto-close brackets",
+  "输入括号与反引号时自动补全右半，Backspace 可成对删除":
+    "Insert the closing bracket automatically; Backspace removes the pair",
+  "拼写检查": "Spell check",
+  "使用系统拼写检查；中文文档建议关闭":
+    "Use the system spell checker; turn off for Chinese documents",
   "光标行始终垂直居中": "Keep the cursor line centered",
   "图片保存目录": "Image folder",
   "粘贴或拖入图片的存放目录": "Folder for pasted or dropped images",
