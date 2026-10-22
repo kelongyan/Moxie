@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import appSource from "../src/App.tsx?raw";
 import toolbarSource from "../src/components/TitleToolbar.tsx?raw";
+import tabBarSource from "../src/components/TabBar.tsx?raw";
 
 /**
  * 标签栏曾在顶栏 Typora 化重构（6faf7ad）中被摘掉挂载点：组件与整套样式都留在仓库里，
@@ -20,5 +21,16 @@ describe("标签栏挂载点", () => {
     expect(toolbarSource).toContain("sidebar-toggle");
     expect(toolbarSource).toContain("app-menu-btn");
     expect(toolbarSource).toContain('aria-label="最小化"');
+  });
+
+  it("顶栏配置深层拖拽与控件排除，确保全栏（含无文件时）可丝滑拖拽移动", () => {
+    // 根容器必须标记 deep，以便整棵子树直接冒泡到 Tauri 原生 drag.js
+    expect(toolbarSource).toContain('data-tauri-drag-region="deep"');
+    // 窗口控制区域与标签本身显式禁止拖拽
+    expect(toolbarSource).toContain('className="window-controls" data-tauri-drag-region="false"');
+    expect(tabBarSource).toContain('data-tauri-drag-region="false"');
+    // 子容器不可携带 bare data-tauri-drag-region，否则会提前截断 deep 冒泡判定
+    expect(tabBarSource).not.toMatch(/className="tab-bar"[^>]*data-tauri-drag-region(?!=)/);
+    expect(tabBarSource).not.toMatch(/className="tab-scroll"[^>]*data-tauri-drag-region(?!=)/);
   });
 });

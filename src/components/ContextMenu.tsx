@@ -61,6 +61,7 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
     <div
       ref={ref}
       className="context-menu"
+      data-tauri-drag-region="false"
       style={{ left: clampedX, top: clampedY }}
       role="menu"
       onKeyDown={onListKeyDown}

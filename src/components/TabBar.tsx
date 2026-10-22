@@ -174,6 +174,7 @@ export function TabBar() {
         )}
         <span
           data-tab-id={doc.id}
+          data-tauri-drag-region="false"
           className={
             "tab" + (selected ? " selected" : "") + (dragIndex === index ? " dragging" : "")
           }
@@ -230,11 +231,10 @@ export function TabBar() {
   const count = documents.length;
 
   return (
-    <div className="tab-bar" ref={barRef} data-tauri-drag-region>
+    <div className="tab-bar" ref={barRef}>
       <div
         className="tab-scroll"
         ref={scrollRef}
-        data-tauri-drag-region
         onDragOver={(e) => {
           if (dragIndex !== null) e.preventDefault();
         }}
@@ -255,7 +255,7 @@ export function TabBar() {
         <Plus size={14} />
       </button>
       {/* 拖拽区放在滚动容器之外：既不会被裁掉，也不随标签滚动 */}
-      <span className="tab-end-zone" data-tauri-drag-region />
+      <span className="tab-end-zone" />
       {menu && (
         <ContextMenu
           x={menu.x}

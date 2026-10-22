@@ -232,6 +232,20 @@ body {
   background: var(--lac-bg-chrome);
   border-bottom: 1px solid var(--lac-border);
   user-select: none;
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.title-toolbar button,
+.title-toolbar input,
+.title-toolbar select,
+.title-toolbar textarea,
+.title-toolbar .tab,
+.title-toolbar .window-controls,
+.title-toolbar .context-menu,
+.title-toolbar [data-tauri-drag-region="false"] {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 /* 顶栏中段：标签栏容器 */

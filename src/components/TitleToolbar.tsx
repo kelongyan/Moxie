@@ -65,7 +65,7 @@ function WindowControls() {
   }, []);
 
   return (
-    <div className="window-controls">
+    <div className="window-controls" data-tauri-drag-region="false">
       <button aria-label="最小化" onClick={() => call("最小化", () => appWindow.minimize())}>
         <Minus size={12} />
       </button>
@@ -253,10 +253,14 @@ export function TitleToolbar({
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
+    if (e.defaultPrevented || e.button !== 0) return;
     const target = e.target as HTMLElement | null;
     if (!target) return;
-    if (target.closest("button, input, select, textarea, .tab, .context-menu, [data-no-drag]")) {
+    if (
+      target.closest(
+        "button, input, select, textarea, .tab, .context-menu, [data-no-drag], [data-tauri-drag-region='false']"
+      )
+    ) {
       return;
     }
     if (e.detail === 2) {
@@ -267,7 +271,7 @@ export function TitleToolbar({
   };
 
   return (
-    <header className="title-toolbar" data-tauri-drag-region onMouseDown={handleMouseDown}>
+    <header className="title-toolbar" data-tauri-drag-region="deep" onMouseDown={handleMouseDown}>
       {/* 单行顶栏：左上角侧栏弹出/隐藏开关，标签栏随后占满中段，右角 应用菜单 / 窗口控制 */}
       <Tooltip label={sidebarPinned ? "收起侧栏" : "弹出侧栏"} shortcut="Ctrl+Shift+B">
         <button
