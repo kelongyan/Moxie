@@ -350,6 +350,22 @@ fn a_skill_says_its_modes_and_its_names() {
 }
 
 #[test]
+fn a_skill_from_the_catalog_keeps_its_modes_labels_and_aliases() {
+    // The catalog's skill files carry the key prefix from before the rename;
+    // reading only the new one would quietly drop all three.
+    use crate::ai::agent::AgentMode;
+    let skill = parse_skill_file(
+        "x",
+        "---\nname: x\nmetadata:\n  textus-version: \"1.0.0\"\n  textus-modes: \"write, review\"\n  textus-label-zh: \"学术润色\"\n  textus-hint-zh: \"润色论文\"\n  textus-aliases-zh: \"学术, 论文润色\"\n---\nbody",
+    );
+    assert_eq!(skill.modes, [AgentMode::Review, AgentMode::Write]);
+    assert_eq!(skill.version.as_deref(), Some("1.0.0"));
+    assert_eq!(skill.labels["zh"].label, "学术润色");
+    assert_eq!(skill.labels["zh"].hint, "润色论文");
+    assert_eq!(skill.aliases["zh"], ["学术", "论文润色"]);
+}
+
+#[test]
 fn a_skill_written_in_a_reply_is_saved_with_its_modes_and_updated_in_place() {
     use crate::ai::agent::AgentMode;
     let root = scratch("written");

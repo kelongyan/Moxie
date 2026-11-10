@@ -4,8 +4,20 @@
 
 use super::*;
 
-/// The prefix of the app's own keys under a skill's `metadata:`.
+/// The prefix of the app's own keys under a skill's `metadata:`, written
+/// from here on.
 pub(crate) const META_PREFIX: &str = "moxie";
+
+/// The prefix the catalog's skill files still carry, from before the rename:
+/// read so an installed skill keeps its modes, labels and aliases.
+const LEGACY_META_PREFIX: &str = "textus";
+
+/// `key` without either prefix, so a caller can look for `-label-` after it.
+fn strip_meta_prefix(key: &str) -> Option<&str> {
+    [META_PREFIX, LEGACY_META_PREFIX]
+        .into_iter()
+        .find_map(|prefix| key.strip_prefix(prefix))
+}
 
 pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
     let (frontmatter, body) = split_frontmatter(content);
@@ -29,8 +41,9 @@ pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
         skill.invocation = Invocation::UserOnly;
     }
     let meta = |key: &str| {
-        fm.metadata
-            .get(&format!("{META_PREFIX}-{key}"))
+        [META_PREFIX, LEGACY_META_PREFIX]
+            .into_iter()
+            .find_map(|prefix| fm.metadata.get(&format!("{prefix}-{key}")))
             .map(|v| v.trim())
             .filter(|v| !v.is_empty())
     };
@@ -43,9 +56,7 @@ pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
     }
     skill.category = meta("category").map(str::to_string);
     for (key, value) in &fm.metadata {
-        let Some(lang) = key
-            .strip_prefix(META_PREFIX)
-            .and_then(|k| k.strip_prefix("-label-"))
+        let Some(lang) = strip_meta_prefix(key).and_then(|k| k.strip_prefix("-label-"))
         else {
             continue;
         };
@@ -82,7 +93,7 @@ pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
     skill.packs = words(meta("packs"));
     skill.target_packs = words(meta("target-packs"));
     let alias_keys = fm.metadata.iter().filter_map(|(key, value)| {
-        let lang = key.strip_prefix(META_PREFIX)?.strip_prefix("-aliases-")?;
+        let lang = strip_meta_prefix(key)?.strip_prefix("-aliases-")?;
         Some((lang, value))
     });
     for (lang, value) in alias_keys {
