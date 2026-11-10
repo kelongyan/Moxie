@@ -91,7 +91,7 @@ const labels = {
   webSearch: "Web search",
   deepThinking: "Deep thinking",
   deepThinkingHint:
-    "Deep thinking: when it's on, Textus AI thinks longer before it answers",
+    "Deep thinking: when it's on, Moxie AI thinks longer before it answers",
   toggleOnHint: "{label} (On - click again to turn it off)",
   webSearchNeedsService: "Choose a search service",
 };
@@ -498,7 +498,7 @@ describe("ChatComposer Deep thinking", () => {
   });
 
   it("has no button, and no Deep, for a model that can't think deeper", () => {
-    localStorage.setItem("textus-agent-deep-thinking", "1");
+    localStorage.setItem("moxie-agent-deep-thinking", "1");
     canThinkDeeper = false;
     const { onSend } = renderComposer();
     expect(screen.queryByRole("button", { name: "Deep thinking" })).toBeNull();
@@ -517,7 +517,7 @@ describe("ChatComposer Deep thinking", () => {
   });
 
   it("asks Quick Ask's model for a fast answer, with no button", () => {
-    localStorage.setItem("textus-agent-deep-thinking", "1");
+    localStorage.setItem("moxie-agent-deep-thinking", "1");
     const onSend = vi.fn();
     render(
       <ChatComposer

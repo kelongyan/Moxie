@@ -3,7 +3,7 @@ import { setEditorHeld } from "../document/editor-held";
 import { undecidedIn } from "../document/undecided";
 import type { PendingStatus } from "../ai/revision/usePendingEdits";
 
-/** Keeps a hidden tab's editor loaded while anything of Textus AI's lives
+/** Keeps a hidden tab's editor loaded while anything of Moxie AI's lives
  *  in it, or changes in it wait to be decided. */
 export function useHeldWhileBusy({
   tabId,

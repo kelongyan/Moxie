@@ -15,7 +15,7 @@ export interface CreateRequest {
 }
 
 /** Asks the window to open Settings at Extensions › Create. */
-export const OPEN_CREATE_EVENT = "textus-open-create";
+export const OPEN_CREATE_EVENT = "moxie-open-create";
 
 let pending: CreateRequest | null = null;
 const takers = new Set<() => void>();

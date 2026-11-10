@@ -48,7 +48,7 @@ const PLUGIN = {
     name: "Remind",
     version: "1.0.0",
     publisher: "test",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     background: "background.js",
     activationEvents: ["onStartupFinished"],
@@ -137,7 +137,7 @@ test("the first job with background mode off says so once, with a way to turn it
   await open(page, ["notifications", "background", "files.read"]);
   await setJobs(page);
   const notice = page.getByText(
-    "Remind scheduled something. It only runs while Textus is running",
+    "Remind scheduled something. It only runs while Moxie is running",
     { exact: false },
   );
   await expect(notice).toBeVisible();
@@ -169,7 +169,7 @@ test("a job's run calls the background code, which has no editor", async ({
     ]);
 });
 
-test("a plugin hears Textus go behind and come back", async ({ page }) => {
+test("a plugin hears Moxie go behind and come back", async ({ page }) => {
   await open(page, ["notifications", "background", "files.read"]);
   await page.evaluate(() =>
     (window as unknown as Shim).__devSchedule.setAppState("inactive"),

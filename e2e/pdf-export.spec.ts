@@ -87,7 +87,7 @@ test("no block taller than a page runs into a page's top or bottom margin", asyn
     // Every box in the document - each piece of a cut block, its lines,
     // rows and highlighted spans - must sit inside one page's text area.
     for (const el of Array.from(root.querySelectorAll("*"))) {
-      if (el.closest(".textus-page-spacer")) continue;
+      if (el.closest(".moxie-page-spacer")) continue;
       const rect = el.getBoundingClientRect();
       if (rect.height === 0 || rect.width === 0) continue;
       const top = rect.top + scrollY;
@@ -110,7 +110,7 @@ test("no block taller than a page runs into a page's top or bottom margin", asyn
       listStarts: Array.from(root.querySelectorAll("ol")).map((ol) => ol.start),
       // The numbers drawn: the editor's counter, one before each piece's first.
       listCounters: Array.from(root.querySelectorAll("ol")).map(
-        (ol) => Number(ol.style.getPropertyValue("--textus-ol-start") || 0) + 1,
+        (ol) => Number(ol.style.getPropertyValue("--moxie-ol-start") || 0) + 1,
       ),
       codeText: Array.from(root.querySelectorAll("pre"))
         .map((pre) => pre.textContent)

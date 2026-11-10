@@ -51,7 +51,7 @@ const RICH_HTML_SELECTOR = [
 function htmlIsStyledPlainText(html: string): boolean {
   const template = document.createElement("template");
   template.innerHTML = html;
-  // Textus's own node types mark their wrappers with data-type: that's node
+  // Moxie's own node types mark their wrappers with data-type: that's node
   // data, and re-parsing their plain text would drop math formulas.
   if (template.content.querySelector("[data-type]")) return false;
   return !template.content.querySelector(RICH_HTML_SELECTOR);
@@ -98,7 +98,7 @@ const keepsItsShape = (node: ProseNode | null) =>
   !!node && WHOLE_BLOCKS.has(node.type.name);
 
 /** Opened, a quote or code block was poured into the line: a quote starting
- *  with a list lost its quote, and code became text. Copies from Textus
+ *  with a list lost its quote, and code became text. Copies from Moxie
  *  keep it only on an empty line, as a piece of code pasted into text is
  *  text. A table cell holds one paragraph, so there it stays poured. */
 export function keepPastedBlock(
@@ -144,7 +144,7 @@ export const pasteMarkdownSourcePlugin = $prose(
   (ctx) =>
     new Plugin({
       props: {
-        // Pasted HTML, Textus's own copies and drags: ProseMirror's slice, which
+        // Pasted HTML, Moxie's own copies and drags: ProseMirror's slice, which
         // the clipboard plugin pastes as it is.
         transformPasted: (slice, view) =>
           joinLinesForTableCell(

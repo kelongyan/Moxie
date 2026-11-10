@@ -16,7 +16,7 @@ async function review(page: Page, anchors: string[]) {
   await page.setViewportSize({ width: 1100, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "original" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `${PARA}\n\n${NEXT}`);
   await mockInvoke(page, {

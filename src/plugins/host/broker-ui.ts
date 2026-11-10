@@ -20,7 +20,7 @@ function tone(value: unknown): "info" | "warning" | "error" {
 }
 
 /**
- * A plugin's commands and the dialogs it asks for, drawn as Textus draws its
+ * A plugin's commands and the dialogs it asks for, drawn as Moxie draws its
  * own and titled with the plugin's name so the user knows who is asking. No
  * permission needed.
  */

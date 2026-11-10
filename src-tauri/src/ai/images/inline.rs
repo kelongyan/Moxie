@@ -1,7 +1,7 @@
 //! Pictures written into new text: each is a line of its own in the proposed
-//! text, `![alt](textus-picture:16:9 what it shows)`, and starts being made the
+//! text, `![alt](moxie-picture:16:9 what it shows)`, and starts being made the
 //! moment its line has streamed in. Placed, the lines become
-//! `![alt](textus-generated:ID)` as for any other picture.
+//! `![alt](moxie-generated:ID)` as for any other picture.
 
 use super::{placeholder_src, ImageRun};
 use crate::ai::agent::StreamEvent;
@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 /// The src of a picture line. Keep in step with the frontend's `PICTURE_LINE`.
-pub(super) const PICTURE_SCHEME: &str = "textus-picture:";
+pub(super) const PICTURE_SCHEME: &str = "moxie-picture:";
 
 /// One picture line read: its alt text, the description it is made from,
 /// its shape, and the src of the picture it is drawn like (or "").
@@ -25,7 +25,7 @@ struct PictureLine<'a> {
     like: &'a str,
 }
 
-/// `line` as a picture line, if it is one: `![alt](textus-picture:` then
+/// `line` as a picture line, if it is one: `![alt](moxie-picture:` then
 /// an optional aspect, an optional `like:SRC`, and the description, up to
 /// the line's last `)` (a description may have parentheses of its own).
 fn picture_line(line: &str) -> Option<PictureLine<'_>> {
@@ -310,7 +310,7 @@ fn partial_string(json: &str, key: &str) -> Option<(String, bool)> {
 mod tests;
 
 /// `text` with each picture line begun on `run` and placed as
-/// `![alt](textus-generated:ID)`, for text that didn't stream through a
+/// `![alt](moxie-generated:ID)`, for text that didn't stream through a
 /// request (a paper's sections). A line that can't be made - past the
 /// limit, or refused - is left out; why comes back with the text.
 pub(crate) fn place_pictures(run: &ImageRun, text: &str) -> (String, Vec<String>) {

@@ -1,5 +1,5 @@
 //! macOS: UNUserNotificationCenter. Its delegate hears the click, also one
-//! that launched Textus, and has notifications shown while Textus is in front
+//! that launched Moxie, and has notifications shown while Moxie is in front
 //! (the system hides them otherwise). The permission prompt comes with the
 //! first notification. An unbundled build (`tauri dev`) can't use the center
 //! at all - it throws - so there a notification is only logged.

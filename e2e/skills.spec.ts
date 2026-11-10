@@ -4,7 +4,7 @@ import { emit, openApp, PHONE, settled } from "./helpers";
 // The composer's `/` and `@` pickers and Settings' skills, against the dev
 // shim's 9 built-ins and one user skill in Write.
 
-const AI_NAME = "Textus AI";
+const AI_NAME = "Moxie AI";
 
 /** Opens the app with the AI panel open, in `language` and `mode`. */
 async function openWithPanel(
@@ -14,7 +14,7 @@ async function openWithPanel(
 ) {
   await openApp(page, {
     settings: { language, agentDefaultMode: mode },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const input = page.locator(".agent-panel .inline-chat-input");
   await expect(input).toBeVisible();
@@ -38,7 +38,7 @@ async function openSkillsTab(panel: Locator) {
   await panel.getByRole("tab", { name: "Skills" }).click();
 }
 
-/** Settings › Textus AI › Built-in skills, unfolded. */
+/** Settings › Moxie AI › Built-in skills, unfolded. */
 async function openBuiltins(panel: Locator) {
   await panel.locator(".settings-nav-item", { hasText: AI_NAME }).click();
   const builtins = panel.locator(".settings-builtin-skills");
@@ -59,7 +59,7 @@ test.describe("Settings › Extensions › Skills", () => {
     await input.fill("");
     const panel = await openSettings(page);
     // No switch on a built-in: it says it is built in, under its mode, with
-    // Textus AI's settings rather than among the skills added.
+    // Moxie AI's settings rather than among the skills added.
     const builtins = await openBuiltins(panel);
     const proofread = builtins.locator('[data-skill="proofread"]');
     await expect(proofread).toContainText("Built-in");

@@ -13,7 +13,7 @@ const CLIP_CHARS: usize = 1_500;
 const RECENT_MESSAGES: usize = 6;
 
 /// What the pass is told - the same for every provider.
-const PASS_INSTRUCTIONS: &str = r#"You keep the memory of Textus AI, a writing assistant: what should still hold in the user's later conversations. You are shown the newest exchange of a conversation - the user's messages (the last one is new) and the assistant's reply - and what is already remembered. Answer with the changes to make, as JSON only.
+const PASS_INSTRUCTIONS: &str = r#"You keep the memory of Moxie AI, a writing assistant: what should still hold in the user's later conversations. You are shown the newest exchange of a conversation - the user's messages (the last one is new) and the assistant's reply - and what is already remembered. Answer with the changes to make, as JSON only.
 
 What to keep:
 - requirement: something the user wants always or never done ("from now on", "always", "never", a rule of their style guide or house style).
@@ -224,7 +224,7 @@ impl MemoryDirs {
             .collect()
     }
 
-    /// A memory, or a library entry Textus AI wrote, taken back: deleted,
+    /// A memory, or a library entry Moxie AI wrote, taken back: deleted,
     /// with what it was for Undo to put back.
     pub(crate) fn forget(&self, id: &str) -> Result<Remembering, String> {
         let loc = self.locate(id)?;

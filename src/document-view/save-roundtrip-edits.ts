@@ -132,7 +132,7 @@ export function makeEdit(
       // A word and a space, on the side of it that has none.
       const before = doc.resolve(at).nodeBefore;
       const spaced = !before || (before.isText && before.text!.endsWith(" "));
-      view.dispatch(state.tr.insertText(spaced ? "Textus " : " Textus", at));
+      view.dispatch(state.tr.insertText(spaced ? "Moxie " : " Moxie", at));
       return { touched: [topIndex(doc, at)] };
     }
     case "delete-word": {
@@ -184,7 +184,7 @@ export function makeEdit(
       });
       if (!ends.length) return null;
       const at = pick(rand, ends);
-      view.dispatch(state.tr.insertText(" Textus", at));
+      view.dispatch(state.tr.insertText(" Moxie", at));
       return { touched: [topIndex(doc, at)] };
     }
     case "insert-heading": {

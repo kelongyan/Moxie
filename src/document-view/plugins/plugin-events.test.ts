@@ -40,7 +40,7 @@ describe("the source plugins are told of a change", () => {
     expect(told).toEqual(["user", "history"]);
   });
 
-  it("is a plugin for edits through its API, and AI where Textus AI marks it", async () => {
+  it("is a plugin for edits through its API, and AI where Moxie AI marks it", async () => {
     const { told, act } = await setUp();
     act((ctx) => applyPluginEdits(ctx, [{ action: "append", text: "three" }]));
     act((ctx) => replaceDocument(ctx, "one\n\nfour\n"));

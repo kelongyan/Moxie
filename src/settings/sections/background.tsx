@@ -34,7 +34,7 @@ function useBackgroundStatus(): BackgroundStatus | null {
   return status;
 }
 
-/** Settings › General › App: whether closing the last window leaves Textus
+/** Settings › General › App: whether closing the last window leaves Moxie
  *  running with a tray icon. Off by default; desktop only. */
 export function BackgroundSection({ t }: { t: Strings }) {
   const { settings, setSettings } = useSettings();

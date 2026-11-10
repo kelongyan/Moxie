@@ -56,7 +56,7 @@ vi.mock("../../ai/chat/chat-labels", () => ({
 }));
 vi.mock("../../prefs/SettingsContext", () => ({
   useSettings: () => ({
-    settings: { aiProvider: "x", agentModels: {}, textusAi: true },
+    settings: { aiProvider: "x", agentModels: {}, moxieAi: true },
   }),
 }));
 vi.mock("../../platform/ipc", () => ({

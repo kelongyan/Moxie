@@ -51,7 +51,7 @@ import {
 import { $inputRule } from "@milkdown/kit/utils";
 import { isLinuxPlatform } from "../../platform/os";
 
-// The stock commonmark/gfm presets minus what Textus replaces or must avoid:
+// The stock commonmark/gfm presets minus what Moxie replaces or must avoid:
 // - bold/italic/strike/inline code marks: md_span nodes instead;
 // - remarkPreserveEmptyLinePlugin: it saved empty paragraphs as `<br />`;
 // - htmlSchema: replaced by a real-text node, and the parser takes the first

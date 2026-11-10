@@ -153,13 +153,13 @@ test("a reply for text that has changed since is dropped, even with the caret wh
   await expect(ghost).toHaveCount(1);
 });
 
-test("a reply landing while a Textus AI edit is on show is dropped", async ({
+test("a reply landing while a Moxie AI edit is on show is dropped", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await holdCompletions(page);
   await pasteMarkdown(page, ORIGINAL);

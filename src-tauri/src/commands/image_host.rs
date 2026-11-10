@@ -322,7 +322,7 @@ pub async fn upload_image(
     // PicGo reads the image from a file named as it will be uploaded, in a
     // private folder removed when `folder` drops.
     let mut folder = (preset.body == Body::PathList)
-        .then(|| TempDir::create("textus-upload-"))
+        .then(|| TempDir::create("moxie-upload-"))
         .transpose()
         .map_err(|e| e.to_string())?;
     let path = match &mut folder {

@@ -1,6 +1,6 @@
-//! What Textus AI makes for a project folder - its memories and research
-//! papers - kept in Textus's own config folder, not the user's:
-//! `<config>/textus/projects/<key>/`. The project's `.textus/` keeps only
+//! What Moxie AI makes for a project folder - its memories and research
+//! papers - kept in Moxie's own config folder, not the user's:
+//! `<config>/textus/projects/<key>/`. The project's `.moxie/` keeps only
 //! what the user writes (agent.md, skills, style profile, library).
 
 use crate::ai::workspace::project_dir;
@@ -29,8 +29,8 @@ pub(crate) fn dir(global: &Path, root: &Path) -> PathBuf {
     global.join(PROJECTS).join(key(root))
 }
 
-/// `sub` of the project's data folder. What an older Textus kept in
-/// `<root>/.textus/<sub>` moves there the first time; where it can't be
+/// `sub` of the project's data folder. What an older Moxie kept in
+/// `<root>/.moxie/<sub>` moves there the first time; where it can't be
 /// moved it is copied, and the original left as it was.
 pub(crate) fn adopt(global: &Path, root: &Path, sub: &str) -> PathBuf {
     let to = dir(global, root).join(sub);
@@ -38,7 +38,7 @@ pub(crate) fn adopt(global: &Path, root: &Path, sub: &str) -> PathBuf {
     if from.is_dir() && !to.exists() {
         if let Err(e) = move_dir(&from, &to) {
             eprintln!(
-                "textus: could not move {} to {}: {e}",
+                "moxie: could not move {} to {}: {e}",
                 from.display(),
                 to.display()
             );
@@ -85,7 +85,7 @@ mod tests {
 
     #[test]
     fn what_an_older_textus_kept_in_the_folder_moves_out() {
-        let tmp = std::env::temp_dir().join(format!("textus-pdata-{}", std::process::id()));
+        let tmp = std::env::temp_dir().join(format!("moxie-pdata-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&tmp);
         let root = tmp.join("novel");
         let global = tmp.join("config/textus");

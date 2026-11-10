@@ -123,9 +123,9 @@ for (const lang of LANGS) {
           library: s.library,
         },
         storage: {
-          "textus-agent-panel-open": "1",
+          "moxie-agent-panel-open": "1",
           ...(s.panelWidth
-            ? { "textus-agent-panel-width": String(s.panelWidth) }
+            ? { "moxie-agent-panel-width": String(s.panelWidth) }
             : {}),
         },
       });
@@ -271,8 +271,8 @@ for (const lang of LANGS) {
         settings: { zoom: TOUR_ZOOM },
         // Its outline open in the sidebar, as a long document is written.
         storage: {
-          "textus-sidebar-open": "1",
-          "textus-sidebar-tab": "outline",
+          "moxie-sidebar-open": "1",
+          "moxie-sidebar-tab": "outline",
         },
       });
       const doc = page.locator('[data-active-tab="true"] .milkdown');
@@ -299,7 +299,7 @@ for (const lang of LANGS) {
       await caretAtEnd(page);
       await emit(page, "menu-open-settings");
       await page
-        .locator(".settings-nav-item", { hasText: "Textus AI" })
+        .locator(".settings-nav-item", { hasText: "Moxie AI" })
         .click();
       await page.locator(".provider-picker .combobox-trigger").click();
       await expect(page.locator(".combobox-option")).toHaveCount(

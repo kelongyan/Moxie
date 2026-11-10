@@ -17,7 +17,7 @@ async function keyField(page: Page) {
   });
   await emit(page, "menu-open-settings");
   const panel = page.getByRole("dialog", { name: "Settings" });
-  await panel.getByRole("button", { name: "Textus AI", exact: true }).click();
+  await panel.getByRole("button", { name: "Moxie AI", exact: true }).click();
   await panel.getByRole("combobox", { name: "Search service" }).click();
   await page.getByRole("option", { name: "Tavily" }).click();
   return { panel, field: panel.getByLabel("Tavily API key") };

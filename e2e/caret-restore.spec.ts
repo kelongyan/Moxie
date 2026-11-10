@@ -76,7 +76,7 @@ test("a caret past the end of a file that got shorter lands at its end", async (
   await page.addInitScript(
     (path) =>
       localStorage.setItem(
-        "textus-last-carets",
+        "moxie-last-carets",
         JSON.stringify({ [path]: { offset: 99999, mtime: 1 } }),
       ),
     PATH,
@@ -124,7 +124,7 @@ test("a large document comes back at its caret too", async ({ page }) => {
     .poll(() => caretParagraph(page))
     .toBe("Paragraph 4100 of the story.");
   const stored = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("textus-last-carets") ?? "{}"),
+    JSON.parse(localStorage.getItem("moxie-last-carets") ?? "{}"),
   );
   expect(stored[PATH]).toEqual({ pos: expect.any(Number), mtime: 1 });
 });
@@ -138,7 +138,7 @@ test("File > Open Recent opens a document at its last caret", async ({
         [path]: doc,
       };
       localStorage.setItem(
-        "textus-last-carets",
+        "moxie-last-carets",
         JSON.stringify({
           [path]: { offset: doc.indexOf("Paragraph 50 ") + 5, mtime: 1 },
         }),

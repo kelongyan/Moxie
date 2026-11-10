@@ -13,7 +13,7 @@ import type { UserThemeMeta } from "./settings-values";
  * (its tokens) are left blank, and an import keeps this computer's own.
  */
 
-const FORMAT = "textus-settings";
+const FORMAT = "moxie-settings";
 
 /** Never leave this computer: they name its folders and network, or what
  *  it has already been through. */
@@ -21,7 +21,7 @@ export const DEVICE_SETTINGS = [
   "agentWorkspaceRoot",
   "onboardingShown",
   "languageChosen",
-  "textusAiResumeAt",
+  "moxieAiResumeAt",
   "proxyType",
   "proxyHost",
   "proxyPort",
@@ -112,7 +112,7 @@ function themeCssOf(value: unknown): ThemeCss {
 }
 
 /** The settings a file holds, over `current` where it says nothing, and the
- *  theme CSS to save; null for a file that isn't Textus settings. */
+ *  theme CSS to save; null for a file that isn't Moxie settings. */
 export function settingsFromFile(
   text: string,
   current: Settings,

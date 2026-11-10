@@ -5,7 +5,7 @@ import { ColorField, DateField } from "./plugin-form-fields";
 import "./plugin-form.css";
 
 /**
- * textus.ui.form: a few fields in one dialog, drawn as Textus draws its own, so
+ * textus.ui.form: a few fields in one dialog, drawn as Moxie draws its own, so
  * a plugin needs no webview to ask for them. Requests queue.
  */
 export type PluginFormField =

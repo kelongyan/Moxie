@@ -3,7 +3,7 @@ import type { Lang, Strings } from "../i18n/strings";
 import { links } from "../platform/ipc";
 import { isMacPlatform } from "../platform/os";
 import { ProviderListPanel } from "../settings/sections/providers";
-import { TextusAiOffNote } from "../ai/TextusAiSwitch";
+import { MoxieAiOffNote } from "../ai/MoxieAiSwitch";
 import { useSettings } from "../prefs/SettingsContext";
 import { practiceNotes } from "./practice-notes";
 import { isLessonComplete, isTaskDone } from "./tutorial-evaluation";
@@ -82,15 +82,15 @@ export function TutorialExperience({
   let controls: ReactNode = null;
   if (step.id === "connect") {
     status = phase >= 1 ? t.tutorialConnected : null;
-    // Nothing to connect while Textus AI is off: its lessons are watched.
-    controls = settings.textusAi ? (
+    // Nothing to connect while Moxie AI is off: its lessons are watched.
+    controls = settings.moxieAi ? (
       <ProviderListPanel
         t={t}
         expandCredentials
         onActiveConnectedChange={onConnectedChange}
       />
     ) : (
-      <TextusAiOffNote />
+      <MoxieAiOffNote />
     );
   } else if (step.id === "done") {
     note = t.tutorialDoneMemory;

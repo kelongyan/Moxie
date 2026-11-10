@@ -5,7 +5,7 @@
 use super::*;
 
 /// The prefix of the app's own keys under a skill's `metadata:`.
-pub(crate) const META_PREFIX: &str = "textus";
+pub(crate) const META_PREFIX: &str = "moxie";
 
 pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
     let (frontmatter, body) = split_frontmatter(content);
@@ -103,7 +103,7 @@ pub(crate) fn parse_skill_file(file_stem: &str, content: &str) -> AgentSkill {
     skill
 }
 
-/// Strips `<!-- -->` comments from a `.textus/` file or the global agent.md
+/// Strips `<!-- -->` comments from a `.moxie/` file or the global agent.md
 /// before it reaches a prompt. An unterminated comment swallows the rest, as
 /// HTML would.
 pub(crate) fn strip_html_comments(text: &str) -> String {
@@ -298,7 +298,7 @@ pub(crate) fn reset_in(skills_dir: &Path, name: &str) -> Result<Vec<String>, Str
     Ok(deleted)
 }
 
-/// `raw` with its `metadata:` key `textus-<key>` set to `value`: replaced, or
+/// `raw` with its `metadata:` key `moxie-<key>` set to `value`: replaced, or
 /// added under `metadata:`, adding that or the front matter when missing.
 pub(crate) fn with_metadata(raw: &str, key: &str, value: &str) -> String {
     let line = format!("  {META_PREFIX}-{key}: \"{value}\"");

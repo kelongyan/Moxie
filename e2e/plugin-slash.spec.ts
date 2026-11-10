@@ -23,7 +23,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "A / command.",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     permissions: ["editor.write"],
     contributes: {

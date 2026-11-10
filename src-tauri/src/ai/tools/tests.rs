@@ -608,17 +608,17 @@ fn propose_edit_refuses_a_clause_replaced_by_one_latin_token() {
     }
     let out = edit(
         &ctx("名称：乐维斯"),
-        r#"{"action":"replace","anchor":"乐维斯","text":"Textus"}"#,
+        r#"{"action":"replace","anchor":"乐维斯","text":"Moxie"}"#,
     );
     assert!(out.starts_with("Edit proposed"), "{out}");
 }
 
 #[test]
 fn a_second_proposal_for_the_same_passage_is_refused() {
-    let doc = ctx("Textus is great.\n\nTextus is fast.\n\nIt ships soon.");
-    let ctx2 = ctx("Textus is great.");
+    let doc = ctx("Moxie is great.\n\nMoxie is fast.\n\nIt ships soon.");
+    let ctx2 = ctx("Moxie is great.");
     let ctx = doc;
-    let first = r#"{"action":"replace","anchor":"Textus is great.","text":"Textus is good."}"#;
+    let first = r#"{"action":"replace","anchor":"Moxie is great.","text":"Moxie is good."}"#;
     assert!(edit(&ctx, first).starts_with("Edit proposed"));
     assert!(edit(&ctx, first).starts_with("Not proposed"));
     // Inside the first passage, too: the block it is in.
@@ -627,12 +627,12 @@ fn a_second_proposal_for_the_same_passage_is_refused() {
     // Another passage and an insertion beside the first stand.
     for args in [
         r#"{"action":"replace","anchor":"It ships soon.","text":"It ships in May."}"#,
-        r#"{"action":"insert_after","anchor":"Textus is great.","text":" Really."}"#,
+        r#"{"action":"insert_after","anchor":"Moxie is great.","text":" Really."}"#,
     ] {
         assert!(edit(&ctx, args).starts_with("Edit proposed"), "{args}");
     }
     // A refused call (words in no block) doesn't count as proposed.
-    let missing = r#"{"action":"replace","anchor":"Textus is slow.","text":"x"}"#;
+    let missing = r#"{"action":"replace","anchor":"Moxie is slow.","text":"x"}"#;
     assert!(edit(&ctx2, missing).starts_with("Not proposed"));
 }
 
@@ -648,19 +648,19 @@ fn the_size_note_counts_like_measure_text() {
 
 #[test]
 fn a_repeated_word_is_told_apart_by_its_block() {
-    let doc = ctx("Textus is great.\n\nTextus is fast.");
+    let doc = ctx("Moxie is great.\n\nMoxie is fast.");
     let fast = doc.document.blocks[1].id.clone();
     let out = propose_edit(
         &doc,
-        &json!({"action": "replace", "block": fast, "anchor": "Textus", "text": "It"}).to_string(),
+        &json!({"action": "replace", "block": fast, "anchor": "Moxie", "text": "It"}).to_string(),
     );
     assert!(out.starts_with("Edit proposed"), "{out}");
     // Twice in its block, it needs more words.
-    let twice = ctx("Textus is great, Textus is fast.");
+    let twice = ctx("Moxie is great, Moxie is fast.");
     let id = twice.document.blocks[0].id.clone();
     let out = propose_edit(
         &twice,
-        &json!({"action": "replace", "block": id, "anchor": "Textus", "text": "It"}).to_string(),
+        &json!({"action": "replace", "block": id, "anchor": "Moxie", "text": "It"}).to_string(),
     );
     assert!(out.contains("exactly once"), "{out}");
     // Without a block, document text isn't edited.
@@ -674,16 +674,16 @@ fn a_repeated_word_is_told_apart_by_its_block() {
 #[test]
 fn a_text_puts_each_picture_it_was_given_in_once() {
     let mut ledger = ProposalLedger::default();
-    assert_eq!(ledger.pictures_problem("![a](textus-generated:zz)"), None);
+    assert_eq!(ledger.pictures_problem("![a](moxie-generated:zz)"), None);
     ledger.add_picture("k3f9qz".into());
     ledger.add_picture("p08mxa".into());
-    let both = "One.\n\n![a](textus-generated:k3f9qz)\n\nTwo.\n\n![b](textus-generated:p08mxa)";
+    let both = "One.\n\n![a](moxie-generated:k3f9qz)\n\nTwo.\n\n![b](moxie-generated:p08mxa)";
     assert_eq!(ledger.pictures_problem(both), None);
-    let twice = "![a](textus-generated:k3f9qz)\n\n![b](textus-generated:k3f9qz)";
+    let twice = "![a](moxie-generated:k3f9qz)\n\n![b](moxie-generated:k3f9qz)";
     let why = ledger.pictures_problem(twice).unwrap();
     assert!(why.contains("twice") && why.contains("p08mxa"), "{why}");
     let wrong = ledger
-        .pictures_problem("![a](textus-generated:k3f9qy)")
+        .pictures_problem("![a](moxie-generated:k3f9qy)")
         .unwrap();
     assert!(wrong.contains("no picture of this request"), "{wrong}");
 }
@@ -693,7 +693,7 @@ fn a_result_says_its_picture_ids_are_textus_own() {
     let mut ledger = ProposalLedger::default();
     assert_eq!(ledger.pictures_placed("One."), "");
     ledger.add_picture("k3f9qz".into());
-    let note = ledger.pictures_placed("One.\n\n![a](textus-generated:k3f9qz)");
+    let note = ledger.pictures_placed("One.\n\n![a](moxie-generated:k3f9qz)");
     assert!(note.contains("nothing to fix"), "{note}");
     assert_eq!(ledger.pictures_placed("One."), "");
 }

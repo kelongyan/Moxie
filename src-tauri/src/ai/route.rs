@@ -8,7 +8,7 @@ use aicompat::providers::{custom, openai_api_key, openai_codex, AgentProvider, E
 use tauri::AppHandle;
 
 pub(crate) const NOT_CONFIGURED: &str =
-    "This provider isn't set up yet - configure it in Settings > Textus AI.";
+    "This provider isn't set up yet - configure it in Settings > Moxie AI.";
 
 pub enum OpenaiAuth {
     /// Browser "sign in with ChatGPT": talks to the ChatGPT backend, not the

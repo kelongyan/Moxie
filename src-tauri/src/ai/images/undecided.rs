@@ -17,7 +17,7 @@ pub(crate) const IMAGE_ACTIONS: [&str; 5] = [
 /// The src a picture being made has in a proposal's Markdown, until saved.
 /// Keep in step with the frontend's `generatedImageSrc`.
 pub(crate) fn placeholder_src(id: &str) -> String {
-    format!("textus-generated:{id}")
+    format!("moxie-generated:{id}")
 }
 
 /// What a picture may stand next to besides the document: the text of

@@ -1,5 +1,5 @@
-//! Make Textus the app that opens .md files, as far as each system allows.
-//! Windows only lets the user choose, so this registers Textus and opens
+//! Make Moxie the app that opens .md files, as far as each system allows.
+//! Windows only lets the user choose, so this registers Moxie and opens
 //! Default apps; macOS sets LaunchServices; Linux uses `xdg-mime` (not for an AppImage).
 
 use serde::Serialize;
@@ -30,17 +30,17 @@ pub async fn set_default_editor(app: AppHandle) -> Result<(), String> {
     platform::make_default(&app)
 }
 
-/// The registry values that list Textus for Markdown files, all under
+/// The registry values that list Moxie for Markdown files, all under
 /// HKEY_CURRENT_USER. Built without touching the registry, so they can be tested.
 #[cfg(any(windows, test))]
 mod registry {
-    /// Textus's own ProgID. Not "Markdown", which other editors' installers also
+    /// Moxie's own ProgID. Not "Markdown", which other editors' installers also
     /// write. Keep in step with `bundle.fileAssociations`.
-    pub const PROG_ID: &str = "Textus.Markdown";
+    pub const PROG_ID: &str = "Moxie.Markdown";
     pub const EXTENSIONS: [&str; 2] = [".md", ".markdown"];
-    /// The name Default apps knows Textus by, in RegisteredApplications.
-    pub const REGISTERED_APP: &str = "Textus";
-    const CAPABILITIES: &str = r"Software\Textus\Capabilities";
+    /// The name Default apps knows Moxie by, in RegisteredApplications.
+    pub const REGISTERED_APP: &str = "Moxie";
+    const CAPABILITIES: &str = r"Software\Moxie\Capabilities";
 
     #[derive(Debug, PartialEq)]
     pub enum Data {
@@ -66,7 +66,7 @@ mod registry {
         }
     }
 
-    /// Every value, for Textus installed at `exe`; keep in step with the installer
+    /// Every value, for Moxie installed at `exe`; keep in step with the installer
     /// hooks. The extensions' own default values are left to the installer.
     pub fn values(exe: &str) -> Vec<Value> {
         let exe_name = exe.rsplit('\\').next().unwrap_or(exe);
@@ -77,9 +77,9 @@ mod registry {
             text(&prog_id, "", "Markdown document"),
             text(&format!(r"{prog_id}\DefaultIcon"), "", &format!("{exe},0")),
             text(&format!(r"{prog_id}\shell\open\command"), "", &open),
-            text(&app, "FriendlyAppName", "Textus"),
+            text(&app, "FriendlyAppName", "Moxie"),
             text(&format!(r"{app}\shell\open\command"), "", &open),
-            text(CAPABILITIES, "ApplicationName", "Textus"),
+            text(CAPABILITIES, "ApplicationName", "Moxie"),
             text(CAPABILITIES, "ApplicationDescription", "Markdown editor"),
             text(
                 r"Software\RegisteredApplications",
@@ -88,7 +88,7 @@ mod registry {
             ),
         ];
         for ext in EXTENSIONS {
-            // What keeps Textus under "Open with" whoever holds the default.
+            // What keeps Moxie under "Open with" whoever holds the default.
             values.push(Value {
                 key: format!(r"Software\Classes\{ext}\OpenWithProgids"),
                 name: PROG_ID.into(),
@@ -104,7 +104,7 @@ mod registry {
         values
     }
 
-    /// Default apps, opened at Textus's entry (Windows 11; older versions
+    /// Default apps, opened at Moxie's entry (Windows 11; older versions
     /// open the Default apps page).
     pub fn settings_uri() -> String {
         format!("ms-settings:defaultapps?registeredAppUser={REGISTERED_APP}")
@@ -269,10 +269,10 @@ mod platform {
     }
 }
 
-/// The desktop entry ids Textus is installed under: the .deb and .rpm name
+/// The desktop entry ids Moxie is installed under: the .deb and .rpm name
 /// it after the product, the AUR package and the tarball after the binary.
 #[cfg(any(target_os = "linux", test))]
-const DESKTOP_IDS: [&str; 2] = ["Textus.desktop", "textus.desktop"];
+const DESKTOP_IDS: [&str; 2] = ["Moxie.desktop", "textus.desktop"];
 
 /// The MIME types the desktop entry claims.
 #[cfg(any(target_os = "linux", test))]
@@ -347,7 +347,7 @@ mod platform {
     }
 
     pub fn make_default(_app: &AppHandle) -> Result<(), String> {
-        let id = desktop_id().ok_or("no desktop entry for Textus is installed")?;
+        let id = desktop_id().ok_or("no desktop entry for Moxie is installed")?;
         let out = Command::new("xdg-mime")
             .args(xdg_mime_default_args(id))
             .output()

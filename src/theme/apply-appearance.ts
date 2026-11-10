@@ -35,7 +35,7 @@ export function letterSpacing(
 // Puts the appearance settings on the page: light or dark, the text width,
 // the content theme and the user's Custom CSS, in that cascade order.
 
-const CUSTOM_CSS_STYLE_ID = "textus-user-css";
+const CUSTOM_CSS_STYLE_ID = "moxie-user-css";
 
 /** Keeps an imported theme's chrome colours for the boot script, which
  *  paints the next window's first frame with them. Written only on change. */
@@ -219,7 +219,7 @@ export function useApplyAppearance(
   // theme/mode change and on OS switches in "system" mode.
   useEffect(() => {
     const root = document.documentElement;
-    const STYLE_ID = "textus-custom-theme";
+    const STYLE_ID = "moxie-custom-theme";
 
     function clearInjectedStyle() {
       document.getElementById(STYLE_ID)?.remove();
@@ -252,7 +252,7 @@ export function useApplyAppearance(
     }
 
     root.removeAttribute("data-content-theme");
-    // Turns Textus's own content ornaments off: an imported theme should look
+    // Turns Moxie's own content ornaments off: an imported theme should look
     // the way it does in Typora.
     root.setAttribute("data-user-theme", "");
     let cancelled = false;

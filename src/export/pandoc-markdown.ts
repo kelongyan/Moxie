@@ -19,7 +19,7 @@ const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const MATH_FENCE = /^\s*\$\$/;
 const IMG_TAG = /<img\b(?:[^<>"']|"[^"]*"|'[^']*')*>/gi;
 const IMAGE_WIDTH =
-  /!\[([^\]]*)\]\((\S+?)\s+"([^"]*?)\s*\{textus-width=(\d{1,3})%\}"\)/g;
+  /!\[([^\]]*)\]\((\S+?)\s+"([^"]*?)\s*\{moxie-width=(\d{1,3})%\}"\)/g;
 const QUOTE = /^(?:[ \t]*>)+[ \t]?/;
 // A block a comment can't run on into: a list item, heading or table row.
 const BLOCK_START = /^\s*(?:[-+*]\s|\d{1,9}[.)]\s|#{1,6}\s|\|)/;
@@ -100,15 +100,15 @@ function rewriteText(text: string, options: PandocRewrite): string {
   return text.replace(
     INLINE,
     (whole, cite, mark, sup, tilde, offset: number) => {
-      if (cite) return options.citations ? `\`${cite}\`{=textuscite}` : whole;
+      if (cite) return options.citations ? `\`${cite}\`{=moxiecite}` : whole;
       if (mark) return `[${rewriteText(mark, options)}]{.mark}`;
-      if (sup) return `[${bracketsEscaped(sup)}]{.textus-sup}`;
+      if (sup) return `[${bracketsEscaped(sup)}]{.moxie-sup}`;
       // The editor's rule: one tilde after a letter or digit, around text
       // with no space, is a subscript; anywhere else it strikes through.
       const subscript =
         /[\p{L}\p{N}]/u.test(text[offset - 1] ?? "") && !/\s/.test(tilde);
       return subscript
-        ? `[${bracketsEscaped(tilde)}]{.textus-sub}`
+        ? `[${bracketsEscaped(tilde)}]{.moxie-sub}`
         : `~~${tilde}~~`;
     },
   );

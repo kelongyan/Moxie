@@ -10,7 +10,7 @@ exports.activate = function () {
     var day = new Date(2026, 10, 7, 9, 5);
     var filled = await textus.templates.fill(
       "# {{title}}\\n{{date}} {{time}} {{date:dddd}} {{project}} <% tp.date.now('YYYY') %>",
-      { title: "Plan", now: day, values: { project: "Textus" } },
+      { title: "Plan", now: day, values: { project: "Moxie" } },
     );
     return JSON.stringify({
       format: textus.dates.format(day, "gggg-[W]ww"),
@@ -42,7 +42,7 @@ test("a plugin formats and reads dates and fills a template in the folder's form
           version: "1.0.0",
           publisher: "test",
           description: "Dates and templates.",
-          engines: { textus: "^1.3.0" },
+          engines: { moxie: "^1.3.0" },
           main: "host.js",
           permissions: ["ai.tools", "files.read"],
           contributes: {
@@ -94,6 +94,6 @@ test("a plugin formats and reads dates and fills a template in the folder's form
   expect(JSON.parse((await result())!)).toEqual({
     format: "2026-W45",
     parse: "2026-11-07",
-    filled: "# Plan\n07.11.2026 09:05 Saturday Textus 2026",
+    filled: "# Plan\n07.11.2026 09:05 Saturday Moxie 2026",
   });
 });

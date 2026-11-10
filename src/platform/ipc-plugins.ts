@@ -48,7 +48,7 @@ export const plugins = {
     command("plugin_set", id, enabled, granted),
   installed: () => command("plugins_installed"),
   install: (path: string) => command("plugin_install", path),
-  /** A plugin from its files' text (what Textus AI writes), installed as a
+  /** A plugin from its files' text (what Moxie AI writes), installed as a
    *  package is. */
   installFiles: (files: PluginFile[]) => command("plugin_install_files", files),
   loadDev: (path: string) => command("plugin_load_dev", path),
@@ -56,9 +56,9 @@ export const plugins = {
   /** Export for Publishing: the new folder's path. */
   exportPlugin: (id: string, publisher: string, folder: string) =>
     command("plugin_export", id, publisher, folder),
-  /** textus:// links waiting for a window, taken. */
+  /** moxie:// links waiting for a window, taken. */
   takeUris: () => command("plugin_take_uris"),
-  /** The plugins Textus offers, fetched now and kept for next time. */
+  /** The plugins Moxie offers, fetched now and kept for next time. */
   catalog: () => command("plugin_catalog"),
   /** The catalog as last fetched, if one was kept. */
   cachedCatalog: () => command("plugin_catalog_cached"),
@@ -179,7 +179,7 @@ export const plugins = {
   ) => command("plugin_store_delete", id, scope, root, path),
   /** When a developer's plugin folder last changed (ms), or null. */
   devStamp: (id: string) => command("plugin_dev_stamp", id),
-  /** The tools this window's plugins give Textus AI. */
+  /** The tools this window's plugins give Moxie AI. */
   aiToolsSet: (tools: Generated.PluginAiTool[]) =>
     command("plugin_ai_tools_set", tools),
   aiToolResult: (callId: string, text: string | null, error: string | null) =>

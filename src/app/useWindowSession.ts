@@ -9,7 +9,7 @@ export function useWindowTitle(activeTitle: string): void {
   useEffect(() => {
     if (!canUseWindows) return;
     void thisWindow()
-      .setTitle(`${activeTitle} - Textus`)
+      .setTitle(`${activeTitle} - Moxie`)
       .catch(() => {});
   }, [activeTitle]);
 }

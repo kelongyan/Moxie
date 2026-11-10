@@ -13,7 +13,7 @@ export const MAX_SHOWN_MATCHES = 200;
 /** The search box's filter beside it: every file, or documents only. */
 export type SearchScope = "all" | "documents";
 
-/** What Textus opens as a document, listed before every other file. */
+/** What Moxie opens as a document, listed before every other file. */
 const DOCUMENT_EXTENSIONS = new Set(["md", "markdown", "txt", "text"]);
 
 export function isDocumentName(name: string): boolean {

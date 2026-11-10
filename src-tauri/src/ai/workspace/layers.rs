@@ -12,11 +12,11 @@ pub(crate) fn global_agent_dir(app: &AppHandle) -> Result<PathBuf, String> {
 }
 
 /// The global layer's folder in the app's config folder: `textus/`, laid out
-/// as a project's `.textus/` is (agent.md, skills/, memory/).
-pub(crate) const GLOBAL_DIR: &str = "textus";
+/// as a project's `.moxie/` is (agent.md, skills/, memory/).
+pub(crate) const GLOBAL_DIR: &str = "moxie";
 
 /// Resolves the project folder, the sandbox for the file tools: the folder
-/// opened or chosen, else the nearest enclosing folder with `.textus/`. A
+/// opened or chosen, else the nearest enclosing folder with `.moxie/`. A
 /// lone document's own folder is not one: it may be Downloads or Desktop,
 /// so the agent works in the conversation's scratch folder instead.
 pub(crate) fn resolve_root(doc_path: Option<&str>, root_override: Option<&str>) -> Option<PathBuf> {
@@ -36,7 +36,7 @@ pub(crate) fn document_folder(doc_path: Option<&str>) -> Option<&Path> {
 }
 
 /// The nearest folder from `folder` upwards that is a project: one holding
-/// `.textus/`, or the folder above `.textus/` itself (for a file inside it).
+/// `.moxie/`, or the folder above `.moxie/` itself (for a file inside it).
 /// Stops before the home folder and a drive root, which are never a project.
 pub(crate) fn enclosing_project(folder: &Path) -> Option<PathBuf> {
     for dir in folder.ancestors() {
@@ -60,7 +60,7 @@ pub(crate) fn project_root(doc_path: Option<&str>, root_override: Option<&str>) 
 }
 
 /// Loads the merged agent workspace for a document: the built-in skills,
-/// then the global config folder, then the project folder's `.textus/`
+/// then the global config folder, then the project folder's `.moxie/`
 /// layer on top.
 pub fn load(
     app: &AppHandle,

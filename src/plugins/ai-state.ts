@@ -1,11 +1,11 @@
 import { emitPluginEvent } from "./app-bridge";
 
-/** What Textus AI is doing, as plugins hear it - never what it says. */
+/** What Moxie AI is doing, as plugins hear it - never what it says. */
 export type AiActivity = "idle" | "thinking" | "writing" | "proposing";
 
 export interface AiState {
   state: AiActivity;
-  /** The service and model in use; null before Textus AI is first used. */
+  /** The service and model in use; null before Moxie AI is first used. */
   model: { provider: string; id: string | null } | null;
   /** On going idle after a request: whether it finished, failed or was
    *  stopped. */
@@ -18,7 +18,7 @@ export function aiState(): AiState {
   return current;
 }
 
-/** Textus AI's conversation reports each change; plugins hear it once. */
+/** Moxie AI's conversation reports each change; plugins hear it once. */
 export function reportAiState(
   state: AiActivity,
   provider: string,

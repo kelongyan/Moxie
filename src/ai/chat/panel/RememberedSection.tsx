@@ -15,7 +15,7 @@ import {
   firstLine,
   NEAR_CAP,
 } from "./memory-text";
-/** Memory › Remembered: what Textus AI keeps about the user and the project, each item to read, change or forget. */
+/** Memory › Remembered: what Moxie AI keeps about the user and the project, each item to read, change or forget. */
 
 /**
  * "AI remembered": personal memories, then the project's, each with its date,

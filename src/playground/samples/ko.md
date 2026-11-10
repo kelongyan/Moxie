@@ -1,6 +1,6 @@
-# Textus에 오신 것을 환영합니다
+# Moxie에 오신 것을 환영합니다
 
-Textus는 글이 보일 모습 그대로 쓰는 Markdown 편집기입니다. 아무 곳이나 클릭해서 입력해 보세요. Markdown 기호는 커서가 있는 곳에만 나타나서 **굵게**, _기울임_, ==강조==, ~~취소선~~, `인라인 코드`도 쓰는 동안 읽기 편합니다.
+Moxie는 글이 보일 모습 그대로 쓰는 Markdown 편집기입니다. 아무 곳이나 클릭해서 입력해 보세요. Markdown 기호는 커서가 있는 곳에만 나타나서 **굵게**, _기울임_, ==강조==, ~~취소선~~, `인라인 코드`도 쓰는 동안 읽기 편합니다.
 
 ## 목록과 할 일
 
@@ -42,4 +42,4 @@ flowchart LR
 
 ---
 
-여기에는 편집기만 있습니다. 데스크톱 앱에는 함께 쓰고 고치는 Textus AI와 폴더, 테마, 이미지, PDF·Word·HTML 내보내기 등이 더 있습니다. [Textus 다운로드](https://textus.md/ko/#download), macOS·Windows·Linux에서 무료입니다.
+여기에는 편집기만 있습니다. 데스크톱 앱에는 함께 쓰고 고치는 Moxie AI와 폴더, 테마, 이미지, PDF·Word·HTML 내보내기 등이 더 있습니다. [Moxie 다운로드](https://textus.md/ko/#download), macOS·Windows·Linux에서 무료입니다.

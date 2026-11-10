@@ -145,14 +145,14 @@ async fn picgo_gets_the_file_path_and_piclist_its_key() {
         ImageHost::Picgo,
         Some("secret"),
         "",
-        png(Some("/tmp/textus-upload-1/shot.png")),
+        png(Some("/tmp/moxie-upload-1/shot.png")),
         "200 OK",
         r#"{"success":true,"result":["https://cdn.test/shot.png"]}"#,
     )
     .await;
     assert_eq!(src.unwrap(), "https://cdn.test/shot.png");
     assert!(request.starts_with("POST /upload?key=secret "), "{request}");
-    assert!(request.ends_with(r#"{"list":["/tmp/textus-upload-1/shot.png"]}"#));
+    assert!(request.ends_with(r#"{"list":["/tmp/moxie-upload-1/shot.png"]}"#));
 }
 
 #[tokio::test]

@@ -36,7 +36,7 @@ async function open(page: Page) {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, DOC);
 }

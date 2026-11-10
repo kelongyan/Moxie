@@ -2,7 +2,7 @@
 # Re-syncs src-tauri/installer/installer.nsi with the tauri-cli version in
 # package-lock.json: a three-way merge of upstream's changes between the
 # version the file was vendored from and the new one, keeping our
-# "; Textus:" blocks. Run it when scripts/check-nsis-template.mjs fails.
+# "; Moxie:" blocks. Run it when scripts/check-nsis-template.mjs fails.
 #
 #   scripts/sync-nsis-template.sh
 #

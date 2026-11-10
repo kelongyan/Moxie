@@ -111,15 +111,15 @@ pub fn owned_arg(args: &[String]) -> Option<&str> {
     None
 }
 
-/// Turns `[x]{.textus-sub}`, `[x]{.textus-sup}` and `` `[@key]`{=textuscite} ``,
+/// Turns `[x]{.moxie-sub}`, `[x]{.moxie-sup}` and `` `[@key]`{=moxiecite} ``,
 /// which the export writes for the editor's `~x~`, `^x^` and citations, into
 /// Pandoc's own: the reader has no sub/superscript or citations to match it.
 pub const LUA_FILTER: &str = r#"function Span(s)
-  if s.classes:includes("textus-sub") then return pandoc.Subscript(s.content) end
-  if s.classes:includes("textus-sup") then return pandoc.Superscript(s.content) end
+  if s.classes:includes("moxie-sub") then return pandoc.Subscript(s.content) end
+  if s.classes:includes("moxie-sup") then return pandoc.Superscript(s.content) end
 end
 function RawInline(r)
-  if r.format == "textuscite" then
+  if r.format == "moxiecite" then
     local blocks = pandoc.read(r.text, "markdown+citations").blocks
     if blocks[1] then return blocks[1].content end
   end
@@ -129,7 +129,7 @@ end
 #[cfg(desktop)]
 /// The filter's file, written where each export can read it.
 pub fn lua_filter_path() -> std::io::Result<std::path::PathBuf> {
-    let path = std::env::temp_dir().join(format!("textus-pandoc-{}.lua", std::process::id()));
+    let path = std::env::temp_dir().join(format!("moxie-pandoc-{}.lua", std::process::id()));
     std::fs::write(&path, LUA_FILTER)?;
     Ok(path)
 }
@@ -253,7 +253,7 @@ mod tests {
             .stdin
             .take()
             .unwrap()
-            .write_all(b"H[2]{.textus-sub}O x[2]{.textus-sup} `[@doe, p. 3]`{=textuscite}")
+            .write_all(b"H[2]{.moxie-sub}O x[2]{.moxie-sup} `[@doe, p. 3]`{=moxiecite}")
             .unwrap();
         let out = String::from_utf8(child.wait_with_output().unwrap().stdout).unwrap();
         assert!(out.contains("Subscript [ Str \"2\" ]"), "{out}");

@@ -1,6 +1,6 @@
 /**
  * A file's icon by its extension. Markdown, pictures and anything else are
- * Textus's own (icons.tsx); the other kinds are Lucide's (ISC licence, see
+ * Moxie's own (icons.tsx); the other kinds are Lucide's (ISC licence, see
  * THIRD-PARTY-NOTICES.md), drawn on its 24-unit grid with a stroke thinned
  * to read like ours at the tree's size.
  */

@@ -96,8 +96,8 @@ function defaultSelect(item: PluginListItem) {
 }
 
 /**
- * A plugin's list, drawn by Textus in a sidebar tab or a tab of its own: the
- * plugin gives the items, Textus the look, keys, filter and folding.
+ * A plugin's list, drawn by Moxie in a sidebar tab or a tab of its own: the
+ * plugin gives the items, Moxie the look, keys, filter and folding.
  */
 export const PluginListPane = memo(function PluginListPane({
   plugin,

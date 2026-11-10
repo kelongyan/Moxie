@@ -154,7 +154,7 @@ fn a_picture_for_new_text_is_written_into_it_not_asked_for() {
     );
     assert!(!announced);
     assert!(generate_image_text(&args).contains("Unknown action `in_text`"));
-    assert!(description(2).contains("![alt](textus-picture:ASPECT description)"));
+    assert!(description(2).contains("![alt](moxie-picture:ASPECT description)"));
 }
 
 #[test]
@@ -212,7 +212,7 @@ fn a_picture_not_decided_yet_is_known_with_its_markdown() {
     ];
     assert_eq!(undecided_pictures(&history), vec!["open1".to_string()]);
     let text = outcome(&json!({"alt": "Boats", "action": "insert_after", "image": {"id": "open1", "width": 1, "height": 1}}).to_string());
-    assert!(text.contains("![Boats](textus-generated:open1)"), "{text}");
+    assert!(text.contains("![Boats](moxie-generated:open1)"), "{text}");
 }
 
 #[test]

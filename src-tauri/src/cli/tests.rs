@@ -54,7 +54,7 @@ fn paths_and_nothing_open_the_app_and_words_are_commands() {
     assert_eq!(classify(&[], none), Mode::Gui);
     assert_eq!(classify(&args(&["notes.md"]), none), Mode::Gui);
     assert_eq!(classify(&args(&["/a/b"]), none), Mode::Gui);
-    assert_eq!(classify(&args(&["textus://command/x"]), none), Mode::Gui);
+    assert_eq!(classify(&args(&["moxie://command/x"]), none), Mode::Gui);
     assert_eq!(classify(&args(&["-psn_0_1"]), none), Mode::Gui);
     assert_eq!(classify(&args(&["search", "x"]), none), Mode::Cli);
     assert_eq!(classify(&args(&["--help"]), none), Mode::Cli);
@@ -79,7 +79,7 @@ fn help_lists_every_command_but_the_ones_kept_for_later() {
             command.name
         );
     }
-    assert!(out.contains("Shown while Textus is running"));
+    assert!(out.contains("Shown while Moxie is running"));
     assert_eq!(run_line(&["--help"]).1, out);
 }
 
@@ -100,14 +100,14 @@ fn help_lists_the_running_apps_plugin_commands() {
 fn a_commands_help_is_its_usage() {
     let (code, out, _) = run_line(&["help", "search"]);
     assert_eq!(code, 0);
-    assert!(out.starts_with("Usage: textus search <query> [<folder>]"));
+    assert!(out.starts_with("Usage: moxie search <query> [<folder>]"));
     assert_eq!(run_line(&["search", "--help"]).1, out);
     assert_eq!(run_line(&["search", "-h"]).1, out);
 }
 
 #[test]
 fn version_is_printed_three_ways() {
-    let want = format!("Textus {}\n", env!("CARGO_PKG_VERSION"));
+    let want = format!("Moxie {}\n", env!("CARGO_PKG_VERSION"));
     for line in [&["version"][..], &["--version"], &["-V"]] {
         assert_eq!(run_line(line), (0, want.clone(), String::new()));
     }
@@ -118,7 +118,7 @@ fn an_unknown_command_is_a_usage_error_on_stderr() {
     let (code, out, err) = run_line(&["serch", "x"]);
     assert_eq!(code, 2);
     assert!(out.is_empty());
-    assert!(err.contains("'serch' is not a textus command"));
+    assert!(err.contains("'serch' is not a moxie command"));
 }
 
 #[test]

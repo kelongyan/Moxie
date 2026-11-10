@@ -10,7 +10,7 @@ import { pluginScheduled } from "../background/schedule-notice";
 import { str, type Params, type PluginScope } from "./broker-scope";
 
 /**
- * A plugin's jobs and notifications, and whether Textus is in front: kept
+ * A plugin's jobs and notifications, and whether Moxie is in front: kept
  * and checked again in Rust. `folder` is the folder a job's files and a
  * notification's file are in - the window's, or the job's in a background
  * run - given to Rust only with files.read.

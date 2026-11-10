@@ -11,7 +11,7 @@ import { streamRevise } from "./revise-mock";
 
 /**
  * axe-core over the main screens in light and dark, failing on a serious or
- * critical violation, and what a screen reader hears from Textus AI.
+ * critical violation, and what a screen reader hears from Moxie AI.
  * A11Y_REPORT=1 prints every violation instead of failing.
  */
 
@@ -64,11 +64,11 @@ async function open(
   await openApp(page, {
     colorScheme,
     settings: { language: "en" },
-    storage: agent ? { "textus-agent-panel-open": "1" } : {},
+    storage: agent ? { "moxie-agent-panel-open": "1" } : {},
   });
 }
 
-/** Textus AI proposes one rewrite of the first sentence. */
+/** Moxie AI proposes one rewrite of the first sentence. */
 async function propose(page: Page) {
   await pasteMarkdown(page, "The cat sat on the mat.\n\nIt was warm.");
   await mockInvoke(page, {
@@ -108,7 +108,7 @@ for (const colorScheme of ["light", "dark"] as const) {
       // A second tab, as the AI panel's project bar opens one.
       await page.evaluate(() =>
         window.dispatchEvent(
-          new CustomEvent("textus:open-file-in-tab", {
+          new CustomEvent("moxie:open-file-in-tab", {
             detail: "/work/notes/a.md",
           }),
         ),
@@ -184,7 +184,7 @@ for (const colorScheme of ["light", "dark"] as const) {
         await scan(page, `settings ${i} ${colorScheme}`);
       }
       await nav.first().click();
-      await page.getByRole("button", { name: "About Textus" }).click();
+      await page.getByRole("button", { name: "About Moxie" }).click();
       await expect(page.getByRole("region", { name: "About" })).toBeVisible();
       await scan(page, `about ${colorScheme}`);
 
@@ -257,7 +257,7 @@ test.describe("axe, newer surfaces", () => {
     }, FILES);
     await openApp(page, {
       settings: { language: "en", imageModelProvider: "openai" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
     });
     const first = "The harbour was quiet before the boats came in.";
     await pasteMarkdown(page, `${first}\n\nThe second paragraph.`);
@@ -298,7 +298,7 @@ test.describe("axe, newer surfaces", () => {
 
     // And the image model's rows in Settings, with a model chosen.
     await emit(page, "menu-open-settings");
-    await page.locator(".settings-nav-item", { hasText: "Textus AI" }).click();
+    await page.locator(".settings-nav-item", { hasText: "Moxie AI" }).click();
     await scan(page, "image model setting");
   });
 
@@ -416,7 +416,7 @@ test(
     }, FILES);
     await openApp(page, {
       settings: { language: "en" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     // Every transform the bar shows as it comes in, one per frame.
@@ -466,7 +466,7 @@ test("a proposal reads as a deletion and an insertion, and its card says what it
   await expect(card).toContainText("The cat lay on the rug.");
 });
 
-test("Textus AI's work is announced: writing, the changes, and the decision", async ({
+test("Moxie AI's work is announced: writing, the changes, and the decision", async ({
   page,
 }) => {
   await open(page, "light", true);
@@ -479,12 +479,12 @@ test("Textus AI's work is announced: writing, the changes, and the decision", as
   // Slow enough that the start is heard on its own.
   await streamRevise(page, [{ id: "c1", args }], { every: 200 });
   await send(page);
-  await expect(liveRegion(page)).toHaveText("Textus AI is writing…");
+  await expect(liveRegion(page)).toHaveText("Moxie AI is writing…");
   await expect(page.locator(".review-bar-accept")).toBeEnabled({
     timeout: 10_000,
   });
   await expect(liveRegion(page)).toHaveText(
-    "1 change proposed. Textus AI is done.",
+    "1 change proposed. Moxie AI is done.",
   );
   await page.locator(".review-bar-accept").click();
   await expect(liveRegion(page)).toContainText("1 change accepted.");

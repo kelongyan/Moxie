@@ -13,7 +13,7 @@ test(
     test.setTimeout(60_000);
     await openApp(page, {
       animations: true,
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
     });
     await pasteMarkdown(
       page,

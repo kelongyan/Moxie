@@ -30,7 +30,7 @@ impl MemoryDirs {
     pub(crate) fn folder(&self, scope: Scope, folder: &str) -> Option<PathBuf> {
         match (scope, folder) {
             (Scope::Personal, MEMORY_FOLDER) => Some(self.personal.as_ref()?.join(MEMORY_FOLDER)),
-            // Memories are Textus's own, kept out of the user's folder; the
+            // Memories are Moxie's own, kept out of the user's folder; the
             // library is the user's, and stays in it.
             (Scope::Project, MEMORY_FOLDER) => {
                 let project = self.project.as_ref()?;
@@ -246,7 +246,7 @@ impl MemoryDirs {
     }
 
     /// A fact about the work: a library entry (`name`, `aliases`), new or
-    /// one Textus AI wrote before - never one the user wrote.
+    /// one Moxie AI wrote before - never one the user wrote.
     pub(crate) fn remember_fact(
         &self,
         args: &RememberArgs,
@@ -380,7 +380,7 @@ impl MemoryDirs {
     }
 
     /// Undo of a remember call: deletes what it created, or puts back the
-    /// file as it was before it updated it. Only ever touches what Textus
+    /// file as it was before it updated it. Only ever touches what Moxie
     /// AI wrote.
     pub fn undo(&self, id: &str, previous: Option<&str>) -> Result<(), String> {
         let loc = self.locate(id)?;

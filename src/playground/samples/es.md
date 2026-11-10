@@ -1,6 +1,6 @@
-# Te damos la bienvenida a Textus
+# Te damos la bienvenida a Moxie
 
-Textus es un editor de Markdown que muestra tu texto tal como quedará. Haz clic donde quieras y escribe: las marcas de Markdown solo aparecen donde está el cursor, así que la **negrita**, la _cursiva_, el ==resaltado==, el ~~tachado~~ y el `código en línea` se leen bien mientras escribes.
+Moxie es un editor de Markdown que muestra tu texto tal como quedará. Haz clic donde quieras y escribe: las marcas de Markdown solo aparecen donde está el cursor, así que la **negrita**, la _cursiva_, el ==resaltado==, el ~~tachado~~ y el `código en línea` se leen bien mientras escribes.
 
 ## Listas y tareas
 
@@ -42,4 +42,4 @@ flowchart LR
 
 ---
 
-Aquí solo está el editor. La app de escritorio añade Textus AI para escribir y revisar contigo, carpetas, temas, imágenes y exportación a PDF, Word, HTML y más. [Descarga Textus](https://textus.md/es/#download), gratis para macOS, Windows y Linux.
+Aquí solo está el editor. La app de escritorio añade Moxie AI para escribir y revisar contigo, carpetas, temas, imágenes y exportación a PDF, Word, HTML y más. [Descarga Moxie](https://textus.md/es/#download), gratis para macOS, Windows y Linux.

@@ -180,7 +180,7 @@ export function chartSvg(spec: ChartSpec, layout: ChartLayout): string {
     ? ` style="font-family:${esc(layout.fontFamily)}"`
     : "";
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" class="textus-chart" viewBox="0 0 ${W} ${bottom + 4}" ` +
+    `<svg xmlns="http://www.w3.org/2000/svg" class="moxie-chart" viewBox="0 0 ${W} ${bottom + 4}" ` +
     `width="${W}" height="${bottom + 4}" role="img" aria-label="${esc(spec.title ?? `${spec.type} chart`)}"${font}>` +
     out.join("") +
     "</svg>"

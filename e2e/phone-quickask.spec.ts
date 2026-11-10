@@ -92,7 +92,7 @@ test("the mode picker is a compact button on the toolbar's row on a phone", asyn
   await expect(dock.locator("textarea")).toBeFocused();
   await page.keyboard.press("Escape");
 
-  // The Textus AI page's composer: the two and Research, and 44pt buttons.
+  // The Moxie AI page's composer: the two and Research, and 44pt buttons.
   await page.locator(".page-switch button").nth(1).tap();
   const sheet = page.locator(".agent-panel");
   await sheet.getByRole("combobox", { name: "Mode" }).tap();

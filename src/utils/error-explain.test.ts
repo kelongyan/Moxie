@@ -21,7 +21,7 @@ describe("explainError", () => {
     expect(explainError(new Error(raw), en)).toBe(`${lead}\n${raw}`);
   });
 
-  it("replaces Textus' own English", () => {
+  it("replaces Moxie' own English", () => {
     expect(explainError("Invalid name", zh)).toBe(zh.errorBadName);
     expect(explainError("The file is too big to open here.", zh)).toBe(
       zh.errorFileTooBig,

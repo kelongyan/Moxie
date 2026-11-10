@@ -6,7 +6,7 @@ import { registerSettingsPage } from "./settings/settings-pages";
 /**
  * The places other code can add to the app: commands, editor menu items,
  * sidebar tabs and settings pages. Each `register*` returns its undo. A
- * development build puts it on `window.__textusPlugins`.
+ * development build puts it on `window.__moxiePlugins`.
  */
 export const pluginApi = {
   commands: { register: registerCommand, run: runCommand },
@@ -20,6 +20,6 @@ export type PluginApi = typeof pluginApi;
 /** Puts the API on the window in a development build. */
 export function exposePluginApiForDevelopment(): void {
   if (!import.meta.env.DEV || typeof window === "undefined") return;
-  (window as Window & { __textusPlugins?: PluginApi }).__textusPlugins =
+  (window as Window & { __moxiePlugins?: PluginApi }).__moxiePlugins =
     pluginApi;
 }

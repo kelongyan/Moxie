@@ -8,7 +8,7 @@ export type ExtensionsTab = "plugins" | "themes" | "skills" | "mcp" | "create";
 
 /** The page's tabs, in order; Plugins only where the app shows plugins,
  *  MCP servers only where the app can run their programs. Create, where
- *  Textus AI makes a theme, plugin or skill, comes last. */
+ *  Moxie AI makes a theme, plugin or skill, comes last. */
 export function extensionsTabs(
   pluginsShown = PLUGINS_SHOWN,
   mcp = isDesktopApp,
@@ -26,7 +26,7 @@ export function extensionsTabs(
  *  sent the user to. */
 let lastTab: ExtensionsTab = extensionsTabs()[0];
 
-/** Makes the next Extensions page open on `tab` (Textus AI's Skills row
+/** Makes the next Extensions page open on `tab` (Moxie AI's Skills row
  *  goes to Skills). */
 export function openExtensionsTab(tab: ExtensionsTab): void {
   lastTab = tab;

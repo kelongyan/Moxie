@@ -1,11 +1,11 @@
 /**
- * An image's quarter turn, kept in its title suffix as `{textus-rotate=D}`
+ * An image's quarter turn, kept in its title suffix as `{moxie-rotate=D}`
  * so the markdown stays standard. Older documents may hold the width in the
- * same braces (`{textus-width=50% textus-rotate=90}`, or `levis-` for
+ * same braces (`{moxie-width=50% moxie-rotate=90}`, or `levis-` for
  * either); both parts are read, in any order.
  */
 const IMAGE_TITLE_METADATA =
-  /\s*\{((?:\s*(?:textus|levis)-(?:width=\d{1,3}%|rotate=\d{1,3}))+)\s*\}\s*$/;
+  /\s*\{((?:\s*(?:moxie|textus|levis)-(?:width=\d{1,3}%|rotate=\d{1,3}))+)\s*\}\s*$/;
 
 export interface ImageTitleParts {
   /** The title as shown, without the suffix. */
@@ -35,7 +35,7 @@ export function splitImageTitle(
 
 /** `visibleTitle` with a rotation suffix; "" when there is neither. */
 function titleWithRotation(visibleTitle: string, rotate: number): string {
-  const suffix = rotate ? `{textus-rotate=${rotate}}` : "";
+  const suffix = rotate ? `{moxie-rotate=${rotate}}` : "";
   return [visibleTitle.trimEnd(), suffix].filter(Boolean).join(" ");
 }
 

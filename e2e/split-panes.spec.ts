@@ -509,7 +509,7 @@ test("the split is remembered and comes back once its documents are open", async
   await page.addInitScript(() => {
     if (window.top !== window) return;
     localStorage.setItem(
-      "textus-split-layout",
+      "moxie-split-layout",
       JSON.stringify({
         direction: "column",
         ratio: 0.5,
@@ -546,13 +546,13 @@ test("the split is remembered and comes back once its documents are open", async
   await dividerMenu(page, "Side by Side ⇄ One Above the Other");
   await expect
     .poll(() =>
-      page.evaluate(() => localStorage.getItem("textus-split-layout")),
+      page.evaluate(() => localStorage.getItem("moxie-split-layout")),
     )
     .toContain('"row"');
   await emit(page, "menu-close-split");
   await expect
     .poll(() =>
-      page.evaluate(() => localStorage.getItem("textus-split-layout")),
+      page.evaluate(() => localStorage.getItem("moxie-split-layout")),
     )
     .toBe("null");
 });

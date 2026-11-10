@@ -16,7 +16,7 @@ export function useFocusModeRefresh(
     () =>
       run((ctx) => {
         const view = ctx.get(editorViewCtx);
-        view.dispatch(view.state.tr.setMeta("textus-refresh", true));
+        view.dispatch(view.state.tr.setMeta("moxie-refresh", true));
       }),
     [run],
   );

@@ -69,25 +69,25 @@ function run(opts) {
   mkdirSync(out, { recursive: true });
   const env = {
     ...process.env,
-    TEXTUS_ENV_FILE: process.env.TEXTUS_ENV_FILE ?? join(root, ".env.local"),
-    TEXTUS_EVAL_JUDGE: opts.judge ? "1" : "0",
-    TEXTUS_EVAL_BUDGET_USD: opts.budget ?? "1",
-    TEXTUS_EVAL_SPEND_FILE: join(out, "spend.json"),
-    TEXTUS_EVAL_OUT: out,
+    MOXIE_ENV_FILE: process.env.MOXIE_ENV_FILE ?? join(root, ".env.local"),
+    MOXIE_EVAL_JUDGE: opts.judge ? "1" : "0",
+    MOXIE_EVAL_BUDGET_USD: opts.budget ?? "1",
+    MOXIE_EVAL_SPEND_FILE: join(out, "spend.json"),
+    MOXIE_EVAL_OUT: out,
     // A missing key fails the run instead of passing it untested.
-    TEXTUS_EVAL_REQUIRE_KEY: "1",
+    MOXIE_EVAL_REQUIRE_KEY: "1",
   };
-  if (provider !== "anthropic") env.TEXTUS_EVAL_PROVIDER = provider;
+  if (provider !== "anthropic") env.MOXIE_EVAL_PROVIDER = provider;
   if (opts.set === "core") {
     // The core set: a case or two per group, for runs while iterating.
     const ids = readFileSync(join(baselines, "core.txt"), "utf8")
       .split("\n")
       .filter((l) => l.trim() && !l.startsWith("#"));
-    env.TEXTUS_EVAL_FILTER = ids.join(",");
+    env.MOXIE_EVAL_FILTER = ids.join(",");
   } else if (opts.set) fail("--set is core (or leave it out for every case)");
-  if (opts.filter) env.TEXTUS_EVAL_FILTER = opts.filter;
-  if (opts.model) env.TEXTUS_EVAL_AGENT_MODEL = opts.model;
-  if (opts.jobs) env.TEXTUS_EVAL_JOBS = opts.jobs;
+  if (opts.filter) env.MOXIE_EVAL_FILTER = opts.filter;
+  if (opts.model) env.MOXIE_EVAL_AGENT_MODEL = opts.model;
+  if (opts.jobs) env.MOXIE_EVAL_JOBS = opts.jobs;
   console.log(`Writing to ${out}`);
   const result = spawnSync(
     "cargo",

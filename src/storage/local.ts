@@ -11,13 +11,13 @@ export const LOCAL_KEYS = {
    *  Rust, and what the one-time import reads. */
   settings: "catvinci-settings",
   /** Deep thinking left on in the composer. */
-  deepThinking: "textus-agent-deep-thinking",
+  deepThinking: "moxie-agent-deep-thinking",
   /** The Agent mode last picked, with the default it was picked under. */
-  lastMode: "textus-agent-last-mode",
+  lastMode: "moxie-agent-last-mode",
   /** A provider's last fetched model list, by provider id. */
-  fetchedModels: (provider: string) => `textus-fetched-models:${provider}`,
+  fetchedModels: (provider: string) => `moxie-fetched-models:${provider}`,
   /** Where each file was last being read. */
-  readingPlaces: "textus-reading-places",
+  readingPlaces: "moxie-reading-places",
 } as const;
 
 /** The value under `key`, or null when it is absent or can't be read. */

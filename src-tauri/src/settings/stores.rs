@@ -135,7 +135,7 @@ impl Stores {
     pub fn flush_all(&self) {
         for store in [&self.settings, &self.ui_state, &self.clipboard] {
             if let Err(e) = store.flush() {
-                eprintln!("textus: cannot write {}: {e}", store.path.display());
+                eprintln!("moxie: cannot write {}: {e}", store.path.display());
             }
         }
         self.chat.flush();

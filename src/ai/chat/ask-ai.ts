@@ -7,7 +7,7 @@ import { requestCreate } from "./create-request";
  * the document in front opens its panel in `mode` with `text` in the box.
  */
 
-const ASK_AI_EVENT = "textus-ask-ai";
+const ASK_AI_EVENT = "moxie-ask-ai";
 
 interface Asked {
   text: string;

@@ -11,7 +11,7 @@ async function open(page: Page) {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", diagramEngine: "mermaid" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
     animations: true,
   });
   await pasteMarkdown(page, "The first paragraph.");

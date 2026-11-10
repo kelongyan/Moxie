@@ -32,7 +32,7 @@ function run(
         name: "Remind",
         version: "0.1.0",
         publisher: "catvinci",
-        engines: { textus: ">=1.3.0-beta.8" },
+        engines: { moxie: ">=1.3.0-beta.8" },
         permissions: granted,
         ...manifest,
       }),
@@ -167,16 +167,16 @@ describe("the runtime in background code", () => {
   it("throws, saying why, where the editor or UI is reached", () => {
     const host = readFileSync(join(__dirname, "runtime", "host.js"), "utf8");
     const w = window as unknown as Record<string, unknown>;
-    w.__textusBackground = true;
+    w.__moxieBackground = true;
     w.createEndpoint = () => ({ call: () => Promise.resolve(), notify() {} });
     new Function("createEndpoint", host)(w.createEndpoint);
-    const textus = w.textus as Record<string, Record<string, unknown>>;
+    const textus = w.moxie as Record<string, Record<string, unknown>>;
     expect(() => textus.editor.getText).toThrow(
       "textus.editor is not available in background code.",
     );
     expect(() => textus.ui.notice).toThrow(/textus.ui/);
     expect(typeof textus.schedule.set).toBe("function");
     expect(typeof textus.notify.show).toBe("function");
-    delete w.__textusBackground;
+    delete w.__moxieBackground;
   });
 });

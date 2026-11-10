@@ -89,7 +89,7 @@ test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 900 });
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await page.evaluate((story) => {
     (window as unknown as { __devFiles: Record<string, string> }).__devFiles = {

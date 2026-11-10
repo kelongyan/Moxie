@@ -123,7 +123,7 @@ describe("the View menu's on/off items", () => {
   it("show what is on", () => {
     const view = buildAppMenu(t, shortcuts, NO_RECENTS, {
       sidebar: true,
-      textusAi: false,
+      moxieAi: false,
       zen: true,
       fullscreen: true,
     });
@@ -161,20 +161,20 @@ describe("the View menu's on/off items", () => {
     ]);
   });
 
-  it("keep Textus AI out of View, the AI panel out of reach while it is off, and the switch in the phone's menu", () => {
-    const items = (checks: { textusAi?: boolean }) =>
+  it("keep Moxie AI out of View, the AI panel out of reach while it is off, and the switch in the phone's menu", () => {
+    const items = (checks: { moxieAi?: boolean }) =>
       flatten(buildAppMenu(t, shortcuts, NO_RECENTS, checks));
-    const panel = (checks: { textusAi?: boolean }) =>
+    const panel = (checks: { moxieAi?: boolean }) =>
       items(checks).find((item) => item.label === t.menuToggleAgentPanel);
     // The window bar's button and Settings carry the switch on a desktop.
-    expect(items({}).find((item) => item.label === t.menuTextusAi)).toBe(
+    expect(items({}).find((item) => item.label === t.menuMoxieAi)).toBe(
       undefined,
     );
-    expect(nativeMenuChecks({})).not.toHaveProperty("toggle-textus-ai");
+    expect(nativeMenuChecks({})).not.toHaveProperty("toggle-moxie-ai");
     expect(panel({})?.disabled).toBe(false);
-    expect(panel({ textusAi: false })?.disabled).toBe(true);
-    const phone = flatten(buildMobileMenu(t, { textusAi: false }));
-    expect(phone.find((item) => item.label === t.menuTextusAi)?.checked).toBe(
+    expect(panel({ moxieAi: false })?.disabled).toBe(true);
+    const phone = flatten(buildMobileMenu(t, { moxieAi: false }));
+    expect(phone.find((item) => item.label === t.menuMoxieAi)?.checked).toBe(
       false,
     );
   });
@@ -186,16 +186,16 @@ describe("the View menu's on/off items", () => {
     expect(buildMobileMenu(t)[0]).toMatchObject({ label: t.menuDocuments });
   });
 
-  it("give the phone its plugins' commands, and Textus AI only where it is offered", () => {
+  it("give the phone its plugins' commands, and Moxie AI only where it is offered", () => {
     const plugins = [{ label: "New Quick Note…", command: "notes.new" }];
     const phone = flatten(buildMobileMenu(t, {}, plugins));
     expect(
       phone.find((item) => item.label === "New Quick Note…")?.action,
     ).toEqual({ native: "plugin-command:notes.new" });
     expect(phone.map((item) => item.label)).toContain(t.menuManagePlugins);
-    expect(phone.map((item) => item.label)).toContain(t.menuTextusAi);
+    expect(phone.map((item) => item.label)).toContain(t.menuMoxieAi);
     const china = flatten(buildMobileMenu(t, {}, plugins, false));
-    expect(china.map((item) => item.label)).not.toContain(t.menuTextusAi);
+    expect(china.map((item) => item.label)).not.toContain(t.menuMoxieAi);
     expect(china.map((item) => item.label)).toContain(t.menuManagePlugins);
   });
 

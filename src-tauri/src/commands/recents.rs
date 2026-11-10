@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn a_deleted_folder_is_not_shown() {
-        let dir = std::env::temp_dir().join(format!("textus-recent-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-recent-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let here = dir.to_string_lossy().to_string();
         let gone = dir.join("gone").to_string_lossy().to_string();

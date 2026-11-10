@@ -1,5 +1,5 @@
 import { normaliseMcpServers } from "./mcp";
-import { hasTextusAi } from "../platform/capabilities";
+import { hasMoxieAi } from "../platform/capabilities";
 import { detectLang, isLang, localeOf, type Lang } from "../i18n/strings";
 import {
   UPDATE_CHANNELS,
@@ -103,7 +103,7 @@ export function guessLanguage(): Lang {
  *  a new installation, which starts in the OS's language. */
 export function normaliseSettings(parsed: Raw | null): Settings {
   const settings = readSettings(parsed);
-  return hasTextusAi ? settings : { ...settings, textusAi: false };
+  return hasMoxieAi ? settings : { ...settings, moxieAi: false };
 }
 
 function readSettings(parsed: Raw | null): Settings {
@@ -196,9 +196,9 @@ function readSettings(parsed: Raw | null): Settings {
         : DEFAULT_SETTINGS.imageHost,
       // Any profile string is kept - a newer build's may not be in this
       // build's list - but it has to be one.
-      textusAiResumeAt:
-        typeof parsed.textusAiResumeAt === "number"
-          ? parsed.textusAiResumeAt
+      moxieAiResumeAt:
+        typeof parsed.moxieAiResumeAt === "number"
+          ? parsed.moxieAiResumeAt
           : null,
       writingConventions:
         typeof parsed.writingConventions === "string" &&

@@ -81,7 +81,7 @@ pub(super) fn forget_global(app: &tauri::AppHandle, id: &str) -> Result<(), Stri
 }
 
 fn project_place(root: &Path, id: &str) -> PathBuf {
-    root.join(".textus").join("plugins").join(id)
+    root.join(".moxie").join("plugins").join(id)
 }
 
 /// A key as a file name: letters, digits, `-` and `_` kept, other bytes as
@@ -421,7 +421,7 @@ mod tests {
     fn a_project_place_is_under_its_textus_folder() {
         assert_eq!(
             project_place(Path::new("/notes"), "catvinci.kanban"),
-            Path::new("/notes/.textus/plugins/catvinci.kanban")
+            Path::new("/notes/.moxie/plugins/catvinci.kanban")
         );
     }
 }

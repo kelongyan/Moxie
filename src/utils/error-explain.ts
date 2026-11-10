@@ -4,7 +4,7 @@ import { errorText } from "./error-text";
 /**
  * Failures recognized in an error's text, said in the user's language. A
  * system's message (which Windows writes in its own language, the others in
- * English) stays below; Textus' own English is replaced, or dropped where
+ * English) stays below; Moxie' own English is replaced, or dropped where
  * the caller's heading already says it all (`null`).
  */
 const KINDS: { text: TextKey | null; pattern: RegExp; own?: true }[] = [
@@ -23,7 +23,7 @@ const KINDS: { text: TextKey | null; pattern: RegExp; own?: true }[] = [
   },
   {
     text: "errorNotDocument",
-    pattern: /^(It isn't a document Textus can read\.|Not a document)$/,
+    pattern: /^(It isn't a document Moxie can read\.|Not a document)$/,
     own: true,
   },
   { text: "errorBadName", pattern: /^Invalid (file )?name\.?$/, own: true },
@@ -39,7 +39,7 @@ const KINDS: { text: TextKey | null; pattern: RegExp; own?: true }[] = [
   },
   {
     text: "errorCatalogNewer",
-    pattern: /^The plugin catalog is for a newer Textus/,
+    pattern: /^The plugin catalog is for a newer Moxie/,
     own: true,
   },
   {

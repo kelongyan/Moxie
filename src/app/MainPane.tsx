@@ -80,7 +80,7 @@ function KeptWhileHidden({
   return useKeptLoaded("plugin-view", shown) ? children : null;
 }
 
-/** A document's editor out of sight ten minutes is let go, unless Textus
+/** A document's editor out of sight ten minutes is let go, unless Moxie
  *  AI or undecided changes live in it, or it has no file to come back
  *  from; shown again, it opens at its text with its undo history. */
 const EDITOR_HIDDEN_MS = 10 * 60_000;

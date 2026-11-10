@@ -7,9 +7,9 @@ description: >-
   report.
 license: MIT
 metadata:
-  textus-version: "1"
-  textus-invocation: "hidden"
-  textus-sources: "Our own text. Ideas from blader/humanizer, avoid-ai-writing, Humanizer-zh, yomiyasu, talkstream/ru-text and k-skill (MIT), and the prompts.chat Multilingual Writing Improvement Assistant (CC0); all summarised in our words."
+  moxie-version: "1"
+  moxie-invocation: "hidden"
+  moxie-sources: "Our own text. Ideas from blader/humanizer, avoid-ai-writing, Humanizer-zh, yomiyasu, talkstream/ru-text and k-skill (MIT), and the prompts.chat Multilingual Writing Improvement Assistant (CC0); all summarised in our words."
 ---
 
 ## contract

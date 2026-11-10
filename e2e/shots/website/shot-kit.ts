@@ -804,7 +804,7 @@ export async function launch(page: Page, options: Launch) {
         name,
         aliases: [],
         include: "detected",
-        file: `.textus/library/${name}.md`,
+        file: `.moxie/library/${name}.md`,
         body: "",
         remembered: null,
       })),

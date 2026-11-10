@@ -118,7 +118,7 @@ export async function call<T>(command: string, args?: object): Promise<T> {
 
 /**
  * A command that sends something to an AI service, refused here while
- * Textus AI is off: the backstop for an entry point that missed the switch.
+ * Moxie AI is off: the backstop for an entry point that missed the switch.
  */
 export function aiCall<T>(command: string, args?: object): Promise<T> {
   return aiRequestsAllowed()

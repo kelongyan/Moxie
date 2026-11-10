@@ -141,7 +141,7 @@ impl ImageJob {
             .await
             .map_err(|e| {
                 gen::ImageError::Failed(format!(
-                    "The ChatGPT sign-in isn't usable - sign in again in Settings › Textus AI: {e}"
+                    "The ChatGPT sign-in isn't usable - sign in again in Settings › Moxie AI: {e}"
                 ))
             })?;
         aicompat::providers::openai_codex::generate_image(
@@ -240,14 +240,14 @@ impl ImageRun {
     }
 
     /// The picture `like` names, by its src in the document or a proposed
-    /// `textus-generated:` src. None where the service takes no picture, when
+    /// `moxie-generated:` src. None where the service takes no picture, when
     /// not found, or while still being made: it is not waited for.
     pub(crate) fn like(&self, like: &str) -> Option<Reference> {
         let like = like.trim();
         if like.is_empty() || !self.job.api.takes_reference() {
             return None;
         }
-        let picture = match like.strip_prefix("textus-generated:") {
+        let picture = match like.strip_prefix("moxie-generated:") {
             Some(id) => made_picture(id),
             None => local_picture(&format!("![](<{like}>)"), self.folder.as_deref()?),
         };
@@ -418,7 +418,7 @@ pub(crate) fn spec(limit: usize) -> ToolSpec {
                 },
                 "like": {
                     "type": "string",
-                    "description": "Only when someone or something recurs: the src of an earlier picture showing them - a picture in the document, or `textus-generated:ID` proposed before - to keep them and the style as they are there."
+                    "description": "Only when someone or something recurs: the src of an earlier picture showing them - a picture in the document, or `moxie-generated:ID` proposed before - to keep them and the style as they are there."
                 }
             },
             "required": ["prompt", "alt", "action"],

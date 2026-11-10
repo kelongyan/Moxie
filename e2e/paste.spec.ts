@@ -175,7 +175,7 @@ async function caretAt(page: Page, n: number, select = 0) {
 test("a URL pasted inside a link's text joins it instead of splitting it", async ({
   page,
 }) => {
-  await pasteMarkdown(page, "Before [Textus](https://t.example) after.");
+  await pasteMarkdown(page, "Before [Moxie](https://t.example) after.");
   // "Before [Tex|tus" - the caret on the link shows its Markdown, and the
   // URL goes into it as text.
   await caretAt(page, 11);
@@ -190,14 +190,14 @@ test("a URL pasted inside a link's text joins it instead of splitting it", async
 test("a URL pasted over a link's URL only changes where it points", async ({
   page,
 }) => {
-  await pasteMarkdown(page, "Before [Textus](https://old.example) after.");
-  // "Before [Textus](|https://old.example|)", in the link's Markdown.
+  await pasteMarkdown(page, "Before [Moxie](https://old.example) after.");
+  // "Before [Moxie](|https://old.example|)", in the link's Markdown.
   await caretAt(page, 16, 19);
   await pasteHere(page, "https://new.example");
   await page.keyboard.press(END);
   await expect(page.locator(`${editor} a`)).toHaveCount(1);
   expect(await sourceOf(page)).toBe(
-    "Before [Textus](https://new.example) after.",
+    "Before [Moxie](https://new.example) after.",
   );
 });
 
@@ -212,7 +212,7 @@ async function clipboardNow(page: Page) {
   });
 }
 
-const LINKED = "See [Textus](https://textus.md) and **bold** text.";
+const LINKED = "See [Moxie](https://textus.md) and **bold** text.";
 
 test("a copy's plain text is its Markdown source, and code copied inside a code block is the code alone", async ({
   page,
@@ -268,7 +268,7 @@ test("Copy as Plain Text gives the words as they read; an old copy setting chang
         .then((c) => c["text/plain"])
         .catch(() => ""),
     )
-    .toBe("See Textus (https://textus.md) and bold text.");
+    .toBe("See Moxie (https://textus.md) and bold text.");
 });
 
 test("the context menu's Copy and Paste keep the formatting, as Cmd+C and Cmd+V do", async ({

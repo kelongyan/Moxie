@@ -125,7 +125,7 @@ test("a narrow window numbers the notes as the chat lists them", async ({
   await page.setViewportSize({ width: 900, height: 780 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "First paragraph here.\n\nSecond paragraph here.");
   const comment = (id: string, anchor: string, text: string) => [
@@ -168,7 +168,7 @@ test("a note opened from its badge stays under the Settings backdrop", async ({
   await page.setViewportSize({ width: 900, height: 780 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "First paragraph here.");
   await mockInvoke(page, {
@@ -208,7 +208,7 @@ test("a note opened from its badge stays under the Settings backdrop", async ({
 test("an undone edit's card still counts what it removes", async ({ page }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "The cat sat on the mat.\n\nThe end.");
   // A rewrite of the selection: the card compares it with the selection
@@ -332,7 +332,7 @@ test("the adaptive column takes 62% of a pane past about 1100px, between 680 and
   await page.setViewportSize({ width: 1280, height: 800 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "0", "textus-sidebar-open": "0" },
+    storage: { "moxie-agent-panel-open": "0", "moxie-sidebar-open": "0" },
   });
   // A laptop window: wider than Standard.
   expect(await width()).toBe(Math.round(1280 * 0.62));

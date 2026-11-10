@@ -9,7 +9,7 @@ function plugin(manifest: Record<string, unknown>, host: string) {
     version: "0.1.0",
     publisher: "local",
     description: "A demo.",
-    engines: { textus: ">=1.3.0" },
+    engines: { moxie: ">=1.3.0" },
     main: "host.js",
     permissions: [],
     ...manifest,
@@ -69,7 +69,7 @@ describe("checkPlugin", () => {
     ).toEqual([{ kind: "permission", permission: "editor.read" }]);
   });
 
-  it("flags a menu condition that reads a key Textus never sets", () => {
+  it("flags a menu condition that reads a key Moxie never sets", () => {
     expect(
       plugin(
         {

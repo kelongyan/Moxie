@@ -49,7 +49,7 @@ const COPIES_NOW = {
   "ui/ContextMenu.tsx | ui/ContextMenu.tsx": 1,
 };
 
-const out = mkdtempSync(join(tmpdir(), "textus-jscpd-"));
+const out = mkdtempSync(join(tmpdir(), "moxie-jscpd-"));
 let report;
 try {
   execFileSync(

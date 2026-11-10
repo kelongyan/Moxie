@@ -2,7 +2,7 @@ import { InputRule } from "@milkdown/kit/prose/inputrules";
 import { $inputRule } from "@milkdown/kit/utils";
 
 /**
- * Markup typed out becomes the node Textus reads it as from a file, or
+ * Markup typed out becomes the node Moxie reads it as from a file, or
  * saving would escape it (`<br>` as `\<br>`, `[^1]` as `\[^1]`).
  */
 

@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn a_picture_line_has_an_alt_an_aspect_and_a_description() {
     assert_eq!(
-        picture_line("![港口](textus-picture:16:9 A harbour at dawn (soft light))"),
+        picture_line("![港口](moxie-picture:16:9 A harbour at dawn (soft light))"),
         Some(PictureLine {
             alt: "港口",
             prompt: "A harbour at dawn (soft light)",
@@ -13,7 +13,7 @@ fn a_picture_line_has_an_alt_an_aspect_and_a_description() {
     );
     // Drawn like an earlier picture: its src after the aspect, or alone.
     assert_eq!(
-        picture_line("![Lin](textus-picture:16:9 like:assets/lin.png Lin at the helm)"),
+        picture_line("![Lin](moxie-picture:16:9 like:assets/lin.png Lin at the helm)"),
         Some(PictureLine {
             alt: "Lin",
             prompt: "Lin at the helm",
@@ -22,21 +22,21 @@ fn a_picture_line_has_an_alt_an_aspect_and_a_description() {
         })
     );
     assert_eq!(
-        picture_line("![Lin](textus-picture:like:textus-generated:ab12cd Lin asleep)")
+        picture_line("![Lin](moxie-picture:like:moxie-generated:ab12cd Lin asleep)")
             .map(|p| (p.like, p.prompt)),
-        Some(("textus-generated:ab12cd", "Lin asleep"))
+        Some(("moxie-generated:ab12cd", "Lin asleep"))
     );
     assert_eq!(
-        picture_line("![x](textus-picture:1:1 like:assets/lin.png)"),
+        picture_line("![x](moxie-picture:1:1 like:assets/lin.png)"),
         None
     );
     assert_eq!(
-        picture_line("  ![x](textus-picture: Boats)  ").map(|p| p.aspect),
+        picture_line("  ![x](moxie-picture: Boats)  ").map(|p| p.aspect),
         Some(Aspect::Square)
     );
-    assert_eq!(picture_line("![x](textus-picture:)"), None);
+    assert_eq!(picture_line("![x](moxie-picture:)"), None);
     assert_eq!(picture_line("![x](picture.png)"), None);
-    assert_eq!(picture_line("Text ![x](textus-picture:Boats) more"), None);
+    assert_eq!(picture_line("Text ![x](moxie-picture:Boats) more"), None);
 }
 
 #[test]
@@ -84,11 +84,11 @@ fn each_picture_starts_once_its_line_has_streamed_in() {
     let ledger = Mutex::default();
     let pictures = run.inline(&ledger);
     let text =
-        "One.\n\n![港口](textus-picture:16:9 Harbour)\n\nTwo.\n\n![船](textus-picture:Boats)";
+        "One.\n\n![港口](moxie-picture:16:9 Harbour)\n\nTwo.\n\n![船](moxie-picture:Boats)";
     let json = serde_json::json!({"action": "append", "text": text}).to_string();
     let started = streamed(&pictures, "c1", &json);
     assert_eq!(started.len(), 2, "{started:?}");
-    assert!(started[0].starts_with("![港口](textus-picture:16:9 Harbour) -> "));
+    assert!(started[0].starts_with("![港口](moxie-picture:16:9 Harbour) -> "));
     // The finished step: the same two pictures, now in the text.
     let step = pictures.place(StepResult::ToolCalls(vec![AgentTurn::ToolCall {
         call_id: "c1".into(),
@@ -106,10 +106,10 @@ fn each_picture_starts_once_its_line_has_streamed_in() {
     let placed = placed["text"].as_str().unwrap();
     let first = started[0].rsplit(' ').next().unwrap();
     assert!(
-        placed.contains(&format!("![港口](textus-generated:{first})")),
+        placed.contains(&format!("![港口](moxie-generated:{first})")),
         "{placed}"
     );
-    assert_eq!(placed.matches("textus-generated:").count(), 2);
+    assert_eq!(placed.matches("moxie-generated:").count(), 2);
     assert!(!placed.contains(PICTURE_SCHEME));
 }
 
@@ -118,14 +118,14 @@ fn a_picture_past_the_limit_is_left_out_and_said_why() {
     let run = ImageRun::offline(1);
     let ledger = Mutex::default();
     let pictures = run.inline(&ledger);
-    let text = "One.\n\n![a](textus-picture:A)\n\nTwo.\n\n![b](textus-picture:B)\n\nThree.";
+    let text = "One.\n\n![a](moxie-picture:A)\n\nTwo.\n\n![b](moxie-picture:B)\n\nThree.";
     let args = serde_json::json!({"action": "append", "text": text}).to_string();
     let placed: Value = serde_json::from_str(&pictures.place_in(&args).unwrap()).unwrap();
     assert_eq!(
         placed["text"]
             .as_str()
             .unwrap()
-            .matches("textus-generated:")
+            .matches("moxie-generated:")
             .count(),
         1
     );
@@ -139,7 +139,7 @@ fn a_line_asked_for_again_is_the_same_picture() {
     let run = ImageRun::offline(2);
     let ledger = Mutex::default();
     let pictures = run.inline(&ledger);
-    let json = serde_json::json!({"text": "![a](textus-picture:A)\n"}).to_string();
+    let json = serde_json::json!({"text": "![a](moxie-picture:A)\n"}).to_string();
     let first = streamed(&pictures, "c1", &json);
     assert_eq!(first.len(), 1);
     // A retried step writes the line again: the same picture, told

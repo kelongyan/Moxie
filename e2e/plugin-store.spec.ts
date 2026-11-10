@@ -39,7 +39,7 @@ function plugin(id: string, permissions: string[]) {
       version: "1.0.0",
       publisher: "test",
       description: "Keeps things.",
-      engines: { textus: "^1.3.0" },
+      engines: { moxie: "^1.3.0" },
       main: "host.js",
       permissions,
       contributes: {

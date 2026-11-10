@@ -14,7 +14,7 @@ export default {
   },
   plugin: {
     label: "플러그인 만들기",
-    hint: "설명대로 작은 Textus 플러그인을 만들어 바로 설치",
+    hint: "설명대로 작은 Moxie 플러그인을 만들어 바로 설치",
     aliases: ["플러그인", "확장 기능"],
   },
   skill: {

@@ -35,7 +35,7 @@ describe.each(LANGS)("AI concept copy in %s", (lang) => {
   });
 
   it("every Settings path names a page that exists", () => {
-    // The AI page is AI_NAME ("Textus AI"), not "Settings → AI".
+    // The AI page is AI_NAME ("Moxie AI"), not "Settings → AI".
     const settings = t.settingsTitle;
     const pages = [
       t.navGeneral,

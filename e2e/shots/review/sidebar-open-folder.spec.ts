@@ -2,10 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp } from "../../helpers";
 
 // Review screenshots of the Files tab's Open Folder button in its three
-// states and widths. Runs only with TEXTUS_SHOTS_DIR set.
+// states and widths. Runs only with MOXIE_SHOTS_DIR set.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const FOLDER = "/Users/me/Writing/Harbour City";
 const FILES = {
@@ -50,7 +50,7 @@ async function shoot(
   await openApp(page, {
     settings: { language: options.lang, ...options.settings },
     colorScheme: options.dark ? "dark" : "light",
-    storage: { "textus-sidebar-width": String(options.width) },
+    storage: { "moxie-sidebar-width": String(options.width) },
   });
   if (options.state === "folder") await emit(page, "menu-open-folder");
   if (options.state !== "empty")

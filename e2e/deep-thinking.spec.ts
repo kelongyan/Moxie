@@ -59,7 +59,7 @@ async function scriptAgent(page: Page, ms: number) {
 
 test("Deep thinking is offered, sent, and stays on", async ({ page }) => {
   await canThinkDeeper(page, true);
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await expect(button(page)).toHaveAttribute("aria-pressed", "false");
   await button(page).click();
   await expect(button(page)).toHaveAttribute("aria-pressed", "true");
@@ -88,8 +88,8 @@ test("no Deep thinking button for a model that can't think deeper", async ({
   await canThinkDeeper(page, false);
   await openApp(page, {
     storage: {
-      "textus-agent-panel-open": "1",
-      "textus-agent-deep-thinking": "1",
+      "moxie-agent-panel-open": "1",
+      "moxie-agent-deep-thinking": "1",
     },
   });
   await expect(page.locator(".inline-chat-web-search")).toBeVisible();
@@ -120,7 +120,7 @@ test(
   { tag: "@perf" },
   async ({ page }) => {
     await canThinkDeeper(page, true);
-    await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+    await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
     await pasteMarkdown(page, "One line.");
     await scriptAgent(page, 2_600);
     await composer(page).fill("Which reading is right?");
@@ -150,7 +150,7 @@ test("thinking on after a step's rows still says so at the panel's end", async (
   page,
 }) => {
   await canThinkDeeper(page, true);
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(page, "One line.");
   // Thinks, loads a skill, and thinks on - the reasoning row stays up
   // under the question, the skill's rows below it.

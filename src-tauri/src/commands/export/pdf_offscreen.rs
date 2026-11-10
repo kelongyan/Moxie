@@ -55,7 +55,7 @@ pub async fn export(
 ) -> Result<(), String> {
     let id = crate::editor_windows::next_window_id();
     // Removed when `page` drops, however this returns.
-    let page = crate::atomic::TempFile::create("textus-pdf-export-", ".html", html)
+    let page = crate::atomic::TempFile::create("moxie-pdf-export-", ".html", html)
         .map_err(|e| e.to_string())?;
     let label = format!("{}{id}", super::PDF_EXPORT_LABEL_PREFIX);
 

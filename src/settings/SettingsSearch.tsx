@@ -23,7 +23,7 @@ import { isImeKeydown } from "../utils/ime";
 /** A page the search reads, rendered out of sight while a query is typed. */
 export interface SearchablePage {
   key: string;
-  /** "Editor & Appearance" or "General › About Textus". */
+  /** "Editor & Appearance" or "General › About Moxie". */
   name: string;
   render: () => ReactNode;
 }

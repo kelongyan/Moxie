@@ -86,7 +86,7 @@ function floatingPlace(value: unknown, what: string): FloatingPlace {
   throw new ManifestError(`${what} must be "desktop", "window" or "either".`);
 }
 
-/** Code block languages Textus draws itself: a plugin can't take them. */
+/** Code block languages Moxie draws itself: a plugin can't take them. */
 export const SUGGEST_KINDS: readonly SuggestKind[] = ["wikilinks"];
 const EMBED_KINDS: readonly EmbedKind[] = ["note", "heading", "block"];
 const HOVER_KINDS: readonly HoverContribution[] = [
@@ -95,7 +95,7 @@ const HOVER_KINDS: readonly HoverContribution[] = [
   "citation",
 ];
 
-/** The entries of `values` among `known`: a later Textus's are left out. */
+/** The entries of `values` among `known`: a later Moxie's are left out. */
 const known = <T extends string>(values: string[], kinds: readonly T[]) =>
   values.filter((v): v is T => (kinds as readonly string[]).includes(v));
 
@@ -198,7 +198,7 @@ function parseSetting(raw: unknown, at: string): SettingContribution {
   };
 }
 
-/** A command's `runs`: one of Textus's own commands ("textus.…") and
+/** A command's `runs`: one of Moxie's own commands ("textus.…") and
  *  its arguments. */
 function textusRun(
   raw: unknown,
@@ -207,7 +207,7 @@ function textusRun(
   const o = object(raw, at);
   const command = text(o.command, `${at}.command`);
   if (!command.startsWith("textus."))
-    throw new Error(`${at}.command must be one of Textus's ("textus.…").`);
+    throw new Error(`${at}.command must be one of Moxie's ("textus.…").`);
   return {
     command,
     args: o.args === undefined ? [] : list(o.args, `${at}.args`),
@@ -405,7 +405,7 @@ export function parseContributes(raw: unknown, id: string): Contributes {
         );
       if (BUILT_IN_BLOCKS.includes(language))
         throw new ManifestError(
-          `${at}.language "${language}" is drawn by Textus itself.`,
+          `${at}.language "${language}" is drawn by Moxie itself.`,
         );
       if (o.frame !== undefined && o.frame !== "none")
         throw new ManifestError(`${at}.frame can only be "none".`);
@@ -429,7 +429,7 @@ export function parseContributes(raw: unknown, id: string): Contributes {
       };
     },
   );
-  // A kind this Textus doesn't know is a later one's: left out.
+  // A kind this Moxie doesn't know is a later one's: left out.
   const suggestFor = list(c.suggestFor, "contributes.suggestFor")
     .map((x, i) => text(x, `contributes.suggestFor[${i}]`))
     .filter((kind): kind is SuggestKind =>

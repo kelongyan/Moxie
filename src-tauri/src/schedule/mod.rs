@@ -89,7 +89,7 @@ mod desktop {
         out
     }
 
-    /// Reads the jobs and starts the timer; jobs missed while Textus wasn't
+    /// Reads the jobs and starts the timer; jobs missed while Moxie wasn't
     /// running come due on its first look.
     pub fn start(app: &tauri::AppHandle) {
         app.manage(Scheduler {

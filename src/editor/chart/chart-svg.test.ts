@@ -74,7 +74,7 @@ describe("renderChart", () => {
     const svg = renderChart(BAR, { width: 600 });
     const root = parse(svg);
     expect(root.querySelector("parsererror")).toBeNull();
-    expect(root.getAttribute("class")).toBe("textus-chart");
+    expect(root.getAttribute("class")).toBe("moxie-chart");
     expect(root.getAttribute("viewBox")).toMatch(/^0 0 600 \d+$/);
     expect(root.querySelectorAll('g[data-id^="series-"]')).toHaveLength(2);
     expect(root.querySelectorAll('g[data-id="series-0"] path')).toHaveLength(3);

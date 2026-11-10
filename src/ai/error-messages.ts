@@ -2,7 +2,7 @@ import type { Strings, TextKey } from "../i18n/strings";
 import { explainError } from "../utils/error-explain";
 
 /**
- * What kind of failure a provider error is, so Textus can say what to do in
+ * What kind of failure a provider error is, so Moxie can say what to do in
  * the user's language above the provider's own message. Unrecognized errors
  * show as they came.
  */
@@ -69,7 +69,7 @@ export function aiErrorTexts(t: Strings): Record<AiErrorKind, string> {
   ) as Record<AiErrorKind, string>;
 }
 
-/** The provider's message with what to do above it, when Textus knows;
+/** The provider's message with what to do above it, when Moxie knows;
  *  other failures as {@link explainError} says them. */
 export function explainAiError(text: string, t: Strings): string {
   const kind = classifyAiError(text);

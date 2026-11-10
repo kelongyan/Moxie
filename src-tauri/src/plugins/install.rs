@@ -160,7 +160,7 @@ pub(super) fn install_sync(
     result
 }
 
-/// A plugin's files as text, by path in the plugin, as Textus AI writes them.
+/// A plugin's files as text, by path in the plugin, as Moxie AI writes them.
 #[derive(Deserialize, Debug)]
 #[cfg_attr(test, derive(specta::Type))]
 pub struct PluginFile {

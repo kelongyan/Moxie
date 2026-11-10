@@ -34,7 +34,7 @@ test("Interface Text Size scales the sidebar, the tabs, the AI panel and the ico
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-sidebar-open": "1", "textus-agent-panel-open": "1" },
+    storage: { "moxie-sidebar-open": "1", "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, SAMPLE_DOC);
   // A second tab, for the tab bar.
@@ -68,7 +68,7 @@ test("a wider window takes the icons and the bar up in a straight line", async (
   await page.setViewportSize({ width: 1200, height: 760 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-sidebar-open": "1" },
+    storage: { "moxie-sidebar-open": "1" },
   });
   const chrome = async () => ({
     bar: (await box(page, ".window-bar")).height,

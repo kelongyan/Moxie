@@ -35,7 +35,7 @@ const asked = new Set<string>();
  * Another app's picture folder found in the document's folder (an Obsidian
  * vault, VS Code's settings...): offered once on a corner card, never
  * applied by itself. Adopting writes it into the project's
- * .textus/settings.json, which then applies without asking; keeping the
+ * .moxie/settings.json, which then applies without asking; keeping the
  * current setting writes that it was turned down.
  */
 export function ConventionsCard({
@@ -62,7 +62,7 @@ export function ConventionsCard({
       .folderConventions(path)
       .then((c) => {
         const found = c.detected;
-        const source = c.sources.find((s) => s.app !== "textus");
+        const source = c.sources.find((s) => s.app !== "moxie");
         if (!current || !found || !source || asked.has(source.root)) return;
         const pictures = picturesOf(found, settings, t);
         if (!pictures) return;

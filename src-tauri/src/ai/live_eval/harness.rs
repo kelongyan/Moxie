@@ -23,12 +23,12 @@ use std::time::Instant;
 // ------------------------------------------------------------- environment
 
 /// A key for a live run: the environment variable `name`, else `name=value`
-/// in TEXTUS_ENV_FILE or `.env.local` at the repository root.
+/// in MOXIE_ENV_FILE or `.env.local` at the repository root.
 pub fn secret(name: &str) -> Option<String> {
     if let Some(value) = std::env::var(name).ok().filter(|v| !v.trim().is_empty()) {
         return Some(value.trim().to_string());
     }
-    let path = std::env::var("TEXTUS_ENV_FILE")
+    let path = std::env::var("MOXIE_ENV_FILE")
         .unwrap_or_else(|_| format!("{}/../.env.local", env!("CARGO_MANIFEST_DIR")));
     let text = std::fs::read_to_string(path).ok()?;
     env_file_value(&text, name)
@@ -52,10 +52,10 @@ fn env_file_value(text: &str, name: &str) -> Option<String> {
     })
 }
 
-/// A run through scripts/live-eval.mjs sets TEXTUS_EVAL_REQUIRE_KEY: there a
+/// A run through scripts/live-eval.mjs sets MOXIE_EVAL_REQUIRE_KEY: there a
 /// missing key is a mistake, not a reason to pass without testing anything.
 fn key_required() -> bool {
-    std::env::var("TEXTUS_EVAL_REQUIRE_KEY").is_ok_and(|v| v == "1")
+    std::env::var("MOXIE_EVAL_REQUIRE_KEY").is_ok_and(|v| v == "1")
 }
 
 pub fn auth() -> Option<AnthropicAuth> {
@@ -63,7 +63,7 @@ pub fn auth() -> Option<AnthropicAuth> {
         return Some(AnthropicAuth::ApiKey(key));
     }
     // The older one-key file still works.
-    let path = std::env::var("TEXTUS_ANTHROPIC_KEY_FILE")
+    let path = std::env::var("MOXIE_ANTHROPIC_KEY_FILE")
         .unwrap_or_else(|_| format!("{}/../.anthropic-api-key.local", env!("CARGO_MANIFEST_DIR")));
     match std::fs::read_to_string(&path) {
         Ok(key) if !key.trim().is_empty() => Some(AnthropicAuth::ApiKey(key.trim().to_string())),
@@ -82,9 +82,9 @@ pub fn block_on<F: std::future::Future>(future: F) -> F::Output {
     tauri::async_runtime::block_on(future)
 }
 
-/// The shipped agent default, unless TEXTUS_EVAL_AGENT_MODEL overrides it.
+/// The shipped agent default, unless MOXIE_EVAL_AGENT_MODEL overrides it.
 pub fn agent_model() -> String {
-    std::env::var("TEXTUS_EVAL_AGENT_MODEL").unwrap_or_else(|_| {
+    std::env::var("MOXIE_EVAL_AGENT_MODEL").unwrap_or_else(|_| {
         let model = crate::ai::catalog::find(agent_provider_id())
             .and_then(|e| e.agent_default_model)
             .expect("the eval's provider has an agent default");
@@ -97,17 +97,17 @@ pub fn agent_model() -> String {
     })
 }
 
-/// TEXTUS_EVAL_PROVIDER=vertex: Gemini on Vertex AI's OpenAI-compatible
-/// endpoint (GOOGLE_VERTEX_API_KEY, TEXTUS_EVAL_VERTEX_PROJECT).
+/// MOXIE_EVAL_PROVIDER=vertex: Gemini on Vertex AI's OpenAI-compatible
+/// endpoint (GOOGLE_VERTEX_API_KEY, MOXIE_EVAL_VERTEX_PROJECT).
 fn on_vertex() -> bool {
-    std::env::var("TEXTUS_EVAL_PROVIDER").is_ok_and(|v| v == "vertex")
+    std::env::var("MOXIE_EVAL_PROVIDER").is_ok_and(|v| v == "vertex")
 }
 
-/// TEXTUS_EVAL_PROVIDER: doubao, deepseek, minimax or opencode-go run the agent cases on
+/// MOXIE_EVAL_PROVIDER: doubao, deepseek, minimax or opencode-go run the agent cases on
 /// that provider (the judge stays Claude); chatgpt uses this machine's app
 /// sign-in, read in place and never copied, printed or refreshed.
 pub fn agent_provider_id() -> &'static str {
-    match std::env::var("TEXTUS_EVAL_PROVIDER").as_deref() {
+    match std::env::var("MOXIE_EVAL_PROVIDER").as_deref() {
         Ok("doubao") => "doubao",
         Ok("deepseek") => "deepseek",
         Ok("minimax") => "minimax",
@@ -116,22 +116,22 @@ pub fn agent_provider_id() -> &'static str {
         Ok("vertex") => "google",
         Ok("anthropic") | Err(_) => "anthropic",
         // A typo must not quietly run every case on paid Claude.
-        Ok(other) => panic!("TEXTUS_EVAL_PROVIDER={other} is not a provider the eval knows"),
+        Ok(other) => panic!("MOXIE_EVAL_PROVIDER={other} is not a provider the eval knows"),
     }
 }
 
 /// The app's ChatGPT sign-in: its access token and account.
 pub(crate) fn chatgpt_sign_in() -> (String, String) {
-    // TEXTUS_EVAL_CHATGPT_AUTH: another profile's sign-in (the test one).
-    let path = std::env::var_os("TEXTUS_EVAL_CHATGPT_AUTH")
+    // MOXIE_EVAL_CHATGPT_AUTH: another profile's sign-in (the test one).
+    let path = std::env::var_os("MOXIE_EVAL_CHATGPT_AUTH")
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             std::env::var_os("HOME")
                 .map(PathBuf::from)
                 .expect("HOME")
-                .join(".config/com.catvinci.textus/auth-codex.json")
+                .join(".config/com.catvinci.moxie/auth-codex.json")
         });
-    let text = std::fs::read_to_string(&path).expect("Textus signed in to ChatGPT");
+    let text = std::fs::read_to_string(&path).expect("Moxie signed in to ChatGPT");
     let auth: Value = serde_json::from_str(&text).expect("auth-codex.json");
     let expires = auth["expires"].as_i64().unwrap_or(0);
     let now = std::time::SystemTime::now()
@@ -140,7 +140,7 @@ pub(crate) fn chatgpt_sign_in() -> (String, String) {
         .as_millis() as i64;
     assert!(
         expires > now,
-        "the ChatGPT sign-in has expired: sign in again in Textus"
+        "the ChatGPT sign-in has expired: sign in again in Moxie"
     );
     let field = |name: &str| {
         auth[name]
@@ -180,8 +180,8 @@ pub(crate) fn agent_endpoint(auth: &AnthropicAuth) -> Endpoint {
             }
         }
         "google" => {
-            let project = std::env::var("TEXTUS_EVAL_VERTEX_PROJECT")
-                .expect("TEXTUS_EVAL_VERTEX_PROJECT: the Vertex AI project");
+            let project = std::env::var("MOXIE_EVAL_VERTEX_PROJECT")
+                .expect("MOXIE_EVAL_VERTEX_PROJECT: the Vertex AI project");
             Endpoint::ChatCompletions {
                 base_url: format!(
                     "https://aiplatform.googleapis.com/v1/projects/{project}/locations/global/endpoints/openapi"
@@ -196,9 +196,9 @@ pub(crate) fn agent_endpoint(auth: &AnthropicAuth) -> Endpoint {
 }
 
 /// The shipped writing (completion + grammar) model, unless
-/// TEXTUS_EVAL_WRITING_MODEL overrides it.
+/// MOXIE_EVAL_WRITING_MODEL overrides it.
 pub fn writing_model() -> String {
-    std::env::var("TEXTUS_EVAL_WRITING_MODEL")
+    std::env::var("MOXIE_EVAL_WRITING_MODEL")
         .unwrap_or_else(|_| anthropic::COMPLETION_MODEL.to_string())
 }
 
@@ -208,28 +208,28 @@ pub fn writing_model_arg(model: &str) -> Option<&str> {
     (model != anthropic::COMPLETION_MODEL).then_some(model)
 }
 
-/// The judge's model: Sonnet unless TEXTUS_EVAL_JUDGE_MODEL names another;
+/// The judge's model: Sonnet unless MOXIE_EVAL_JUDGE_MODEL names another;
 /// Opus costs several times the whole run.
 pub fn judge_model() -> String {
-    std::env::var("TEXTUS_EVAL_JUDGE_MODEL").unwrap_or_else(|_| "claude-sonnet-5-5".into())
+    std::env::var("MOXIE_EVAL_JUDGE_MODEL").unwrap_or_else(|_| "claude-sonnet-5-5".into())
 }
 
-/// TEXTUS_EVAL_JUDGE=1 turns the judge on. Off by default: the automatic
+/// MOXIE_EVAL_JUDGE=1 turns the judge on. Off by default: the automatic
 /// checks decide pass or fail, and judging triples the cost.
 fn judge_enabled() -> bool {
-    std::env::var("TEXTUS_EVAL_JUDGE").is_ok_and(|v| v == "1")
+    std::env::var("MOXIE_EVAL_JUDGE").is_ok_and(|v| v == "1")
 }
 
-/// TEXTUS_EVAL_FILTER: run only cases whose id contains this substring.
+/// MOXIE_EVAL_FILTER: run only cases whose id contains this substring.
 pub fn selected(id: &str) -> bool {
-    std::env::var("TEXTUS_EVAL_FILTER")
+    std::env::var("MOXIE_EVAL_FILTER")
         .map_or(true, |f| f.split(',').any(|f| id.contains(f.trim())))
 }
 
-/// Runs `f` over `items` on TEXTUS_EVAL_JOBS worker threads (default 6),
+/// Runs `f` over `items` on MOXIE_EVAL_JOBS worker threads (default 6),
 /// keeping the input order.
 pub fn par_map<T: Sync, R: Send>(items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec<R> {
-    let jobs: usize = std::env::var("TEXTUS_EVAL_JOBS")
+    let jobs: usize = std::env::var("MOXIE_EVAL_JOBS")
         .ok()
         .and_then(|v| v.parse().ok())
         .unwrap_or(6);
@@ -255,7 +255,7 @@ pub fn par_map<T: Sync, R: Send>(items: &[T], f: impl Fn(&T) -> R + Sync) -> Vec
         .collect()
 }
 
-/// With TEXTUS_EVAL_TIMELINE=1, what the stream sends and when, and every
+/// With MOXIE_EVAL_TIMELINE=1, what the stream sends and when, and every
 /// pause of over a second - to see where a request keeps the user waiting.
 struct Timeline {
     on: bool,
@@ -275,7 +275,7 @@ struct TimelineState {
 impl Timeline {
     fn from_env() -> Self {
         Timeline {
-            on: std::env::var("TEXTUS_EVAL_TIMELINE").is_ok_and(|v| v == "1"),
+            on: std::env::var("MOXIE_EVAL_TIMELINE").is_ok_and(|v| v == "1"),
             started: Instant::now(),
             state: Mutex::new(TimelineState::default()),
         }
@@ -462,10 +462,10 @@ pub fn spent_usd() -> f64 {
     SPENT_MICRO_USD.load(Ordering::SeqCst) as f64 / 1e6
 }
 
-/// TEXTUS_EVAL_BUDGET_USD: once spent, cases not yet started are skipped
+/// MOXIE_EVAL_BUDGET_USD: once spent, cases not yet started are skipped
 /// (a failed `budget` check). Running cases finish.
 pub fn budget_exhausted() -> Option<String> {
-    let budget: f64 = std::env::var("TEXTUS_EVAL_BUDGET_USD")
+    let budget: f64 = std::env::var("MOXIE_EVAL_BUDGET_USD")
         .ok()
         .and_then(|v| v.parse().ok())?;
     let spent = spent_usd();
@@ -810,7 +810,7 @@ pub fn run_conversation(
             proposed: Default::default(),
             checks: Default::default(),
         };
-        // The app's provider path, on Claude unless TEXTUS_EVAL_PROVIDER says otherwise.
+        // The app's provider path, on Claude unless MOXIE_EVAL_PROVIDER says otherwise.
         let agent = AgentProvider {
             id: agent_provider_id().to_string(),
             model: setup.model.to_string(),
@@ -1201,7 +1201,7 @@ impl Verdict {
     }
 }
 
-const JUDGE_INSTRUCTIONS: &str = "You grade the output of the AI features of Textus, a Markdown writing app, for a regression evaluation. Be strict and specific: the bar is a careful professional editor who is fluent in the language of the text.
+const JUDGE_INSTRUCTIONS: &str = "You grade the output of the AI features of Moxie, a Markdown writing app, for a regression evaluation. Be strict and specific: the bar is a careful professional editor who is fluent in the language of the text.
 
 Score each criterion from 1 to 5: 5 = could not reasonably be improved; 4 = good, minor nits only; 3 = acceptable but with a flaw the user would notice; 2 = poor - the user would have to redo much of it; 1 = wrong, harmful, or ignores the request. Use null when a criterion genuinely does not apply.
 
@@ -1450,7 +1450,7 @@ pub fn skipped(case: &str, model: &str, lang: &str, reason: String, input: Value
 fn run_dir() -> &'static PathBuf {
     static DIR: OnceLock<PathBuf> = OnceLock::new();
     DIR.get_or_init(|| {
-        let dir = std::env::var("TEXTUS_EVAL_OUT")
+        let dir = std::env::var("MOXIE_EVAL_OUT")
             .map(PathBuf::from)
             .unwrap_or_else(|_| {
                 let stamp = std::time::SystemTime::now()
@@ -1458,7 +1458,7 @@ fn run_dir() -> &'static PathBuf {
                     .unwrap()
                     .as_secs();
                 std::env::temp_dir()
-                    .join("textus-live-eval")
+                    .join("moxie-live-eval")
                     .join(stamp.to_string())
             });
         std::fs::create_dir_all(&dir).expect("create eval output dir");
@@ -1611,7 +1611,7 @@ pub fn finish(suite: &str, records: Vec<Record>) -> Vec<String> {
         .count();
     if skipped > 0 {
         md.push_str(&format!(
-            "\n**Warning: {skipped} of {n} cases were skipped by the budget guard** (TEXTUS_EVAL_BUDGET_USD).\n"
+            "\n**Warning: {skipped} of {n} cases were skipped by the budget guard** (MOXIE_EVAL_BUDGET_USD).\n"
         ));
     }
     md.push_str(&format!(
@@ -1647,10 +1647,10 @@ fn write_index(dir: &Path, suite: &str, rows: Vec<Value>) {
     std::fs::write(&path, serde_json::to_string_pretty(&all).unwrap()).expect("write index");
 }
 
-/// TEXTUS_EVAL_SPEND_FILE: a running `{"spent_usd", "runs"}` ledger each
+/// MOXIE_EVAL_SPEND_FILE: a running `{"spent_usd", "runs"}` ledger each
 /// finished suite adds its cost to.
 fn record_spend(dir: &Path, suite: &str, cases: usize, total: &Usage) {
-    let Ok(path) = std::env::var("TEXTUS_EVAL_SPEND_FILE") else {
+    let Ok(path) = std::env::var("MOXIE_EVAL_SPEND_FILE") else {
         return;
     };
     let mut ledger: Value = std::fs::read_to_string(&path)

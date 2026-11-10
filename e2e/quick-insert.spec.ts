@@ -3,7 +3,7 @@ import { HOME, selectionRead, END } from "./helpers";
 import { hasPlugin, openPath, openWithPlugins } from "./plugin-helpers";
 
 // The Quick Insert plugin: blocks from the / menu, Turn into…, and emoji
-// after a colon - all through Textus's own Format commands.
+// after a colon - all through Moxie's own Format commands.
 
 const ID = "catvinci.quick-insert";
 test.skip(!hasPlugin(ID), `${ID} is not in this checkout`);

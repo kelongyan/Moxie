@@ -286,7 +286,7 @@ export type WebSearchStatus = WebSearchStatus_Serialize | WebSearchStatus_Deseri
 export type WebSearchStatus_Deserialize = {
 	/**  The provider searches by itself. */
 	native: boolean,
-	/**  Textus's own search service in use otherwise ("deepseek", ...). */
+	/**  Moxie's own search service in use otherwise ("deepseek", ...). */
 	service?: Backend | null,
 };
 
@@ -297,7 +297,7 @@ export type WebSearchStatus_Deserialize = {
 export type WebSearchStatus_Serialize = {
 	/**  The provider searches by itself. */
 	native: boolean,
-	/**  Textus's own search service in use otherwise ("deepseek", ...). */
+	/**  Moxie's own search service in use otherwise ("deepseek", ...). */
 	service: Backend | null,
 };
 

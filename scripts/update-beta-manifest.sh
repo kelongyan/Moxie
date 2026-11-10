@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Points the beta update channel at a published release: copies that
-# release's textus-latest.json to textus-beta.json in our R2 bucket
-# (textus-downloads), which the app's beta channel reads through
-# textus.md/download/textus-beta.json (src-tauri/src/commands/update.rs).
+# release's moxie-latest.json to moxie-beta.json in our R2 bucket
+# (moxie-downloads), which the app's beta channel reads through
+# textus.md/download/moxie-beta.json (src-tauri/src/commands/update.rs).
 # GitHub can't serve it: releases/latest skips pre-releases.
 #
 #   scripts/update-beta-manifest.sh v1.0.5-rc.1
@@ -18,14 +18,14 @@
 # it needs gh logged in and wrangler logged in to the "ChengAo Home" account.
 set -euo pipefail
 tag="${1:?usage: update-beta-manifest.sh vX.Y.Z[-rc.N]}"
-repo=CatVinci-Studio/Textus
-bucket=textus-downloads
-name=textus-beta.json
+repo=CatVinci-Studio/Moxie
+bucket=moxie-downloads
+name=moxie-beta.json
 export CLOUDFLARE_ACCOUNT_ID="${CLOUDFLARE_ACCOUNT_ID:-49abb4d436c552f6e4497b1782fc9beb}"
 
 work="$(mktemp -d)"
 trap 'echo "working files left in $work"' EXIT
-gh release download "$tag" --repo "$repo" --dir "$work" --pattern textus-latest.json
+gh release download "$tag" --repo "$repo" --dir "$work" --pattern moxie-latest.json
 
 # What beta users read now. A missing object is a first run; any other
 # failure stops here rather than risk moving the channel backwards.
@@ -43,14 +43,14 @@ else
 fi
 
 decision="$(node scripts/updater-manifest.mjs beta --version "${tag#v}" \
-  --manifest "$work/textus-latest.json" "${current[@]}")"
+  --manifest "$work/moxie-latest.json" "${current[@]}")"
 if [ "$decision" != advance ]; then
   echo "kept the beta manifest: $tag is older"
   exit 0
 fi
 
 for attempt in 1 2 3; do
-  if npx -y wrangler@4 r2 object put "$bucket/$name" --file "$work/textus-latest.json" \
+  if npx -y wrangler@4 r2 object put "$bucket/$name" --file "$work/moxie-latest.json" \
     --remote --content-type application/json >/dev/null; then
     echo "beta manifest now $tag"
     exit 0

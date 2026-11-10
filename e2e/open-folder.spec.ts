@@ -36,7 +36,7 @@ function openInTab(page: Page, path: string) {
   return page.evaluate(
     (p) =>
       window.dispatchEvent(
-        new CustomEvent("textus:open-file-in-tab", { detail: p }),
+        new CustomEvent("moxie:open-file-in-tab", { detail: p }),
       ),
     path,
   );
@@ -90,7 +90,7 @@ test("Open Folder pins the tree's root and lists the folder as recent; Close Pro
   // Up stops at the folder: it is the edge of what was opened.
   await expect(page.locator(".sidebar .tree-crumb")).toHaveCount(0);
   expect(
-    await page.evaluate(() => localStorage.getItem("textus-open-folder")),
+    await page.evaluate(() => localStorage.getItem("moxie-open-folder")),
   ).toBe(JSON.stringify("/work/notes"));
   expect(
     await page.evaluate(
@@ -106,7 +106,7 @@ test("Open Folder pins the tree's root and lists the folder as recent; Close Pro
     0,
   );
   expect(
-    await page.evaluate(() => localStorage.getItem("textus-open-folder")),
+    await page.evaluate(() => localStorage.getItem("moxie-open-folder")),
   ).toBe("null");
 });
 
@@ -122,8 +122,8 @@ test("a recent folder opens from File > Open Recent", async ({ page }) => {
 test("the folder comes back with the session", async ({ page }) => {
   await open(page, {
     storage: {
-      "textus-open-folder": JSON.stringify("/work/notes"),
-      "textus-sidebar-open": "1",
+      "moxie-open-folder": JSON.stringify("/work/notes"),
+      "moxie-sidebar-open": "1",
     },
   });
   await expect(page.locator(rootLabel)).toHaveText("notes");

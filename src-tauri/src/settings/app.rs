@@ -122,7 +122,7 @@ pub fn boot_script(app: &AppHandle, label: &str) -> String {
         "aiUnavailable": ai_unavailable,
     });
     format!(
-        "{}\n;window.__textusBoot({boot}, {theme_css});",
+        "{}\n;window.__moxieBoot({boot}, {theme_css});",
         include_str!("../boot.js")
     )
 }

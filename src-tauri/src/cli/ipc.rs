@@ -68,7 +68,7 @@ impl Answer {
 #[cfg(target_os = "macos")]
 pub fn endpoint() -> Option<PathBuf> {
     let home = PathBuf::from(std::env::var_os("HOME")?);
-    Some(home.join("Library/Application Support/com.catvinci.textus/cli.sock"))
+    Some(home.join("Library/Application Support/com.catvinci.moxie/cli.sock"))
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -76,7 +76,7 @@ pub fn endpoint() -> Option<PathBuf> {
     let dir = std::env::var_os("XDG_RUNTIME_DIR")
         .map(PathBuf::from)
         .or_else(|| Some(PathBuf::from(std::env::var_os("HOME")?).join(".local/share")))?;
-    Some(dir.join("com.catvinci.textus/cli.sock"))
+    Some(dir.join("com.catvinci.moxie/cli.sock"))
 }
 
 #[cfg(windows)]
@@ -86,7 +86,7 @@ pub fn endpoint() -> Option<PathBuf> {
         .chars()
         .map(|c| if c.is_alphanumeric() { c } else { '_' })
         .collect();
-    Some(PathBuf::from(format!(r"\\.\pipe\textus-cli-{safe}")))
+    Some(PathBuf::from(format!(r"\\.\pipe\moxie-cli-{safe}")))
 }
 
 #[cfg(unix)]
@@ -120,20 +120,20 @@ pub fn exchange(
         .get_mut()
         .write_all(line.as_bytes())
         .and_then(|()| reader.get_mut().flush())
-        .map_err(|e| format!("Textus couldn't be reached: {e}"))?;
+        .map_err(|e| format!("Moxie couldn't be reached: {e}"))?;
     let mut line = String::new();
     loop {
         line.clear();
         let read = reader
             .read_line(&mut line)
-            .map_err(|e| format!("Textus stopped answering: {e}"))?;
+            .map_err(|e| format!("Moxie stopped answering: {e}"))?;
         if read == 0 {
-            return Err("Textus closed the connection without an answer.".into());
+            return Err("Moxie closed the connection without an answer.".into());
         }
         match serde_json::from_str::<Reply>(line.trim_end()) {
             Ok(Reply::Exit(code)) => return Ok(code),
             Ok(reply) => on_reply(reply),
-            Err(_) => return Err("Textus answered with something unreadable.".into()),
+            Err(_) => return Err("Moxie answered with something unreadable.".into()),
         }
     }
 }
@@ -154,7 +154,7 @@ where
     limited.read_line(&mut line).await?;
     let answer = match serde_json::from_str::<Request>(line.trim_end()) {
         Ok(request) => handle(request).await,
-        Err(_) => Answer::fail("Not a request this Textus understands.", 2),
+        Err(_) => Answer::fail("Not a request this Moxie understands.", 2),
     };
     let stream = stream.get_mut();
     for reply in answer.replies() {

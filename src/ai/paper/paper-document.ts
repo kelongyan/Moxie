@@ -97,7 +97,7 @@ export function paperDraft(
 }
 
 const PICTURE_LINE =
-  /^[ \t]*!\[[^\]\n]*\]\(textus-generated:[0-9a-z]+[^)\n]*\)[ \t]*\n?/gm;
+  /^[ \t]*!\[[^\]\n]*\]\(moxie-generated:[0-9a-z]+[^)\n]*\)[ \t]*\n?/gm;
 
 /** The finished paper without its pictures: what is written first; the
  *  pictures follow once they are made. */

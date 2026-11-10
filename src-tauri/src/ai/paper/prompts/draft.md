@@ -49,8 +49,8 @@ a ```chart block: JSON {"type": "bar"|"line"|"area"|"pie"|"scatter", "title", "x
 
 ## figure.generated
 
-a line ![caption](textus-picture:16:9 what the picture shows, in detail)
+a line ![caption](moxie-picture:16:9 what the picture shows, in detail)
 
 ## figure.web
 
-a line <!-- textus-figure web: caption | a few English words to search Wikimedia Commons for --> where it goes; a real photograph or figure is found for it there later, so ask for something Commons would have (a place, an object, a species, a historical image), not an abstract idea
+a line <!-- moxie-figure web: caption | a few English words to search Wikimedia Commons for --> where it goes; a real photograph or figure is found for it there later, so ask for something Commons would have (a place, an object, a species, a historical image), not an abstract idea

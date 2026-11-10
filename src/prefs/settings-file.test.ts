@@ -93,7 +93,7 @@ describe("the settings file", () => {
     expect(settingsFromFile(JSON.stringify(odd), mine)?.ai).toBeNull();
   });
 
-  it("is refused when it isn't Textus settings", () => {
+  it("is refused when it isn't Moxie settings", () => {
     expect(settingsFromFile("{}", mine)).toBeNull();
     expect(settingsFromFile("not json", mine)).toBeNull();
     expect(settingsFromFile('{"language":"de"}', mine)).toBeNull();

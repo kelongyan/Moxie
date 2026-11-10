@@ -14,7 +14,7 @@ import "../../../ui/base.css";
 import "../../../ui/app-dialog.css";
 import "../AgentTurnView.css";
 import "../inline-chat.css";
-import { TextusAiOffNote } from "../../TextusAiSwitch";
+import { MoxieAiOffNote } from "../../MoxieAiSwitch";
 import "./chat-window.css";
 
 /**
@@ -55,12 +55,12 @@ export function ChatWindowApp() {
   const dialogs = <AppDialogHost okLabel={t.dialogOk} />;
 
   // Turned off - here or in any window - the conversation waits behind the
-  // note, and comes back as it was once Textus AI is on again.
-  if (!settings.textusAi)
+  // note, and comes back as it was once Moxie AI is on again.
+  if (!settings.moxieAi)
     return (
       <div className="chat-window">
         {header}
-        <TextusAiOffNote className="chat-window-ai-off" />
+        <MoxieAiOffNote className="chat-window-ai-off" />
         {dialogs}
       </div>
     );

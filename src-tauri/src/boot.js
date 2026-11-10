@@ -11,8 +11,8 @@
 //    second copies.
 //
 // Plain JavaScript with no imports: it is injected as a string.
-window.__textusBoot = function (boot, themeCss) {
-  delete window.__textusBoot;
+window.__moxieBoot = function (boot, themeCss) {
+  delete window.__moxieBoot;
   window.__BOOT__ = boot;
   var settings = boot.settings || {};
 
@@ -140,7 +140,7 @@ window.__textusBoot = function (boot, themeCss) {
           },
         );
       }
-      addStyle("textus-custom-theme", css);
+      addStyle("moxie-custom-theme", css);
       // The app's own colours (sidebar, background, accents) as the
       // frontend last derived them from this stylesheet in this appearance
       // - applyThemeChrome() in src/theme/theme-chrome.ts, which needs a
@@ -156,13 +156,13 @@ window.__textusBoot = function (boot, themeCss) {
         chrome.sourceLength === source.length &&
         typeof chrome.css === "string"
       )
-        addStyle("textus-imported-chrome", chrome.css);
+        addStyle("moxie-imported-chrome", chrome.css);
     }
     if (settings.customCss && String(settings.customCss).trim()) {
-      addStyle("textus-user-css", String(settings.customCss));
+      addStyle("moxie-user-css", String(settings.customCss));
       // promoteCustomProperties() in SettingsContext.tsx: the user's `--*`
       // beat the imported chrome's !important ones.
-      var userSheet = document.getElementById("textus-user-css").sheet;
+      var userSheet = document.getElementById("moxie-user-css").sheet;
       if (userSheet) promote(userSheet.cssRules);
     }
   }

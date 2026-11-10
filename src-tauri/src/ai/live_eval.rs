@@ -4,7 +4,7 @@
 //!
 //! Run from src-tauri/:
 //!   cargo test --lib live_eval -- --ignored --nocapture --test-threads=1
-//! Optional knobs: TEXTUS_EVAL_FILTER, _AGENT_MODEL, _WRITING_MODEL, _JUDGE=0,
+//! Optional knobs: MOXIE_EVAL_FILTER, _AGENT_MODEL, _WRITING_MODEL, _JUDGE=0,
 //! _JOBS, _OUT, _BUDGET_USD, _SPEND_FILE. Without a key, every test passes vacuously.
 
 mod agent_builtin;
@@ -67,7 +67,7 @@ fn assert_clean(suite: &str, records: Vec<Record>) {
     );
 }
 
-/// Every agent case on the shipped agent model (or TEXTUS_EVAL_AGENT_MODEL).
+/// Every agent case on the shipped agent model (or MOXIE_EVAL_AGENT_MODEL).
 #[test]
 #[ignore = "live API - see module docs"]
 fn live_agent_matrix() {
@@ -115,7 +115,7 @@ fn live_grammar_matrix() {
 }
 
 /// Free, no key needed: prints every case id per suite (after
-/// TEXTUS_EVAL_FILTER) - what a run would send, for sizing it first.
+/// MOXIE_EVAL_FILTER) - what a run would send, for sizing it first.
 #[test]
 #[ignore = "prints the case list"]
 fn list_eval_cases() {
@@ -168,7 +168,7 @@ fn list_builtin_cases() {
             .collect::<Vec<_>>()
             .join(", ")
     );
-    // About $0.02-0.03 an agent case with TEXTUS_EVAL_JUDGE=0.
+    // About $0.02-0.03 an agent case with MOXIE_EVAL_JUDGE=0.
     println!(
         "estimated cost without the judge: ${:.2}-{:.2}",
         cases.len() as f64 * 0.02,

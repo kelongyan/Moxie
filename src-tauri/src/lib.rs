@@ -118,9 +118,9 @@ fn desktop_setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>>
     #[cfg(target_os = "macos")]
     crate::editor_windows::watch_fullscreen(app.handle());
     // Plugins' jobs and notifications: before the links, one of which may be
-    // a notification's click that started Textus.
+    // a notification's click that started Moxie.
     schedule::start(app.handle());
-    // textus:// links for plugins.
+    // moxie:// links for plugins.
     plugins::uri::listen(app.handle());
     // Windows/Linux pass an associated file as argv; macOS parks its launch files
     // in LAUNCH_OPENED. With none, restore last session's documents (also what an
@@ -165,7 +165,7 @@ pub fn run() {
     let builder = tauri::Builder::default();
     // Windows and Linux would start a new process per opened file. Must be the
     // first plugin: a second launch hands over its argv and exits. Release builds
-    // only, so a dev build can run beside an installed Textus.
+    // only, so a dev build can run beside an installed Moxie.
     #[cfg(all(any(windows, target_os = "linux"), not(debug_assertions)))]
     let builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
         let paths = paths_from_argv(argv, std::path::Path::new(&cwd));
@@ -244,7 +244,7 @@ pub fn run() {
                 crate::editor_windows::reopen_without_windows(app_handle);
             }
             // Finder "Open With" arrives as an Apple open-documents event (never argv);
-            // iOS delivers "Open in Textus" the same way.
+            // iOS delivers "Open in Moxie" the same way.
             #[cfg(any(target_os = "macos", target_os = "ios"))]
             if let tauri::RunEvent::Opened { urls } = event {
                 open_urls(app_handle, urls);

@@ -1,7 +1,7 @@
 /**
  * Pasted HTML as its page meant it: Docs/Word style spans become <strong>,
  * <em>, <del>; mail's empty spacer paragraphs go; Outlook Safe Links become
- * their real address. Textus's own copies (`data-pm-slice`) are left alone.
+ * their real address. Moxie's own copies (`data-pm-slice`) are left alone.
  */
 
 const BLOCKS = "p,div,li,blockquote,h1,h2,h3,h4,h5,h6,section,article";

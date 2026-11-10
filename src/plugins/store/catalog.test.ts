@@ -24,7 +24,7 @@ vi.mock("../manager", () => ({
 const {
   installFromCatalog,
   loadCatalog,
-  neededTextus,
+  neededMoxie,
   offeredItems,
   searchCatalog,
   sortCatalog,
@@ -46,11 +46,11 @@ const entry = (id: string, version: string, engine: string) => ({
     name: id,
     version,
     publisher: "catvinci",
-    engines: { textus: engine },
+    engines: { moxie: engine },
   },
 });
 
-describe("catalog versions this Textus can run", () => {
+describe("catalog versions this Moxie can run", () => {
   beforeEach(async () => {
     installed.clear();
     installed.set("catvinci.old", "0.1.0");
@@ -69,7 +69,7 @@ describe("catalog versions this Textus can run", () => {
     expect(updateFor("catvinci.old")).toBeNull();
   });
 
-  it("names the Textus a plugin needs, and refuses to install it", async () => {
+  it("names the Moxie a plugin needs, and refuses to install it", async () => {
     await expect(installFromCatalog("catvinci.new")).rejects.toThrow(NEWER);
     expect(ipc.installFromCatalog).not.toHaveBeenCalled();
     await installFromCatalog("catvinci.ok");
@@ -78,9 +78,9 @@ describe("catalog versions this Textus can run", () => {
 
   it("needs nothing newer for a plugin that runs here", () => {
     expect(
-      neededTextus({
+      neededMoxie({
         manifest: { engine: `>=${APP_VERSION}` },
-      } as Parameters<typeof neededTextus>[0]),
+      } as Parameters<typeof neededMoxie>[0]),
     ).toBeNull();
   });
 });

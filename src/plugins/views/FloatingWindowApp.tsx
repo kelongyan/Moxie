@@ -37,7 +37,7 @@ function up(payload: Up) {
 /**
  * The window a floating view floats in over the desktop: transparent, the
  * plugin's page in a sandboxed frame as in the editor window, dragged
- * anywhere and with a right-click menu as there, which also opens Textus. The editor window runs the plugin; this
+ * anywhere and with a right-click menu as there, which also opens Moxie. The editor window runs the plugin; this
  * one passes the frame's messages to it and its answers back.
  */
 export function FloatingWindowApp() {

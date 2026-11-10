@@ -27,15 +27,15 @@ pub const COMMANDS: &[Command] = &[
     Command {
         name: "open",
         usage: "textus open [<file or folder>...]",
-        summary: "Open files or folders in Textus (also: textus <path>...)",
-        details: "With nothing to open, brings Textus to the front.",
+        summary: "Open files or folders in Moxie (also: textus <path>...)",
+        details: "With nothing to open, brings Moxie to the front.",
         runs: Runs::Open,
     },
     Command {
         name: "list",
         usage: "textus list [<folder>] [--json]",
         summary: "List the notes and documents in a folder",
-        details: "Lists what Textus AI can read there: text files and documents \
+        details: "Lists what Moxie AI can read there: text files and documents \
                   (PDF, Word, ...), leaving out hidden and ignored files.\n\
                   The folder is the current one when left out.",
         runs: Runs::Here,
@@ -45,7 +45,7 @@ pub const COMMANDS: &[Command] = &[
         usage: "textus read <file> [--json]",
         summary: "Print a file as Markdown, converting PDF, Word, EPUB and more",
         details: "Markdown and text print as they are; PDF, DOCX, PPTX, XLSX, \
-                  EPUB, RTF and HTML print as the Markdown Textus reads from them.",
+                  EPUB, RTF and HTML print as the Markdown Moxie reads from them.",
         runs: Runs::Here,
     },
     Command {
@@ -75,18 +75,18 @@ pub const COMMANDS: &[Command] = &[
     Command {
         name: "export",
         usage: "textus export <file> --to <format> [--out <file>]",
-        summary: "Export a document as PDF, HTML, Word and more, through Textus",
+        summary: "Export a document as PDF, HTML, Word and more, through Moxie",
         details: "Formats: pdf, html, docx, odt, rtf, epub, latex, mediawiki, rst, \
                   textile, opml (all but pdf and html need pandoc).\n\
                   Saves next to the document unless --out says where, and never \
-                  replaces a file. Opens the document in Textus to export it.",
+                  replaces a file. Opens the document in Moxie to export it.",
         runs: Runs::App,
     },
     Command {
         name: "commands",
         usage: "textus commands [list | run <id>] [--json]",
         summary: "List the command palette's commands, or run one",
-        details: "Plugins' commands included. Runs in the Textus window in front.",
+        details: "Plugins' commands included. Runs in the Moxie window in front.",
         runs: Runs::App,
     },
     Command {
@@ -94,7 +94,7 @@ pub const COMMANDS: &[Command] = &[
         usage: "textus plugin list | install <id or path> | enable <id> | disable <id> [--json]",
         summary: "List, install, turn on or turn off plugins",
         details: "install takes a plugin from the store by its id, or a package or \
-                  folder by its path. Turning one on asks for its permissions in Textus.",
+                  folder by its path. Turning one on asks for its permissions in Moxie.",
         runs: Runs::App,
     },
     Command {
@@ -107,7 +107,7 @@ pub const COMMANDS: &[Command] = &[
     Command {
         name: "skill",
         usage: "textus skill list [--json]",
-        summary: "List Textus AI's skills",
+        summary: "List Moxie AI's skills",
         details: "",
         runs: Runs::App,
     },
@@ -121,14 +121,14 @@ pub const COMMANDS: &[Command] = &[
     Command {
         name: "version",
         usage: "textus version",
-        summary: "Print the version of Textus",
+        summary: "Print the version of Moxie",
         details: "Also: textus --version, textus -V",
         runs: Runs::Here,
     },
     Command {
         name: "ai",
         usage: "textus ai",
-        summary: "Textus AI from the terminal",
+        summary: "Moxie AI from the terminal",
         details: "",
         runs: Runs::NotYet,
     },
@@ -146,7 +146,7 @@ pub fn find(name: &str) -> Option<&'static Command> {
 }
 
 pub fn version_line() -> String {
-    format!("Textus {}", env!("CARGO_PKG_VERSION"))
+    format!("Moxie {}", env!("CARGO_PKG_VERSION"))
 }
 
 /// `textus help`: every command but the ones kept for later, then the plugin
@@ -155,7 +155,7 @@ pub fn overview(plugins: &str) -> String {
     let width = COMMANDS.iter().map(|c| c.name.len()).max().unwrap_or(0);
     let mut out = format!(
         "{} - the next-generation Markdown editor, made for writing with AI\n\n\
-         Usage: textus [<file or folder>...]\n\
+         Usage: moxie [<file or folder>...]\n\
          \x20      textus <command> [<arguments>]\n\
          \x20      textus <plugin> <tool> [--<name> <value>...] [--json '<object>']\n\n\
          Commands:\n",

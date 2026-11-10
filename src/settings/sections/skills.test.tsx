@@ -60,7 +60,7 @@ describe("the user's skills", () => {
       selector: ".settings-skill-name",
     });
     const row = tidy.closest(".settings-skill-item")!;
-    expect(row).toHaveTextContent(t.madeByTextusAi);
+    expect(row).toHaveTextContent(t.madeByMoxieAi);
     expect(screen.getAllByRole("button", { name: t.skillDelete })).toHaveLength(
       1,
     );

@@ -73,7 +73,7 @@ fn report(result: Result<(), String>) -> i32 {
     match result {
         Ok(()) => 0,
         Err(why) => {
-            eprintln!("textus: {why}");
+            eprintln!("moxie: {why}");
             1
         }
     }
@@ -99,7 +99,7 @@ impl Io<'_> {
     }
 
     pub fn warn(&mut self, text: &str) {
-        let _ = writeln!(self.err, "textus: {text}");
+        let _ = writeln!(self.err, "moxie: {text}");
     }
 }
 
@@ -237,7 +237,7 @@ fn to_app(
         json: ctx.json,
     };
     app.send(&request, launch, io)
-        .unwrap_or_else(|| Err("Textus isn't running.".into()))
+        .unwrap_or_else(|| Err("Moxie isn't running.".into()))
 }
 
 /// A word that is no command of the table's: a plugin's tool while the app
@@ -267,8 +267,8 @@ fn plugin_command(
         }
         None => {
             io.warn(&format!(
-                "'{word}' is not a textus command. See 'textus help'. \
-                 (Plugins' commands work while Textus is running.)"
+                "'{word}' is not a moxie command. See 'textus help'. \
+                 (Plugins' commands work while Moxie is running.)"
             ));
             2
         }
@@ -300,8 +300,8 @@ fn help(topic: Option<&String>, io: &mut Io, app: &dyn App) -> i32 {
     };
     let listed = match app.send(&request, false, &mut buffer) {
         Some(Ok(0)) => String::from_utf8_lossy(&plugins).trim_end().to_string(),
-        Some(_) => "  (Textus didn't say which plugins add commands.)".to_string(),
-        None => "  (Shown while Textus is running: start it with 'textus'.)".to_string(),
+        Some(_) => "  (Moxie didn't say which plugins add commands.)".to_string(),
+        None => "  (Shown while Moxie is running: start it with 'moxie'.)".to_string(),
     };
     let listed = if listed.is_empty() {
         "  (None: no plugin that is on adds one.)".to_string()

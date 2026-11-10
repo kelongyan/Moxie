@@ -1,4 +1,4 @@
-// Themes and Custom CSS written before 1.3 name Textus's variables by their
+// Themes and Custom CSS written before 1.3 name Moxie's variables by their
 // old names; they are read with today's.
 
 const RENAMED: [string, string][] = [
@@ -27,7 +27,7 @@ const RENAMED: [string, string][] = [
 
 const NAME_END = "(?![\\w-])";
 
-/** The CSS with every pre-1.3 Textus variable under its current name. */
+/** The CSS with every pre-1.3 Moxie variable under its current name. */
 export function withCurrentVariables(css: string): string {
   let out = css
     // The document's: --editor-*, --md-* and --token-* are --doc-*.

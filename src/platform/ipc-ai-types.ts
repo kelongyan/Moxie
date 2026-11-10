@@ -61,13 +61,13 @@ export interface CompletionHints {
   uiLanguage?: string | null;
 }
 
-/** A project library entry; `remembered` is set on one Textus AI wrote. */
+/** A project library entry; `remembered` is set on one Moxie AI wrote. */
 export type LibraryEntry = LibraryEntry_Serialize;
 
-/** Where and when Textus AI remembered something. */
+/** Where and when Moxie AI remembered something. */
 export type Remembered = Remembered_Serialize;
 
-/** One thing Textus AI remembered by itself. `id` is
+/** One thing Moxie AI remembered by itself. `id` is
  *  `<scope>/memory/<file stem>`. */
 export type Memory = Memory_Serialize;
 
@@ -78,10 +78,10 @@ export type MemoryKind = Kind;
  *  Undo to put back. */
 export type RememberedChange = Remembering_Serialize;
 
-/** Which library entries reached Textus AI. */
+/** Which library entries reached Moxie AI. */
 export type LibraryUse = LibraryUseAnswer;
 
-/** What shapes Textus AI for one document. */
+/** What shapes Moxie AI for one document. */
 export type AgentWorkspaceInfo = AgentWorkspace_Serialize;
 
 // Writing conventions
@@ -186,7 +186,7 @@ export interface SkillListItem {
   aliases: Record<string, string[]>;
   /** Reference-pack sections Rust appends when it is used. */
   packs?: string[];
-  /** A built-in's `textus-version`. */
+  /** A built-in's `moxie-version`. */
   version?: string | null;
   /** "tighten@1" on a Customize… copy; only then can Reset delete it. */
   basedOn?: string | null;

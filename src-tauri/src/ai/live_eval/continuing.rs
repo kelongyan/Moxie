@@ -227,7 +227,7 @@ fn an_undecided_picture_survives_a_rewrite_of_its_text() {
     };
     let doc = settled(&conv);
     assert_eq!(
-        doc.matches("textus-generated:").count(),
+        doc.matches("moxie-generated:").count(),
         1,
         "the picture isn't in once: {doc}"
     );

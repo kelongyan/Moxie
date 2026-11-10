@@ -15,7 +15,7 @@ export default {
   },
   plugin: {
     label: "Criar um plugin",
-    hint: "Um pequeno plugin do Textus a partir da sua descrição, pronto para instalar",
+    hint: "Um pequeno plugin do Moxie a partir da sua descrição, pronto para instalar",
     aliases: ["plugin", "extensão"],
   },
   skill: {

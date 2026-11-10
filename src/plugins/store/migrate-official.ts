@@ -16,7 +16,7 @@ export const RENAMED_PERMISSIONS: Record<string, string> = {
   "workspace.write": "files.write",
 };
 
-/** Official plugins no longer offered: what they did is Textus's own. */
+/** Official plugins no longer offered: what they did is Moxie's own. */
 export const DELISTED = ["catvinci.split-panes"];
 
 const major = (version: unknown) =>

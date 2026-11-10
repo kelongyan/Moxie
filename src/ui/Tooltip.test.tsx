@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 function setup(
-  text = "Deep thinking: when it's on, Textus AI thinks longer",
+  text = "Deep thinking: when it's on, Moxie AI thinks longer",
   props: { onMouseDown?: (e: React.MouseEvent) => void } = {},
 ) {
   render(
@@ -160,7 +160,7 @@ describe("Tooltip", () => {
     const button = setup();
     expect(button).toHaveAccessibleName("Deep thinking");
     expect(button).toHaveAccessibleDescription(
-      "Deep thinking: when it's on, Textus AI thinks longer",
+      "Deep thinking: when it's on, Moxie AI thinks longer",
     );
     cleanup();
     const plain = setup("Deep thinking");

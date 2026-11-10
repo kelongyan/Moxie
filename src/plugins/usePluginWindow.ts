@@ -249,7 +249,7 @@ export function usePluginWindow({
 
   // A plugin a developer loaded from a folder, loaded again as it changes.
   useEffect(() => watchDevPlugins(), []);
-  // textus:// links from outside: those that came before this window, then
+  // moxie:// links from outside: those that came before this window, then
   // each as it comes.
   useEffect(() => {
     void takePluginUris();
@@ -257,7 +257,7 @@ export function usePluginWindow({
       listenToThisWindow("plugin-uri", () => void takePluginUris()),
     );
   }, []);
-  // Tools the plugins give Textus AI, told to Rust and run when called.
+  // Tools the plugins give Moxie AI, told to Rust and run when called.
   useEffect(() => watchPluginAiTools(runPluginAiTool), []);
   // The completions plugins suggest as you type, and calling off those the
   // panel no longer needs.
@@ -297,7 +297,7 @@ export function usePluginWindow({
   }, []);
   usePluginMenuSync(language);
   // Plugins' schedules, after startup: background runs, notifications'
-  // clicks, whether Textus is in front.
+  // clicks, whether Moxie is in front.
   // One ended before its module came connects nothing: it would outlast
   // the connection that replaced it.
   useEffect(() => {

@@ -821,7 +821,7 @@ br:is(.pending-delete, .pending-sentence-hot) {
   overflow: hidden;
 }
 
-/* A README's <picture> of a light and a dark logo: Textus's theme picks
+/* A README's <picture> of a light and a dark logo: Moxie's theme picks
    (an explicit one, else the system's), not the browser's own scheme.
    Hidden with !important: image rules elsewhere set their display. */
 :root[data-theme="light"] img[data-scheme="dark"],
@@ -1008,7 +1008,7 @@ br:is(.pending-delete, .pending-sentence-hot) {
   width: 100%;
 }
 
-/* A quarter turn ({textus-rotate=D} in the title, image-rotation.ts). A
+/* A quarter turn ({moxie-rotate=D} in the title, image-rotation.ts). A
    half turn keeps the footprint; a quarter turn swaps it, so the wrapper
    takes the turned aspect ratio and the picture is laid across it.
    `rotate` and `translate` rather than `transform`: only the turn
@@ -1575,8 +1575,8 @@ br:is(.pending-delete, .pending-sentence-hot) {
    glyph. Numbering is a CSS counter, since data-label can lag. */
 .milkdown ol {
   /* Declared here, or a nested list would inherit its parent's start. */
-  --textus-ol-start: 0;
-  counter-reset: textus-ol var(--textus-ol-start);
+  --moxie-ol-start: 0;
+  counter-reset: moxie-ol var(--moxie-ol-start);
 }
 
 /* No `position: relative` on the item: WebKit removes a positioned element
@@ -1594,7 +1594,7 @@ br:is(.pending-delete, .pending-sentence-hot) {
 }
 
 .milkdown ol > li {
-  counter-increment: textus-ol;
+  counter-increment: moxie-ol;
 }
 
 /* No `color`: lists would read dimmer than the prose. */
@@ -1606,7 +1606,7 @@ br:is(.pending-delete, .pending-sentence-hot) {
 
 /* The gap is the trailing NBSP, as in the native marker. */
 .milkdown ol > li::before {
-  content: counter(textus-ol) ".\00a0";
+  content: counter(moxie-ol) ".\00a0";
   transform: translateX(-100%);
   white-space: nowrap;
 }

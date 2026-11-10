@@ -27,7 +27,7 @@ test("the detached chat window's header buttons are the docked panel's size", as
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const docked = await headerButtons(page, ".agent-panel-header");
 

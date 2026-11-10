@@ -157,7 +157,7 @@ const inlineMarked = new Marked({
 // The document's formulas, in order: a placeholder element stands for each,
 // so the HTML policy (which would strip KaTeX's classes) never sees them.
 let mathSlots: string[] = [];
-const MATH_SLOT_TAG = "textus-math";
+const MATH_SLOT_TAG = "moxie-math";
 
 // The document flavour, for the split view: a single newline is not a line
 // break.
@@ -172,7 +172,7 @@ const documentMarked = new Marked({
     ...footnotes,
   ],
   renderer: {
-    // A width an older Textus kept in the title sizes the picture, as in the
+    // A width an older Moxie kept in the title sizes the picture, as in the
     // editor.
     image(token) {
       const { title, widthPercent } = readImagePresentation(token.title);

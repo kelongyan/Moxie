@@ -7,13 +7,13 @@
 # The app starts as someone who has used it: past onboarding, so the
 # window loads its plugins and its menus as it does at every later launch.
 #
-# Usage: scripts/smoke-ios-sim.sh <Textus.app built for the simulator>
+# Usage: scripts/smoke-ios-sim.sh <Moxie.app built for the simulator>
 #                                 [--screenshot <out.png>]
-#   e.g. src-tauri/gen/apple/build/arm64-sim/Textus.app, from
+#   e.g. src-tauri/gen/apple/build/arm64-sim/Moxie.app, from
 #   npx tauri ios build --debug --target aarch64-sim --no-sign
 set -euo pipefail
 
-app=${1:?the simulator build of Textus.app}
+app=${1:?the simulator build of Moxie.app}
 shift
 shot=""
 if [ "${1:-}" = "--screenshot" ]; then shot=${2:?png path}; fi
@@ -49,9 +49,9 @@ fi
 
 running=$(xcrun simctl spawn "$device" launchctl list)
 if [[ $running != *"UIKitApplication:$id"* ]]; then
-  echo "Textus is not running 20s after launch." >&2
+  echo "Moxie is not running 20s after launch." >&2
   sleep 5
-  report=$(find "$HOME/Library/Logs/DiagnosticReports" -name 'Textus*.ips' \
+  report=$(find "$HOME/Library/Logs/DiagnosticReports" -name 'Moxie*.ips' \
     -newer "$marker" 2>/dev/null | head -n1)
   if [ -n "$report" ]; then
     echo "Crash report: $report" >&2
@@ -61,4 +61,4 @@ if [[ $running != *"UIKitApplication:$id"* ]]; then
   fi
   exit 1
 fi
-echo "Textus is running in the simulator."
+echo "Moxie is running in the simulator."

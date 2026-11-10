@@ -10,8 +10,8 @@ use tauri::Manager;
 const PENDING_FOLDER: &str = "pending";
 
 /// Where `doc_path`'s undecided proposals are kept: `app_data`'s
-/// `pending/`, by a hash of the path. What an older Textus kept in the
-/// project's `.textus/pending/` moves there the first time. None for a path
+/// `pending/`, by a hash of the path. What an older Moxie kept in the
+/// project's `.moxie/pending/` moves there the first time. None for a path
 /// that isn't absolute.
 fn kept_file(doc_path: &str, workspace_root: Option<&str>, app_data: &Path) -> Option<PathBuf> {
     let doc = Path::new(doc_path);
@@ -33,7 +33,7 @@ fn kept_file(doc_path: &str, workspace_root: Option<&str>, app_data: &Path) -> O
     Some(file)
 }
 
-/// Where an older Textus kept them: the project's `.textus/pending/`,
+/// Where an older Moxie kept them: the project's `.moxie/pending/`,
 /// mirroring the document's place in the project.
 fn older_kept_file(doc: &Path, workspace_root: Option<&str>) -> Option<PathBuf> {
     let root = crate::ai::workspace::project_root(doc.to_str(), workspace_root)
@@ -186,7 +186,7 @@ mod tests {
     fn proposals_an_older_textus_kept_in_the_project_move_to_the_app_data() {
         let dir = tempfile::tempdir().unwrap();
         let root = dir.path().join("novel");
-        let old = root.join(".textus/pending/chapters/one.md.json");
+        let old = root.join(".moxie/pending/chapters/one.md.json");
         std::fs::create_dir_all(old.parent().unwrap()).unwrap();
         std::fs::write(&old, "[]").unwrap();
         std::fs::create_dir_all(pictures_dir(&old)).unwrap();

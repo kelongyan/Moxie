@@ -14,7 +14,7 @@ const PLUGIN = "catvinci.backlinks";
 
 test.skip(!hasPlugin(PLUGIN), "needs the textus-plugins checkout");
 
-/** The plugins ask for the Textus this change ships in; the dev build is
+/** The plugins ask for the Moxie this change ships in; the dev build is
  *  the one before it. */
 async function acceptNextEngine(page: Page) {
   await page.route(/\/dev-plugins\/.*\.json$/, async (route) => {
@@ -52,7 +52,7 @@ test("[[ lists notes, headings and blocks, and a block picked gets an id", async
     page,
     {
       // A folder that chose [[wiki links]] (Two-way Links › New Links).
-      "/notes/.textus/settings.json": '{"conventions":{"linkStyle":"wiki"}}',
+      "/notes/.moxie/settings.json": '{"conventions":{"linkStyle":"wiki"}}',
       "/notes/Doc.md": "Start\n",
       "/notes/Ideas.md":
         "# Ideas\n\n## Plan\n\nFirst point.\n\nSecond point.\n",
@@ -124,7 +124,7 @@ test("an embed shows its note read-only and follows its changes", async ({
     const w = window as unknown as { __devFs: Record<string, string> };
     w.__devFs["/notes/Ideas.md"] = "# Ideas\n\n## Plan\n\nA new point.\n";
     window.dispatchEvent(
-      new CustomEvent("textus:file-written", { detail: "/notes/Ideas.md" }),
+      new CustomEvent("moxie:file-written", { detail: "/notes/Ideas.md" }),
     );
   });
   await expect(embed.locator(".note-embed-body")).toContainText("A new point.");
@@ -163,7 +163,7 @@ test("an embed folds to a line with its name and stays folded when drawn again",
     const w = window as unknown as { __devFs: Record<string, string> };
     w.__devFs["/notes/Ideas.md"] = "# Ideas\n\n## Plan\n\nA new point.\n";
     window.dispatchEvent(
-      new CustomEvent("textus:file-written", { detail: "/notes/Ideas.md" }),
+      new CustomEvent("moxie:file-written", { detail: "/notes/Ideas.md" }),
     );
   });
   await expect(embed.getByRole("button", { name: "Expand" })).toBeVisible();

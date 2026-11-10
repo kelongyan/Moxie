@@ -7,9 +7,9 @@ afterEach(closeViews);
 
 const paper = [
   "Text.",
-  "![A green roof](textus-generated:ab12)",
+  "![A green roof](moxie-generated:ab12)",
   "*Figure 1. A green roof*",
-  "![Lost](textus-generated:cd34)",
+  "![Lost](moxie-generated:cd34)",
   "More.",
 ].join("\n\n");
 

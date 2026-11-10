@@ -2,7 +2,7 @@ use super::*;
 
 fn scratch(tag: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!(
-        "textus-memory-{tag}-{}-{}",
+        "moxie-memory-{tag}-{}-{}",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -52,12 +52,12 @@ fn a_memory_is_written_where_its_scope_says() {
     assert!(done.created && done.previous.is_none());
     assert_eq!(done.scope, Scope::Project);
     let stem = done.remembered.rsplit('/').next().unwrap();
-    // Textus's own folder for the project, not the project's .textus/.
+    // Moxie's own folder for the project, not the project's .moxie/.
     let memory = crate::ai::project_data::dir(&base.join("agent"), &base.join("novel"));
     let file = memory.join(format!("memory/{stem}.md"));
-    assert!(!base.join("novel/.textus/memory").exists());
+    assert!(!base.join("novel/.moxie/memory").exists());
     let content = std::fs::read_to_string(&file).unwrap();
-    assert!(content.starts_with("---\nkind: style\nremembered-by: textus-ai\n"));
+    assert!(content.starts_with("---\nkind: style\nremembered-by: moxie-ai\n"));
     assert!(content.contains("source-title: \"Tighten \\\"the\\\" opening\"\n"));
     assert!(content.ends_with("---\nUse 「」 for quotations.\n"));
 
@@ -288,7 +288,7 @@ fn facts_go_to_the_library_and_never_change_the_users_entries() {
     assert!(!updated.created);
     // An entry the user wrote is theirs.
     std::fs::write(
-        base.join("novel/.textus/library/harbour.md"),
+        base.join("novel/.moxie/library/harbour.md"),
         "---\nname: Harbour\n---\nA port city.",
     )
     .unwrap();

@@ -33,7 +33,7 @@ const memory = (over: Partial<Memory>): Memory => ({
   scope: "project",
   kind: "preference",
   text: "x",
-  file: "/novel/.textus/memory/x.md",
+  file: "/novel/.moxie/memory/x.md",
   remembered: record,
   included: true,
   ...over,
@@ -43,7 +43,7 @@ const entry = (over: Partial<LibraryEntry>): LibraryEntry => ({
   name: "Lin",
   aliases: [],
   include: "detected",
-  file: ".textus/library/Lin.md",
+  file: ".moxie/library/Lin.md",
   body: "Teaches Chinese.",
   remembered: null,
   ...over,
@@ -322,10 +322,10 @@ describe("the Project tab's Memory section", () => {
 describe("the Project tab's library", () => {
   it("marks exactly the entries Rust says were sent, and names those left out", () => {
     const lin = entry({});
-    const wu = entry({ name: "Wu", file: ".textus/library/Wu.md" });
+    const wu = entry({ name: "Wu", file: ".moxie/library/Wu.md" });
     const harbour = entry({
       name: "Harbour",
-      file: ".textus/library/Harbour.md",
+      file: ".moxie/library/Harbour.md",
     });
     renderTab(workspace({ library: [lin, wu, harbour] }), {
       included: [wu.file],

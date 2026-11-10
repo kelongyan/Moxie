@@ -26,15 +26,17 @@ const schema = new Schema({
   },
 });
 const n = schema.nodes;
-// "see ", the link's source (5..22), " end".
+const linkSource = "[Moxie](a.com)";
+// "see ", then the link (a node with content, so its size is the source plus
+// the two boundary tokens), then " end".
 const doc = n.doc.create(null, [
   n.paragraph.create(null, [
     schema.text("see "),
-    n.link.create(null, schema.text("[Textus](a.com)")),
+    n.link.create(null, schema.text(linkSource)),
     schema.text(" end"),
   ]),
 ]);
-const linkEnd = 1 + 4 + 17;
+const linkEnd = 1 + 4 + linkSource.length + 2;
 
 function run(command: Command, pos: number): string | null {
   let state = EditorState.create({ schema, doc });
@@ -46,8 +48,8 @@ function run(command: Command, pos: number): string | null {
 
 describe("Backspace and Delete beside a link's source", () => {
   it("take one character of the source, not the whole link", () => {
-    expect(run(backspaceIntoSource, linkEnd)).toBe("see [Textus](a.com end");
-    expect(run(deleteIntoSource, 5)).toBe("see Textus](a.com) end");
+    expect(run(backspaceIntoSource, linkEnd)).toBe("see [Moxie](a.com end");
+    expect(run(deleteIntoSource, 5)).toBe("see Moxie](a.com) end");
   });
 
   it("leave a caret beside plain text to the default", () => {
@@ -107,16 +109,16 @@ describe("a click at a link's edges", () => {
       clickOutsideBrackets([tr], state, state.apply(tr))?.selection.from ?? null
     );
   };
-  // The label "Textus" runs from 7 to 13 in the source from 6 to 21.
+  // The label "Moxie" runs from 7 to 12 in the source from 6 to 20.
 
   it("at the label's ends while the syntax is hidden, lands outside", () => {
-    expect(caretAfter(13)).toBe(linkEnd);
+    expect(caretAfter(12)).toBe(linkEnd);
     expect(caretAfter(7)).toBe(5);
     expect(caretAfter(10)).toBeNull();
   });
 
   it("at the source's ends while it shows, lands outside", () => {
-    expect(caretAfter(21, 10)).toBe(linkEnd);
+    expect(caretAfter(20, 10)).toBe(linkEnd);
     expect(caretAfter(6, 10)).toBe(5);
     expect(caretAfter(13, 10)).toBeNull();
   });

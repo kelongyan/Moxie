@@ -79,7 +79,7 @@ test("the Sort menu shows hidden files and sorts by name or by date modified; th
     "chart.png",
   ]);
   expect(
-    await page.evaluate(() => localStorage.getItem("textus-file-tree-hidden")),
+    await page.evaluate(() => localStorage.getItem("moxie-file-tree-hidden")),
   ).toBe("1");
   await page.getByRole("button", { name: "Sort" }).click();
   await page.getByRole("menuitemradio", { name: "Show Hidden Files" }).click();
@@ -103,8 +103,8 @@ test("the Sort menu shows hidden files and sorts by name or by date modified; th
   await expect(rows(page)).toHaveText(["drafts", "b.md", "a.md"]);
   expect(
     await page.evaluate(() => [
-      localStorage.getItem("textus-file-tree-sort"),
-      localStorage.getItem("textus-file-search-scope"),
+      localStorage.getItem("moxie-file-tree-sort"),
+      localStorage.getItem("moxie-file-search-scope"),
     ]),
   ).toEqual(["modified", "documents"]);
 });
@@ -302,7 +302,7 @@ test("in a vault whose settings the project took, the split preview breaks the l
 }) => {
   await open(page, {
     "/work/notes/.obsidian/app.json": "{}",
-    "/work/notes/.textus/settings.json": JSON.stringify({
+    "/work/notes/.moxie/settings.json": JSON.stringify({
       conventions: { softBreaks: true, detected: "followed" },
     }),
     "/work/notes/a.md": "# Alpha\n\none\ntwo",

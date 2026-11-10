@@ -1,5 +1,5 @@
 //! The frontmatter of a skill file or a library entry: the small YAML
-//! subset Textus reads (scalars, lists, folded and literal blocks).
+//! subset Moxie reads (scalars, lists, folded and literal blocks).
 
 use super::*;
 

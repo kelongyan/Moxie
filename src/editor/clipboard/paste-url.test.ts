@@ -3,8 +3,8 @@ import { bareUrl } from "./paste-url";
 
 describe("bareUrl", () => {
   it("takes a lone URL, trimmed", () => {
-    expect(bareUrl(" https://github.com/CatVinci-Studio/Textus/issues\n")).toBe(
-      "https://github.com/CatVinci-Studio/Textus/issues",
+    expect(bareUrl(" https://github.com/kelongyan/Moxie/issues\n")).toBe(
+      "https://github.com/kelongyan/Moxie/issues",
     );
     expect(bareUrl("mailto:a@b.org")).toBe("mailto:a@b.org");
     expect(bareUrl("ftp://x.org/f")).toBe("ftp://x.org/f");

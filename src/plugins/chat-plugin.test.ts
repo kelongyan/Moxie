@@ -7,7 +7,7 @@ const manifest = {
   version: "1.0.0",
   publisher: "local",
   description: "Counts the words of the selection.",
-  engines: { textus: "^1.3.0" },
+  engines: { moxie: "^1.3.0" },
   main: "host.js",
   permissions: ["editor.read"],
   contributes: {

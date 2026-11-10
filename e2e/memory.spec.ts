@@ -2,12 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { mockInvoke, openApp } from "./helpers";
 
 /**
- * The AI panel's Memory tab and the project files it opens (.textus/):
+ * The AI panel's Memory tab and the project files it opens (.moxie/):
  * each opens as a document of its own, in a new tab beside the one being
  * written.
  */
 
-const ENTRY_PATH = "/notes/.textus/library/Lin.md";
+const ENTRY_PATH = "/notes/.moxie/library/Lin.md";
 
 const workspace = (library: unknown[]) => ({
   instructions: [],
@@ -38,11 +38,11 @@ test("a new library entry opens in a tab with the panel still on Memory, its tem
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   // What projectLibraryTemplate writes.
   const note =
-    "Facts Textus AI should keep consistent whenever Lin or an alias comes up. Comments like this one are never sent.";
+    "Facts Moxie AI should keep consistent whenever Lin or an alias comes up. Comments like this one are never sent.";
   await mockInvoke(page, {
     load_agent_workspace: workspace([]),
     ensure_project_file: ENTRY_PATH,
@@ -92,7 +92,7 @@ const memoryWorkspace = (remember = true) => ({
             scope: "project",
             kind: "requirement",
             text: REMEMBERED.text,
-            file: "/notes/.textus/memory/Use-British-spelling.md",
+            file: "/notes/.moxie/memory/Use-British-spelling.md",
             remembered: {
               created: "2026-10-18T09:30:00Z",
               updated: "2026-10-18T09:30:00Z",
@@ -128,12 +128,12 @@ async function calls(page: Page, cmd: string) {
   );
 }
 
-test("what Textus AI remembers shows under its reply, and Undo takes it back", async ({
+test("what Moxie AI remembers shows under its reply, and Undo takes it back", async ({
   page,
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const message = "Always use British spelling";
   await mockInvoke(page, {
@@ -195,7 +195,7 @@ test("with Remember automatically off, nothing is asked after the reply, and the
 }) => {
   await openApp(page, {
     settings: { language: "en", rememberAutomatically: false },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await mockInvoke(page, {
     load_agent_workspace: memoryWorkspace(false),
@@ -227,7 +227,7 @@ test("the Memory tab lists what was remembered, and moves and deletes it", async
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await mockInvoke(page, {
     load_agent_workspace: memoryWorkspace(),
@@ -271,7 +271,7 @@ test("a request worth doing again is offered as a skill, saved only when asked",
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const message =
     "Turn my notes into the weekly report: three sections - Done, Next, Risks - one line each, no names.";

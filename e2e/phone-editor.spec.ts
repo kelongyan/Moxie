@@ -141,7 +141,7 @@ test("a tap on a grammar underline offers the fix in a bottom card", async ({
     ],
   });
   await page.evaluate(() =>
-    window.dispatchEvent(new Event("textus:trigger-grammar-check")),
+    window.dispatchEvent(new Event("moxie:trigger-grammar-check")),
   );
   await editor.locator(".grammar-issue").tap();
   const card = page.locator(".bottom-card");

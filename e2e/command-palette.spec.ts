@@ -34,7 +34,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "A command for the palette.",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     contributes: {
       commands: [
@@ -150,7 +150,7 @@ test("a plugin's command line lists its own commands among the palette's, and ha
   await expect(page.locator(".split-pane")).toHaveCount(2);
 });
 
-test("the palette changes the appearance, the editor theme and Textus AI", async ({
+test("the palette changes the appearance, the editor theme and Moxie AI", async ({
   page,
 }) => {
   await openApp(page, { settings: { language: "en", theme: "light" } });
@@ -166,7 +166,7 @@ test("the palette changes the appearance, the editor theme and Textus AI", async
   await page.keyboard.press("ControlOrMeta+Shift+P");
   await page.keyboard.type("textus ai on or off");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button", { name: "Textus AI" })).toHaveClass(
+  await expect(page.getByRole("button", { name: "Moxie AI" })).toHaveClass(
     /off|disabled/,
   );
 });

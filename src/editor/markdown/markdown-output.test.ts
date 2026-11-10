@@ -91,8 +91,8 @@ describe("saved markdown stays as written", () => {
     ["a code fence's line marks", "```py {1,3} linenums\nx\n```\n"],
     ["an image without a title", "![图](a.png)\n"],
     [
-      "an image width an older Textus saved",
-      '![图](a.png "{textus-width=30%}")\n',
+      "an image width an older Moxie saved",
+      '![图](a.png "{moxie-width=30%}")\n',
     ],
     ["an image width", '<img src="assets/a.png" alt="图" width="50%">\n'],
     ["an <img> in a line", 'A <img src="a.png" width="30%"> icon\n'],
@@ -128,9 +128,9 @@ describe("saved markdown stays as written", () => {
     expect(await throughClipboard(markdown)).toBe(markdown);
   });
 
-  it("pastes an older Textus's sized image as <img width>", async () => {
+  it("pastes an older Moxie's sized image as <img width>", async () => {
     expect(
-      await throughClipboard('![x](a.png "Cap {textus-width=30%}")\n'),
+      await throughClipboard('![x](a.png "Cap {moxie-width=30%}")\n'),
     ).toBe('<img src="a.png" alt="x" title="Cap" width="30%">\n');
   });
 
@@ -340,11 +340,11 @@ describe("an image's width", () => {
     ).toBe('![](a.png "Cap")\n');
   });
 
-  it("moves out of an older Textus's title once it changes", async () => {
-    expect(await resized('![x](a.png "Cap {textus-width=50%}")\n', 70)).toBe(
+  it("moves out of an older Moxie's title once it changes", async () => {
+    expect(await resized('![x](a.png "Cap {moxie-width=50%}")\n', 70)).toBe(
       '<img src="a.png" alt="x" title="Cap" width="70%">\n',
     );
-    expect(await resized('![x](a.png "{textus-width=50%}")\n', null)).toBe(
+    expect(await resized('![x](a.png "{moxie-width=50%}")\n', null)).toBe(
       "![x](a.png)\n",
     );
   });

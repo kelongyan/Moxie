@@ -22,7 +22,7 @@ export const WINDOWS_PAGE: PageGeometry = {
   margin: 76,
 };
 
-const SPACER_CLASS = "textus-page-spacer";
+const SPACER_CLASS = "moxie-page-spacer";
 
 // Containers cut between their children when taller than a page.
 function isSplittable(el: Element): boolean {
@@ -74,7 +74,7 @@ export function splitBefore(el: Element, node: Node, offset?: number): Element {
       el.querySelectorAll(":scope > li").length;
     rest.setAttribute("start", String(start));
     // The editor's list counter, which the numbers are drawn from.
-    rest.style.setProperty("--textus-ol-start", String(start - 1));
+    rest.style.setProperty("--moxie-ol-start", String(start - 1));
   } else if (el.tagName === "P") {
     // The rest of a paragraph, not a new one.
     rest.style.textIndent = "0";

@@ -23,10 +23,10 @@ describe("countWords", () => {
   });
 
   it("leaves an image's turn and width out of its title", () => {
-    expect(countWords('![a](a.png "Shot {textus-rotate=90}")').words).toBe(
+    expect(countWords('![a](a.png "Shot {moxie-rotate=90}")').words).toBe(
       countWords('![a](a.png "Shot")').words,
     );
-    expect(countWords("x {textus-width=50% textus-rotate=180}").words).toBe(1);
+    expect(countWords("x {moxie-width=50% moxie-rotate=180}").words).toBe(1);
   });
 
   it("leaves fenced code out", () => {

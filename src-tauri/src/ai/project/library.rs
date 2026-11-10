@@ -26,7 +26,7 @@ pub struct LibraryEntry {
     /// Path relative to the project root, for "open this entry".
     pub file: String,
     pub body: String,
-    /// Set on an entry Textus AI wrote, which the Memory tab also lists.
+    /// Set on an entry Moxie AI wrote, which the Memory tab also lists.
     pub remembered: Option<Remembered>,
 }
 
@@ -78,7 +78,7 @@ pub fn parse_library_entry(file: &str, stem: &str, content: &str) -> LibraryEntr
     entry
 }
 
-/// The library: `.textus/library/*.md`, in file-name order.
+/// The library: `.moxie/library/*.md`, in file-name order.
 pub fn read_library(root: &Path) -> Vec<LibraryEntry> {
     let Ok(entries) = std::fs::read_dir(project_dir(root).join("library")) else {
         return Vec::new();
@@ -105,12 +105,12 @@ pub fn read_library(root: &Path) -> Vec<LibraryEntry> {
         .collect()
 }
 
-/// Where "Learn my style" writes the profile: `.textus/style.md`.
+/// Where "Learn my style" writes the profile: `.moxie/style.md`.
 pub(crate) fn style_path(root: &Path) -> PathBuf {
     project_dir(root).join("style.md")
 }
 
-/// The style profile: `.textus/style.md`.
+/// The style profile: `.moxie/style.md`.
 pub fn read_style(root: &Path) -> Option<String> {
     project_file(root, "style.md")
         .and_then(|path| std::fs::read_to_string(path).ok())
@@ -178,7 +178,7 @@ pub fn writing_context_section(style: Option<&str>, entries: &[&LibraryEntry]) -
     let mut parts = Vec::new();
     if let Some(style) = style {
         parts.push(format!(
-            "---the author's style profile (.textus/style.md: how this author writes, drafted from their own writing with \"Learn my style\" or written by them; follow it in all the text you write for this project's documents, whatever their language - it shapes that text, never the language you reply in. Its concrete limits - sentence length, words and punctuation to avoid - are rules; its habits apply where they read naturally and never override the request or the sense of the text: a habit of the present tense doesn't turn a plan into a fact, a habit of speaking to \"you\" doesn't turn the author's own account of what they did into the reader's, a length limit doesn't let a sentence drop what it covered, and an expansion still comes out longer)---\n{style}"
+            "---the author's style profile (.moxie/style.md: how this author writes, drafted from their own writing with \"Learn my style\" or written by them; follow it in all the text you write for this project's documents, whatever their language - it shapes that text, never the language you reply in. Its concrete limits - sentence length, words and punctuation to avoid - are rules; its habits apply where they read naturally and never override the request or the sense of the text: a habit of the present tense doesn't turn a plan into a fact, a habit of speaking to \"you\" doesn't turn the author's own account of what they did into the reader's, a length limit doesn't let a sentence drop what it covered, and an expansion still comes out longer)---\n{style}"
         ));
     }
     if !entries.is_empty() {
@@ -195,13 +195,13 @@ pub fn writing_context_section(style: Option<&str>, entries: &[&LibraryEntry]) -
             .collect::<Vec<_>>()
             .join("\n\n");
         parts.push(format!(
-            "---project library (.textus/library): established facts about the people, places and terms mentioned here - stay consistent with them, add nothing about them that neither this nor the text gives, and treat them as background: use them as constraints, not as text to recite---\n{body}"
+            "---project library (.moxie/library): established facts about the people, places and terms mentioned here - stay consistent with them, add nothing about them that neither this nor the text gives, and treat them as background: use them as constraints, not as text to recite---\n{body}"
         ));
     }
     (!parts.is_empty()).then(|| parts.join("\n\n"))
 }
 
-/// Which library entries reached Textus AI, for the Memory tab's marks: sent or
+/// Which library entries reached Moxie AI, for the Memory tab's marks: sent or
 /// left out, and whether from the last request (`lastRequest`) or from the
 /// document's text alone.
 #[derive(Serialize, Clone, Debug, Default, PartialEq)]

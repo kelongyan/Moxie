@@ -80,8 +80,8 @@ for (const uiTextScale of [1, 1.25])
     await openApp(page, {
       settings: { language: LANGUAGES[0], uiTextScale },
       storage: {
-        "textus-agent-panel-open": "1",
-        "textus-agent-panel-width": "300",
+        "moxie-agent-panel-open": "1",
+        "moxie-agent-panel-width": "300",
       },
     });
     await selectPassage(page);
@@ -116,8 +116,8 @@ test("the footer holds its row in a wider font too", async ({ page }) => {
   await openApp(page, {
     settings: { language: "de" },
     storage: {
-      "textus-agent-panel-open": "1",
-      "textus-agent-panel-width": "300",
+      "moxie-agent-panel-open": "1",
+      "moxie-agent-panel-width": "300",
     },
   });
   await page.addStyleTag({

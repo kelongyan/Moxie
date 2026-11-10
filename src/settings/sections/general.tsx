@@ -121,7 +121,7 @@ export function UpdateButton({
   );
 }
 
-/** Downloads `update`, installs it and starts the new Textus. On Windows
+/** Downloads `update`, installs it and starts the new Moxie. On Windows
  *  downloadAndInstall never returns (the updater calls process::exit, skipping
  *  Rust's exit flush), so pending writes go now, while the download runs. */
 async function installAndRelaunch(update: Update) {
@@ -248,7 +248,7 @@ const CLI_STATUS: Record<CliStatus, (t: Strings) => [string, string]> = {
 
 /**
  * Startup already tries a silent install; this row covers when that failed
- * (an older Textus's script, or none) and retries through an
+ * (an older Moxie's script, or none) and retries through an
  * admin-privileged prompt.
  */
 export function CliCommandSection({ t }: { t: Strings }) {
@@ -292,7 +292,7 @@ export function CliCommandSection({ t }: { t: Strings }) {
 }
 
 /**
- * Make Textus the app that opens .md files. Windows only lets the user
+ * Make Moxie the app that opens .md files. Windows only lets the user
  * choose, so there it opens Default apps and re-reads the status on return.
  */
 export function DefaultEditorSection({ t }: { t: Strings }) {

@@ -53,7 +53,7 @@ fn copy_files(from: &Path, to: &Path) -> Result<(), String> {
 }
 
 /// The plugin's own ids (its commands, views, settings) all start with its
-/// id, and Textus refuses a manifest whose ones don't: renamed in every
+/// id, and Moxie refuses a manifest whose ones don't: renamed in every
 /// text file with it.
 fn rename_id(dir: &Path, from: &str, to: &str) -> Result<(), String> {
     const TEXT: [&str; 7] = ["json", "js", "mjs", "html", "css", "md", "txt"];
@@ -204,7 +204,7 @@ mod tests {
         .unwrap();
         assert_eq!(manifest["id"], "jane.word-count");
         assert_eq!(manifest["publisher"], "jane");
-        // Its own ids follow the new one, or Textus wouldn't load it.
+        // Its own ids follow the new one, or Moxie wouldn't load it.
         assert_eq!(
             manifest["contributes"]["commands"][0]["command"],
             "jane.word-count.count"

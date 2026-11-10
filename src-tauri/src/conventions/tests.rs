@@ -128,7 +128,7 @@ fn reads_logseq_foam_and_our_own_settings() {
     let ours = folder_with(&[
         (".obsidian/app.json", "{}"),
         (
-            ".textus/settings.json",
+            ".moxie/settings.json",
             r#"{"conventions":{"linkStyle":"markdown","attachments":"./img","detected":"followed"}}"#,
         ),
     ]);
@@ -175,7 +175,7 @@ fn puts_pictures_where_the_folder_keeps_attachments() {
         ("Files/img", "Files/img", "../Files/img/"),
     ];
     for (setting, dir, prefix) in cases {
-        let vault = folder_with(&[(".textus/settings.json", &conventions(setting))]);
+        let vault = folder_with(&[(".moxie/settings.json", &conventions(setting))]);
         let doc = vault.path().join("notes/a.md");
         fs::write(&doc, "x").unwrap();
         let (folder, _) = attachment_folder(&doc).unwrap();
@@ -185,7 +185,7 @@ fn puts_pictures_where_the_folder_keeps_attachments() {
         );
         assert_eq!(folder.src("p.png"), format!("{prefix}p.png"), "{setting}");
     }
-    let escapes = folder_with(&[(".textus/settings.json", &conventions("../out"))]);
+    let escapes = folder_with(&[(".moxie/settings.json", &conventions("../out"))]);
     let doc = escapes.path().join("notes/a.md");
     fs::write(&doc, "x").unwrap();
     assert!(attachment_folder(&doc).is_none());
@@ -214,7 +214,7 @@ fn follows_typora_copy_images_to_before_the_vault() {
 #[test]
 fn writes_an_embed_in_the_folders_link_form() {
     let vault = folder_with(&[(
-        ".textus/settings.json",
+        ".moxie/settings.json",
         r#"{"conventions":{"linkStyle":"wiki","linkPath":"shortest"}}"#,
     )]);
     let doc = vault.path().join("notes/a.md");
@@ -243,13 +243,13 @@ fn never_writes_a_settings_file() {
         (".obsidian/app.json", "{}"),
         ("logseq/config.edn", "{}"),
         (".vscode/settings.json", "{}"),
-        (".textus/settings.json", "{}"),
+        (".moxie/settings.json", "{}"),
     ]);
     let files = [
         ".obsidian/app.json",
         "logseq/config.edn",
         ".vscode/settings.json",
-        ".textus/settings.json",
+        ".moxie/settings.json",
     ];
     let stamps = |d: &Path| files.map(|f| fs::metadata(d.join(f)).unwrap().modified().unwrap());
     let before = stamps(dir.path());

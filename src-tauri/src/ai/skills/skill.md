@@ -10,23 +10,23 @@ description: >-
   habilidad, compétence, Fähigkeit, навык).
 license: MIT
 metadata:
-  textus-version: "1"
-  textus-invocation: "both"
-  textus-index: "Use when asked to make, write or change a skill, a saved procedure, a template for a recurring task or a /command."
-  textus-category: "create"
-  textus-modes: "create"
-  textus-packs: ""
-  textus-sources: "Our own text; the file format is the Agent Skills format (agentskills.io), summarised."
-  textus-aliases-en: "make-skill, procedure, command"
-  textus-aliases-zh: "做技能, 技能, 新建技能"
-  textus-aliases-zh-Hant: "做技能, 技能, 新增技能"
-  textus-aliases-ja: "スキルを作る, スキル"
-  textus-aliases-ko: "스킬 만들기, 스킬"
-  textus-aliases-es: "habilidad, crear-habilidad"
-  textus-aliases-fr: "compétence, créer-compétence"
-  textus-aliases-de: "fähigkeit, skill"
-  textus-aliases-ru: "навык, создать-навык"
-  textus-aliases-pt: "habilidade, criar-habilidade"
+  moxie-version: "1"
+  moxie-invocation: "both"
+  moxie-index: "Use when asked to make, write or change a skill, a saved procedure, a template for a recurring task or a /command."
+  moxie-category: "create"
+  moxie-modes: "create"
+  moxie-packs: ""
+  moxie-sources: "Our own text; the file format is the Agent Skills format (agentskills.io), summarised."
+  moxie-aliases-en: "make-skill, procedure, command"
+  moxie-aliases-zh: "做技能, 技能, 新建技能"
+  moxie-aliases-zh-Hant: "做技能, 技能, 新增技能"
+  moxie-aliases-ja: "スキルを作る, スキル"
+  moxie-aliases-ko: "스킬 만들기, 스킬"
+  moxie-aliases-es: "habilidad, crear-habilidad"
+  moxie-aliases-fr: "compétence, créer-compétence"
+  moxie-aliases-de: "fähigkeit, skill"
+  moxie-aliases-ru: "навык, создать-навык"
+  moxie-aliases-pt: "habilidade, criar-habilidade"
 ---
 
 # Make a skill
@@ -35,7 +35,7 @@ metadata:
 - One skill for one kind of task the user does again and again (a weekly report, how their newsletter is translated, a review checklist). The skill goes in the reply, never into the document.
 - When the request is too vague to write ("a skill for my work"), ask one question: what the task is and what a good result looks like. Otherwise write it and say what you assumed.
 - Built from what the user said in this conversation: every requirement they gave, in order. Nothing about this document in particular - the skill must work on the next one.
-- To change a skill from earlier in the conversation, write the whole file again with the change, keeping its `name` and raising `textus-version`.
+- To change a skill from earlier in the conversation, write the whole file again with the change, keeping its `name` and raising `moxie-version`.
 
 ## The file
 One Markdown file: front matter, then the instructions.
@@ -48,12 +48,12 @@ description: >-
   each point one line with its owner. Use when asked for a weekly report,
   status update or 周报.
 metadata:
-  textus-version: "1.0.0"
-  textus-invocation: "both"
-  textus-modes: "write"
-  textus-label-zh: "写周报"
-  textus-hint-zh: "把本周笔记整理成团队周报"
-  textus-aliases-zh: "周报, 工作周报"
+  moxie-version: "1.0.0"
+  moxie-invocation: "both"
+  moxie-modes: "write"
+  moxie-label-zh: "写周报"
+  moxie-hint-zh: "把本周笔记整理成团队周报"
+  moxie-aliases-zh: "周报, 工作周报"
 ---
 
 Turn the notes the user points to (the selection, or the document) into ...
@@ -61,9 +61,9 @@ Turn the notes the user points to (the selection, or the document) into ...
 
 - `name`: two to four English words in kebab-case, the file's name too (`weekly-report.md`).
 - `description`: what it does, then "Use when ..." with the words people would ask with, in their language too. The AI picks the skill by this line, so make it specific.
-- `textus-modes`: where the skill applies, one or more of `write` (it changes or adds text in the document), `review` (it only reads and comments), `create` (it makes a theme, plugin or skill). Most skills are `write`; a checking task is `review`.
-- `textus-invocation`: `both` (the AI may pick it by itself), or `user-only` when it should run only when typed as /name.
-- `textus-label-<code>` and `textus-hint-<code>`: the name and one-line hint people see, in the user's language, where `<code>` is one of en, zh, zh-Hant, ja, ko, es, fr, de, ru, pt; `textus-aliases-<code>`: other words they might type after /.
+- `moxie-modes`: where the skill applies, one or more of `write` (it changes or adds text in the document), `review` (it only reads and comments), `create` (it makes a theme, plugin or skill). Most skills are `write`; a checking task is `review`.
+- `moxie-invocation`: `both` (the AI may pick it by itself), or `user-only` when it should run only when typed as /name.
+- `moxie-label-<code>` and `moxie-hint-<code>`: the name and one-line hint people see, in the user's language, where `<code>` is one of en, zh, zh-Hant, ja, ko, es, fr, de, ru, pt; `moxie-aliases-<code>`: other words they might type after /.
 
 ## The instructions
 - Second person, to the AI: "Turn the notes into ...". Plain numbered steps for a procedure, bullets for rules.

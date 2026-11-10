@@ -213,7 +213,7 @@ export const links = {
    *  clip or from the top. */
   openTutorialsPage: (language: Lang, clip?: string) =>
     command("open_tutorials_page", clip ?? null, language),
-  /** About Textus's links and the theme gallery's website, by name. */
+  /** About Moxie's links and the theme gallery's website, by name. */
   openAboutLink: (page: "github" | "discord" | "qq" | "themes" | "listing") =>
     command("open_about_link", page),
   /** A web or mail link Ctrl/Cmd+clicked in a document. */
@@ -385,6 +385,6 @@ export const updater = {
     return metadata ? new Update(metadata) : null;
   },
   /** Right before the relaunch that applies an update, so the new process
-   *  is the running Textus. */
+   *  is the running Moxie. */
   releaseInstance: () => desktopQueryCommand("release_instance", null),
 };

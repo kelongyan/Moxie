@@ -164,7 +164,7 @@ describe("the editor menu", () => {
       `${t.menuPlainText} › ${t.copyAsPlainText} | ${t.pasteAsPlainText}`,
       "-",
       `${t.menuFormat} › ${t.toolbarBold} | ${t.toolbarItalic} | ${t.toolbarHighlight} | - | ${[1, 2, 3].map((n) => t.menuHeadingTemplate.replace("{n}", String(n))).join(" | ")} | - | ${t.insertBulletList} | ${t.insertOrderedList} | ${t.insertBlockquote} | ${t.insertCodeBlock} | ${t.insertTable}`,
-      `${t.menuTextusAi} › Ask | Continue`,
+      `${t.menuMoxieAi} › Ask | Continue`,
     ]);
   });
 
@@ -226,7 +226,7 @@ describe("the editor menu", () => {
 
     rotateImage(run, imagePos, 1);
     expect(view.state.doc.nodeAt(imagePos)?.attrs.title).toBe(
-      "{textus-rotate=90}",
+      "{moxie-rotate=90}",
     );
     expect(view.state.selection).toBeInstanceOf(NodeSelection);
     rotateImage(run, imagePos, -1);

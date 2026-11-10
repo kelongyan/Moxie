@@ -79,7 +79,7 @@ describe("redrawDiagrams", () => {
   it("redraws a chart as a chart", async () => {
     const draw = vi.fn(async () => "<svg>light</svg>");
     await redrawDiagrams(
-      diagram('{"data": [1]}', '<svg class="textus-chart">dark</svg>') +
+      diagram('{"data": [1]}', '<svg class="moxie-chart">dark</svg>') +
         diagram("graph LR", "<svg>dark</svg>"),
       draw,
     );

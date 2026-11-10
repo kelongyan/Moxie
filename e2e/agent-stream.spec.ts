@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { mockInvoke, openApp, pasteMarkdown } from "./helpers";
 
 /**
- * Textus AI's edits as they really arrive: streamed over the onEvent channel
+ * Moxie AI's edits as they really arrive: streamed over the onEvent channel
  * (toolStart, argument fragments, then each completed turn), not only as
  * the final turn list the other tests hand back.
  */
@@ -10,7 +10,7 @@ import { mockInvoke, openApp, pasteMarkdown } from "./helpers";
 test("a streamed edit whose text starts empty still becomes decidable", async ({
   page,
 }) => {
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(page, "Alpha line one.\n\nBeta line two.\n\nGamma.");
   await page.evaluate(() => {
     type Send = (event: unknown) => void;
@@ -124,7 +124,7 @@ test("a streamed edit whose text starts empty still becomes decidable", async ({
 });
 
 test("an edit the backend refused never stays on screen", async ({ page }) => {
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(page, "Alpha line one.\n\nBeta line two.");
   await page.evaluate(() => {
     type Send = (event: unknown) => void;
@@ -229,7 +229,7 @@ test("the empty-document hint gives way to text the AI is writing", async ({
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const editor = page.locator('[data-active-tab="true"] .ProseMirror');
   await editor.click();
@@ -320,7 +320,7 @@ test(
   { tag: "@perf" },
   async ({ page }) => {
     await page.setViewportSize({ width: 1100, height: 600 });
-    await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+    await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
     await pasteMarkdown(page, "One line.");
     // A reply that goes on: a word every 30ms, a paragraph every dozen.
     await page.evaluate(() => {
@@ -384,7 +384,7 @@ test("a long step result opens in a box of its own, its summary at hand to close
   await page.setViewportSize({ width: 1100, height: 700 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "One line.");
   // A whole skill's text, as use_skill returns it.

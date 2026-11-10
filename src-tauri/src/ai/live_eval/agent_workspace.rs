@@ -1,4 +1,4 @@
-//! The project folder, its `.textus/` folder and the style profile, exercised
+//! The project folder, its `.moxie/` folder and the style profile, exercised
 //! on real folders loaded through the app's own loader. Covers reading files,
 //! writing instructions, library, skills and their shadowing, the unsaved
 //! draft, the sandbox, and learning and following a style profile.
@@ -30,14 +30,14 @@ pub fn scratch(name: &str) -> PathBuf {
 }
 
 /// Under the system temp dir, outside the repository: a folder above the
-/// repository may be a project of its own (a `.textus` marker), and the
+/// repository may be a project of its own (a `.moxie` marker), and the
 /// agent would search that instead. One folder per process; folders an
 /// earlier run left more than a day ago are cleared once per run, and only
 /// ones named by a process id, so nothing else there is ever touched.
 fn scratch_root() -> PathBuf {
     static ROOT: std::sync::OnceLock<PathBuf> = std::sync::OnceLock::new();
     ROOT.get_or_init(|| {
-        let root = std::env::temp_dir().join("textus-eval-ws");
+        let root = std::env::temp_dir().join("moxie-eval-ws");
         let day = std::time::Duration::from_secs(24 * 60 * 60);
         for entry in std::fs::read_dir(&root).into_iter().flatten().flatten() {
             let name = entry.file_name().to_string_lossy().into_owned();
@@ -382,7 +382,7 @@ pub fn cases() -> Vec<AgentCase> {
 fn learned_cases() -> Vec<AgentCase> {
     let mut c = Vec::new();
     let memory = |text: &str| {
-        format!("---\nkind: requirement\nremembered-by: textus-ai\ncreated: 2026-10-19T09:30:00Z\nupdated: 2026-10-19T09:30:00Z\n---\n{text}\n")
+        format!("---\nkind: requirement\nremembered-by: moxie-ai\ncreated: 2026-10-19T09:30:00Z\nupdated: 2026-10-19T09:30:00Z\n---\n{text}\n")
     };
 
     const NOTE_ZH: &str = "周三的读书会来了十二个人。小周说「这本书前半部分有点慢」，大家都笑了。老陈接着说「慢一点也好，可以多想想」。最后我们定下来，下个月读一本短一些的书，每个人都要带一个问题来。";
@@ -594,7 +594,7 @@ fn workspace_cases() -> Vec<AgentCase> {
 
     // A chosen project folder: another folder than the document's.
     let base = scratch("override");
-    put(&base, "drafts/.textus/agent.md", "Always reply in French.");
+    put(&base, "drafts/.moxie/agent.md", "Always reply in French.");
     put(
         &base,
         "drafts/notes.md",
@@ -611,18 +611,18 @@ fn workspace_cases() -> Vec<AgentCase> {
         show: vec![base.clone()],
         ..DiskWorkspace::default()
     };
-    c.push(AgentCase::new("workspace/en/override-root", Lang::En, Lang::En, STORY_EN, "What does sources.md say about the 2019 survey?", no_edit().reply(&["312"]).check("looked in the folder", used_file_tools), "The project folder is set to research/ (not the document's drafts/ folder): sources.md is readable there, and the writing instructions in drafts/.textus/agent.md ('reply in French') do not apply. Expect an English answer: 312 fishing boats, down from 540 in 1990.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("workspace/en/override-root", Lang::En, Lang::En, STORY_EN, "What does sources.md say about the 2019 survey?", no_edit().reply(&["312"]).check("looked in the folder", used_file_tools), "The project folder is set to research/ (not the document's drafts/ folder): sources.md is readable there, and the writing instructions in drafts/.moxie/agent.md ('reply in French') do not apply. Expect an English answer: 312 fishing boats, down from 540 in 1990.").mode(AgentMode::Review).disk(ws));
 
     // The document's folder with its own agent.md and notes.
     let dir = scratch("doc-folder-agentmd");
     put(
         &dir,
-        ".textus/agent.md",
+        ".moxie/agent.md",
         "<!-- 这里写给 AI 的长期说明 -->\n面向读者一律称“您”，不要用“你”。",
     );
     put(&dir, "notes.md", "场地：市图书馆二楼多功能厅（东门进）\n");
     let ws = doc_folder(&dir, "邀请.md", INVITE_ZH);
-    c.push(AgentCase::new("workspace/zh/doc-folder-agentmd", Lang::ZhHans, Lang::ZhHans, INVITE_ZH, "根据 notes.md 里的场地信息，在文末补一句活动地点。", edit_anywhere().has(&["多功能厅"]).check("looked in the folder", used_file_tools).check("addresses readers as 您", |o| (!proposed_text(o).contains('你')).then_some(()).ok_or_else(|| "used 你".into())), "Project folder = the document's folder: its writing instructions (.textus/agent.md: address readers as 您) apply and notes.md is readable. Expect one sentence at the end giving the venue (市图书馆二楼多功能厅, 东门进), using 您 if it addresses the reader.").disk(ws));
+    c.push(AgentCase::new("workspace/zh/doc-folder-agentmd", Lang::ZhHans, Lang::ZhHans, INVITE_ZH, "根据 notes.md 里的场地信息，在文末补一句活动地点。", edit_anywhere().has(&["多功能厅"]).check("looked in the folder", used_file_tools).check("addresses readers as 您", |o| (!proposed_text(o).contains('你')).then_some(()).ok_or_else(|| "used 你".into())), "Project folder = the document's folder: its writing instructions (.moxie/agent.md: address readers as 您) apply and notes.md is readable. Expect one sentence at the end giving the venue (市图书馆二楼多功能厅, 东门进), using 您 if it addresses the reader.").disk(ws));
     c
 }
 
@@ -633,14 +633,14 @@ fn agentmd_library_skill_cases() -> Vec<AgentCase> {
     let dir = scratch("agentmd-zh-english");
     put(
         &dir,
-        ".textus/agent.md",
+        ".moxie/agent.md",
         "无论用户用什么语言提问，都用英文回复。写进文档的内容保持文档原来的语言。",
     );
     let ws = doc_folder(&dir, "外婆的厨房.md", ESSAY_ZH);
-    c.push(AgentCase::new("agentmd/zh/reply-english-file", Lang::En, Lang::ZhHans, ESSAY_ZH, "把第一段改得更简洁。", edit_in(para(ESSAY_ZH, 0), StructureExpect::Same).shorter(), "The project's writing instructions (.textus/agent.md, written in Chinese) say: always reply in English; document text stays in its language. The user writes in Chinese: expect the first paragraph tightened IN CHINESE and the reply in ENGLISH.").disk(ws));
+    c.push(AgentCase::new("agentmd/zh/reply-english-file", Lang::En, Lang::ZhHans, ESSAY_ZH, "把第一段改得更简洁。", edit_in(para(ESSAY_ZH, 0), StructureExpect::Same).shorter(), "The project's writing instructions (.moxie/agent.md, written in Chinese) say: always reply in English; document text stays in its language. The user writes in Chinese: expect the first paragraph tightened IN CHINESE and the reply in ENGLISH.").disk(ws));
 
     let dir = scratch("agentmd-en-house");
-    put(&dir, ".textus/agent.md", "House style for everything you write into documents:\n- Write \"email\", never \"e-mail\".\n- Spell out numbers from one to nine.\n- No exclamation marks.");
+    put(&dir, ".moxie/agent.md", "House style for everything you write into documents:\n- Write \"email\", never \"e-mail\".\n- Spell out numbers from one to nine.\n- No exclamation marks.");
     let ws = doc_folder(&dir, "welcome.md", BETA_EN);
     c.push(AgentCase::new("agentmd/en/house-style-file", Lang::En, Lang::En, BETA_EN, "Rewrite the second paragraph so it sounds friendlier.", edit_in(para(BETA_EN, 1), StructureExpect::Same).check("house style followed", |o| {
         let t = proposed_text(o);
@@ -650,14 +650,14 @@ fn agentmd_library_skill_cases() -> Vec<AgentCase> {
         let d = small_digits(&t);
         if !d.is_empty() { p.push(format!("digits {d:?}")); }
         p.is_empty().then_some(()).ok_or_else(|| p.join(", "))
-    }), "Writing instructions (.textus/agent.md), house style: 'email' not 'e-mail', numbers one to nine spelled out, no exclamation marks. Expect the second paragraph rewritten friendlier and following all three ('within one day'), meaning kept.").disk(ws));
+    }), "Writing instructions (.moxie/agent.md), house style: 'email' not 'e-mail', numbers one to nine spelled out, no exclamation marks. Expect the second paragraph rewritten friendlier and following all three ('within one day'), meaning kept.").disk(ws));
 
     // The global config folder's writing instructions, then the project's.
     let base = scratch("agentmd-global");
     put(&base, "global/agent.md", "<!--\nThis part is a comment and is never sent:\nAlways reply in French.\n-->\nAlways reply in English, whatever language the user writes in.");
     put(
         &base,
-        "project/.textus/agent.md",
+        "project/.moxie/agent.md",
         "面向读者一律称“您”，不要用“你”。",
     );
     let ws = DiskWorkspace {
@@ -666,21 +666,21 @@ fn agentmd_library_skill_cases() -> Vec<AgentCase> {
         show: vec![base.clone()],
         ..DiskWorkspace::default()
     };
-    c.push(AgentCase::new("agentmd/global-plus-workspace", Lang::En, Lang::ZhHans, INVITE_ZH, "在文末加一句欢迎大家带朋友一起来的话。", edit_anywhere().check("addresses readers as 您", |o| (!proposed_text(o).contains('你')).then_some(()).ok_or_else(|| "used 你".into())), "Two layers of writing instructions: the global config folder's agent.md (reply in English; a commented-out 'reply in French' that must be ignored) and the project's .textus/agent.md (address readers as 您), headed as the project's. Expect a Chinese sentence at the end using 您, and an ENGLISH reply (not French, not Chinese).").disk(ws));
+    c.push(AgentCase::new("agentmd/global-plus-workspace", Lang::En, Lang::ZhHans, INVITE_ZH, "在文末加一句欢迎大家带朋友一起来的话。", edit_anywhere().check("addresses readers as 您", |o| (!proposed_text(o).contains('你')).then_some(()).ok_or_else(|| "used 你".into())), "Two layers of writing instructions: the global config folder's agent.md (reply in English; a commented-out 'reply in French' that must be ignored) and the project's .moxie/agent.md (address readers as 您), headed as the project's. Expect a Chinese sentence at the end using 您, and an ENGLISH reply (not French, not Chinese).").disk(ws));
 
     // Library entries on disk, reached by alias.
     let dir = scratch("library-en");
-    put(&dir, ".textus/library/ines.md", "---\nname: Ines Duarte\naliases: [the Captain, Captain Duarte]\n---\nCaptain of the Marrow. 52 years old, grew up in Porto. Afraid of fire since the engine-room blaze of 2009; she keeps an extinguisher by her bunk.");
+    put(&dir, ".moxie/library/ines.md", "---\nname: Ines Duarte\naliases: [the Captain, Captain Duarte]\n---\nCaptain of the Marrow. 52 years old, grew up in Porto. Afraid of fire since the engine-room blaze of 2009; she keeps an extinguisher by her bunk.");
     put(
         &dir,
-        ".textus/library/marrow.md",
+        ".moxie/library/marrow.md",
         "---\nname: Marrow\ninclude: never\n---\nAn old trawler. (Never sent: include is never.)",
     );
     let ws = doc_folder(&dir, "chapter-2.md", STORY_EN);
     c.push(AgentCase::new("library/en/alias-fact", Lang::En, Lang::En, STORY_EN, "How old is the Captain, and what is she afraid of?", no_edit().reply(&["52"]).check("names the fear", |o| o.reply.to_lowercase().contains("fire").then_some(()).ok_or_else(|| "no fire in the reply".into())), "The library entry Ines Duarte (aliases: the Captain) says she is 52 and afraid of fire since a 2009 engine-room blaze. Expect a short English answer from it, no edit.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("library-zh");
-    put(&dir, ".textus/library/lin.md", "---\nname: 林晚\naliases: [晚晚]\n---\n书店店员，二十九岁。从不喝咖啡，只喝热水或者淡茶。话很少。");
+    put(&dir, ".moxie/library/lin.md", "---\nname: 林晚\naliases: [晚晚]\n---\n书店店员，二十九岁。从不喝咖啡，只喝热水或者淡茶。话很少。");
     let ws = doc_folder(&dir, "第三章.md", NOVEL_ZH);
     c.push(AgentCase::new("library/zh/consistency", Lang::ZhHans, Lang::ZhHans, NOVEL_ZH, "在最后加两句：老周给林晚倒了一杯喝的，两个人聊了几句。", edit_anywhere().check("added at the end", |o| {
         let (s, _, _) = checks::changed_span(&o.doc_before, &o.doc_after);
@@ -690,18 +690,18 @@ fn agentmd_library_skill_cases() -> Vec<AgentCase> {
     // Skills on disk: by /name and by description; the project's shadows
     // the global one of the same name.
     let dir = scratch("skill-zh-slash");
-    put(&dir, ".textus/skills/runse.md", "---\nname: 润色\ndescription: 润色中文段落：去掉口水话和重复，保留全部事实和引用\n---\n润色时：删掉“其实”“基本上”“大家都觉得”这类口语；合并重复的意思；所有数字、人名、年份和引用原样保留；篇幅压缩到原来的 70% 左右；保持学术语气。每段只提一个修改。");
+    put(&dir, ".moxie/skills/runse.md", "---\nname: 润色\ndescription: 润色中文段落：去掉口水话和重复，保留全部事实和引用\n---\n润色时：删掉“其实”“基本上”“大家都觉得”这类口语；合并重复的意思；所有数字、人名、年份和引用原样保留；篇幅压缩到原来的 70% 左右；保持学术语气。每段只提一个修改。");
     let ws = doc_folder(&dir, "绿地.md", ACADEMIC_ZH);
     c.push(AgentCase::new("skill/zh/slash", Lang::ZhHans, Lang::ZhHans, ACADEMIC_ZH, "/润色 文献综述这一段", edit_in(para(ACADEMIC_ZH, 0), StructureExpect::Same).shorter().has(&["2019", "2021", "2022", "2.3"]).lacks(&["其实已经"]), "The user typed /润色 (the composer expands it into the skill's instructions): expect the literature paragraph polished per the skill - colloquialisms cut, ~70% length, every figure and citation kept - one edit, reply in Chinese.").disk(ws));
 
     let dir = scratch("skill-zh-description");
-    put(&dir, ".textus/skills/minutes.md", "---\nname: 会议纪要\ndescription: 把零散的会议记录整理成规范的会议纪要（结论、待办、负责人、截止时间）\n---\n整理会议纪要时：用三个二级标题“结论”“待办”“待确认”；待办写成任务列表（* [ ]），每条写明负责人，记录里没有负责人的写“负责人待定”；不补充记录里没有的信息，不改动原有的事实。");
+    put(&dir, ".moxie/skills/minutes.md", "---\nname: 会议纪要\ndescription: 把零散的会议记录整理成规范的会议纪要（结论、待办、负责人、截止时间）\n---\n整理会议纪要时：用三个二级标题“结论”“待办”“待确认”；待办写成任务列表（* [ ]），每条写明负责人，记录里没有负责人的写“负责人待定”；不补充记录里没有的信息，不改动原有的事实。");
     let ws = doc_folder(&dir, "访谈.md", NOTES_ZH);
     c.push(AgentCase::new("skill/zh/by-description", Lang::ZhHans, Lang::ZhHans, NOTES_ZH, "帮我把这些零散的记录整理成正式的会议纪要。", edit_anywhere().tools(&["use_skill"]).has(&["负责人待定"]), "A project skill 会议纪要 matches by description: expect use_skill, then the notes reorganised under 结论 / 待办 / 待确认 with task items, '负责人待定' where the notes name no owner (the 手机请假 item), and nothing invented.").disk(ws));
 
     let base = scratch("skill-shadow");
     put(&base, "global/skills/headline.md", "---\nname: headline\ndescription: Write or rewrite document titles\n---\nTitles in Title Case, up to 12 words; a colon and a subtitle are welcome.");
-    put(&base, "project/.textus/skills/headline.md", "---\nname: headline\ndescription: Write or rewrite document titles in the house style\n---\nHouse style for titles: sentence case, at most 6 words, no colon, lead with the concrete result.");
+    put(&base, "project/.moxie/skills/headline.md", "---\nname: headline\ndescription: Write or rewrite document titles in the house style\n---\nHouse style for titles: sentence case, at most 6 words, no colon, lead with the concrete result.");
     let en = lang_doc(Lang::En).doc;
     let ws = DiskWorkspace {
         global: Some(base.join("global")),
@@ -740,7 +740,7 @@ fn style_cases() -> Vec<AgentCase> {
     let dir = scratch("learned-zh");
     let learn = LearnStyle {
         samples: samples(&dir, &ZH_SAMPLES),
-        write_to: Some(dir.join(".textus/style.md")),
+        write_to: Some(dir.join(".moxie/style.md")),
         checks: profile_checks(Lang::ZhHans, ZH_HABITS),
     };
     let ws = doc_folder(&dir, "关于搬家.md", MOVING_ZH);
@@ -748,12 +748,12 @@ fn style_cases() -> Vec<AgentCase> {
         .title("面馆", &["面馆"])
         .banned(&["！", "——", "“", "”"])
         .rubric("Under the learned profile (short sentences, 「」 speech, no exclamation marks): expect a short continuation in that voice.");
-    c.push(AgentCase::new("style/zh/learned-applied", Lang::ZhHans, Lang::ZhHans, MOVING_ZH, "按我的风格改写这一段。", edit_in(para(MOVING_ZH, 0), StructureExpect::Any).check("learned habits followed", |o| rule_checks_zh(o, 18.0, 30)), "Learn my style (from three samples) wrote .textus/style.md; then 'rewrite this in my style' on a paragraph full of long sentences, ！ and ——. Expect short sentences, no ！ or ——, the author's plain voice, every fact kept (the details of moving, east to west of the city, two weeks). Then a completion under the same profile.").learn(learn).disk(ws).complete_after(completion));
+    c.push(AgentCase::new("style/zh/learned-applied", Lang::ZhHans, Lang::ZhHans, MOVING_ZH, "按我的风格改写这一段。", edit_in(para(MOVING_ZH, 0), StructureExpect::Any).check("learned habits followed", |o| rule_checks_zh(o, 18.0, 30)), "Learn my style (from three samples) wrote .moxie/style.md; then 'rewrite this in my style' on a paragraph full of long sentences, ！ and ——. Expect short sentences, no ！ or ——, the author's plain voice, every fact kept (the details of moving, east to west of the city, two weeks). Then a completion under the same profile.").learn(learn).disk(ws).complete_after(completion));
 
     let dir = scratch("learned-en");
     let learn = LearnStyle {
         samples: samples(&dir, &EN_SAMPLES),
-        write_to: Some(dir.join(".textus/style.md")),
+        write_to: Some(dir.join(".moxie/style.md")),
         checks: profile_checks(Lang::En, EN_HABITS),
     };
     let ws = doc_folder(&dir, "moving.md", MOVING_EN);
@@ -776,22 +776,22 @@ fn style_cases() -> Vec<AgentCase> {
         let avg = lengths.iter().sum::<usize>() as f64 / lengths.len().max(1) as f64;
         if avg > 14.0 { p.push(format!("average sentence {avg:.1} words")); }
         p.is_empty().then_some(()).ok_or_else(|| p.join(", "))
-    }), "Learn my style wrote .textus/style.md from three second-person, British-spelling samples; then 'rewrite in my style' on a paragraph with semicolons, 'very', 'leverage', 'utilize' and an exclamation mark. Expect short sentences, no semicolons, British spelling, the author's voice (second person fits), facts kept (across town, two weeks, pack / contracts / internet, the checklist). Then a completion under the same profile.").learn(learn).disk(ws).complete_after(completion));
+    }), "Learn my style wrote .moxie/style.md from three second-person, British-spelling samples; then 'rewrite in my style' on a paragraph with semicolons, 'very', 'leverage', 'utilize' and an exclamation mark. Expect short sentences, no semicolons, British spelling, the author's voice (second person fits), facts kept (across town, two weeks, pack / contracts / internet, the checklist). Then a completion under the same profile.").learn(learn).disk(ws).complete_after(completion));
 
     // Hand-written profiles with hard rules.
     let dir = scratch("rules-zh");
-    put(&dir, ".textus/style.md", ZH_RULES);
+    put(&dir, ".moxie/style.md", ZH_RULES);
     let ws = doc_folder(&dir, "关于搬家.md", MOVING_ZH);
     c.push(AgentCase::new("style/zh/rules", Lang::ZhHans, Lang::ZhHans, MOVING_ZH, "把这段扩写成两段，多写写搬家那两个星期的感受。", edit_in(para(MOVING_ZH, 0), StructureExpect::Any).longer().check("profile rules followed", |o| rule_checks_zh(o, 20.0, 25)), "The project's style.md: sentences ≤ 20 characters, no 非常/十分/极其/特别, 「」 for quotes, no ！ or ——. Expect two paragraphs that follow every rule and expand on the feelings without inventing events (inner states and consequences of what is there are fine).").disk(ws));
 
     let dir = scratch("rules-en");
-    put(&dir, ".textus/style.md", EN_RULES);
+    put(&dir, ".moxie/style.md", EN_RULES);
     let ws = doc_folder(&dir, "moving.md", MOVING_EN);
     c.push(AgentCase::new("style/en/banned-words", Lang::En, Lang::En, MOVING_EN, "Tidy up this paragraph.", edit_in(para(MOVING_EN, 0), StructureExpect::Any).check("profile rules followed", |o| rule_checks_en(o, &["very", "really", "leverage", "utilize", "incredibly"], 30.0)), "The project's style.md bans very/really/leverage/utilize/incredibly, semicolons and exclamation marks, and wants one to nine spelled out ('2 full weeks' -> 'two full weeks'). Expect the paragraph tidied with every rule followed and every fact kept.").disk(ws));
 
     // A profile in one language, a document in the other.
     let dir = scratch("cross-en-profile");
-    put(&dir, ".textus/style.md", EN_PROFILE_FOR_ZH);
+    put(&dir, ".moxie/style.md", EN_PROFILE_FOR_ZH);
     let ws = doc_folder(&dir, "关于搬家.md", MOVING_ZH);
     c.push(AgentCase::new("style/cross/en-profile-zh-doc", Lang::ZhHans, Lang::ZhHans, MOVING_ZH, "把这段改得更好读一些。", edit_in(para(MOVING_ZH, 0), StructureExpect::Any).check("profile rules followed", |o| {
         let t = proposed_text(o);
@@ -804,7 +804,7 @@ fn style_cases() -> Vec<AgentCase> {
     }), "An English style profile (short sentences, no exclamation marks, no em dashes) on a Chinese document: expect the paragraph rewritten IN CHINESE (the profile's language must not leak into the text) following the rules - short sentences, no ！, no ——.").disk(ws));
 
     let dir = scratch("cross-zh-profile");
-    put(&dir, ".textus/style.md", ZH_PROFILE_FOR_EN);
+    put(&dir, ".moxie/style.md", ZH_PROFILE_FOR_EN);
     let ws = doc_folder(&dir, "moving.md", MOVING_EN);
     c.push(AgentCase::new("style/cross/zh-profile-en-doc", Lang::En, Lang::En, MOVING_EN, "Tighten this paragraph.", edit_in(para(MOVING_EN, 0), StructureExpect::Any).shorter().check("profile rules followed", |o| {
         let t = proposed_text(o);
@@ -822,7 +822,7 @@ fn style_cases() -> Vec<AgentCase> {
 
     // Quick Ask under a style profile: the widget path carries it too.
     let dir = scratch("quick-style-zh");
-    put(&dir, ".textus/style.md", ZH_RULES);
+    put(&dir, ".moxie/style.md", ZH_RULES);
     let ws = doc_folder(&dir, "外婆的厨房.md", ESSAY_ZH);
     c.push(AgentCase::new("style/zh/quick-ask", Lang::ZhHans, Lang::ZhHans, ESSAY_ZH, "改得更有画面感", edit_anywhere().check("edit inside the selection", in_selection).check("profile rules followed", |o| rule_checks_zh(o, 20.0, 25)), "Quick Ask on the selected second paragraph, with the project's style.md (≤ 20-character sentences, no 非常/特别, no ！/——): expect a more vivid rewrite of exactly the selection that keeps to the profile and invents nothing.").quick(para(ESSAY_ZH, 1)).disk(ws));
     c
@@ -931,35 +931,35 @@ fn concept_cases() -> Vec<AgentCase> {
 
     let dir = scratch("concept-en-style");
     let ws = doc_folder(&dir, "mill-street.md", ESSAY_EN);
-    c.push(AgentCase::new("concept/en/style", Lang::En, Lang::En, ESSAY_EN, "How do I get you to write more like me in this project?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["style profile"], &["learn my style"]])), "Expect a short English answer: the style profile (.textus/style.md), which Learn my style from samples… in the project menu drafts from the user's own writing (or Create style profile), followed in conversations and completion. Names as in the UI; no invented settings.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/en/style", Lang::En, Lang::En, ESSAY_EN, "How do I get you to write more like me in this project?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["style profile"], &["learn my style"]])), "Expect a short English answer: the style profile (.moxie/style.md), which Learn my style from samples… in the project menu drafts from the user's own writing (or Create style profile), followed in conversations and completion. Names as in the UI; no invented settings.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-zh-style");
     let ws = doc_folder(&dir, "外婆的厨房.md", ESSAY_ZH);
-    c.push(AgentCase::new("concept/zh/style", Lang::ZhHans, Lang::ZhHans, ESSAY_ZH, "怎么才能让你以后都照我的文风来改稿？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["文风档案"], &["学习我的文风"]])), "Expect a short Chinese answer: the 文风档案 (.textus/style.md), drafted by 从样本学习我的文风… in the project menu (or 新建文风档案), followed in conversations and completion. UI names, full-width punctuation.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/zh/style", Lang::ZhHans, Lang::ZhHans, ESSAY_ZH, "怎么才能让你以后都照我的文风来改稿？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["文风档案"], &["学习我的文风"]])), "Expect a short Chinese answer: the 文风档案 (.moxie/style.md), drafted by 从样本学习我的文风… in the project menu (or 新建文风档案), followed in conversations and completion. UI names, full-width punctuation.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-zh-library");
     let ws = doc_folder(&dir, "第三章.md", NOVEL_ZH);
-    c.push(AgentCase::new("concept/zh/library", Lang::ZhHans, Lang::ZhHans, NOVEL_ZH, "小说里的人物越来越多，怎么让你记住每个人的设定，别写错？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["资料库"]])), "Expect a short Chinese answer: the 资料库 (.textus/library/, one entry per character, made with 新建资料库条目… in the project menu; an entry is sent when its name or an alias comes up). Optionally the 写作要求 for project background. UI names only.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/zh/library", Lang::ZhHans, Lang::ZhHans, NOVEL_ZH, "小说里的人物越来越多，怎么让你记住每个人的设定，别写错？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["资料库"]])), "Expect a short Chinese answer: the 资料库 (.moxie/library/, one entry per character, made with 新建资料库条目… in the project menu; an entry is sent when its name or an alias comes up). Optionally the 写作要求 for project background. UI names only.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-en-global");
     let ws = doc_folder(&dir, "welcome.md", BETA_EN);
-    c.push(AgentCase::new("concept/en/global-instructions", Lang::En, Lang::En, BETA_EN, "I want you to always reply in British English, in all my documents. Where do I set that once?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["writing instructions"], &["settings"]])), "Expect a short English answer: the global writing instructions, Settings > Textus AI > Writing Instructions (agent.md) > Edit agent.md, sent with every conversation in every document (a project's own writing instructions can add to them). No 'workspace', no invented menu.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/en/global-instructions", Lang::En, Lang::En, BETA_EN, "I want you to always reply in British English, in all my documents. Where do I set that once?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["writing instructions"], &["settings"]])), "Expect a short English answer: the global writing instructions, Settings > Moxie AI > Writing Instructions (agent.md) > Edit agent.md, sent with every conversation in every document (a project's own writing instructions can add to them). No 'workspace', no invented menu.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-en-project");
     let ws = doc_folder(&dir, "chapter-2.md", STORY_EN);
-    c.push(AgentCase::new("concept/en/project-instructions", Lang::En, Lang::En, STORY_EN, "This story needs its own rules: Ines narrates, and the tone stays dry. How do I give you rules for just this project?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["writing instructions"], &["edit project writing instructions", ".textus/agent.md"]])), "Expect a short English answer: the project's writing instructions, opened with Edit project writing instructions in the project menu (.textus/agent.md), sent after the global ones and winning where they conflict. Optionally the style profile for the dry tone and the library for Ines.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/en/project-instructions", Lang::En, Lang::En, STORY_EN, "This story needs its own rules: Ines narrates, and the tone stays dry. How do I give you rules for just this project?", no_edit().check("UI names", uses_ui_names(Lang::En, &[&["writing instructions"], &["edit project writing instructions", ".moxie/agent.md"]])), "Expect a short English answer: the project's writing instructions, opened with Edit project writing instructions in the project menu (.moxie/agent.md), sent after the global ones and winning where they conflict. Optionally the style profile for the dry tone and the library for Ines.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-zh-skill");
     let ws = doc_folder(&dir, "改期说明.md", EMAIL_ZH);
-    c.push(AgentCase::new("concept/zh/skill", Lang::ZhHans, Lang::ZhHans, EMAIL_ZH, "我经常要把邮件改成正式的语气，能不能存成一个固定的指令，以后直接调用？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["技能"], &["/"]])), "Expect a short Chinese answer: a 技能 - one Markdown file (name, description, instructions) in .textus/skills/ for this project or the global config folder's skills/ (设置 > Textus AI > 技能 > 导入技能…), called with /名字 or matched by its description. UI names only.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/zh/skill", Lang::ZhHans, Lang::ZhHans, EMAIL_ZH, "我经常要把邮件改成正式的语气，能不能存成一个固定的指令，以后直接调用？", no_edit().check("UI names", uses_ui_names(Lang::ZhHans, &[&["技能"], &["/"]])), "Expect a short Chinese answer: a 技能 - one Markdown file (name, description, instructions) in .moxie/skills/ for this project or the global config folder's skills/ (设置 > Moxie AI > 技能 > 导入技能…), called with /名字 or matched by its description. UI names only.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-ja-folder");
     let ws = doc_folder(&dir, "リリース準備.md", TASKS_DOC_JA);
-    c.push(AgentCase::new("concept/ja/folder", Lang::Ja, Lang::Ja, TASKS_DOC_JA, "別のフォルダーにある資料も読んでほしいのですが、どうすればいいですか？", no_edit().check("UI names", uses_ui_names(Lang::Ja, &[&["プロジェクトフォルダー"]])), "Expect a short Japanese answer: choose that folder (or a common parent) as the プロジェクトフォルダー with プロジェクトフォルダーを選択… in the project menu or 設定 > Textus AI > プロジェクトフォルダー; files outside it can't be read. UI names (フォルダー with ー), full-width punctuation.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/ja/folder", Lang::Ja, Lang::Ja, TASKS_DOC_JA, "別のフォルダーにある資料も読んでほしいのですが、どうすればいいですか？", no_edit().check("UI names", uses_ui_names(Lang::Ja, &[&["プロジェクトフォルダー"]])), "Expect a short Japanese answer: choose that folder (or a common parent) as the プロジェクトフォルダー with プロジェクトフォルダーを選択… in the project menu or 設定 > Moxie AI > プロジェクトフォルダー; files outside it can't be read. UI names (フォルダー with ー), full-width punctuation.").mode(AgentMode::Review).disk(ws));
 
     let dir = scratch("concept-ja-style");
     let ws = doc_folder(&dir, "リリース準備.md", TASKS_DOC_JA);
-    c.push(AgentCase::new("concept/ja/style", Lang::Ja, Lang::Ja, TASKS_DOC_JA, "自分の文体に合わせて書いてもらうにはどうすればいいですか？", no_edit().check("UI names", uses_ui_names(Lang::Ja, &[&["文体プロファイル"], &["文体を学習"]])), "Expect a short Japanese answer: the 文体プロファイル (.textus/style.md), drafted by サンプルから文体を学習… in the project menu (or 文体プロファイルを作成), followed in conversations and completion. UI names only.").mode(AgentMode::Review).disk(ws));
+    c.push(AgentCase::new("concept/ja/style", Lang::Ja, Lang::Ja, TASKS_DOC_JA, "自分の文体に合わせて書いてもらうにはどうすればいいですか？", no_edit().check("UI names", uses_ui_names(Lang::Ja, &[&["文体プロファイル"], &["文体を学習"]])), "Expect a short Japanese answer: the 文体プロファイル (.moxie/style.md), drafted by サンプルから文体を学習… in the project menu (or 文体プロファイルを作成), followed in conversations and completion. UI names only.").mode(AgentMode::Review).disk(ws));
     c
 }
 

@@ -1,4 +1,4 @@
-//! search_conversations: the user's earlier conversations with Textus AI,
+//! search_conversations: the user's earlier conversations with Moxie AI,
 //! searched for words when they refer to one.
 
 use crate::ai::tools::{Access, Run, Tool, EVERY_MODE};

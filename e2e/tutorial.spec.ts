@@ -20,7 +20,7 @@ const UI = {
     tutorialDoneTitle: "All done",
     tutorialWatchNote: "Connect an AI later in",
     tutorialDoneMemory:
-      "Textus AI remembers your requirements and style over time; see Project, the folder button in the AI panel.",
+      "Moxie AI remembers your requirements and style over time; see Project, the folder button in the AI panel.",
   },
   zh: {
     tutorialStart: "开始",
@@ -35,7 +35,7 @@ const UI = {
     tutorialDoneTitle: "完成",
     tutorialWatchNote: "之后在",
     tutorialDoneMemory:
-      "Textus AI 会慢慢记住你的要求和风格，可以在 AI 面板的“项目”里查看。",
+      "Moxie AI 会慢慢记住你的要求和风格，可以在 AI 面板的“项目”里查看。",
   },
 };
 
@@ -51,7 +51,7 @@ const NOTES = {
 
 type Lang = keyof typeof UI;
 
-const PROGRESS = "textus-tutorial-progress";
+const PROGRESS = "moxie-tutorial-progress";
 
 const at = (stepId: string, extra: Record<string, unknown> = {}) => ({
   [PROGRESS]: JSON.stringify({ active: true, stepId, tabId: null, ...extra }),
@@ -192,7 +192,7 @@ test("the whole tour, typed, with the AI lessons watched", async ({ page }) => {
   const t = UI.en;
   await openApp(page, { settings: { language: "en" }, storage: at("welcome") });
 
-  await expect(lesson(page, "Welcome to Textus")).toContainText(
+  await expect(lesson(page, "Welcome to Moxie")).toContainText(
     "reading notes on Hamlet",
   );
   await page.getByRole("button", { name: "Start" }).click();
@@ -260,7 +260,7 @@ test("the whole tour, typed, with the AI lessons watched", async ({ page }) => {
     // What to do is still spelled out; watching is an extra.
     await expect(card).toContainText(says);
     await expect(card).toContainText(
-      "Connect an AI later in Settings › Textus AI to try it yourself.",
+      "Connect an AI later in Settings › Moxie AI to try it yourself.",
     );
     await card.getByRole("button", { name: /Watch the animation/ }).click();
     await expect
@@ -279,7 +279,7 @@ test("the whole tour, typed, with the AI lessons watched", async ({ page }) => {
 
   const done = lesson(page, "All done");
   await expect(done).toContainText(
-    "Textus AI remembers your requirements and style over time",
+    "Moxie AI remembers your requirements and style over time",
   );
   await done.getByRole("button", { name: "Online Tutorials" }).click();
   await done.getByRole("button", { name: "Join the Community" }).click();

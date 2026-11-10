@@ -2,8 +2,8 @@ import { ownNotes } from "../platform/ipc";
 
 /**
  * Track My Changes keeps a document's file as it was, with only the changes
- * accepted, and the writer's own undecided changes beside it in .textus - as
- * Textus AI's undecided proposals are kept. Shared as a folder, both go along.
+ * accepted, and the writer's own undecided changes beside it in .moxie - as
+ * Moxie AI's undecided proposals are kept. Shared as a folder, both go along.
  * The sidecar holds the original (`base`, what the file holds) and the text
  * with the changes (`revised`, what the editor shows).
  */

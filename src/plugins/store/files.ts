@@ -4,7 +4,7 @@ import { scaleStylesheet } from "../../ui/scale-lengths";
 
 /**
  * A plugin's own files, and how a webview gets them: each
- * `textus-resource:` becomes a `textus-plugin:` URL of that file
+ * `moxie-resource:` becomes a `textus-plugin:` URL of that file
  * (plugins/scheme.rs), or a `data:` URL where there is no such scheme.
  */
 
@@ -79,9 +79,9 @@ export function dataUrl(path: string, bytes: Uint8Array): string {
   return `data:${mimeOf(path)};base64,${toBase64(bytes)}`;
 }
 
-const RESOURCE = /textus-resource:([A-Za-z0-9._~\-/]+)/g;
+const RESOURCE = /moxie-resource:([A-Za-z0-9._~\-/]+)/g;
 
-/** `html` with each `textus-resource:<path>` replaced by the URL of that
+/** `html` with each `moxie-resource:<path>` replaced by the URL of that
  *  file of plugin `id`'s. A big file as a `data:` URL took WebKit gigabytes
  *  to load, so it is one only where nothing serves the files. */
 export async function withResources(
@@ -109,7 +109,7 @@ export async function withResources(
 
 const STYLE = /(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi;
 const SHEET =
-  /<link\b(?=[^>]*\brel=["']?stylesheet\b)[^>]*\bhref=["']?textus-resource:([A-Za-z0-9._~\-/]+)["']?[^>]*>/gi;
+  /<link\b(?=[^>]*\brel=["']?stylesheet\b)[^>]*\bhref=["']?moxie-resource:([A-Za-z0-9._~\-/]+)["']?[^>]*>/gi;
 /** A url() in a stylesheet, unless it names a scheme, the root or data. */
 const RELATIVE_URL =
   /url\(\s*(["']?)(?![a-z][a-z0-9+.-]*:|\/|#)([^"')]+)\1\s*\)/gi;
@@ -134,7 +134,7 @@ async function withScaledStyles(
         css.replace(
           RELATIVE_URL,
           (_, quote: string, path: string) =>
-            `url(${quote}textus-resource:${dir}${path.replace(/^\.\//, "")}${quote})`,
+            `url(${quote}moxie-resource:${dir}${path.replace(/^\.\//, "")}${quote})`,
         ),
       );
     }),

@@ -14,7 +14,7 @@ const base = {
   name: "Example",
   version: "1.0.0",
   publisher: "catvinci",
-  engines: { textus: "^1.3.0" },
+  engines: { moxie: "^1.3.0" },
 };
 
 describe("a plugin's manifest", () => {
@@ -106,11 +106,11 @@ describe("a plugin's manifest", () => {
     expect(bad({ contributes: { menus: { "window/title": [] } } })).toThrow(
       /no menu/,
     );
-    expect(bad({ engines: {} })).toThrow(/engines.textus/);
+    expect(bad({ engines: {} })).toThrow(/engines.moxie/);
     expect(() => parseManifest("{nope")).toThrow(/not JSON/);
   });
 
-  it("reads a command that runs one of Textus's own, and only Textus's", () => {
+  it("reads a command that runs one of Moxie's own, and only Moxie's", () => {
     const runs = (command: string) =>
       parseManifest({
         ...base,
@@ -128,7 +128,7 @@ describe("a plugin's manifest", () => {
       command: "textus.insertBlock",
       args: ["h2"],
     });
-    expect(() => runs("other.plugin.cmd")).toThrow(/one of Textus's/);
+    expect(() => runs("other.plugin.cmd")).toThrow(/one of Moxie's/);
   });
 
   it("reads where a plugin suggests completions, and refuses a bad pattern", () => {

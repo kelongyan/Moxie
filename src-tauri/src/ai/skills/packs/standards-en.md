@@ -4,9 +4,9 @@ description: >-
   Writing conventions for English: punctuation and typography presets, numbers, word choice and spelling variety, register and inclusive language, dialogue, letters, academic citation styles, ad disclosure and AI tells.
 license: MIT
 metadata:
-  textus-version: "1"
-  textus-invocation: "hidden"
-  textus-sources: "Our own text. Adapted from the Google developer documentation style guide and the Microsoft Writing Style Guide (CC BY 4.0, changes made) and GOV.UK guidance (OGL v3.0); summarised from the Federal Plain Language Guidelines, GPO Style Manual, AR 25-50, The Tongue and Quill, Strunk 1920 and FTC 16 CFR 255 (public domain), Chicago 18, AP, APA 7, MLA 9, the Oxford style guide, ASA/CAP and Wikipedia (summarised only); Kobak et al. 2025 (CC BY 4.0); blader/humanizer and avoid-ai-writing (MIT, ideas)."
+  moxie-version: "1"
+  moxie-invocation: "hidden"
+  moxie-sources: "Our own text. Adapted from the Google developer documentation style guide and the Microsoft Writing Style Guide (CC BY 4.0, changes made) and GOV.UK guidance (OGL v3.0); summarised from the Federal Plain Language Guidelines, GPO Style Manual, AR 25-50, The Tongue and Quill, Strunk 1920 and FTC 16 CFR 255 (public domain), Chicago 18, AP, APA 7, MLA 9, the Oxford style guide, ASA/CAP and Wikipedia (summarised only); Kobak et al. 2025 (CC BY 4.0); blader/humanizer and avoid-ai-writing (MIT, ideas)."
 ---
 
 ## typography

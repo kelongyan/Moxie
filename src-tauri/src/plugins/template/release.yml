@@ -1,10 +1,10 @@
 name: release
 
 # Publishes the plugin when a version tag is pushed (v0.1.0, v0.2.0...):
-# its files at that tag, zipped, as a GitHub release Textus can install.
+# its files at that tag, zipped, as a GitHub release Moxie can install.
 # The zip holds exactly what the tag holds - less this folder and
 # .gitignore - so anyone can check a release against its source, as
-# the Textus plugin listing does.
+# the Moxie plugin listing does.
 on:
   push:
     tags: ["v*"]

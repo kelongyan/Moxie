@@ -8,7 +8,7 @@ use lopdf::{dictionary, Dictionary, Document, Object, ObjectId, Stream};
 
 /// The resource name the number's font goes under on each page - unusual
 /// enough not to collide with a renderer's own /F1, /TT2, ...
-const FONT_NAME: &[u8] = b"TextusPageNo";
+const FONT_NAME: &[u8] = b"MoxiePageNo";
 /// Small, like a book's folio.
 const FONT_SIZE: f32 = 9.0;
 /// The baseline above the sheet's bottom edge: ~10mm, the middle of the ~20mm
@@ -196,7 +196,7 @@ mod tests {
             assert!(number > body, "page {n}: {text}");
             // Restored to the page's own state before drawing.
             assert!(text.starts_with("q\n"), "page {n}: {text}");
-            assert!(text[body..].contains("Q\nq\nBT\n/TextusPageNo 9 Tf"));
+            assert!(text[body..].contains("Q\nq\nBT\n/MoxiePageNo 9 Tf"));
         }
     }
 

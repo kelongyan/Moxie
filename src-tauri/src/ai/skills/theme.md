@@ -9,23 +9,23 @@ description: >-
   thème, Design, тема).
 license: MIT
 metadata:
-  textus-version: "1"
-  textus-invocation: "both"
-  textus-index: "Use when asked to make, design or change a theme, colour scheme or look for the editor."
-  textus-category: "create"
-  textus-modes: "create"
-  textus-packs: ""
-  textus-sources: "Our own text. The theme format is the app's own (Typora-compatible #write selectors); contrast ratios from WCAG 2.2 (W3C), summarised."
-  textus-aliases-en: "theme-css, stylesheet"
-  textus-aliases-zh: "设计主题, 主题, 编辑器主题"
-  textus-aliases-zh-Hant: "設計主題, 主題, 編輯器主題"
-  textus-aliases-ja: "テーマを作る, テーマ, テーマ作成"
-  textus-aliases-ko: "테마 만들기, 테마"
-  textus-aliases-es: "tema, diseñar-tema"
-  textus-aliases-fr: "thème, créer-thème"
-  textus-aliases-de: "design, farbschema"
-  textus-aliases-ru: "тема, оформление"
-  textus-aliases-pt: "tema, criar-tema"
+  moxie-version: "1"
+  moxie-invocation: "both"
+  moxie-index: "Use when asked to make, design or change a theme, colour scheme or look for the editor."
+  moxie-category: "create"
+  moxie-modes: "create"
+  moxie-packs: ""
+  moxie-sources: "Our own text. The theme format is the app's own (Typora-compatible #write selectors); contrast ratios from WCAG 2.2 (W3C), summarised."
+  moxie-aliases-en: "theme-css, stylesheet"
+  moxie-aliases-zh: "设计主题, 主题, 编辑器主题"
+  moxie-aliases-zh-Hant: "設計主題, 主題, 編輯器主題"
+  moxie-aliases-ja: "テーマを作る, テーマ, テーマ作成"
+  moxie-aliases-ko: "테마 만들기, 테마"
+  moxie-aliases-es: "tema, diseñar-tema"
+  moxie-aliases-fr: "thème, créer-thème"
+  moxie-aliases-de: "design, farbschema"
+  moxie-aliases-ru: "тема, оформление"
+  moxie-aliases-pt: "tema, criar-tema"
 ---
 
 # Design a theme
@@ -73,5 +73,5 @@ The app's revision colours follow the page by themselves (they are built on its 
 - Then how to use it, naming the app's controls as the user's UI names them:
   - Use this theme under the reply installs it and switches to it;
   - or save it as a .css file and import it with Settings > Extensions > Themes > ⋯ > Import CSS…; the Theme menu in Settings > Editor & Appearance switches back.
-- Then one line: they can share it in the theme gallery by posting it on https://github.com/CatVinci-Studio/textus-themes/issues/1 (a name, a one-sentence description, a license, the CSS and a screenshot).
+- Then one line: they can share it in the theme gallery by posting it on https://github.com/CatVinci-Studio/moxie-themes/issues/1 (a name, a one-sentence description, a license, the CSS and a screenshot).
 - Nothing else after the block: no list of the colours again.

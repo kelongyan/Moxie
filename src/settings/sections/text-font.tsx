@@ -21,7 +21,7 @@ import { ChevronIcon } from "../../ui/icons";
 
 let families: Promise<string[]> | null = null;
 /** Read once per session: the list is a few hundred names and rarely
- *  changes while Textus runs. */
+ *  changes while Moxie runs. */
 function fontFamilies(): Promise<string[]> {
   // Without the native side (the browser build) there is no list.
   families ??= systemIpc

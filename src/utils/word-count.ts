@@ -43,10 +43,10 @@ const PARAGRAPHS_KEPT = 50_000;
 const paragraphCounts = new Map<string, number>();
 onMemoryIdle(() => paragraphCounts.clear());
 
-/** An image's turn or width kept in its title (`{textus-rotate=90}`,
+/** An image's turn or width kept in its title (`{moxie-rotate=90}`,
  *  images/image-rotation.ts): layout, not words. */
 const IMAGE_TITLE_METADATA =
-  /\{(?:\s*(?:textus|levis)-(?:width|rotate)=[^\s}]*)+\s*\}/g;
+  /\{(?:\s*(?:moxie|textus|levis)-(?:width|rotate)=[^\s}]*)+\s*\}/g;
 
 function countParagraph(text: string): number {
   let words = paragraphCounts.get(text);

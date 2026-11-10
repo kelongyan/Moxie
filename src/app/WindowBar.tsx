@@ -6,7 +6,7 @@ import { AppMenuButton } from "./WindowControls";
 import { MenuBar } from "./menu/MenuBar";
 import { appDrawsWindowFrame } from "../platform/window-chrome";
 import { Tooltip } from "../ui/Tooltip";
-import { TextusAiButton } from "../ai/TextusAiSwitch";
+import { MoxieAiButton } from "../ai/MoxieAiSwitch";
 import { isIOSApp } from "../platform/capabilities";
 import { LockIcon, SidebarToggleIcon } from "../ui/icons";
 import { useFullscreenMark } from "./useFullscreenMark";
@@ -57,7 +57,7 @@ export function WindowBar({
   /** The sidebar's shortcut, as shown in the button's tooltip. */
   sidebarShortcut: string;
   onToggleSidebar: () => void;
-  /** The AI panel can be opened: Textus AI is on, and so is its chat. */
+  /** The AI panel can be opened: Moxie AI is on, and so is its chat. */
   showAgentToggle: boolean;
   agentOpen: boolean;
   /** The AI panel's shortcut, as shown in the button's tooltip. */
@@ -73,14 +73,14 @@ export function WindowBar({
     () => statusItemsSnapshot().length > 0,
   );
   const menuBar = appDrawsWindowFrame && settings.menuBarShown;
-  // A phone switches between the document and Textus AI as two pages: the
+  // A phone switches between the document and Moxie AI as two pages: the
   // capsule takes the AI button's place, and the word count goes into the
   // menu to leave the row to the title.
   const phone = usePhoneLayout();
-  const pages = phone && settings.textusAi && showAgentToggle;
+  const pages = phone && settings.moxieAi && showAgentToggle;
   // An iPad keeps the docked panel, with the same edge swipes.
   usePageSwipe(
-    isIOSApp && settings.textusAi && showAgentToggle,
+    isIOSApp && settings.moxieAi && showAgentToggle,
     agentOpen,
     onToggleAgent,
   );
@@ -163,7 +163,7 @@ export function WindowBar({
                 `${words} ${words === 1 ? t.wordUnit : t.wordsUnit}`}
             </span>
           )}
-          {/* Struck through while Textus AI is off; right-click pauses or
+          {/* Struck through while Moxie AI is off; right-click pauses or
           turns it off. */}
           {pages ? (
             <PageSwitch
@@ -173,7 +173,7 @@ export function WindowBar({
               }}
             />
           ) : (
-            <TextusAiButton
+            <MoxieAiButton
               className="window-bar-toggle"
               panelOpen={agentOpen}
               showPanel={showAgentToggle}

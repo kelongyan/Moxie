@@ -2,10 +2,10 @@ import { test, type Page } from "@playwright/test";
 import { PHONE, openApp, openPhone } from "../../helpers";
 
 // Review screenshots of every Settings page at full length, desktop and
-// phone, light and dark. Runs only with TEXTUS_SHOTS_DIR set.
+// phone, light and dark. Runs only with MOXIE_SHOTS_DIR set.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const LANGUAGES = ["en", "zh"] as const;
 
@@ -15,7 +15,7 @@ const CATEGORY_IDS: Record<string, string> = {
   通用: "general",
   "Editor & Appearance": "editor",
   编辑与外观: "editor",
-  "Textus AI": "ai",
+  "Moxie AI": "ai",
   Shortcuts: "shortcuts",
   快捷键: "shortcuts",
   Privacy: "privacy",
@@ -68,7 +68,7 @@ async function shootPages(page: Page, prefix: string) {
     if (i === 0) {
       await panel
         .locator(".settings-link-row", {
-          hasText: /^(About Textus|关于 Textus)$/,
+          hasText: /^(About Moxie|关于 Moxie)$/,
         })
         .click();
       await shoot("1b-about");

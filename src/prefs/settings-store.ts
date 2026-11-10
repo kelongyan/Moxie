@@ -150,8 +150,8 @@ export function loadSettings(): Settings {
 }
 
 // Every AI request checks the switch as it goes out, so one made right after
-// turning Textus AI off is refused.
-gateAiRequests(() => loadSettings().textusAi);
+// turning Moxie AI off is refused.
+gateAiRequests(() => loadSettings().moxieAi);
 
 /** Forgets the store, for tests that install a different boot snapshot. */
 export function resetSettingsStoreForTests(): void {

@@ -42,7 +42,7 @@ export async function installThemeBackend(
           case "delete_theme":
             return null;
           case "export_save_dialog":
-            return "/exports/textus-theme.css";
+            return "/exports/moxie-theme.css";
           case "write_text_file":
             written[String(args.path)] = String(args.contents);
             return null;
@@ -74,7 +74,7 @@ export async function importTheme(page: Page, path: string) {
   await dialog.getByRole("button", { name: "More", exact: true }).click();
   await dialog.getByRole("menuitem", { name: "Import CSS…" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-user-theme", "");
-  await expect(page.locator("#textus-imported-chrome")).toHaveCount(1);
+  await expect(page.locator("#moxie-imported-chrome")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
 }

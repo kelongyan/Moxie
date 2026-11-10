@@ -57,7 +57,7 @@ export function isPermission(value: unknown): value is Permission {
 export interface CommandContribution {
   command: string;
   title: string;
-  /** Runs one of Textus's commands with these arguments, at once and with
+  /** Runs one of Moxie's commands with these arguments, at once and with
    *  no code of the plugin's: what a / item or a key must do before the
    *  next key comes. */
   runs?: { command: string; args: unknown[] };
@@ -83,7 +83,7 @@ export type MenuId =
   | "app/plugins"
   | "app/tray";
 
-/** A Textus setting a plugin needs on to do all it does. */
+/** A Moxie setting a plugin needs on to do all it does. */
 export type RequiredSetting = "runInBackground";
 export const REQUIRED_SETTINGS: readonly RequiredSetting[] = [
   "runInBackground",
@@ -104,7 +104,7 @@ export interface MenuContribution {
   icon?: string;
 }
 
-/** A view is drawn by Textus from the plugin's items, or is a page of the
+/** A view is drawn by Moxie from the plugin's items, or is a page of the
  *  plugin's own. */
 export type ViewType = "list" | "webview";
 
@@ -126,7 +126,7 @@ export interface ViewContribution {
 /** Code blocks of a language the plugin draws in the document: ```tasks. */
 export interface CodeBlockContribution {
   language: string;
-  /** What the block is called where Textus names it ("Task query"). */
+  /** What the block is called where Moxie names it ("Task query"). */
   title?: string;
   /** "none": the block sits on the page without the box drawn round a
    *  figure - for one that reads as part of the document, such as a table. */
@@ -180,7 +180,7 @@ export interface ThemeContribution {
   path: string;
 }
 
-/** A tool the plugin gives Textus AI: what the model is told and its
+/** A tool the plugin gives Moxie AI: what the model is told and its
  *  arguments as a JSON schema. */
 export interface AiToolContribution {
   name: string;
@@ -207,7 +207,7 @@ export interface LinkContribution {
 }
 
 /** Where a floating view may be: on the desktop, over every window, in
- *  Textus's window, or either, as the user picks. */
+ *  Moxie's window, or either, as the user picks. */
 export type FloatingPlace = "desktop" | "window" | "either";
 
 /** A small page of the plugin's that floats - a desk pet, a timer, a
@@ -221,14 +221,14 @@ export interface FloatingViewContribution {
   place: FloatingPlace;
 }
 
-/** What a document can hold that a plugin works with, so Textus suggests it
+/** What a document can hold that a plugin works with, so Moxie suggests it
  *  for a document that does: [[wikilinks]]. */
 export type SuggestKind = "wikilinks";
 
 /** What `![[...]]` embeds point at. */
 export type EmbedKind = "note" | "heading" | "block";
 
-/** `![[...]]` embeds whose content the plugin gives as Markdown; Textus
+/** `![[...]]` embeds whose content the plugin gives as Markdown; Moxie
  *  draws it, read-only. Needs files.read. */
 export interface EmbedContribution {
   id: string;
@@ -272,7 +272,7 @@ export interface PluginManifest {
   icon?: string;
   license?: string;
   repository?: string;
-  /** The Textus versions it works with: "^1.2.0", ">=1.2.0". */
+  /** The Moxie versions it works with: "^1.2.0", ">=1.2.0". */
   engine: string;
   /** Where it runs. Unset, everywhere, unless it works in the background
    *  (background code, or requiring runInBackground): the desktop's only. */
@@ -332,7 +332,7 @@ export function parseManifest(raw: string | unknown): PluginManifest {
       reason: text(need.reason, `requires[${i}].reason`, true) || undefined,
     };
   });
-  // Background code, or Textus kept running in the background: the desktop's.
+  // Background code, or Moxie kept running in the background: the desktop's.
   const inBackground =
     !!background || requires.some((r) => r.setting === "runInBackground");
   const platforms: readonly PluginPlatform[] =
@@ -374,7 +374,7 @@ export function parseManifest(raw: string | unknown): PluginManifest {
     icon: text(m.icon, "icon", true) || undefined,
     license: text(m.license, "license", true) || undefined,
     repository: text(m.repository, "repository", true) || undefined,
-    engine: text(engines.textus, "engines.textus"),
+    engine: text(engines.moxie, "engines.moxie"),
     platforms,
     main: parseMain(m.main),
     background,
@@ -425,8 +425,8 @@ export function compareVersions(a: string, b: string): number {
 }
 
 /**
- * Whether Textus `version` satisfies `range`: `^1.3.0`, `>=1.3.0`, `1.3.x`, or
- * exact. Textus pre-releases count as their release unless the range names a
+ * Whether Moxie `version` satisfies `range`: `^1.3.0`, `>=1.3.0`, `1.3.x`, or
+ * exact. Moxie pre-releases count as their release unless the range names a
  * pre-release itself; then they are told apart.
  */
 export function engineSatisfied(range: string, version: string): boolean {

@@ -54,7 +54,7 @@ export function ShortcutsPage({
           [
             t.shortcutAiGroupLabel,
             [
-              ["toggleTextusAi", t.shortcutToggleTextusAi],
+              ["toggleMoxieAi", t.shortcutToggleMoxieAi],
               ["triggerCompletion", t.shortcutTriggerCompletion],
               ["triggerGrammarCheck", t.shortcutTriggerGrammarCheck],
               ["toggleFloatingChat", t.shortcutToggleFloatingChat],

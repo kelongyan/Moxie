@@ -43,7 +43,7 @@ test("dragging the sidebar's edge resizes it; it comes back as it was left: open
   expect(await mainPaneLeft(page)).toBe(320);
   await expect
     .poll(() =>
-      page.evaluate(() => localStorage.getItem("textus-sidebar-width")),
+      page.evaluate(() => localStorage.getItem("moxie-sidebar-width")),
     )
     .toBe("320");
 

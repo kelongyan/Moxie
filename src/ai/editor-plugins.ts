@@ -19,7 +19,7 @@ import { paperRegionPlugin } from "./paper/paper-region-plugin";
 import { resolveStrings } from "../i18n/strings";
 import { sendTourSignal, type TourAi } from "../utils/events";
 import type { RevisionDisplay, Settings } from "../prefs/SettingsContext";
-import { aiFeatures } from "../settings/textus-ai";
+import { aiFeatures } from "../settings/moxie-ai";
 
 export interface PendingEditCallbacks {
   onAccept: (callId: string) => void;
@@ -37,7 +37,7 @@ export interface PendingEditCallbacks {
 
 /**
  * The AI features that live in the text, each switched in Settings under
- * Textus AI's own switch, as the last plugins in the chain. The callbacks are
+ * Moxie AI's own switch, as the last plugins in the chain. The callbacks are
  * ref-indirected: the chain is built at mount, before the handlers exist.
  */
 export function withAiPlugins(

@@ -1,5 +1,5 @@
 //! When a job is due: its trigger read from what the plugin asked for, the
-//! next time after a moment, and what a time missed while Textus wasn't
+//! next time after a moment, and what a time missed while Moxie wasn't
 //! running becomes. Pure; times are Unix milliseconds, local time comes from
 //! the `TimeZone` passed in.
 
@@ -8,7 +8,7 @@ use chrono::{DateTime, Duration, LocalResult, NaiveTime, TimeZone, Utc};
 /// The shortest `every` a plugin may ask for.
 pub const MIN_EVERY_MINUTES: u32 = 15;
 
-/// A due time this late was missed (Textus wasn't running, or asleep), not
+/// A due time this late was missed (Moxie wasn't running, or asleep), not
 /// just reached on the timer's next tick.
 pub const MISSED_AFTER_MS: i64 = 2 * 60 * 1000;
 
@@ -27,7 +27,7 @@ pub enum Trigger {
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
 pub enum CatchUp {
-    /// A time missed fires once when Textus is next running.
+    /// A time missed fires once when Moxie is next running.
     #[default]
     Once,
     /// A time missed is let go.

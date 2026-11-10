@@ -3,7 +3,7 @@ use super::*;
 #[test]
 fn library_entries_parse_frontmatter_lists_in_both_scripts() {
     let entry = parse_library_entry(
-        ".textus/library/lin.md",
+        ".moxie/library/lin.md",
         "lin",
         "---\nname: 林晚\naliases: [晚晚, 林老师]\ninclude: always\n---\n女主角。",
     );
@@ -362,7 +362,7 @@ fn images_are_listed_and_shown_only_to_a_model_that_can_see() {
     assert_eq!(image.data_base64, "iVBORw==");
     assert_eq!(
             read_image(root, "poster.jpg").unwrap_err(),
-            "`poster.jpg` is too large to show (6.0 MB; the limit is 6.0 MB), and Textus can't make images smaller - ask the user for a smaller copy."
+            "`poster.jpg` is too large to show (6.0 MB; the limit is 6.0 MB), and Moxie can't make images smaller - ask the user for a smaller copy."
         );
     assert!(read_image(root, "notes.md")
         .unwrap_err()
@@ -426,14 +426,14 @@ fn find_caps_its_answer() {
 
 #[test]
 fn the_library_and_style_are_read_from_textus_only() {
-    let dir = std::env::temp_dir().join(format!("textus-lib-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("moxie-lib-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     for (path, body) in [
         (".other/library/wu.md", "---\nname: Wu\n---\nOther Wu."),
         (".other/style.md", "Short sentences."),
-        (".textus/library/lin.md", "---\nname: Lin\n---\nTextus Lin."),
+        (".moxie/library/lin.md", "---\nname: Lin\n---\nMoxie Lin."),
         (
-            ".textus/library/new.md",
+            ".moxie/library/new.md",
             "---\nname: New\n---\n<!-- what to know about New -->\n",
         ),
     ] {
@@ -443,16 +443,16 @@ fn the_library_and_style_are_read_from_textus_only() {
     }
     let library = read_library(&dir);
     let bodies: Vec<_> = library.iter().map(|e| e.body.as_str()).collect();
-    assert_eq!(bodies, ["Textus Lin.", ""]);
-    assert_eq!(library[0].file, ".textus/library/lin.md");
+    assert_eq!(bodies, ["Moxie Lin.", ""]);
+    assert_eq!(library[0].file, ".moxie/library/lin.md");
     // Listed, but never sent: nothing is written in it yet.
     assert!(relevant_library(&library, "New and Lin")
         .iter()
         .all(|e| e.name != "New"));
     assert_eq!(read_style(&dir), None);
-    // "Learn my style" and "Open style profile" write .textus/style.md.
-    assert_eq!(style_path(&dir), dir.join(".textus/style.md"));
-    std::fs::write(dir.join(".textus/style.md"), "Long sentences.").unwrap();
+    // "Learn my style" and "Open style profile" write .moxie/style.md.
+    assert_eq!(style_path(&dir), dir.join(".moxie/style.md"));
+    std::fs::write(dir.join(".moxie/style.md"), "Long sentences.").unwrap();
     assert_eq!(read_style(&dir).as_deref(), Some("Long sentences."));
     let _ = std::fs::remove_dir_all(&dir);
 }
@@ -479,18 +479,18 @@ fn the_library_cap_counts_characters_and_names_what_it_left_out() {
 }
 
 /// How long the project tools take on a real folder:
-/// `TEXTUS_PROJECT_BENCH=<dir> cargo test --release project_tools_benchmark -- --ignored --nocapture`.
+/// `MOXIE_PROJECT_BENCH=<dir> cargo test --release project_tools_benchmark -- --ignored --nocapture`.
 #[test]
 #[ignore]
 fn project_tools_benchmark() {
-    let Some(dir) = std::env::var_os("TEXTUS_PROJECT_BENCH") else {
+    let Some(dir) = std::env::var_os("MOXIE_PROJECT_BENCH") else {
         return;
     };
     let root = PathBuf::from(dir);
-    let words = std::env::var("TEXTUS_PROJECT_BENCH_WORDS")
+    let words = std::env::var("MOXIE_PROJECT_BENCH_WORDS")
         .unwrap_or_else(|_| "zebracorn,harbour,note 4".into());
     let [rare, common, name] = words.splitn(3, ',').collect::<Vec<_>>()[..] else {
-        panic!("TEXTUS_PROJECT_BENCH_WORDS is <rare>,<common>,<name>");
+        panic!("MOXIE_PROJECT_BENCH_WORDS is <rare>,<common>,<name>");
     };
     let timed = |what: &str, out: &dyn Fn() -> String| {
         let start = Instant::now();
@@ -538,7 +538,7 @@ fn project_tools_benchmark() {
 fn filesystem_root_is_too_broad() {
     assert!(is_too_broad(Path::new("/")));
     assert!(!is_too_broad(
-        &std::env::temp_dir().join("textus-some-project")
+        &std::env::temp_dir().join("moxie-some-project")
     ));
 }
 

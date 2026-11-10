@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { emit, openApp, openPhone, pasteMarkdown, PHONE, END } from "./helpers";
 
 /**
- * Textus AI's switch on the window bar's AI button: off, nothing of it runs
+ * Moxie AI's switch on the window bar's AI button: off, nothing of it runs
  * and no request reaches an AI service; each feature keeps its own setting.
  */
 
@@ -28,21 +28,21 @@ const providerRequests = (page: Page) =>
   );
 
 /** The window bar's one AI button: the panel while on, struck through
- *  (`.textus-ai-button-off`) while off. */
+ *  (`.moxie-ai-button-off`) while off. */
 const aiButton = (page: Page) => page.locator(".window-bar .window-bar-toggle");
 const panelButton = (page: Page) =>
-  page.locator('.window-bar-toggle[aria-label="Textus AI"]');
+  page.locator('.window-bar-toggle[aria-label="Moxie AI"]');
 
 async function turnOff(page: Page) {
   await aiButton(page).click({ button: "right" });
-  await page.getByRole("menuitem", { name: "关闭 Textus AI" }).click();
-  await expect(aiButton(page)).toHaveClass(/textus-ai-button-off/);
+  await page.getByRole("menuitem", { name: "关闭 Moxie AI" }).click();
+  await expect(aiButton(page)).toHaveClass(/moxie-ai-button-off/);
 }
 
 async function turnOn(page: Page) {
   await aiButton(page).click();
-  await page.getByRole("menuitem", { name: "开启 Textus AI" }).click();
-  await expect(aiButton(page)).not.toHaveClass(/textus-ai-button-off/);
+  await page.getByRole("menuitem", { name: "开启 Moxie AI" }).click();
+  await expect(aiButton(page)).not.toHaveClass(/moxie-ai-button-off/);
 }
 
 const savedSetting = (page: Page, key: string) =>
@@ -58,26 +58,26 @@ async function typeAtEnd(page: Page, text: string, typed: string) {
   await page.keyboard.type(typed);
 }
 
-test("the AI button turns Textus AI off and on from its right-click menu", async ({
+test("the AI button turns Moxie AI off and on from its right-click menu", async ({
   page,
 }) => {
   await openApp(page);
   const button = aiButton(page);
   await expect(button).toHaveAccessibleDescription(
-    /^Textus AI \(.+L\) · 右键可暂停或关闭$/,
+    /^Moxie AI \(.+L\) · 右键可暂停或关闭$/,
   );
   await expect(button.locator("svg path")).toHaveCount(1);
 
   await turnOff(page);
   // Struck through, named for what it is now, and no panel to open.
-  await expect(button).toHaveAccessibleName("Textus AI 已关闭");
+  await expect(button).toHaveAccessibleName("Moxie AI 已关闭");
   await expect(button.locator("svg path")).toHaveCount(3);
   await expect(button).toHaveAccessibleDescription(
-    "Textus AI 已关闭 · 点击开启",
+    "Moxie AI 已关闭 · 点击开启",
   );
   await expect(page.locator(".agent-panel-view")).toHaveCount(0);
-  expect(await savedSetting(page, "textusAi")).toBe(false);
-  expect(await savedSetting(page, "textusAiResumeAt")).toBe(null);
+  expect(await savedSetting(page, "moxieAi")).toBe(false);
+  expect(await savedSetting(page, "moxieAiResumeAt")).toBe(null);
 
   await turnOn(page);
   await expect(panelButton(page)).toBeVisible();
@@ -85,48 +85,48 @@ test("the AI button turns Textus AI off and on from its right-click menu", async
   await expect(page.locator(".agent-panel-view")).toBeVisible();
 });
 
-test("a pause turns Textus AI off for an hour, and it comes back by itself", async ({
+test("a pause turns Moxie AI off for an hour, and it comes back by itself", async ({
   page,
 }) => {
   await page.clock.install();
   await openApp(page);
   await aiButton(page).click({ button: "right" });
   await page.getByRole("menuitem", { name: "暂停 1 小时" }).click();
-  await expect(aiButton(page)).toHaveClass(/textus-ai-button-off/);
+  await expect(aiButton(page)).toHaveClass(/moxie-ai-button-off/);
   await expect(aiButton(page)).toHaveAccessibleDescription(
-    /^Textus AI 已暂停，.+ 自动开启 · 点击开启$/,
+    /^Moxie AI 已暂停，.+ 自动开启 · 点击开启$/,
   );
-  expect(await savedSetting(page, "textusAiResumeAt")).toEqual(
+  expect(await savedSetting(page, "moxieAiResumeAt")).toEqual(
     expect.any(Number),
   );
 
   await page.clock.fastForward(60 * 60 * 1000);
-  await expect(aiButton(page)).not.toHaveClass(/textus-ai-button-off/);
-  expect(await savedSetting(page, "textusAi")).toBe(true);
-  expect(await savedSetting(page, "textusAiResumeAt")).toBe(null);
+  await expect(aiButton(page)).not.toHaveClass(/moxie-ai-button-off/);
+  expect(await savedSetting(page, "moxieAi")).toBe(true);
+  expect(await savedSetting(page, "moxieAiResumeAt")).toBe(null);
 });
 
-test("a pause that ran out while Textus was closed is over at launch", async ({
+test("a pause that ran out while Moxie was closed is over at launch", async ({
   page,
 }) => {
   await openApp(page, {
-    settings: { textusAi: false, textusAiResumeAt: Date.now() - 1000 },
+    settings: { moxieAi: false, moxieAiResumeAt: Date.now() - 1000 },
   });
-  await expect(aiButton(page)).not.toHaveClass(/textus-ai-button-off/);
+  await expect(aiButton(page)).not.toHaveClass(/moxie-ai-button-off/);
   await expect(panelButton(page)).toBeVisible();
 });
 
-test("while Textus AI is off, no request reaches an AI service, from launch on", async ({
+test("while Moxie AI is off, no request reaches an AI service, from launch on", async ({
   page,
 }) => {
   // Debounces are passed by moving the clock on, not by waiting.
   await page.clock.install();
-  // Grammar check off by its own switch: it has to stay off when Textus AI
+  // Grammar check off by its own switch: it has to stay off when Moxie AI
   // comes back on.
   await openApp(page, {
-    settings: { textusAi: false, enableGrammarCheck: false },
+    settings: { moxieAi: false, enableGrammarCheck: false },
   });
-  await expect(aiButton(page)).toHaveClass(/textus-ai-button-off/);
+  await expect(aiButton(page)).toHaveClass(/moxie-ai-button-off/);
 
   // Typing, which would ask for a completion and a grammar check.
   await typeAtEnd(page, "The keeper woke before dawn", " and the sea");
@@ -135,7 +135,7 @@ test("while Textus AI is off, no request reaches an AI service, from launch on",
   await page.keyboard.press("ControlOrMeta+Shift+G");
   await page.keyboard.press("ControlOrMeta+Shift+K");
   await page.keyboard.press("ControlOrMeta+Shift+L");
-  // The right-click menu offers none of Textus AI's items.
+  // The right-click menu offers none of Moxie AI's items.
   await page.locator(".milkdown p", { hasText: "The keeper" }).click({
     button: "right",
   });
@@ -145,12 +145,12 @@ test("while Textus AI is off, no request reaches an AI service, from launch on",
   await expect(menu.getByText("立即检查语法")).toHaveCount(0);
   await expect(menu.getByText("询问 AI…")).toHaveCount(0);
   await page.keyboard.press("Escape");
-  // Settings › Textus AI shows only the switch, so nothing there asks for
+  // Settings › Moxie AI shows only the switch, so nothing there asks for
   // a model list either.
   await emit(page, "menu-open-settings");
-  await page.locator(".settings-nav-item", { hasText: "Textus AI" }).click();
+  await page.locator(".settings-nav-item", { hasText: "Moxie AI" }).click();
   await expect(
-    page.getByRole("checkbox", { name: "开启 Textus AI" }),
+    page.getByRole("checkbox", { name: "开启 Moxie AI" }),
   ).not.toBeChecked();
   await expect(
     page.getByText("已关闭：不会向任何 AI 服务发送内容。"),
@@ -178,10 +178,10 @@ test("while Textus AI is off, no request reaches an AI service, from launch on",
   expect(requests).not.toContain("ai_grammar_check");
 });
 
-test("turning Textus AI off clears what it showed and stops a running reply", async ({
+test("turning Moxie AI off clears what it showed and stops a running reply", async ({
   page,
 }) => {
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   // A reply that never ends until it is cancelled.
   await page.evaluate(() => {
     const w = window as unknown as {
@@ -245,15 +245,15 @@ test("turning Textus AI off clears what it showed and stops a running reply", as
 test("the menu and the shortcut turn it off and on too", async ({ page }) => {
   await openApp(page, {
     settings: {
-      shortcuts: { toggleTextusAi: "mod+alt+a" },
+      shortcuts: { toggleMoxieAi: "mod+alt+a" },
     },
   });
   await page.locator(".milkdown").click();
   await page.keyboard.press("ControlOrMeta+Alt+A");
-  await expect(aiButton(page)).toHaveClass(/textus-ai-button-off/);
+  await expect(aiButton(page)).toHaveClass(/moxie-ai-button-off/);
   // The iPhone's menu, as the backend sends it.
-  await emit(page, "menu-toggle-textus-ai");
-  await expect(aiButton(page)).not.toHaveClass(/textus-ai-button-off/);
+  await emit(page, "menu-toggle-moxie-ai");
+  await expect(aiButton(page)).not.toHaveClass(/moxie-ai-button-off/);
 });
 
 test("the popped-out AI window says it is off and turns it back on", async ({
@@ -288,13 +288,13 @@ test("the popped-out AI window says it is off and turns it back on", async ({
   // Turned off in the main window: the chat window follows.
   await turnOff(page);
   await expect(chat.locator(".chat-window-ai-off")).toContainText(
-    "Textus AI 已关闭",
+    "Moxie AI 已关闭",
   );
   await expect(chat.locator(".chat-window-body")).toHaveCount(0);
 
   await chat.locator(".chat-window-ai-off button").click();
   await expect(chat.locator(".chat-window-body textarea")).toBeVisible();
-  await expect(aiButton(page)).not.toHaveClass(/textus-ai-button-off/);
+  await expect(aiButton(page)).not.toHaveClass(/moxie-ai-button-off/);
 });
 
 test.describe("on a phone", () => {
@@ -303,11 +303,11 @@ test.describe("on a phone", () => {
   test("off, the title row's AI button is struck through and a tap turns it back on, as the capsule", async ({
     page,
   }) => {
-    await openPhone(page, { settings: { textusAi: false } });
+    await openPhone(page, { settings: { moxieAi: false } });
     const button = aiButton(page);
-    await expect(button).toHaveClass(/textus-ai-button-off/);
+    await expect(button).toHaveClass(/moxie-ai-button-off/);
     await button.tap();
-    await page.getByRole("menuitem", { name: "Turn on Textus AI" }).tap();
+    await page.getByRole("menuitem", { name: "Turn on Moxie AI" }).tap();
     await expect(button).toHaveCount(0);
     await expect(page.locator(".page-switch")).toBeVisible();
   });

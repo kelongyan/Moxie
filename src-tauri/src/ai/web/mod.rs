@@ -1,5 +1,5 @@
-//! Web search for Textus AI, for every provider: the provider's own search when
-//! it has one, else Textus's `web_search` on a search service; `web_fetch` with
+//! Web search for Moxie AI, for every provider: the provider's own search when
+//! it has one, else Moxie's `web_search` on a search service; `web_fetch` with
 //! either. Every page cited gets one number for the whole conversation.
 
 mod budget;
@@ -38,7 +38,7 @@ const SEARCH_CACHE_FOR: Duration = Duration::from_secs(5 * 60);
 const FETCH_CACHE_FOR: Duration = Duration::from_secs(15 * 60);
 
 /// The provider's own search for `model`, if it has one, per the capability
-/// table. Providers without one use Textus's own web_search.
+/// table. Providers without one use Moxie's own web_search.
 pub(crate) fn native_search(provider: &str, model: &str) -> Option<NativeSearch> {
     Some(capabilities::search_route(provider, model)).filter(|s| *s != NativeSearch::None)
 }
@@ -50,7 +50,7 @@ pub(crate) fn native_search_for(provider: &str, model: Option<&str>) -> Option<N
     native_search(provider, model.or(default).unwrap_or_default())
 }
 
-/// The search service Textus's own web_search uses: the one chosen in Settings
+/// The search service Moxie's own web_search uses: the one chosen in Settings
 /// ("auto": the first of DeepSeek, Zhipu and Kimi whose key is saved). A
 /// chosen service without its key is None, not a substitute.
 pub(crate) fn resolve_service(
@@ -82,7 +82,7 @@ pub(crate) struct WebPlan {
     /// The composer's Web search button is on.
     pub on: bool,
     pub native: Option<NativeSearch>,
-    /// Textus's own web_search - only without a native search.
+    /// Moxie's own web_search - only without a native search.
     service: Option<Service>,
     budget: Arc<dyn WebBudget>,
     state: Mutex<State>,
@@ -162,13 +162,13 @@ impl WebPlan {
         let papers = "search_papers finds scholarly papers: prefer them to web pages for research findings, data and established facts; their results are numbered and cited the same way.";
         let section = match (&self.native, &self.service) {
             (Some(_), _) => format!(
-                "---web---\nYou can search the web; the provider runs the search, and Textus numbers the pages your reply cites and lists them under it, so don't add a list of sources yourself. web_fetch reads one page in full when you have its address. {fetched} {papers} Search only when the request needs facts that are current or that you aren't sure of - not to write or revise text that doesn't depend on them. {proposals} {untrusted}"
+                "---web---\nYou can search the web; the provider runs the search, and Moxie numbers the pages your reply cites and lists them under it, so don't add a list of sources yourself. web_fetch reads one page in full when you have its address. {fetched} {papers} Search only when the request needs facts that are current or that you aren't sure of - not to write or revise text that doesn't depend on them. {proposals} {untrusted}"
             ),
             (None, Some(service)) => {
                 let searches = self.budget.limit(WebUse::Search);
                 let fetches = self.budget.limit(WebUse::Fetch);
                 format!(
-                "---web---\nYou can search the web with web_search (queries go to {}) and read a page in full with web_fetch. Search only when the request needs facts that are current or that you aren't sure of - not to write or revise text that doesn't depend on them; at most {searches} searches and {fetches} page reads per request. Every fact you take from the web is cited with the number its result or page has, in brackets right after it - [1], or [2][3] - in your reply; never make up a number or a source, and don't add a list of sources: Textus lists them under your reply. {papers} {proposals} {untrusted}",
+                "---web---\nYou can search the web with web_search (queries go to {}) and read a page in full with web_fetch. Search only when the request needs facts that are current or that you aren't sure of - not to write or revise text that doesn't depend on them; at most {searches} searches and {fetches} page reads per request. Every fact you take from the web is cited with the number its result or page has, in brackets right after it - [1], or [2][3] - in your reply; never make up a number or a source, and don't add a list of sources: Moxie lists them under your reply. {papers} {proposals} {untrusted}",
                 service.backend.label()
             )
             }
@@ -309,7 +309,7 @@ async fn cached_fetch(url: &str) -> Result<fetch::Fetched, String> {
 pub struct WebSearchStatus {
     /// The provider searches by itself.
     native: bool,
-    /// Textus's own search service in use otherwise ("deepseek", ...).
+    /// Moxie's own search service in use otherwise ("deepseek", ...).
     service: Option<Backend>,
 }
 

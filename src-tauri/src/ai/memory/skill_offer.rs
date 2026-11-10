@@ -8,7 +8,7 @@ use crate::ai::workspace::{skill_file_path, AgentSkill};
 /// A request shorter than this is never a procedure.
 const OFFER_FROM_CHARS: usize = 60;
 
-const OFFER_INSTRUCTIONS: &str = r#"You help Textus AI, a writing assistant, learn the user's tasks. You are shown the user's last request, the assistant's reply, and the skills (saved procedures) the user has. Decide whether the request is a procedure worth saving as a new skill: several particular requirements for a kind of task the user is likely to ask for again in other documents (how to translate their newsletters, the checklist for a weekly report, the way to turn notes into minutes). Not a request about this text only ("make this shorter", "fix the typo", "translate this paragraph"), not one a skill they have already does, not a single requirement (that is a memory, not a skill). Most requests are not worth it: when in doubt, offer nothing.
+const OFFER_INSTRUCTIONS: &str = r#"You help Moxie AI, a writing assistant, learn the user's tasks. You are shown the user's last request, the assistant's reply, and the skills (saved procedures) the user has. Decide whether the request is a procedure worth saving as a new skill: several particular requirements for a kind of task the user is likely to ask for again in other documents (how to translate their newsletters, the checklist for a weekly report, the way to turn notes into minutes). Not a request about this text only ("make this shorter", "fix the typo", "translate this paragraph"), not one a skill they have already does, not a single requirement (that is a memory, not a skill). Most requests are not worth it: when in doubt, offer nothing.
 
 Answer with exactly this JSON and nothing else:
 {"skill": null}
@@ -94,7 +94,7 @@ where
 pub(crate) fn skill_file(offer: &SkillOffer) -> String {
     let quote = |s: &str| serde_json::to_string(s).unwrap_or_default();
     format!(
-        "---\nname: {}\ndescription: {}\nmetadata:\n  textus-invocation: \"both\"\n---\n\n{}\n",
+        "---\nname: {}\ndescription: {}\nmetadata:\n  moxie-invocation: \"both\"\n---\n\n{}\n",
         quote(&offer.name),
         quote(&offer.description),
         offer.instructions

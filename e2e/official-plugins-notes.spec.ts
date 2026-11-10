@@ -44,7 +44,7 @@ test("a quick note is kept, and Insert writes it into the document", async ({
   await page.locator(".sidebar-tabs").getByRole("button").first().click();
   const again = await openSidebarTab(page, "Quick Notes");
   await expect(again.locator("textarea")).toHaveValue("Call the printer");
-  // A note's actions are Textus's own menu.
+  // A note's actions are Moxie's own menu.
   await again.getByRole("button", { name: "Actions" }).click();
   await page
     .locator(".context-menu")
@@ -73,7 +73,7 @@ test("a deleted quick note comes back with Undo, and an empty one goes by itself
     .getByRole("menuitem", { name: "Delete" })
     .click();
   await expect(panel.locator("textarea")).toHaveCount(0);
-  // Undo is on Textus's own note at the foot of the window.
+  // Undo is on Moxie's own note at the foot of the window.
   await page.locator(".notice").getByRole("button", { name: "Undo" }).click();
   await expect(panel.locator("textarea")).toHaveValue("Keep me");
   // A new note left empty doesn't stay.
@@ -122,7 +122,7 @@ test("the folder's tasks are listed, and ticking one writes its line", async ({
     },
   });
   await openPath(page, "/notes/other.md");
-  // A list Textus draws (views.registerList), in the page itself.
+  // A list Moxie draws (views.registerList), in the page itself.
   const tasks = await openSidebarList(page, "Tasks");
   await expect(tasks.locator(".plugin-list-message")).toHaveText("1 open task");
   await expect(tasks.locator(".plugin-list-row")).toHaveCount(1);

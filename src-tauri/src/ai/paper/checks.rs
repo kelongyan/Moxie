@@ -26,7 +26,7 @@ pub(super) fn same_address(a: &str, b: &str) -> bool {
 }
 
 /// Where a web picture goes until one is found for it.
-pub(crate) const WEB_FIGURE_MARK: &str = "<!-- textus-figure web:";
+pub(crate) const WEB_FIGURE_MARK: &str = "<!-- moxie-figure web:";
 
 /// A citation as the paper writes it, `[n](address)`: a web page's address,
 /// or a local file's path (`attached/…`, `references/…`).
@@ -361,10 +361,10 @@ pub(crate) fn problems(
             charts.len()
         )));
     }
-    let pictures = markdown.matches("](textus-picture:").count();
+    let pictures = markdown.matches("](moxie-picture:").count();
     if pictures < count(FigureKind::Generated) {
         out.push(Problem::soft(format!(
-            "{} planned picture(s), {pictures} textus-picture line(s).",
+            "{} planned picture(s), {pictures} moxie-picture line(s).",
             count(FigureKind::Generated)
         )));
     }

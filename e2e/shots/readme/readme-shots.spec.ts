@@ -153,7 +153,7 @@ for (const [lang, s] of Object.entries(SAMPLES)) {
     // a comment.
     await openApp(page, {
       settings: { language: lang, enableCompletion: false },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
     });
     await pasteMarkdown(page, s.doc);
     await mockInvoke(page, {

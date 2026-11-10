@@ -61,7 +61,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
-  document.getElementById("textus-custom-theme")?.remove();
+  document.getElementById("moxie-custom-theme")?.remove();
 });
 
 it("installs a reply's css block as a user theme and switches to it", async () => {

@@ -51,7 +51,7 @@ export function pluginScheduled(id: string): void {
 }
 
 /** With background mode off, the first time a plugin schedules a job a
- *  notice says its jobs fire only while Textus runs, with a button that
+ *  notice says its jobs fire only while Moxie runs, with a button that
  *  turns background mode on. */
 function tellOfScheduling(
   plugin: string,

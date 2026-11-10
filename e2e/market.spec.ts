@@ -75,7 +75,7 @@ test("one search goes through the installed skills and the available ones", asyn
     1,
   );
   await expect(page.locator('[data-skill="cover-letter"]')).toBeVisible();
-  // The built-ins live under Textus AI, not here.
+  // The built-ins live under Moxie AI, not here.
   await expect(page.locator(".settings-builtin-skill")).toHaveCount(0);
   // Folded, the list stays folded the next time.
   await page

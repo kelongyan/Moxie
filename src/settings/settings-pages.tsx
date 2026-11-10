@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import type { Strings } from "../i18n/strings";
-import { hasTextusAi, isIOSApp } from "../platform/capabilities";
+import { hasMoxieAi, isIOSApp } from "../platform/capabilities";
 import { AiPage } from "./pages/AiPage";
 import { EditorPage } from "./pages/EditorPage";
 import { GeneralPage } from "./pages/GeneralPage";
@@ -25,7 +25,7 @@ const BUILT_IN: SettingsPageDef[] = [
   {
     id: "ai",
     label: (t) => t.navAi,
-    available: () => hasTextusAi,
+    available: () => hasMoxieAi,
     Page: AiPage,
   },
   {

@@ -35,11 +35,11 @@ fn a_lone_document_has_no_project_folder_but_textus_files_find_theirs() {
     assert_eq!(resolve_root(Some("/tmp/novel/chapter-1.md"), None), None);
     assert_eq!(resolve_root(None, None), None);
     assert_eq!(
-        resolve_root(Some("/tmp/novel/.textus/library/Lin.md"), None),
+        resolve_root(Some("/tmp/novel/.moxie/library/Lin.md"), None),
         Some(PathBuf::from("/tmp/novel"))
     );
     assert_eq!(
-        resolve_root(Some("/tmp/novel/.textus/style.md"), None),
+        resolve_root(Some("/tmp/novel/.moxie/style.md"), None),
         Some(PathBuf::from("/tmp/novel"))
     );
 }
@@ -63,7 +63,7 @@ fn a_stale_root_falls_back_to_the_enclosing_project() {
     // A moved or unmounted folder is skipped, as if none were chosen.
     assert_eq!(
         resolve_root(
-            Some("/tmp/novel/.textus/style.md"),
+            Some("/tmp/novel/.moxie/style.md"),
             Some("/definitely/not/a/real/folder")
         ),
         Some(PathBuf::from("/tmp/novel"))
@@ -137,7 +137,7 @@ fn block_scalar_descriptions_are_read_whole() {
 fn a_name_nested_under_metadata_does_not_rename_the_skill() {
     let skill = parse_skill_file(
             "polish",
-            "---\nname: polish\nmetadata:\n  name: other\n  textus-category: \"revise\"\n  textus-packs: \"contract standards#words\"\n  textus-aliases-zh: \"润色， 打磨, 润色\"\n  textus-invocation: user-only\ndescription: Polish\n---\nbody",
+            "---\nname: polish\nmetadata:\n  name: other\n  moxie-category: \"revise\"\n  moxie-packs: \"contract standards#words\"\n  moxie-aliases-zh: \"润色， 打磨, 润色\"\n  moxie-invocation: user-only\ndescription: Polish\n---\nbody",
         );
     assert_eq!(skill.name, "polish");
     assert_eq!(skill.description, "Polish");
@@ -175,7 +175,7 @@ fn comments_crlf_and_bom_are_handled() {
 
 fn scratch(tag: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!(
-        "textus-skills-{tag}-{}-{}",
+        "moxie-skills-{tag}-{}-{}",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -195,15 +195,15 @@ fn write(path: &Path, text: &str) {
 fn the_project_is_the_nearest_folder_above_with_a_textus_folder() {
     let root = scratch("walk-up");
     let novel = root.join("novel");
-    write(&novel.join(".textus/agent.md"), "Novel rules.");
+    write(&novel.join(".moxie/agent.md"), "Novel rules.");
     write(&novel.join("part-1/scenes/one.md"), "# One");
     let doc = novel.join("part-1/scenes/one.md");
     assert_eq!(resolve_root(doc.to_str(), None), Some(novel.clone()));
     let ws = load_layers(None, doc.to_str(), None);
     assert_eq!(ws.root_source, RootSource::EnclosingProject);
     assert_eq!(ws.project_instructions.as_deref(), Some("Novel rules."));
-    // A nearer .textus/ wins.
-    write(&novel.join("part-1/.textus/agent.md"), "Part rules.");
+    // A nearer .moxie/ wins.
+    write(&novel.join("part-1/.moxie/agent.md"), "Part rules.");
     assert_eq!(resolve_root(doc.to_str(), None), Some(novel.join("part-1")));
     // With none anywhere above, no project folder: a lone document's own
     // folder (Downloads, Desktop) isn't opened to the agent.
@@ -221,7 +221,7 @@ fn the_walk_up_never_takes_a_folder_too_broad() {
     write(&root.join("a/b/c.md"), "x");
     assert_eq!(enclosing_project(&root.join("a/b")), None);
     assert_eq!(enclosing_project(Path::new("/")), None);
-    // Even with a .textus/ in it, the home folder is no project.
+    // Even with a .moxie/ in it, the home folder is no project.
     if let Some(home) = std::env::var_os("HOME") {
         assert_eq!(enclosing_project(Path::new(&home)), None);
     }
@@ -232,7 +232,7 @@ fn the_walk_up_never_takes_a_folder_too_broad() {
 fn only_textus_metadata_keys_are_read() {
     let skill = parse_skill_file(
         "x",
-        "---\nname: x\nmetadata:\n  other-version: \"1\"\n  textus-version: \"2\"\n  other-based-on: \"tighten@1\"\n  other-aliases-en: \"old\"\n  textus-aliases-en: \"new\"\n---\nbody",
+        "---\nname: x\nmetadata:\n  other-version: \"1\"\n  moxie-version: \"2\"\n  other-based-on: \"tighten@1\"\n  other-aliases-en: \"old\"\n  moxie-aliases-en: \"new\"\n---\nbody",
     );
     assert_eq!(skill.version.as_deref(), Some("2"));
     assert_eq!(skill.based_on, None);
@@ -254,7 +254,7 @@ fn layers_override_built_ins_by_name() {
         "---\nname: theme\ndescription: Global summary\n---\nGlobal.",
     );
     write(
-        &project.join(".textus/skills/theme.md"),
+        &project.join(".moxie/skills/theme.md"),
         "---\nname: theme\ndescription: House style\n---\nAt most 6 words.",
     );
     write(&project.join("chapter.md"), "# One");
@@ -284,7 +284,7 @@ fn customize_copies_and_reset_deletes_only_copies() {
     let path = customize_in(&skills, "proofread").unwrap();
     assert_eq!(path, skills.join("proofread.md"));
     let copy = std::fs::read_to_string(&path).unwrap();
-    assert!(copy.contains("textus-based-on: \"proofread@1\""));
+    assert!(copy.contains("moxie-based-on: \"proofread@1\""));
     // The copy now shadows the built-in, marked as such.
     let ws = load_layers(Some(&root), None, None);
     let proofread = ws.skills.iter().find(|s| s.name == "proofread").unwrap();
@@ -339,7 +339,7 @@ fn a_skill_says_its_modes_and_its_names() {
     use crate::ai::agent::AgentMode;
     let skill = parse_skill_file(
         "x",
-        "---\nname: x\nmetadata:\n  textus-modes: \"review, write nope\"\n  textus-label-zh: \"周报\"\n  textus-hint-zh: \"写周报\"\n  textus-label-ja: \"週報\"\n---\nbody",
+        "---\nname: x\nmetadata:\n  moxie-modes: \"review, write nope\"\n  moxie-label-zh: \"周报\"\n  moxie-hint-zh: \"写周报\"\n  moxie-label-ja: \"週報\"\n---\nbody",
     );
     assert_eq!(skill.modes, [AgentMode::Review, AgentMode::Write]);
     assert_eq!(skill.labels["zh"].label, "周报");
@@ -354,7 +354,7 @@ fn a_skill_written_in_a_reply_is_saved_with_its_modes_and_updated_in_place() {
     use crate::ai::agent::AgentMode;
     let root = scratch("written");
     let skills = root.join("skills");
-    let v1 = "---\nname: weekly-report\ndescription: d\nmetadata:\n  textus-version: \"1.0.0\"\n  textus-modes: \"write\"\n---\nTurn the notes into a report.\n";
+    let v1 = "---\nname: weekly-report\ndescription: d\nmetadata:\n  moxie-version: \"1.0.0\"\n  moxie-modes: \"write\"\n---\nTurn the notes into a report.\n";
     let path = save_written_in(&skills, v1, &[AgentMode::Write, AgentMode::Review], false).unwrap();
     assert_eq!(path, skills.join("weekly-report.md"));
     let (_, saved) = read_skill_files(&skills).pop().unwrap();
@@ -452,7 +452,7 @@ fn setting_a_skills_modes_rewrites_its_file() {
     let skills = root.join("skills");
     write(
         &skills.join("weekly.md"),
-        "---\nname: weekly\ndescription: d\nmetadata:\n  textus-version: \"1.0.0\"\n---\nBody.\n",
+        "---\nname: weekly\ndescription: d\nmetadata:\n  moxie-version: \"1.0.0\"\n---\nBody.\n",
     );
     write(&skills.join("bare.md"), "---\nname: bare\n---\nBody.\n");
     set_modes_in(&skills, "weekly", &[AgentMode::Review, AgentMode::Write]).unwrap();
@@ -472,7 +472,7 @@ fn setting_a_skills_modes_rewrites_its_file() {
     // Again: the line is replaced, not added.
     set_modes_in(&skills, "weekly", &[AgentMode::Write]).unwrap();
     let text = std::fs::read_to_string(read("weekly").0).unwrap();
-    assert_eq!(text.matches("textus-modes").count(), 1);
+    assert_eq!(text.matches("moxie-modes").count(), 1);
     assert!(text.ends_with("Body.\n"));
     assert!(set_modes_in(&skills, "weekly", &[]).is_err());
     assert!(set_modes_in(&skills, "nope", &[AgentMode::Write]).is_err());
@@ -483,7 +483,7 @@ fn setting_a_skills_modes_rewrites_its_file() {
     set_off_in(&skills, "weekly", false).unwrap();
     assert!(!read("weekly").1.off);
     let text = std::fs::read_to_string(read("weekly").0).unwrap();
-    assert_eq!(text.matches("textus-off").count(), 1);
+    assert_eq!(text.matches("moxie-off").count(), 1);
     assert!(set_off_in(&skills, "nope", true).is_err());
     std::fs::remove_dir_all(&root).ok();
 }

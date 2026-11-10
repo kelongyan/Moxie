@@ -14,7 +14,7 @@ const TIDY_AFTER_SECS: u64 = 7 * 24 * 60 * 60;
 /// When the last tidy was, in the memory folder.
 const MARKER: &str = ".tidied.json";
 
-const TIDY_INSTRUCTIONS: &str = r#"You keep the memory of Textus AI, a writing assistant, tidy. Below is every memory it has, each with its id, scope and kind. Answer with the changes that tidy it, as JSON only.
+const TIDY_INSTRUCTIONS: &str = r#"You keep the memory of Moxie AI, a writing assistant, tidy. Below is every memory it has, each with its id, scope and kind. Answer with the changes that tidy it, as JSON only.
 
 - Repeats: memories that say the same thing (in other words, or one inside another) become one - update the clearest with the whole of what they say together, and forget the others "into" it.
 - Overturned: when a newer memory (lower in its list) contradicts an older one about the same thing, forget the older "into" the newer - unless the newer says from where it holds ("From chapter 4 on…"); then both stay.

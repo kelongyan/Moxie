@@ -113,7 +113,7 @@ export function SourceEditor({
             autocapitalize: "off",
           }),
           // The plain-text keys only: no searchKeymap (Ctrl/Cmd+F is
-          // Textus's own find bar), and Tab moves the focus as in any field.
+          // Moxie's own find bar), and Tab moves the focus as in any field.
           keymap.of([...standardKeymap, ...historyKeymap]),
           sourceHighlighting(),
           sourceEscapes(),

@@ -10,7 +10,7 @@ export interface Boot {
   newProfile: boolean;
   /** This window's label, to recognise the events its own changes cause. */
   label: string;
-  /** Textus AI isn't offered on this install (an iOS App Store download
+  /** Moxie AI isn't offered on this install (an iOS App Store download
    *  in mainland China). */
   aiUnavailable: boolean;
 }

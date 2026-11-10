@@ -70,7 +70,7 @@ test("a chart loads its renderer, not Mermaid, and a diagram then loads Mermaid"
   );
   await expect(
     page.locator(
-      '[data-active-tab="true"] .ProseMirror .mermaid-preview > svg.textus-chart',
+      '[data-active-tab="true"] .ProseMirror .mermaid-preview > svg.moxie-chart',
     ),
   ).toHaveCount(1, { timeout: 10_000 });
   const now = await loaded(page);
@@ -88,7 +88,7 @@ test("a chart loads its renderer, not Mermaid, and a diagram then loads Mermaid"
   );
   await expect(
     page.locator(
-      '[data-active-tab="true"] .ProseMirror .mermaid-preview > svg:not(.textus-chart)',
+      '[data-active-tab="true"] .ProseMirror .mermaid-preview > svg:not(.moxie-chart)',
     ),
   ).toHaveCount(1, { timeout: 10_000 });
   expect(await loaded(page)).toContain("mermaid");
@@ -111,7 +111,7 @@ test("an installed plugin starts, and its views load, only once it is needed", a
       version: "1.0.0",
       publisher: "test",
       description: "Draws shout blocks.",
-      engines: { textus: "^1.3.0" },
+      engines: { moxie: "^1.3.0" },
       main: "host.js",
       contributes: { codeBlocks: [{ language: "shout" }] },
     }),
@@ -158,7 +158,7 @@ test("the paper agent's UI isn't loaded by picking Research, only by a paper", a
 }) => {
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const panel = page.locator(".agent-panel-view");
   await expect(panel.getByRole("combobox", { name: /^Mode/ })).toBeVisible();

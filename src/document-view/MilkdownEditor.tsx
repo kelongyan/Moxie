@@ -37,7 +37,7 @@ interface MilkdownEditorProps {
 }
 
 /**
- * One tab's document: the editor, Textus AI's chats on it, caret handling,
+ * One tab's document: the editor, Moxie AI's chats on it, caret handling,
  * what opens over it and reviewing it.
  */
 export function MilkdownEditor({

@@ -2,7 +2,7 @@
 //! binary marked as started from a terminal (`crate::cli::SCRIPT_ENV`), which
 //! answers commands itself and hands paths to the app window at once.
 //! - macOS: `/usr/local/bin/textus` runs the binary inside the .app, or
-//!   `open -a Textus` once that is gone.
+//!   `open -a Moxie` once that is gone.
 //! - Windows: `bin\textus.cmd` beside the app, that folder on the user's PATH.
 //! - Linux: the .deb/.rpm ship the binary itself as `/usr/bin/textus`;
 //!   otherwise (the AppImage) `~/.local/bin/textus`.
@@ -61,7 +61,7 @@ mod imp {
         }
         // Root-owned /usr/local/bin: stage the script in a fresh owner-only temp
         // file and have an admin shell copy it, so AppleScript only quotes paths.
-        let tmp = crate::atomic::TempFile::create("textus-cli-install-", "", script_content())
+        let tmp = crate::atomic::TempFile::create("moxie-cli-install-", "", script_content())
             .map_err(|e| e.to_string())?;
         let shell_cmd = format!(
             "mkdir -p /usr/local/bin && cp '{}' '{CLI_BIN_PATH}' && chmod 755 '{CLI_BIN_PATH}'",
@@ -70,7 +70,7 @@ mod imp {
         let escaped = shell_cmd.replace('\\', "\\\\").replace('"', "\\\"");
         let apple_script = format!(
             "do shell script \"{escaped}\" with administrator privileges with prompt \
-             \"{APP_NAME} wants to install the 'textus' command in /usr/local/bin.\""
+             \"{APP_NAME} wants to install the 'moxie' command in /usr/local/bin.\""
         );
         let result = std::process::Command::new("osascript")
             .arg("-e")
@@ -346,13 +346,13 @@ mod imp {
     pub fn try_silent_install() {}
 
     pub fn install() -> Result<(), String> {
-        Err("The 'textus' command isn't available here.".into())
+        Err("The 'moxie' command isn't available here.".into())
     }
 }
 
 pub use imp::try_silent_install;
 
-/// What Settings shows: `Outdated` is a script an older Textus wrote,
+/// What Settings shows: `Outdated` is a script an older Moxie wrote,
 /// which only opens the app.
 #[derive(Serialize, Clone, Copy, PartialEq, Eq, Debug)]
 #[cfg_attr(test, derive(specta::Type))]
@@ -396,16 +396,16 @@ mod tests {
 
     #[test]
     fn windows_path_is_added_once() {
-        let dir = r"C:\Users\a\AppData\Local\Textus\bin";
+        let dir = r"C:\Users\a\AppData\Local\Moxie\bin";
         assert!(path_has(r"C:\x;c:\users\a\appdata\local\textus\BIN\;", dir));
-        assert!(!path_has(r"C:\x;C:\Users\a\AppData\Local\Textus", dir));
+        assert!(!path_has(r"C:\x;C:\Users\a\AppData\Local\Moxie", dir));
         assert_eq!(path_with("", dir), dir);
         assert_eq!(path_with(r"C:\x;", dir), format!(r"C:\x;{dir}"));
     }
 
     #[test]
     fn windows_path_keeps_every_entry_or_is_not_written() {
-        let dir = r"C:\Users\a\AppData\Local\Textus\bin";
+        let dir = r"C:\Users\a\AppData\Local\Moxie\bin";
         let old = r"C:\Python;%USERPROFILE%\go\bin;";
         let next = next_path(Some(old), dir).unwrap();
         assert!(next.starts_with(r"C:\Python;%USERPROFILE%\go\bin"));
@@ -420,31 +420,31 @@ mod tests {
     #[test]
     fn scripts_run_the_binary_marked_as_from_a_terminal() {
         assert_eq!(
-            windows_script("Textus.exe"),
-            "@echo off\r\nsetlocal\r\nset \"TEXTUS_CLI=1\"\r\n\"%~dp0..\\Textus.exe\" %*\r\n"
+            windows_script("Moxie.exe"),
+            "@echo off\r\nsetlocal\r\nset \"MOXIE_CLI=1\"\r\n\"%~dp0..\\Moxie.exe\" %*\r\n"
         );
         assert_eq!(
-            linux_script("/home/a/it's/Textus.AppImage"),
-            "#!/bin/sh\nTEXTUS_CLI=1 exec '/home/a/it'\\''s/Textus.AppImage' \"$@\"\n"
+            linux_script("/home/a/it's/Moxie.AppImage"),
+            "#!/bin/sh\nMOXIE_CLI=1 exec '/home/a/it'\\''s/Moxie.AppImage' \"$@\"\n"
         );
         assert_eq!(
             mac_script(
-                Some("/Applications/Textus.app/Contents/MacOS/textus"),
-                "Textus"
+                Some("/Applications/Moxie.app/Contents/MacOS/textus"),
+                "Moxie"
             ),
-            "#!/bin/sh\nif [ -x '/Applications/Textus.app/Contents/MacOS/textus' ]; then\n  \
-             TEXTUS_CLI=1 exec '/Applications/Textus.app/Contents/MacOS/textus' \"$@\"\nfi\n\
-             exec open -a \"Textus\" \"$@\"\n"
+            "#!/bin/sh\nif [ -x '/Applications/Moxie.app/Contents/MacOS/textus' ]; then\n  \
+             MOXIE_CLI=1 exec '/Applications/Moxie.app/Contents/MacOS/textus' \"$@\"\nfi\n\
+             exec open -a \"Moxie\" \"$@\"\n"
         );
     }
 
     #[test]
     fn a_script_an_older_textus_wrote_needs_updating() {
-        let exe = "/Applications/Textus.app/Contents/MacOS/textus";
-        let current = |s: &str| s == mac_script(Some(exe), "Textus");
-        let older = "#!/bin/bash\nexec open -a \"Textus\" \"$@\"\n".to_string();
+        let exe = "/Applications/Moxie.app/Contents/MacOS/textus";
+        let current = |s: &str| s == mac_script(Some(exe), "Moxie");
+        let older = "#!/bin/bash\nexec open -a \"Moxie\" \"$@\"\n".to_string();
         assert_eq!(CliStatus::of(Some(older), current), CliStatus::Outdated);
-        let now = mac_script(Some(exe), "Textus");
+        let now = mac_script(Some(exe), "Moxie");
         assert_eq!(CliStatus::of(Some(now), current), CliStatus::Installed);
         assert_eq!(CliStatus::of(None, current), CliStatus::Missing);
     }
@@ -452,8 +452,8 @@ mod tests {
     #[test]
     fn a_dev_build_keeps_the_script_that_opens_the_installed_app() {
         assert_eq!(
-            mac_script(None, "Textus"),
-            "#!/bin/bash\nexec open -a \"Textus\" \"$@\"\n"
+            mac_script(None, "Moxie"),
+            "#!/bin/bash\nexec open -a \"Moxie\" \"$@\"\n"
         );
     }
 }

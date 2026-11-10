@@ -33,7 +33,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Keeps something for a document.",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     permissions: ["files.read"],
     activationEvents: ["onStartupFinished"],

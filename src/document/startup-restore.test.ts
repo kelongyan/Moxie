@@ -324,14 +324,14 @@ describe("startup restore into the initial tab", () => {
     beforeAll(installTestLocalStorage);
     beforeEach(() =>
       localStorage.setItem(
-        "textus-last-carets",
+        "moxie-last-carets",
         JSON.stringify({
           "/docs/a.md": { offset: 3, mtime: 1 },
           "/docs/b.md": { offset: 9, mtime: 2 },
         }),
       ),
     );
-    afterEach(() => localStorage.removeItem("textus-last-carets"));
+    afterEach(() => localStorage.removeItem("moxie-last-carets"));
 
     it("hands the initial tab's editor the caret its file was left at", async () => {
       ipc.takePendingOpenPaths.mockResolvedValue(["/docs/a.md"]);

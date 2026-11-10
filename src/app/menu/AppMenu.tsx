@@ -19,7 +19,7 @@ import { thisWindow } from "../../platform/this-window";
 import {
   canToggleFullscreen,
   hasAppMenu,
-  hasTextusAi,
+  hasMoxieAi,
 } from "../../platform/capabilities";
 import { useMenuAim } from "../../ui/menu-aim";
 import { CheckIcon, ChevronIcon } from "../../ui/icons";
@@ -64,7 +64,7 @@ export function AppMenu({ x, y, onClose, checks, section }: AppMenuProps) {
         { ...checks, fullscreen, trackChanges: trackingShown() },
         pluginEntries,
       )
-    : buildMobileMenu(t, checks, pluginEntries, hasTextusAi);
+    : buildMobileMenu(t, checks, pluginEntries, hasMoxieAi);
   const items =
     section === undefined
       ? menu

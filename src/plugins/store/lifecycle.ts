@@ -11,7 +11,7 @@ export type PluginStatus =
   | "on"
   /** Its manifest couldn't be read; `problem` says why. */
   | "broken"
-  /** Made for another version of Textus. */
+  /** Made for another version of Moxie. */
   | "incompatible"
   /** Turned off because it failed; `problem` says why. */
   | "failed";

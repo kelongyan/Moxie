@@ -242,7 +242,7 @@ test("markdown inside <div align=center> is centred, as on GitHub", async ({
       "",
       "# Moyu",
       "",
-      "The mascot of Textus.",
+      "The mascot of Moxie.",
       "",
       "</div>",
       "",
@@ -251,7 +251,7 @@ test("markdown inside <div align=center> is centred, as on GitHub", async ({
   );
   const editor = page.locator('[data-active-tab="true"] .ProseMirror');
   await expect(editor.locator("h1")).toHaveCSS("text-align", "center");
-  await expect(editor.getByText("The mascot of Textus.")).toHaveCSS(
+  await expect(editor.getByText("The mascot of Moxie.")).toHaveCSS(
     "text-align",
     "center",
   );
@@ -261,7 +261,7 @@ test("markdown inside <div align=center> is centred, as on GitHub", async ({
   await expect(editor).not.toContainText("<div", { useInnerText: true });
 });
 
-test("a <picture>'s logo follows Textus's theme, not the system's", async ({
+test("a <picture>'s logo follows Moxie's theme, not the system's", async ({
   page,
 }) => {
   await openApp(page, { settings: { language: "en", theme: "light" } });
@@ -288,7 +288,7 @@ test("a <picture>'s logo follows Textus's theme, not the system's", async ({
           .filter((img) => getComputedStyle(img).display !== "none")
           .map((img) => img.getAttribute("src")),
       );
-  // The system is dark, but Textus is set to light.
+  // The system is dark, but Moxie is set to light.
   await expect.poll(shown).toEqual(["light.png"]);
   await page.evaluate(() =>
     document.documentElement.setAttribute("data-theme", "dark"),

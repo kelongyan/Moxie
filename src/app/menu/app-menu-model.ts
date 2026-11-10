@@ -43,7 +43,7 @@ export type NativeMenuId =
   | "track-changes"
   | "toggle-sidebar"
   | "toggle-agent-panel"
-  | "toggle-textus-ai"
+  | "toggle-moxie-ai"
   | "toggle-split-view"
   | "toggle-read-only"
   | "toggle-zen-mode"
@@ -97,8 +97,8 @@ export interface MenuEntry {
 export interface MenuChecks {
   sidebar?: boolean;
   agentPanel?: boolean;
-  /** Textus AI's master switch; unset counts as on. */
-  textusAi?: boolean;
+  /** Moxie AI's master switch; unset counts as on. */
+  moxieAi?: boolean;
   sourceMode?: boolean;
   splitView?: boolean;
   typewriter?: boolean;
@@ -271,7 +271,7 @@ export function buildAppMenu(
           accel: shortcuts.toggleAgentPanel,
           action: { native: "toggle-agent-panel" },
           checked: !!checks.agentPanel,
-          disabled: checks.textusAi === false,
+          disabled: checks.moxieAi === false,
         },
         "separator",
         {
@@ -413,7 +413,7 @@ export function buildMobileMenu(
   t: Strings,
   checks: MenuChecks = {},
   plugins: readonly PluginMenuEntry[] = [],
-  /** Textus AI is offered on this install. */
+  /** Moxie AI is offered on this install. */
   ai = true,
 ): MenuNode[] {
   const words = checks.words;
@@ -442,9 +442,9 @@ export function buildMobileMenu(
     ...(ai
       ? [
           {
-            label: t.menuTextusAi,
-            action: { native: "toggle-textus-ai" },
-            checked: checks.textusAi !== false,
+            label: t.menuMoxieAi,
+            action: { native: "toggle-moxie-ai" },
+            checked: checks.moxieAi !== false,
           } as MenuNode,
         ]
       : []),

@@ -120,31 +120,31 @@ describe("saving an image", () => {
   });
 });
 
-describe("a width an older Textus kept in the title", () => {
+describe("a width an older Moxie kept in the title", () => {
   it("reads it without showing it as the caption", () => {
-    expect(readImagePresentation("Product shot {textus-width=70%}")).toEqual({
+    expect(readImagePresentation("Product shot {moxie-width=70%}")).toEqual({
       title: "Product shot",
       widthPercent: 70,
     });
-    expect(imageWidthOf(image({ title: "{textus-width=30%}" }))).toBe("30%");
+    expect(imageWidthOf(image({ title: "{moxie-width=30%}" }))).toBe("30%");
   });
 
   it("gives way to the image's own width", () => {
     expect(
-      imageWidthOf(image({ title: "{textus-width=30%}", width: "320" })),
+      imageWidthOf(image({ title: "{moxie-width=30%}", width: "320" })),
     ).toBe("320");
     expect(imageWidthOf(image({}))).toBeNull();
   });
 
   it("comes out of the title when the width changes, the caption kept", () => {
-    const old = image({ alt: "x", title: "Product shot {textus-width=50%}" });
+    const old = image({ alt: "x", title: "Product shot {moxie-width=50%}" });
     const sized = withImageWidth(old, 70) as ImageAttrs;
     expect(sized).toMatchObject({ title: "Product shot", width: "70%" });
     expect(imageMarkdownHtml(sized)).toBe(
       '<img src="a.png" alt="x" title="Product shot" width="70%">',
     );
     const auto = withImageWidth(
-      image({ title: "{textus-width=50%}" }),
+      image({ title: "{moxie-width=50%}" }),
       null,
     ) as ImageAttrs;
     expect(auto).toMatchObject({ title: "", width: "" });

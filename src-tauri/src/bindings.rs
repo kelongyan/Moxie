@@ -377,7 +377,7 @@ fn generate(builder: &Builder<tauri::Wry>) -> String {
 
 #[test]
 fn bindings_are_current() {
-    let write = std::env::var_os("TEXTUS_WRITE_BINDINGS").is_some();
+    let write = std::env::var_os("MOXIE_WRITE_BINDINGS").is_some();
     let mut stale = Vec::new();
     for (name, builder) in groups() {
         let path = dir().join(name);

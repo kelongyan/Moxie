@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { useDocumentReporting, useEditorFlush } from "./useDocumentReporting";
-import { useTextusEditor } from "./useTextusEditor";
+import { useMoxieEditor } from "./useMoxieEditor";
 import { useAiNotice } from "./useAiNotice";
 import { useQuickAskDecorations } from "./useQuickAskDecorations";
 import { useSettingsRedraw } from "./useSettingsRedraw";
@@ -67,7 +67,7 @@ export function useEditorSetup({
     onSelectionChangeRef,
     noMarginRef,
     reviewNotesRef,
-  } = useTextusEditor({
+  } = useMoxieEditor({
     initialValue,
     reporting,
     settingsRef,

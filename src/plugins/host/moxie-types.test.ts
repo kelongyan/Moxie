@@ -17,7 +17,7 @@ function runtimeMembers(): string[] {
   const w = window as unknown as Record<string, unknown>;
   w.createEndpoint = () => ({ call: () => Promise.resolve(), notify() {} });
   new Function("createEndpoint", HOST)(w.createEndpoint);
-  const api = w.textus as Record<string, Record<string, unknown>>;
+  const api = w.moxie as Record<string, Record<string, unknown>>;
   const out: string[] = [];
   for (const [ns, part] of Object.entries(api))
     for (const name of Object.getOwnPropertyNames(part))

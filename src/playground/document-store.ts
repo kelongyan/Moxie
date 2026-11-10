@@ -20,11 +20,11 @@ export interface DocumentBackend {
 }
 
 /** The single document of the first web editor, moved in on first load. */
-export const LEGACY_KEY = "textus-playground:document";
-const CURRENT_KEY = "textus-playground:current";
+export const LEGACY_KEY = "moxie-playground:document";
+const CURRENT_KEY = "moxie-playground:current";
 /** The open document's latest text, written at once: IndexedDB's write
  *  may not finish before the tab closes. */
-const PENDING_KEY = "textus-playground:pending";
+const PENDING_KEY = "moxie-playground:pending";
 
 export function memoryBackend(docs: WebDocument[] = []): DocumentBackend {
   const kept = new Map(docs.map((doc) => [doc.id, doc]));
@@ -35,7 +35,7 @@ export function memoryBackend(docs: WebDocument[] = []): DocumentBackend {
   };
 }
 
-const DB = "textus-web";
+const DB = "moxie-web";
 const STORE = "documents";
 
 function request<T>(req: IDBRequest<T>): Promise<T> {

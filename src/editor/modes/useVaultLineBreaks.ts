@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fs } from "../../platform/ipc";
 
 /** Whether the document's project shows a single newline as a line break,
- *  as its .textus/settings.json says; false otherwise, or before the
+ *  as its .moxie/settings.json says; false otherwise, or before the
  *  answer comes. */
 export function useVaultLineBreaks(docPath: string | null): boolean {
   const [found, setFound] = useState<{ path: string; breaks: boolean }>();

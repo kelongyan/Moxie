@@ -3,10 +3,10 @@ import { openApp, pasteMarkdown } from "../../helpers";
 import { STORY, STORY_CLASSICAL, streamRevise } from "../../revise-mock";
 
 // Review screenshots of a Revise rewrite in the margin views, mid-stream
-// and settled. Runs only with TEXTUS_SHOTS_DIR set to where the PNGs go.
+// and settled. Runs only with MOXIE_SHOTS_DIR set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 async function start(
   page: Page,
@@ -27,7 +27,7 @@ async function start(
   await openApp(page, {
     colorScheme,
     settings: { language: "zh", revisionDisplay: display },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, anchor);
   await streamRevise(page, [{ id: "s1", args }], {

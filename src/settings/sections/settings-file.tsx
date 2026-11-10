@@ -37,7 +37,7 @@ export function SettingsFileSection({ t }: { t: Strings }) {
       okLabel: t.settingsFileWithAiYes,
       cancelLabel: t.settingsFileSettingsOnly,
     });
-    const path = await fs.saveSettingsFileDialog("Textus Settings.json");
+    const path = await fs.saveSettingsFileDialog("Moxie Settings.json");
     if (!path) return;
     try {
       const text = settingsFileText(

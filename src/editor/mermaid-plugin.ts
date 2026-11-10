@@ -122,7 +122,7 @@ export function createMermaidPreviewPlugin(options: {
     // Keyed by source text, not position: an edit above shifts every later
     // block's position, which would miss the cache and flash the source.
     let lastRenders = new Map<string, Drawn>();
-    // What Textus AI's proposals drew, by source: an accepted diagram shows at
+    // What Moxie AI's proposals drew, by source: an accepted diagram shows at
     // once, and the next pass takes the drawing over.
     const pendingDrawn = new Map<string, Drawn>();
     // The engine the last pass was started for: a change redraws every diagram.

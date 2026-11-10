@@ -26,7 +26,7 @@ export function checkWrittenPlugin(files: unknown, version: string): string {
   const range = manifest.engine;
   if (!engineSatisfied(range, version))
     problems.push(
-      `engines.textus "${range}" leaves out this Textus (${version}): use ">=${version}" or a range that holds it.`,
+      `engines.moxie "${range}" leaves out this Moxie (${version}): use ">=${version}" or a range that holds it.`,
     );
   if (!manifest.id.startsWith("local."))
     problems.push(
@@ -36,7 +36,7 @@ export function checkWrittenPlugin(files: unknown, version: string): string {
     if (!list.some((f) => f.path === main.replace(/^\.\//, "")))
       problems.push(`main names ${main}, which isn't among the files.`);
   problems.push(...checkPlugin(manifest, list).map(sentence));
-  const textus = `(This is Textus ${version}.)`;
+  const textus = `(This is Moxie ${version}.)`;
   return problems.length
     ? `Fix these, then check again:\n${problems.map((p) => `- ${p}`).join("\n")}\n${textus}`
     : `No problems found: the manifest installs and the code asks for what it uses. ${textus}`;
@@ -51,6 +51,6 @@ function sentence(check: PluginCheck): string {
     case "unregistered":
       return `The manifest declares ${check.id}, but the code never registers it.`;
     case "when":
-      return `A menu item's "when" reads ${check.key}, which Textus never sets: the item would never show.`;
+      return `A menu item's "when" reads ${check.key}, which Moxie never sets: the item would never show.`;
   }
 }

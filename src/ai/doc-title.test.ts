@@ -106,7 +106,7 @@ describe("useDraftTitles", () => {
   });
 
   it("keeps the first line when the AI fails", async () => {
-    vi.mocked(ai.suggestDocTitle).mockRejectedValue(new Error("textus-ai-off"));
+    vi.mocked(ai.suggestDocTitle).mockRejectedValue(new Error("moxie-ai-off"));
     const { result } = render([draft]);
     await act(() => vi.advanceTimersByTimeAsync(TITLE_IDLE_MS));
     expect(result.current(draft)).toBeNull();

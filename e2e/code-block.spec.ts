@@ -217,7 +217,7 @@ test("Select All in a document that opens with a code block selects its text", a
   // Edit > Select All, as the macOS menu sends it.
   await page.evaluate(() =>
     window.dispatchEvent(
-      new CustomEvent("textus:edit-action", { detail: "select-all" }),
+      new CustomEvent("moxie:edit-action", { detail: "select-all" }),
     ),
   );
   // WebKit highlights a selection between characters, not one beside the

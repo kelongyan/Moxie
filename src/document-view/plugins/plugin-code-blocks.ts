@@ -149,7 +149,7 @@ export function pluginCodeBlocks(docPath: { readonly current: string | null }) {
       const holder = document.createElement("div");
       holder.className = "plugin-code-holder";
       el.append(holder);
-      // Folded as Textus folds drawn blocks: by the document and its place.
+      // Folded as Moxie folds drawn blocks: by the document and its place.
       // In a column too narrow for it, it starts folded to its line.
       addBlockFold(
         el,

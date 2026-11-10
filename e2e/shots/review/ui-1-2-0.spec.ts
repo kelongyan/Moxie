@@ -2,10 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp, pasteMarkdown, SAMPLE_DOC } from "../../helpers";
 
 // Review screenshots of Settings › Shortcuts and of the narrowest panels at
-// 100% and 125% text size. Runs only with TEXTUS_SHOTS_DIR set.
+// 100% and 125% text size. Runs only with MOXIE_SHOTS_DIR set.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const SCALES = [1, 1.25] as const;
 const pct = (scale: number) => `${Math.round(scale * 100)}`;
@@ -68,10 +68,10 @@ for (const language of ["en", "de", "zh"])
       await openApp(page, {
         settings: { language, uiTextScale: scale },
         storage: {
-          "textus-sidebar-open": "1",
-          "textus-sidebar-width": "180",
-          "textus-agent-panel-open": "1",
-          "textus-agent-panel-width": "300",
+          "moxie-sidebar-open": "1",
+          "moxie-sidebar-width": "180",
+          "moxie-agent-panel-open": "1",
+          "moxie-agent-panel-width": "300",
         },
       });
       await pasteMarkdown(page, SAMPLE_DOC);

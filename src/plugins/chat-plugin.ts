@@ -3,7 +3,7 @@ import { replyFiles } from "../ai/chat/reply-files";
 import { parseManifest, type PluginManifest } from "./store/manifest";
 
 /**
- * A plugin Textus AI wrote in a reply: each file in a fenced block whose info
+ * A plugin Moxie AI wrote in a reply: each file in a fenced block whose info
  * string is the language and path (```js host.js). The manifest makes it one.
  */
 export interface ReplyPlugin {

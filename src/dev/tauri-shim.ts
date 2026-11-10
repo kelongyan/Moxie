@@ -397,7 +397,7 @@ export function installDevTauriShim(): void {
       author: "dev-shim",
       description: `A canned theme from the dev shim's gallery.`,
       license: "MIT",
-      source: "https://github.com/CatVinci-Studio/textus-themes",
+      source: "https://github.com/CatVinci-Studio/moxie-themes",
       created: "2026-10-17T00:00:00Z",
       updated: "2026-10-17T00:00:00Z",
       css: `themes/${id}/theme.css`,
@@ -462,7 +462,7 @@ export function installDevTauriShim(): void {
   };
   w.__devSkills = skills;
   const skillCopyPath = (name: string) =>
-    `/home/dev/.config/textus/agent/skills/${name}.md`;
+    `/home/dev/.config/moxie/agent/skills/${name}.md`;
   function skillCommand(
     cmd: string,
     args: Record<string, unknown> = {},
@@ -546,7 +546,7 @@ export function installDevTauriShim(): void {
           skills.customized.add(name);
           skills.files.set(
             path,
-            `---\nname: ${name}\ndescription: The built-in ${name} skill, to change as you like.\nmetadata:\n  textus-based-on: "${name}@1"\n---\n\n# ${name}\n`,
+            `---\nname: ${name}\ndescription: The built-in ${name} skill, to change as you like.\nmetadata:\n  moxie-based-on: "${name}@1"\n---\n\n# ${name}\n`,
           );
         }
         return Promise.resolve(path);
@@ -767,7 +767,7 @@ export function installDevTauriShim(): void {
           ignore: [],
           detected: null,
         };
-        // The project's own .textus/settings.json applies; an Obsidian vault
+        // The project's own .moxie/settings.json applies; an Obsidian vault
         // (a folder with a file under `.obsidian/`) is the one other app the
         // browser flows stand in for, offered until the project answers.
         let ours: Record<string, unknown> | null = null;
@@ -775,7 +775,7 @@ export function installDevTauriShim(): void {
         for (let dir = path; dir.includes("/") && !ours;) {
           try {
             const file = JSON.parse(
-              files[`${dir}/.textus/settings.json`] ?? "{}",
+              files[`${dir}/.moxie/settings.json`] ?? "{}",
             ) as { conventions?: Record<string, unknown> };
             if (file.conventions) {
               ours = file.conventions;
@@ -788,7 +788,7 @@ export function installDevTauriShim(): void {
         }
         const mine = <T>(key: string) =>
           ours && ours[key] !== undefined
-            ? { value: ours[key] as T, app: "textus", root: oursRoot }
+            ? { value: ours[key] as T, app: "moxie", root: oursRoot }
             : null;
         const applied = {
           ...none,
@@ -1264,7 +1264,7 @@ export function installDevTauriShim(): void {
           (w.__devPluginStamps as Record<string, number> | undefined)?.[id] ??
             null,
         );
-      // Tools for Textus AI, and what each call answered.
+      // Tools for Moxie AI, and what each call answered.
       case "plugin_ai_tools_set":
         w.__devAiTools = args.tools;
         return Promise.resolve(null);
@@ -1273,7 +1273,7 @@ export function installDevTauriShim(): void {
           String(args.callId)
         ] = args.error ? { error: args.error } : { text: args.text };
         return Promise.resolve(null);
-      // textus:// links waiting for a window: `window.__devPluginUris`, taken once.
+      // moxie:// links waiting for a window: `window.__devPluginUris`, taken once.
       case "plugin_take_uris": {
         const links = (w.__devPluginUris ?? []) as string[];
         w.__devPluginUris = [];
@@ -1288,7 +1288,7 @@ export function installDevTauriShim(): void {
         forgetShimSecrets(id);
         return Promise.resolve(null);
       }
-      // A plugin Textus AI wrote: listed with its files, over an earlier
+      // A plugin Moxie AI wrote: listed with its files, over an earlier
       // version of the same id.
       case "plugin_install_files": {
         const files = (args.files ?? []) as { path: string; text: string }[];

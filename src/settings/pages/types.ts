@@ -2,7 +2,7 @@ import type { Strings } from "../../i18n/strings";
 import type { FixedShortcutGroup } from "../../app/fixed-shortcuts";
 import type { Settings, useSettings } from "../../prefs/SettingsContext";
 
-/** A page's own page within its category (General › About Textus; on the
+/** A page's own page within its category (General › About Moxie; on the
  *  phone, Editor & Appearance › More themes). */
 /** What Help opens as a document (or, the welcome, as the tour). */
 export type HelpGuide = "welcome" | "markdown" | "agent";
@@ -29,7 +29,7 @@ export interface SettingsPageProps {
   /** The desktop without that room: the margin's rows say so. */
   noMargin: boolean;
   setSubpage: (subpage: Subpage) => void;
-  /** Goes to another page of Settings (Textus AI's Skills row to
+  /** Goes to another page of Settings (Moxie AI's Skills row to
    *  Extensions). */
   openPage: (id: string) => void;
   /** Opens a guide as a document, closing Settings first. */

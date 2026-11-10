@@ -159,7 +159,7 @@ export interface ContextMenuOptions {
   drawnBlock?: DrawnBlockActions | null;
   /** Already filtered down to the AI features that are switched on. */
   aiItems: ContextMenuItem[];
-  /** Textus AI's items for the image right-clicked. */
+  /** Moxie AI's items for the image right-clicked. */
   pictureAiItems?: ContextMenuItem[];
   copyOrCut: (cut: boolean) => void;
   /** Copy and paste as plain text, while Settings offers them. */
@@ -243,7 +243,7 @@ export function buildContextMenuItems(
     first,
     clipboard,
     ownChanges,
-    [...format, ...grouped(t.menuTextusAi, options.aiItems)],
+    [...format, ...grouped(t.menuMoxieAi, options.aiItems)],
     grouped(
       t.menuPlugins,
       contributedMenuItems({ selectedText: selectedText(run) }),

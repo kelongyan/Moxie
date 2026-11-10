@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { dropPaths, mockInvoke, openApp, settled } from "./helpers";
 
-// Ctrl/Cmd+click on a link to a local file: what Textus opens itself (a
+// Ctrl/Cmd+click on a link to a local file: what Moxie opens itself (a
 // Word file) opens in a tab; anything else asks first, then opens in the
 // system's app for it; cancelled, nothing opens.
 

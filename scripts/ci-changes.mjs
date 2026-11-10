@@ -84,8 +84,8 @@ const VERSION_FILES = {
   "package.json": jsonVersions(["version"]),
   "package-lock.json": jsonVersions(["version"], ["packages", "", "version"]),
   "src-tauri/tauri.conf.json": jsonVersions(["version"]),
-  "src-tauri/Cargo.toml": tomlVersion('\\[package\\]\\nname = "textus"'),
-  "src-tauri/Cargo.lock": tomlVersion('\\[\\[package\\]\\]\\nname = "textus"'),
+  "src-tauri/Cargo.toml": tomlVersion('\\[package\\]\\nname = "moxie"'),
+  "src-tauri/Cargo.lock": tomlVersion('\\[\\[package\\]\\]\\nname = "moxie"'),
 };
 
 function versionOnly(file, before, after) {

@@ -126,7 +126,7 @@ test("a table of the folder's pages, a cell edited into its page's front matter"
   );
 });
 
-/** Textus's own menu, which the page opens over itself. */
+/** Moxie's own menu, which the page opens over itself. */
 const menu = (page: Page) => page.locator(".context-menu").last();
 const pick = async (page: Page, name: string) => {
   await menu(page).getByRole("menuitem", { name, exact: true }).click();
@@ -278,7 +278,7 @@ test("zoomed, the block's page draws at the zoom across the column's width, and 
   await expect.poll(zoom).not.toBe(before);
 });
 
-test("a long view loads more rows once its end is in sight; folded by Textus, one line", async ({
+test("a long view loads more rows once its end is in sight; folded by Moxie, one line", async ({
   page,
 }) => {
   const db = await open(page, {
@@ -464,7 +464,7 @@ test("in a narrow column the block starts folded to its line, and stays open onc
   await expect(block).not.toHaveAttribute("data-folded");
   await expect
     .poll(() =>
-      page.evaluate(() => localStorage.getItem("textus-opened-blocks")),
+      page.evaluate(() => localStorage.getItem("moxie-opened-blocks")),
     )
     .toContain("2026 Calendar.md");
 });
@@ -490,7 +490,7 @@ test("zoomed, a date's month opens under its field", async ({ page }) => {
   await expect(db.locator(".date-pop")).toHaveCount(0);
 });
 
-test("a field in the page takes Textus's own menu for its text, not the system's", async ({
+test("a field in the page takes Moxie's own menu for its text, not the system's", async ({
   page,
 }) => {
   const db = await open(page);

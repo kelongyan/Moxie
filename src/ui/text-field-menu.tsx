@@ -8,7 +8,7 @@ import type { Strings } from "../i18n/strings";
 import "./text-field-menu.css";
 
 /**
- * Textus's own menu for a text field - undo, cut, copy, paste, select all -
+ * Moxie's own menu for a text field - undo, cut, copy, paste, select all -
  * where the system's would show (a field of a dialog, a panel, a plugin's
  * page): one look for every right-click in the app.
  */
@@ -116,7 +116,7 @@ function show(x: number, y: number, field: Field): void {
   root.render(createElement(ContextMenu, { x, y, items, onClose: close }));
 }
 
-/** Text fields take Textus's menu, not the system's. A menu someone else
+/** Text fields take Moxie's menu, not the system's. A menu someone else
  *  opened (the editor's) is left alone. */
 export function installTextFieldMenu(): void {
   window.addEventListener("contextmenu", (event) => {

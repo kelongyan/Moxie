@@ -22,10 +22,10 @@ describe("toPandocMarkdown", () => {
   });
 
   it("moves an image's width from its title to an attribute", () => {
-    expect(toPandocMarkdown('![图](assets/a.png "{textus-width=30%}")')).toBe(
+    expect(toPandocMarkdown('![图](assets/a.png "{moxie-width=30%}")')).toBe(
       "![图](assets/a.png){width=30%}",
     );
-    expect(toPandocMarkdown('![x](a.png "A caption {textus-width=50%}")')).toBe(
+    expect(toPandocMarkdown('![x](a.png "A caption {moxie-width=50%}")')).toBe(
       '![x](a.png "A caption"){width=50%}',
     );
   });
@@ -149,7 +149,7 @@ describe("toPandocMarkdown", () => {
 
   it("writes the editor's subscript, superscript and one-tilde strikethrough", () => {
     expect(toPandocMarkdown("H~2~O, x^2^, ~gone~ and ~~old~~")).toBe(
-      "H[2]{.textus-sub}O, x[2]{.textus-sup}, ~~gone~~ and ~~old~~",
+      "H[2]{.moxie-sub}O, x[2]{.moxie-sup}, ~~gone~~ and ~~old~~",
     );
     expect(
       toPandocMarkdown("a ~b~ but ~a b~ and 2^10 and [^1] and ^[note]"),
@@ -193,7 +193,7 @@ describe("toPandocMarkdown", () => {
     const md = "As [@doe99, p. 3] and [see @a; @b] say; mail [x a@b.c].";
     expect(toPandocMarkdown(md)).toBe(md);
     expect(toPandocMarkdown(md, { citations: true })).toBe(
-      "As `[@doe99, p. 3]`{=textuscite} and `[see @a; @b]`{=textuscite} say; mail [x a@b.c].",
+      "As `[@doe99, p. 3]`{=moxiecite} and `[see @a; @b]`{=moxiecite} say; mail [x a@b.c].",
     );
   });
 });

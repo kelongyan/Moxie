@@ -1,5 +1,5 @@
 //! The tray icon of background mode, built when the setting turns on and
-//! dropped when it turns off. Its menu: Open Textus, plugin commands, Quit.
+//! dropped when it turns off. Its menu: Open Moxie, plugin commands, Quit.
 
 use std::sync::Mutex;
 use tauri::image::Image;
@@ -8,7 +8,7 @@ use tauri::tray::TrayIconBuilder;
 use tauri::{AppHandle, Emitter, Manager, Wry};
 
 /// The tray's id. There is only ever one.
-pub const ID: &str = "textus";
+pub const ID: &str = "moxie";
 
 /// Menu ids, "tray:<item>". Tauri sends tray menu clicks to the app's menu
 /// handler, which hands them to `on_menu`.
@@ -43,16 +43,16 @@ struct Labels {
 
 fn labels(language: &str) -> Labels {
     let (open_app, quit) = match language {
-        "zh" => ("打开 Textus", "退出 Textus"),
-        "zh-Hant" => ("打開 Textus", "結束 Textus"),
-        "ja" => ("Textus を開く", "Textusを終了"),
-        "ko" => ("Textus 열기", "Textus 종료"),
-        "es" => ("Abrir Textus", "Salir de Textus"),
-        "fr" => ("Ouvrir Textus", "Quitter Textus"),
-        "de" => ("Textus öffnen", "Textus beenden"),
-        "ru" => ("Открыть Textus", "Завершить Textus"),
-        "pt" => ("Abrir o Textus", "Encerrar Textus"),
-        _ => ("Open Textus", "Quit Textus"),
+        "zh" => ("打开 Moxie", "退出 Moxie"),
+        "zh-Hant" => ("打開 Moxie", "結束 Moxie"),
+        "ja" => ("Moxie を開く", "Moxieを終了"),
+        "ko" => ("Moxie 열기", "Moxie 종료"),
+        "es" => ("Abrir Moxie", "Salir de Moxie"),
+        "fr" => ("Ouvrir Moxie", "Quitter Moxie"),
+        "de" => ("Moxie öffnen", "Moxie beenden"),
+        "ru" => ("Открыть Moxie", "Завершить Moxie"),
+        "pt" => ("Abrir o Moxie", "Encerrar Moxie"),
+        _ => ("Open Moxie", "Quit Moxie"),
     };
     Labels { open_app, quit }
 }
@@ -251,7 +251,7 @@ fn build(app: &AppHandle) -> tauri::Result<()> {
     // or dark.
     #[cfg(target_os = "macos")]
     let builder = builder.icon_as_template(true);
-    // Windows: a left click opens Textus, the right click the menu.
+    // Windows: a left click opens Moxie, the right click the menu.
     #[cfg(not(target_os = "macos"))]
     let builder = builder
         .show_menu_on_left_click(false)
@@ -283,8 +283,8 @@ mod tests {
         let value = line.split_once(':').unwrap().1.trim();
         let value = value.trim_end_matches(',');
         value[1..value.len() - 1]
-            .replace("${APP_NAME}", "Textus")
-            .replace("{name}", "Textus")
+            .replace("${APP_NAME}", "Moxie")
+            .replace("{name}", "Moxie")
     }
 
     #[test]
@@ -306,7 +306,7 @@ mod tests {
         ];
         for (language, source) in locales {
             let l = labels(language);
-            for (label, key) in [(l.open_app, "trayOpenTextus"), (l.quit, "menuQuit")] {
+            for (label, key) in [(l.open_app, "trayOpenMoxie"), (l.quit, "menuQuit")] {
                 assert_eq!(label, locale_string(source, key), "{language} {key}");
             }
         }
@@ -314,7 +314,7 @@ mod tests {
 
     #[test]
     fn an_unknown_language_gets_english() {
-        assert_eq!(labels("xx").open_app, "Open Textus");
+        assert_eq!(labels("xx").open_app, "Open Moxie");
     }
 
     #[test]

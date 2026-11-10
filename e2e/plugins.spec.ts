@@ -54,7 +54,7 @@ exports.activate = function (ctx) {
         "<p id=page></p>",
         "<p id=out></p>",
         "<script>",
-        "const api = acquireTextusApi();",
+        "const api = acquireMoxieApi();",
         "for (const id of ['ping', 'propose', 'folder', 'outline', 'status', 'l10n'])",
         "  document.getElementById(id).onclick = () => api.postMessage(id);",
         "api.onMessage((m) => (document.getElementById('out').textContent = m));",
@@ -79,7 +79,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Says hello.",
-  engines: { textus: "^1.2.0" },
+  engines: { moxie: "^1.2.0" },
   main: "host.js",
   permissions: ["editor.read", "editor.propose"],
   contributes: {

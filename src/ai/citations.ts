@@ -1,7 +1,7 @@
 import type { WebSource } from "./types";
 
 /**
- * Web citations in text Textus AI proposes: the model marks a web fact with
+ * Web citations in text Moxie AI proposes: the model marks a web fact with
  * its source's number as a link, `[2](https://…)`. On accept they become
  * footnotes or are left out, per settings.sourcesAsFootnotes.
  */

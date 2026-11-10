@@ -57,12 +57,12 @@ test("a document with maths opens with its formulas already drawn", async ({
   expect(first).toEqual([2, 2]);
 });
 
-test("a formula in a Textus AI proposal is drawn as soon as KaTeX loads", async ({
+test("a formula in a Moxie AI proposal is drawn as soon as KaTeX loads", async ({
   page,
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "The first paragraph.\n\nThe second paragraph.");
   // KaTeX arrives well after the proposal is shown, as on a slow disk.

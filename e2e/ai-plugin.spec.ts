@@ -10,7 +10,7 @@ const manifest = (version: string) => ({
   version,
   publisher: "local",
   description: "Counts the words of the document.",
-  engines: { textus: "^1.3.0" },
+  engines: { moxie: "^1.3.0" },
   main: "host.js",
   permissions: ["editor.read"],
   contributes: {
@@ -63,7 +63,7 @@ test("Install this plugin installs the reply's plugin and turns it on", async ({
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await ask(page, "1.0.0");
 
@@ -133,7 +133,7 @@ test("a plugin's page asks the AI to change it, in Extensions' Create tab", asyn
           version: "1.0.0",
           publisher: "local",
           description: "Counts words.",
-          engines: { textus: "^1.3.0" },
+          engines: { moxie: "^1.3.0" },
           main: "host.js",
         }),
         dev: false,

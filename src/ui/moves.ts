@@ -7,7 +7,7 @@ import {
 } from "./motion";
 import { measure, play } from "./flip";
 
-/** The few moves everything in Textus is made of: enter, exit, and mark (tint
+/** The few moves everything in Moxie is made of: enter, exit, and mark (tint
  *  what is about to change, then `land`). Only opacity and transform animate;
  *  each move ends at once where motionAllowed() says no. */
 

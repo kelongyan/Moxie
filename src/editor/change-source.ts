@@ -9,13 +9,13 @@ import { $prose } from "@milkdown/kit/utils";
 
 /**
  * Who changed the document: the user typing, pasting or using the keyboard;
- * Textus AI (an accepted proposal, a completion, a grammar fix); the file
+ * Moxie AI (an accepted proposal, a completion, a grammar fix); the file
  * reloaded from disk; a plugin through its API; or undo and redo. Where the
  * change is made marks its transaction; anything unmarked is the user's.
  */
 export type ChangeSource = "user" | "ai" | "disk" | "plugin" | "history";
 
-const META = "textus-change-source";
+const META = "moxie-change-source";
 
 /** Which of several changes since the last report is told: the user's
  *  first, so a plugin timing the user's writing never misses it. */

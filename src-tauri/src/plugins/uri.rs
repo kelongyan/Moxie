@@ -1,4 +1,4 @@
-//! `textus://<plugin id>/<path>?<query>` links opened from outside Textus, for
+//! `moxie://<plugin id>/<path>?<query>` links opened from outside Moxie, for
 //! the plugin they name. They wait here until a window takes them, so one
 //! arriving during startup isn't lost.
 
@@ -6,22 +6,22 @@ use std::sync::Mutex;
 
 use tauri::{Emitter, Manager};
 
-/// The scheme Textus answers to.
-pub const SCHEME: &str = "textus";
+/// The scheme Moxie answers to.
+pub const SCHEME: &str = "moxie";
 
 /// Links not yet taken by a window, oldest first.
 #[derive(Default)]
 pub struct PendingUris(pub Mutex<Vec<String>>);
 
 /// Whether a launch argument is one of these links, not a file to open.
-pub fn is_textus_uri(arg: &str) -> bool {
+pub fn is_moxie_uri(arg: &str) -> bool {
     arg.get(..SCHEME.len() + 3)
         .is_some_and(|start| start.eq_ignore_ascii_case(&format!("{SCHEME}://")))
 }
 
 /// Queues `url` for the windows and tells them one came.
 pub fn deliver(app: &tauri::AppHandle, url: &str) {
-    if !is_textus_uri(url) {
+    if !is_moxie_uri(url) {
         return;
     }
     // A notification's click (Windows): no plugin id has no dot.
@@ -36,7 +36,7 @@ pub fn deliver(app: &tauri::AppHandle, url: &str) {
     let _ = app.emit("plugin-uri", ());
 }
 
-/// `textus://notification/<id>`: a notification's click, not a plugin's link.
+/// `moxie://notification/<id>`: a notification's click, not a plugin's link.
 pub fn notification_id(url: &str) -> Option<&str> {
     let rest = &url[SCHEME.len() + 3..];
     rest.strip_prefix("notification/")
@@ -50,7 +50,7 @@ pub fn plugin_take_uris(pending: tauri::State<'_, PendingUris>) -> Vec<String> {
     std::mem::take(&mut *pending.0.lock().unwrap())
 }
 
-/// Listens for links from the operating system, and takes the one Textus
+/// Listens for links from the operating system, and takes the one Moxie
 /// was started with.
 #[cfg(desktop)]
 pub fn listen(app: &tauri::AppHandle) {
@@ -78,19 +78,19 @@ mod tests {
 
     #[test]
     fn tells_links_from_files() {
-        assert!(is_textus_uri("textus://catvinci.zotero/item?key=AB12"));
-        assert!(is_textus_uri("TEXTUS://x.y/"));
-        assert!(!is_textus_uri("textus:/x"));
-        assert!(!is_textus_uri("/home/me/textus://x.md"));
-        assert!(!is_textus_uri("notes.md"));
-        assert!(!is_textus_uri("tex"));
+        assert!(is_moxie_uri("moxie://catvinci.zotero/item?key=AB12"));
+        assert!(is_moxie_uri("MOXIE://x.y/"));
+        assert!(!is_moxie_uri("moxie:/x"));
+        assert!(!is_moxie_uri("/home/me/moxie://x.md"));
+        assert!(!is_moxie_uri("notes.md"));
+        assert!(!is_moxie_uri("tex"));
     }
 
     #[test]
     fn a_notifications_click_is_told_from_a_plugins_link() {
-        assert_eq!(notification_id("textus://notification/0af3"), Some("0af3"));
-        assert_eq!(notification_id("textus://notification/"), None);
-        assert_eq!(notification_id("textus://notification/../x"), None);
-        assert_eq!(notification_id("textus://catvinci.zotero/item"), None);
+        assert_eq!(notification_id("moxie://notification/0af3"), Some("0af3"));
+        assert_eq!(notification_id("moxie://notification/"), None);
+        assert_eq!(notification_id("moxie://notification/../x"), None);
+        assert_eq!(notification_id("moxie://catvinci.zotero/item"), None);
     }
 }

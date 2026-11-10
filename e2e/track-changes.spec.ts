@@ -101,7 +101,7 @@ test("the review bar counts the writer's changes, steps through them and decides
   await expect(page.locator(editor)).toContainText("was still at dusk");
 });
 
-test("the writer's changes take the review bar's views, as Textus AI's do", async ({
+test("the writer's changes take the review bar's views, as Moxie AI's do", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1400, height: 800 });
@@ -150,7 +150,7 @@ test("the writer's changes take the review bar's views, as Textus AI's do", asyn
   await expect(card).toContainText("Gulls cried.");
 });
 
-test("saved, the file keeps the original and the changes are kept beside it, as Textus AI's are", async ({
+test("saved, the file keeps the original and the changes are kept beside it, as Moxie AI's are", async ({
   page,
 }) => {
   await openDraft(page);

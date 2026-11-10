@@ -245,7 +245,7 @@ pub(crate) fn open_new_window(app: &tauri::AppHandle) -> tauri::Result<()> {
     build_window(app, &format!("window-{}", next_window_id()), None)
 }
 
-/// The Dock icon, Open Textus in the tray, or a relaunch while in the background:
+/// The Dock icon, Open Moxie in the tray, or a relaunch while in the background:
 /// a minimised or hidden editor window comes back, or else the app opens as a
 /// launch would, so closing the last window and returning matches a relaunch.
 #[cfg(desktop)]

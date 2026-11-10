@@ -30,7 +30,7 @@ pub(super) fn picture(path: &Path, ext: &str) -> Result<Picture, String> {
     let decoded = match ext {
         "heic" | "heif" | "avif" => system_decode(path)?,
         _ => image::load_from_memory(&bytes)
-            .map_err(|_| "Textus couldn't read that picture.".to_string())?,
+            .map_err(|_| "Moxie couldn't read that picture.".to_string())?,
     };
     encode(decoded)
 }
@@ -66,7 +66,7 @@ fn encode(picture: DynamicImage) -> Result<Picture, String> {
 /// into a PNG first.
 #[cfg(target_os = "macos")]
 fn system_decode(path: &Path) -> Result<DynamicImage, String> {
-    let out = crate::atomic::TempFile::create("textus-picture-", ".png", b"")
+    let out = crate::atomic::TempFile::create("moxie-picture-", ".png", b"")
         .map_err(|e| e.to_string())?;
     let status = std::process::Command::new("/usr/bin/sips")
         .args(["-s", "format", "png"])
@@ -76,14 +76,14 @@ fn system_decode(path: &Path) -> Result<DynamicImage, String> {
         .output()
         .map_err(|e| e.to_string())?;
     if !status.status.success() {
-        return Err("Textus couldn't read that picture.".to_string());
+        return Err("Moxie couldn't read that picture.".to_string());
     }
-    image::open(out.path()).map_err(|_| "Textus couldn't read that picture.".to_string())
+    image::open(out.path()).map_err(|_| "Moxie couldn't read that picture.".to_string())
 }
 
 #[cfg(not(target_os = "macos"))]
 fn system_decode(_path: &Path) -> Result<DynamicImage, String> {
-    Err("Textus can't read HEIC or AVIF pictures on this system yet. Save it as JPEG or PNG and attach that.".to_string())
+    Err("Moxie can't read HEIC or AVIF pictures on this system yet. Save it as JPEG or PNG and attach that.".to_string())
 }
 
 #[cfg(test)]
@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn a_bmp_is_sent_as_jpeg_and_a_huge_one_made_smaller() {
-        let dir = std::env::temp_dir().join(format!("textus-picture-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-picture-test-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("scan.bmp");
         std::fs::write(&path, bmp(4000, 1000)).unwrap();
@@ -115,7 +115,7 @@ mod tests {
 
     #[test]
     fn a_small_png_goes_as_it_is() {
-        let dir = std::env::temp_dir().join(format!("textus-picture-png-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-picture-png-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("dot.png");
         let mut bytes = Vec::new();

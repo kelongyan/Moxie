@@ -2,5 +2,5 @@
 
 interface ImportMetaEnv {
   /** The browser build (vite.playground.config.ts). */
-  readonly TEXTUS_BROWSER?: boolean;
+  readonly MOXIE_BROWSER?: boolean;
 }

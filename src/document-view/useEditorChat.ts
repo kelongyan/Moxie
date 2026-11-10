@@ -14,7 +14,7 @@ import type { Settings } from "../prefs/SettingsContext";
 import type { Strings } from "../i18n/strings";
 
 /**
- * One tab's editor and Textus AI's chats: their proposals, what each chat
+ * One tab's editor and Moxie AI's chats: their proposals, what each chat
  * is told of the document, the quoted selection, and the docked panel.
  */
 export function useEditorChat({

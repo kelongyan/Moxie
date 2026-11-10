@@ -84,10 +84,10 @@ export function webviewDocument(
   const head = [
     "<meta charset='utf-8'>",
     `<meta http-equiv="Content-Security-Policy" content="${webviewCsp(options.frameHosts)}">`,
-    `<style id="textus-theme">${inElement(options.themeCss, "style")}</style>`,
-    `<style id="textus-ui">${inElement(pluginUiCss, "style")}</style>`,
-    `<style id="textus-shared">${inElement(SHARED_CSS, "style")}</style>`,
-    `<script type="application/json" id="textus-locale">${inElement(locale, "script")}</script>`,
+    `<style id="moxie-theme">${inElement(options.themeCss, "style")}</style>`,
+    `<style id="moxie-ui">${inElement(pluginUiCss, "style")}</style>`,
+    `<style id="moxie-shared">${inElement(SHARED_CSS, "style")}</style>`,
+    `<script type="application/json" id="moxie-locale">${inElement(locale, "script")}</script>`,
     `<script>${inElement(`${RPC_SOURCE}\n${webviewRuntime}`, "script")}</script>`,
   ].join("\n");
   const theme = options.dark ? "dark" : "light";
@@ -145,12 +145,12 @@ export function connectFrame(
   let endpoint: Endpoint | null = null;
   const receive = (event: MessageEvent) => {
     if (event.source !== frame.contentWindow) return;
-    const data = event.data as { textus?: string } | null;
-    if (data?.textus !== "ready") return;
+    const data = event.data as { moxie?: string } | null;
+    if (data?.moxie !== "ready") return;
     endpoint?.close();
     const channel = new MessageChannel();
     endpoint = createEndpoint(channel.port1, handlers, timeoutMs);
-    frame.contentWindow?.postMessage({ textus: "init", ...init() }, "*", [
+    frame.contentWindow?.postMessage({ moxie: "init", ...init() }, "*", [
       channel.port2,
     ]);
     onConnect(endpoint);

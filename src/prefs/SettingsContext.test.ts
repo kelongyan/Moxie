@@ -91,7 +91,7 @@ describe("settings from a build with features since taken out", () => {
         openAtLogin: true,
         quickNoteShortcutEnabled: true,
         quickNoteShortcut: "Control+Alt+N",
-        quickNoteFolder: "/home/me/Documents/Textus/速记",
+        quickNoteFolder: "/home/me/Documents/Moxie/速记",
         quickNotePerDay: true,
         quickNoteContinueMinutes: 5,
       }),

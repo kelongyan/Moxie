@@ -64,9 +64,9 @@ async function bootWithRust(page: Page, saved: unknown[]) {
       new Function(script)();
       (
         window as unknown as {
-          __textusBoot: (boot: unknown, css: unknown) => void;
+          __moxieBoot: (boot: unknown, css: unknown) => void;
         }
-      ).__textusBoot(boot, null);
+      ).__moxieBoot(boot, null);
       (window as unknown as Record<string, unknown>).__devChatHistory = {
         saved,
         archived: 3,
@@ -100,7 +100,7 @@ const entry = (page: Page, title: string) =>
 test("a past conversation reopens with its own document", async ({ page }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-chat-history": JSON.stringify(SAVED) },
+    storage: { "moxie-chat-history": JSON.stringify(SAVED) },
   });
   await installDisk(page);
   await openHistory(page);
@@ -112,7 +112,7 @@ test("a past conversation reopens with its own document", async ({ page }) => {
   // ...still filed under that document.
   const stored = await page.evaluate(
     () =>
-      JSON.parse(localStorage.getItem("textus-chat-history")!) as {
+      JSON.parse(localStorage.getItem("moxie-chat-history")!) as {
         id: string;
         docPath: string | null;
       }[],
@@ -152,7 +152,7 @@ test("a conversation deleted from the list is gone for good", async ({
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-chat-history": JSON.stringify(SAVED) },
+    storage: { "moxie-chat-history": JSON.stringify(SAVED) },
   });
   await openHistory(page);
   const line = entry(page, "Brainstorm a title");
@@ -163,7 +163,7 @@ test("a conversation deleted from the list is gone for good", async ({
   await expect(page.locator(".chat-history-entry")).toHaveCount(2);
   const stored = await page.evaluate(
     () =>
-      JSON.parse(localStorage.getItem("textus-chat-history")!) as {
+      JSON.parse(localStorage.getItem("moxie-chat-history")!) as {
         id: string;
       }[],
   );
@@ -200,7 +200,7 @@ test("a search finds the conversations where the words were said", async ({
   await search.fill("albatross");
   await expect(page.locator(".chat-history-hit")).toHaveCount(2);
   await expect(page.locator(".chat-history-hit").first()).toContainText(
-    "Textus AI: Call it the Albatross",
+    "Moxie AI: Call it the Albatross",
   );
   await search.fill("albatross petrel");
   await expect(page.locator(".chat-history-entry")).toHaveCount(1);

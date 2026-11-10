@@ -27,7 +27,7 @@ fn inside_documents(
         parent.canonicalize().map_err(|e| e.to_string())?.join(name)
     };
     if resolved == docs || !resolved.starts_with(&docs) {
-        return Err("Outside the Textus folder".into());
+        return Err("Outside the Moxie folder".into());
     }
     Ok(resolved)
 }

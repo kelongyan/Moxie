@@ -3,7 +3,7 @@ import { fs } from "../platform/ipc";
 /** A project's own settings, which go with the folder: plugin values under
  *  "plugins", the folder's conventions under "conventions". */
 export const projectSettingsFile = (root: string) =>
-  `${root.replace(/[\\/]+$/, "")}/.textus/settings.json`;
+  `${root.replace(/[\\/]+$/, "")}/.moxie/settings.json`;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === "object" && !Array.isArray(value);

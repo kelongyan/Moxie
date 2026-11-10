@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 import { isIOSApp } from "../platform/capabilities";
 
 /** The width at which the iPhone layout takes over: the sidebar becomes a
- *  drawer and Textus AI a bottom sheet. */
+ *  drawer and Moxie AI a bottom sheet. */
 export const PHONE_QUERY = "(max-width: 760px)";
 
 function subscribe(onChange: () => void) {

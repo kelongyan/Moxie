@@ -119,7 +119,7 @@ test("an AI edit and a review note on folded text open the fold", async ({
   // Wide enough for the margin, where the note goes.
   await page.setViewportSize({ width: 1440, height: 900 });
   const { editor, hidden } = await openFolded(page, {
-    "textus-agent-panel-open": "1",
+    "moxie-agent-panel-open": "1",
   });
   await mockInvoke(page, {
     ai_agent_message: [
@@ -164,7 +164,7 @@ test("stepping to a review note in text folded again opens the fold", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const { editor } = await openFolded(page, {
-    "textus-agent-panel-open": "1",
+    "moxie-agent-panel-open": "1",
   });
   const note = (id: string, anchor: string) => [
     {
@@ -215,7 +215,7 @@ test("a grammar check asked for in folded text opens it", async ({ page }) => {
     ],
   });
   await page.evaluate(() =>
-    window.dispatchEvent(new Event("textus:trigger-grammar-check")),
+    window.dispatchEvent(new Event("moxie:trigger-grammar-check")),
   );
   await expect(editor.locator(".grammar-issue")).toBeVisible();
   await expect(hidden).toBeVisible();

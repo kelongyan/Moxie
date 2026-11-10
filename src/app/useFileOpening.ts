@@ -324,7 +324,7 @@ export function useFileOpening(opts: {
     else void openPathInTab(path, { anchor });
   });
 
-  // A linked file: in a tab when Textus shows it, or when an official plugin
+  // A linked file: in a tab when Moxie shows it, or when an official plugin
   // would and the user installs it; else, once the user agrees, in the
   // system's app (a document's link shouldn't open things unseen; a program
   // is only shown in its folder, which the backend decides).

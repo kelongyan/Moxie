@@ -31,7 +31,7 @@ pre.md-fences {
   color: rgb(198, 120, 221);
 }
 
-/* Bare, as some themes write them: Textus's own token colours must not win. */
+/* Bare, as some themes write them: Moxie's own token colours must not win. */
 .cm-string {
   color: rgb(152, 195, 121);
 }

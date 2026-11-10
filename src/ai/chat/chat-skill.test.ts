@@ -8,9 +8,9 @@ const file = [
   "  Turns the week's notes into the team's weekly report.",
   "  Use when asked for a weekly report.",
   "metadata:",
-  '  textus-version: "1.0.0"',
-  '  textus-modes: "write review"',
-  '  textus-label-zh: "写周报"',
+  '  moxie-version: "1.0.0"',
+  '  moxie-modes: "write review"',
+  '  moxie-label-zh: "写周报"',
   "---",
   "",
   "Turn the notes into a report: done, next, blocked.",
@@ -43,7 +43,7 @@ describe("a skill in a reply", () => {
   });
 
   it("is in Write when it doesn't say", () => {
-    const [skill] = skillsInReply(reply.replace(/ {2}textus-modes.*\n/, ""));
+    const [skill] = skillsInReply(reply.replace(/ {2}moxie-modes.*\n/, ""));
     expect(skill.modes).toEqual(["write"]);
   });
 

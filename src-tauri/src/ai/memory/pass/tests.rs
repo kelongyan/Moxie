@@ -2,7 +2,7 @@ use super::*;
 
 fn folders(tag: &str) -> (PathBuf, MemoryDirs) {
     let base = std::env::temp_dir().join(format!(
-        "textus-pass-{tag}-{}-{}",
+        "moxie-pass-{tag}-{}-{}",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -84,7 +84,7 @@ fn added_updated_and_forgotten_as_the_writer_keeps_them() {
 #[test]
 fn the_users_own_library_entry_is_never_forgotten() {
     let (base, dirs) = folders("theirs");
-    let library = base.join("novel/.textus/library");
+    let library = base.join("novel/.moxie/library");
     std::fs::create_dir_all(&library).unwrap();
     std::fs::write(
         library.join("harbour.md"),
@@ -111,7 +111,7 @@ fn the_pass_is_shown_what_is_remembered_and_the_entries_named() {
         &Source::default(),
     )
     .unwrap();
-    let library = base.join("novel/.textus/library");
+    let library = base.join("novel/.moxie/library");
     std::fs::create_dir_all(&library).unwrap();
     std::fs::write(library.join("lin.md"), "---\nname: 林晚\n---\n灯塔看守人。").unwrap();
     std::fs::write(library.join("zhou.md"), "---\nname: 老周\n---\n渔夫。").unwrap();
@@ -132,7 +132,7 @@ fn the_pass_is_shown_what_is_remembered_and_the_entries_named() {
     );
     assert!(input.contains("1. 续写一段。\n2. 林晚其实话多。"));
     assert!(input.contains("---project folder---\nyes"));
-    // One Textus AI wrote has its id, to update or forget.
+    // One Moxie AI wrote has its id, to update or forget.
     dirs.apply_changes(
         parse_changes(r#"{"changes": [{"op": "add", "kind": "fact", "name": "阿青", "text": "林晚的妹妹。"}]}"#),
         &Source::default(),

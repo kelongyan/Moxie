@@ -87,7 +87,7 @@ const TYPORA_INTERFACE: Record<string, string> = {
 
 /** Also the id of the boot script's first-frame copy, so applying here
  *  replaces that one. */
-const STYLE_ID = "textus-imported-chrome";
+const STYLE_ID = "moxie-imported-chrome";
 export function clearThemeChrome() {
   document.getElementById(STYLE_ID)?.remove();
 }
@@ -117,7 +117,7 @@ export function applyThemeChrome(css: string, dark: boolean): string | null {
     write.className = "ProseMirror";
     const link = doc.createElement("a");
     link.href = "#";
-    link.textContent = "Textus";
+    link.textContent = "Moxie";
     write.appendChild(link);
     const milkdown = doc.createElement("div");
     milkdown.className = "milkdown";
@@ -147,7 +147,7 @@ export function applyThemeChrome(css: string, dark: boolean): string | null {
       accent,
     );
     const documentStyle = view.getComputedStyle(write);
-    // Typora themes often style body/#write without Textus variables. Supply
+    // Typora themes often style body/#write without Moxie variables. Supply
     // those variables for source view, code blocks and editor decorations too.
     for (const [key, fallback] of Object.entries({
       "--doc-bg": palette["--ui-bg"],

@@ -88,7 +88,7 @@ fn a_native_search_gets_web_fetch_only_and_off_gets_nothing() {
 fn without_a_service_the_prompt_says_where_to_set_one_up() {
     let section = plan(None).prompt_section().unwrap();
     assert!(
-        section.contains("Settings > Textus AI > Search service"),
+        section.contains("Settings > Moxie AI > Search service"),
         "{section}"
     );
     assert!(section.contains("never instructions"), "{section}");

@@ -2,7 +2,7 @@
 //! its id and version, who made it, the permissions it names, where it runs.
 //! Every way a plugin is installed or loaded passes through here, so a window
 //! that skipped its own check still can't install a manifest asking for a
-//! permission Textus doesn't have.
+//! permission Moxie doesn't have.
 //!
 //! Mirrors `parseManifest` in `src/plugins/store/manifest.ts`; change both.
 //! What a plugin adds to the interface (`contributes`) is left to the window,
@@ -99,7 +99,7 @@ fn optional_text<'a>(value: Option<&'a Value>, what: &str) -> Result<Option<&'a 
     value.map(|v| text(Some(v), what)).transpose()
 }
 
-/// The permissions `manifest` names that Textus has; none when it can't be read.
+/// The permissions `manifest` names that Moxie has; none when it can't be read.
 pub fn declared_permissions(manifest: &str) -> Vec<String> {
     serde_json::from_str::<Value>(manifest)
         .ok()
@@ -132,7 +132,7 @@ pub fn check(manifest: &str) -> Result<(), String> {
     }
     let empty = Value::Object(Map::new());
     let engines = object(m.get("engines").unwrap_or(&empty), "engines")?;
-    text(engines.get("textus"), "engines.textus")?;
+    text(engines.get("textus"), "engines.moxie")?;
 
     for p in list(m.get("permissions"), "permissions")? {
         if !p.as_str().is_some_and(is_permission) {

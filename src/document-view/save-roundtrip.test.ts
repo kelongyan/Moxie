@@ -21,7 +21,7 @@ css.escape ??= (value) => value.replace(/["\\]/g, "\\$&");
 
 // CI runs these once, only for changes that can reach saving; the native
 // jobs set this to skip them.
-describe.skipIf(process.env.TEXTUS_SKIP_ROUNDTRIP === "1")(
+describe.skipIf(process.env.MOXIE_SKIP_ROUNDTRIP === "1")(
   "saving after an edit keeps the rest and loses nothing",
   () => {
     it.each(snippetDocuments(250))("%s", async (id, markdown) => {

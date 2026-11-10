@@ -35,7 +35,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Suggests another plugin.",
-  engines: { textus: "^1.3.0" },
+  engines: { moxie: "^1.3.0" },
   main: "host.js",
   activationEvents: ["*"],
   permissions: [],

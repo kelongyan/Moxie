@@ -30,7 +30,7 @@ function saved(page: Page) {
     () =>
       (
         JSON.parse(
-          localStorage.getItem("textus-playground:pending") ?? "null",
+          localStorage.getItem("moxie-playground:pending") ?? "null",
         ) as { markdown: string } | null
       )?.markdown ?? null,
   );
@@ -68,7 +68,7 @@ async function typeAtEnd(page: Page, text: string) {
 
 test("the first visit shows the sample, rendered", async ({ page }) => {
   await openPlayground(page);
-  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Textus");
+  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Moxie");
   await expect(page.locator(`${editor} table`)).toBeVisible();
   await expect(page.locator(`${editor} .katex`).first()).toBeVisible();
   // KaTeX's fonts are bundled as woff2 alone; the formulas must still get
@@ -89,7 +89,7 @@ test("the first visit shows the sample, rendered", async ({ page }) => {
     timeout: 15_000,
   });
   await expect(
-    page.getByRole("banner").getByRole("link", { name: "Download Textus" }),
+    page.getByRole("banner").getByRole("link", { name: "Download Moxie" }),
   ).toHaveAttribute("href", "https://textus.md/#download");
   await expect(
     page.getByText("Your documents are kept in this browser only."),
@@ -104,7 +104,7 @@ test("typing is saved and survives a reload", async ({ page }) => {
   await expect.poll(() => saved(page)).toContain("Written in the browser");
   await page.reload();
   await expect(page.locator(editor)).toContainText("Written in the browser");
-  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Textus");
+  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Moxie");
 });
 
 test("an edit the debounce still holds is kept on leaving", async ({
@@ -125,7 +125,7 @@ test("an edit the debounce still holds is kept on leaving", async ({
   // Straight away, before the listener reports it.
   await page.reload();
   await expect(page.locator(`${editor} h1`)).toContainText(
-    "Welcome to Textus!",
+    "Welcome to Moxie!",
   );
 });
 
@@ -141,9 +141,9 @@ test("Open adds a file as a document of its own, and the Documents menu goes bac
   await expect(page.locator(`${editor} h1`)).toContainText("Imported");
   await expect(page.locator(`${editor} li`)).toHaveText("a task");
   const items = await documentsMenu(page);
-  await expect(items).toContainText(["notes", "Welcome to Textus"]);
-  await items.filter({ hasText: "Welcome to Textus" }).click();
-  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Textus");
+  await expect(items).toContainText(["notes", "Welcome to Moxie"]);
+  await items.filter({ hasText: "Welcome to Moxie" }).click();
+  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Moxie");
 });
 
 test("New Document opens an empty one, and Delete takes it away", async ({
@@ -161,7 +161,7 @@ test("New Document opens an empty one, and Delete takes it away", async ({
   )
     .filter({ hasText: "Delete This Document" })
     .click();
-  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Textus");
+  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Moxie");
   await expect(await documentsMenu(page)).not.toContainText(["A fresh page"]);
 });
 
@@ -221,7 +221,7 @@ test("a file that isn't Markdown is turned away", async ({ page }) => {
   await expect(page.getByRole("status")).toHaveText(
     "Only .md, .markdown and .txt files can be imported.",
   );
-  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Textus");
+  await expect(page.locator(`${editor} h1`)).toContainText("Welcome to Moxie");
 });
 
 test("Save downloads the document where the browser can't save files", async ({
@@ -234,9 +234,9 @@ test("Save downloads the document where the browser can't save files", async ({
     page.waitForEvent("download"),
     page.getByRole("button", { name: "Save" }).click(),
   ]);
-  expect(download.suggestedFilename()).toBe("Welcome to Textus.md");
+  expect(download.suggestedFilename()).toBe("Welcome to Moxie.md");
   const text = readFileSync(await download.path(), "utf8");
-  expect(text).toMatch(/^# Welcome to Textus\n/);
+  expect(text).toMatch(/^# Welcome to Moxie\n/);
   expect(text).toContain("```mermaid");
   expect(text).toContain("Exported line");
 });
@@ -249,7 +249,7 @@ test("source mode shows the Markdown and takes edits back", async ({
   await page.keyboard.press("ControlOrMeta+/");
   const source = page.locator(".source-view .cm-content");
   await expect(source).toBeVisible();
-  expect(await sourceValue(page, "body")).toMatch(/^# Welcome to Textus\n/);
+  expect(await sourceValue(page, "body")).toMatch(/^# Welcome to Moxie\n/);
   await source.fill("# From source\n\n$x^2$ squared\n\nEnd\n");
   await page.getByRole("button", { name: "Source" }).click();
   await expect(source).toHaveCount(0);
@@ -276,7 +276,7 @@ test("a pasted image inserts nothing and says why", async ({ page }) => {
     );
   }, PNG);
   await expect(page.getByRole("status")).toHaveText(
-    "Images need the Textus desktop app.",
+    "Images need the Moxie desktop app.",
   );
   await expect(
     page.locator(`${editor} img:not(.ProseMirror-separator)`),
@@ -292,7 +292,7 @@ test.describe("in Chinese", () => {
     page,
   }) => {
     await openPlayground(page);
-    await expect(page.locator(`${editor} h1`)).toContainText("欢迎使用 Textus");
+    await expect(page.locator(`${editor} h1`)).toContainText("欢迎使用 Moxie");
     await expect(page.getByRole("button", { name: "打开…" })).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
   });
@@ -303,7 +303,7 @@ test("a link names the language, and the page switches to another", async ({
 }) => {
   await openPlayground(page, "?lang=de");
   await expect(page.locator(`${editor} h1`)).toContainText(
-    "Willkommen bei Textus",
+    "Willkommen bei Moxie",
   );
   await expect(page.locator("html")).toHaveAttribute("lang", "de");
   await page.getByRole("combobox", { name: "Sprache" }).click();

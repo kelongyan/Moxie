@@ -58,7 +58,7 @@ export function ImageStorageSection({
 }
 
 /** The sentence naming the picture folder the document's project sets (its
- *  .textus/settings.json, or another app's settings it follows), which
+ *  .moxie/settings.json, or another app's settings it follows), which
  *  wins over Settings there; null when it sets none. */
 function useProjectPictures(docPath: string | null, t: Strings): string | null {
   const [found, setFound] = useState<string | null>(null);

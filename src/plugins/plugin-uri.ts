@@ -5,11 +5,11 @@ import { showConfirm, showMessage } from "../ui/app-dialog";
 import { askPlugin, loadPlugins } from "./manager";
 
 /**
- * `textus://` links opened from outside: `textus://<plugin id>/<path>?<query>`
- * goes to that plugin; `textus://command/<id>?<query>` runs a command once the
+ * `moxie://` links opened from outside: `moxie://<plugin id>/<path>?<query>`
+ * goes to that plugin; `moxie://command/<id>?<query>` runs a command once the
  * user agrees, since a link is anyone's to write.
  */
-export type TextusUri =
+export type MoxieUri =
   | {
       kind: "plugin";
       plugin: string;
@@ -27,15 +27,15 @@ export type TextusUri =
 const ID = /^[a-z0-9-]+\.[a-z0-9-]+$/;
 const COMMAND_ID = /^[a-z0-9][a-z0-9.-]*$/i;
 
-/** The link as Textus reads it; null when it isn't one. */
-export function parseTextusUri(link: string): TextusUri | null {
+/** The link as Moxie reads it; null when it isn't one. */
+export function parseMoxieUri(link: string): MoxieUri | null {
   let url: URL;
   try {
     url = new URL(link);
   } catch {
     return null;
   }
-  if (url.protocol !== "textus:") return null;
+  if (url.protocol !== "moxie:") return null;
   const host = url.hostname.toLowerCase();
   const path = decodeURIComponent(url.pathname || "/") || "/";
   const query = Object.fromEntries(url.searchParams);
@@ -67,7 +67,7 @@ async function runLinkedCommand(
 
 /** Gives a link to the plugin it names, started first if it hasn't been;
  *  whether it took it. */
-function givePlugin(uri: Extract<TextusUri, { kind: "plugin" }>) {
+function givePlugin(uri: Extract<MoxieUri, { kind: "plugin" }>) {
   return askPlugin(uri.plugin, "$uri", {
     path: uri.path,
     query: uri.query,
@@ -86,7 +86,7 @@ export async function takePluginUris(): Promise<void> {
   await loadPlugins();
   const links = await pluginsIpc.takeUris().catch(() => [] as string[]);
   for (const link of links) {
-    const uri = parseTextusUri(link);
+    const uri = parseMoxieUri(link);
     const taken = !uri
       ? false
       : uri.kind === "command"

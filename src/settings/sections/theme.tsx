@@ -93,7 +93,7 @@ async function exportThemeCss(t: Strings, customCss: string): Promise<void> {
   ]
     .filter(Boolean)
     .join("\n");
-  const css = `/* Textus theme - exported from Settings > Extensions > Themes.
+  const css = `/* Moxie theme - exported from Settings > Extensions > Themes.
    Edit it, then bring it back with Import CSS… there.
    #write is the document; .milkdown wraps it. */
 
@@ -117,11 +117,11 @@ ${typeRules}
   /* font-family: "Songti SC", serif; */
 }
 
-/* Textus's ornaments - delete any you don't want */
+/* Moxie's ornaments - delete any you don't want */
 ${ornamentRules()}
 ${customCss.trim() ? `\n/* Custom CSS */\n${customCss}\n` : ""}`;
   const picked = await exportDoc.exportSaveDialog(
-    "textus-theme.css",
+    "moxie-theme.css",
     "CSS",
     "css",
   );
@@ -389,7 +389,7 @@ export function ThemesTab({ t }: { t: Strings }) {
                 </span>
                 {madeByAi(settings.creations, "theme", theme.id) && (
                   <span className="plugin-byline">
-                    <span className="plugin-official">{t.madeByTextusAi}</span>
+                    <span className="plugin-official">{t.madeByMoxieAi}</span>
                   </span>
                 )}
               </div>

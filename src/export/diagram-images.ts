@@ -193,7 +193,7 @@ export async function redrawDiagrams(
     if (!source?.classList.contains("mermaid-source-hidden")) continue;
     if (preview.querySelector(":scope > svg.pele")) continue;
     const code = (source.querySelector("code") ?? source).textContent ?? "";
-    const language = preview.querySelector(":scope > svg.textus-chart")
+    const language = preview.querySelector(":scope > svg.moxie-chart")
       ? "chart"
       : "mermaid";
     const svg = await draw(code, language).catch(() => null);

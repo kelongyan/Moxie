@@ -36,7 +36,7 @@ test("a translation streaming in lands paragraph by paragraph, each in its own p
   await page.setViewportSize({ width: 1280, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "final" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const doc = ZH.join("\n\n");
   await pasteMarkdown(page, doc);
@@ -88,7 +88,7 @@ test("short lines landed together stand as the paragraphs they will be, and the 
   await page.setViewportSize({ width: 1280, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "final" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const doc = ZH_TALK.join("\n\n");
   await pasteMarkdown(page, doc);

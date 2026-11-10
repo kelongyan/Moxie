@@ -11,7 +11,7 @@ import {
 
 /**
  * A plugin's settings, kept under `plugins.<id>` in settings.json and, for a
- * project, in its `.textus/settings.json` over those. A plugin reads the
+ * project, in its `.moxie/settings.json` over those. A plugin reads the
  * project's value, else the global one, else its manifest's default.
  */
 

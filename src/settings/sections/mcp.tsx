@@ -18,7 +18,7 @@ import {
 } from "../../prefs/mcp";
 import { explainError } from "../../utils/error-explain";
 
-/** Settings › Extensions › MCP: the servers Textus AI may use, each a card
+/** Settings › Extensions › MCP: the servers Moxie AI may use, each a card
  *  with its switch and state, and a form to add, change or try one. The
  *  servers run in Rust; this asks for their state. */
 export function McpSection({ t }: { t: Strings }) {

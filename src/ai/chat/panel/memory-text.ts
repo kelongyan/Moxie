@@ -17,7 +17,7 @@ export function rememberedDate(stamp: string, lang: Lang): string {
 }
 
 /** A library entry's id for the memory commands: its file
- *  `.textus/library/<stem>.md` as `project/library/<stem>`. */
+ *  `.moxie/library/<stem>.md` as `project/library/<stem>`. */
 export function libraryEntryId(entry: LibraryEntry): string {
   return `project/library/${basename(entry.file).replace(/\.md$/, "")}`;
 }

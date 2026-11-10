@@ -140,7 +140,7 @@ export function StartPage({ t }: { t: Strings }) {
       <div className="start-page-body">
         <h1 className="start-page-title">
           <img src={mark} alt="" width={64} height={64} />
-          Textus
+          Moxie
         </h1>
         <div className="start-page-actions">
           {actions.map((a) => (

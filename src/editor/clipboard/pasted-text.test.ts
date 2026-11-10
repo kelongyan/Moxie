@@ -20,7 +20,7 @@ const links = (root: HTMLElement) =>
   });
 
 it("a pasted URL becomes a link with the URL as its text", async () => {
-  const url = "https://github.com/CatVinci-Studio/Textus/issues";
+  const url = "https://github.com/kelongyan/Moxie/issues";
   const t = await open();
   t.paste(url);
   expect(links(t.view.dom)).toEqual([`${url} -> ${url}`]);

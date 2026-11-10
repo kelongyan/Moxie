@@ -24,7 +24,7 @@ import { leadingWhitespaceOfLastLine } from "../code/code-indent";
 import { LINK } from "../markdown/link-source";
 
 /**
- * Enter, Shift+Enter and Mod+Enter across Textus's container blocks, decided
+ * Enter, Shift+Enter and Mod+Enter across Moxie's container blocks, decided
  * in one place so they follow one rule: Enter on an empty line leaves the
  * block, Mod+Enter leaves it from anywhere. Registered ahead of the preset
  * keymaps, so these win over gfm's table keys and the base keymap.

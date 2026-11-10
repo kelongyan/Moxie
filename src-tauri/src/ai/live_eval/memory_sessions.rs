@@ -1,4 +1,4 @@
-//! What Textus AI remembers over real use: several conversations on the same
+//! What Moxie AI remembers over real use: several conversations on the same
 //! work, each starting fresh with only the memories, and whether a later one
 //! works the way the user asked. Run with
 //! `cargo test --lib live_eval::memory_sessions -- --ignored --nocapture`.
@@ -39,7 +39,7 @@ fn rejecting(mut s: Session) -> Session {
 struct Ended {
     /// Every memory, as (scope, kind, text).
     memories: Vec<(Scope, MemoryKind, String)>,
-    /// The library entries Textus AI wrote, whole.
+    /// The library entries Moxie AI wrote, whole.
     facts: Vec<String>,
     /// Each conversation, in order.
     conversations: Vec<Conversation>,
@@ -289,14 +289,14 @@ fn scenarios() -> Vec<Scenario> {
             seed: Vec::new(),
             sessions: vec![
                 session(AgentMode::Write, PRODUCT, &[
-                    "Add a line saying the app now opens folders. And it's Textus, one word, capital T only - people keep writing TextUs.",
+                    "Add a line saying the app now opens folders. And it's Moxie, one word, capital T only - people keep writing TextUs.",
                 ]),
                 session(AgentMode::Write, PRODUCT, &["Add a short paragraph thanking the beta testers."]),
             ],
             checks: vec![
                 ("the spelling is kept for the project", |e| {
-                    e.memories.iter().any(|(s, _, t)| *s == Scope::Project && t.contains("Textus"))
-                        || e.in_library(&["Textus"])
+                    e.memories.iter().any(|(s, _, t)| *s == Scope::Project && t.contains("Moxie"))
+                        || e.in_library(&["Moxie"])
                 }),
                 ("the later text spells it right", |e| !e.last_text().contains("TextUs")),
             ],
@@ -430,7 +430,7 @@ impl Folders {
         std::fs::create_dir_all(&global).unwrap();
         let project = project.then(|| {
             let root = dir.path().join("work");
-            std::fs::create_dir_all(root.join(".textus")).unwrap();
+            std::fs::create_dir_all(root.join(".moxie")).unwrap();
             root
         });
         Folders {
@@ -457,7 +457,7 @@ impl Folders {
         let Some(root) = &self.project else {
             return Vec::new();
         };
-        read_all(&root.join(".textus").join("library"))
+        read_all(&root.join(".moxie").join("library"))
     }
 }
 
@@ -568,7 +568,7 @@ fn live_memory_over_sessions() {
         .map(|r| r["checks"].as_array().map_or(0, Vec::len))
         .sum();
     eprintln!("memory_sessions: {passed}/{total} checks passed");
-    let out = std::env::var("TEXTUS_EVAL_OUT")
+    let out = std::env::var("MOXIE_EVAL_OUT")
         .unwrap_or_else(|_| format!("{}/target/live-eval", env!("CARGO_MANIFEST_DIR")));
     std::fs::create_dir_all(&out).unwrap();
     let path = format!("{out}/memory-sessions.json");

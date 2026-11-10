@@ -4,7 +4,7 @@ import { swipeTurnsPage } from "./usePageSwipe";
 const width = 430;
 
 describe("an edge swipe between the phone's pages", () => {
-  it("opens Textus AI from the right edge, leftwards", () => {
+  it("opens Moxie AI from the right edge, leftwards", () => {
     expect(
       swipeTurnsPage({ x: 420, y: 300 }, { x: 300, y: 310 }, width, false),
     ).toBe(true);

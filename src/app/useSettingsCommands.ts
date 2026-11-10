@@ -7,7 +7,7 @@ import { currentStrings } from "../i18n/current";
 
 /**
  * The settings most often changed, as commands for the command palette:
- * the appearance, the editor theme, and Textus AI on or off.
+ * the appearance, the editor theme, and Moxie AI on or off.
  */
 export function useSettingsCommands(
   settings: Settings,
@@ -54,9 +54,9 @@ export function useSettingsCommands(
         },
       }),
       registerCommand({
-        id: "textus.toggleTextusAi",
-        title: (t) => t.shortcutToggleTextusAi,
-        run: () => set({ textusAi: !latest.current.settings.textusAi }),
+        id: "textus.toggleMoxieAi",
+        title: (t) => t.shortcutToggleMoxieAi,
+        run: () => set({ moxieAi: !latest.current.settings.moxieAi }),
       }),
     ];
     return () => offs.forEach((off) => off());

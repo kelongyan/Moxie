@@ -145,7 +145,7 @@ export function useWindowDocuments({
 
   const aiTitleFor = useDraftTitles(
     tabs,
-    settings.textusAi && settings.autoSuggestFilename
+    settings.moxieAi && settings.autoSuggestFilename
       ? settings.aiProvider
       : null,
     settings.writingModels[settings.aiProvider] || null,

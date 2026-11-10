@@ -101,7 +101,7 @@ describe("file name search", () => {
 });
 
 describe("isDocumentName", () => {
-  it("knows the types Textus opens as documents", () => {
+  it("knows the types Moxie opens as documents", () => {
     expect(isDocumentName("a.MD")).toBe(true);
     expect(isDocumentName("notes.txt")).toBe(true);
     expect(isDocumentName("photo.png")).toBe(false);

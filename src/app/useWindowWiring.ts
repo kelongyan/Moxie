@@ -46,7 +46,7 @@ export function useWindowWiring({
   setSettings: ReturnType<typeof useSettings>["setSettings"];
   t: Strings;
 }) {
-  const { tabState, tutorial, textusAi, panels, setPendingClose } = shell;
+  const { tabState, tutorial, moxieAi, panels, setPendingClose } = shell;
   const { tabsRef, activeTabId, setActiveTabId, setTabs, liveTabs } = tabState;
   const { activeTab, openFolder, openFile, openPathInTab } = docs;
 
@@ -63,7 +63,7 @@ export function useWindowWiring({
     toggleSplitView: docs.toggleSplitView,
     toggleZenMode: docs.toggleZenMode,
     searchFiles: docs.searchFiles,
-    toggleTextusAi: textusAi.toggle,
+    toggleMoxieAi: moxieAi.toggle,
   });
 
   useNavHistory({ tabsRef, activeTabId, setActiveTabId });
@@ -136,7 +136,7 @@ export function useWindowWiring({
   const menuChecks = {
     sidebar: panels.panelOpen,
     agentPanel: panels.agentPanel.open,
-    textusAi: textusAi.on,
+    moxieAi: moxieAi.on,
     sourceMode: !!activeTab.sourceMode && !activeTab.splitView,
     splitView: !!activeTab.sourceMode && !!activeTab.splitView,
     typewriter: settings.typewriterMode,
@@ -170,7 +170,7 @@ export function useWindowWiring({
     onOpenAgentPanel: () => {
       if (!panels.agentPanel.open) panels.toggleAgentPanel();
     },
-    onToggleTextusAi: textusAi.toggle,
+    onToggleMoxieAi: moxieAi.toggle,
     onToggleSplitView: docs.toggleSplitView,
     onToggleReadOnly: () => docs.chooseViewMode("read-only"),
     onViewModeDefault: () => docs.chooseViewMode("default"),

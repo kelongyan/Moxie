@@ -1,5 +1,5 @@
 /** How many changes each open document still has to decide - the writer's
- *  own and Textus AI's - by path, as its editor reports them, so closing it
+ *  own and Moxie AI's - by path, as its editor reports them, so closing it
  *  can say they are kept. */
 const counts = new Map<string, { own: number; ai: number }>();
 

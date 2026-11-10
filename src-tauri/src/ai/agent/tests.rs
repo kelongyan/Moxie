@@ -548,7 +548,7 @@ fn the_workspace_section_says_which_folder_and_why() {
         (None, RootSource::None)
     );
     let text = workspace_section(&lone, "en");
-    assert!(text.contains("no folder is open") && text.contains("Settings > Textus AI"));
+    assert!(text.contains("no folder is open") && text.contains("Settings > Moxie AI"));
     assert!(text.contains("attach it with +") && !text.contains("attached/"));
     // No project, no project bar: only the Settings row is offered.
     assert!(!text.contains("click the folder name"));
@@ -901,7 +901,7 @@ fn remembered_memories_follow_the_users_instructions() {
 
 #[test]
 fn a_selected_picture_in_the_documents_folder_is_seen() {
-    let dir = std::env::temp_dir().join(format!("textus-selpic-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("moxie-selpic-{}", std::process::id()));
     std::fs::create_dir_all(dir.join("assets")).unwrap();
     // A 1x1 PNG.
     let png = base64::Engine::decode(

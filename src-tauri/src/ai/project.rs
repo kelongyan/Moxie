@@ -1,5 +1,5 @@
 //! The project folder seen as writing material: walking, reading and searching
-//! it safely, and the `.textus/` style profile and library. A library entry
+//! it safely, and the `.moxie/` style profile and library. A library entry
 //! goes to the model only when `always`, or when its name or an alias comes up.
 
 use crate::ai::memory::Remembered;
@@ -102,7 +102,7 @@ pub async fn library_use(
     .unwrap_or_default()
 }
 
-/// Creates `.textus/<rel>` with `template` unless it already exists, and
+/// Creates `.moxie/<rel>` with `template` unless it already exists, and
 /// returns its absolute path.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
@@ -197,7 +197,7 @@ pub async fn import_references_picked(
     .map_err(|e| e.to_string())?
 }
 
-/// "Learn my style": analyses the picked samples and writes `.textus/style.md`
+/// "Learn my style": analyses the picked samples and writes `.moxie/style.md`
 /// (keeping the previous one as style.previous.md). Returns its path, which the
 /// frontend opens for review.
 #[tauri::command]

@@ -119,7 +119,7 @@ describe("pictures in a proposal's text", () => {
 
   it("a picture joins text next to the paragraph that quotes its anchor", () => {
     const draft = "One.\n\nTwo, three.\n\nFour.";
-    const picture = "![P](textus-generated:p1)";
+    const picture = "![P](moxie-generated:p1)";
     expect(joinedText(draft, "Two", "insert_after", picture)).toBe(
       `One.\n\nTwo, three.\n\n${picture}\n\nFour.`,
     );
@@ -139,14 +139,14 @@ describe("pictures in a proposal's text", () => {
 });
 
 describe("pictures written into streaming text", () => {
-  const line = "![港口](textus-picture:16:9 A harbour at dawn (mist))";
+  const line = "![港口](moxie-picture:16:9 A harbour at dawn (mist))";
 
   it("show as their picture once begun, never as the line", () => {
     const text = `One.\n\n${line}\n\nTwo.`;
     expect(withBegunPictures("w1", text)).toBe("One.\n\n\nTwo.");
     noteBegunPicture("w1", line, "k3f9qz", { width: 1536, height: 1024 });
     expect(withBegunPictures("w1", text)).toBe(
-      "One.\n\n![港口](textus-generated:k3f9qz)\n\nTwo.",
+      "One.\n\n![港口](moxie-generated:k3f9qz)\n\nTwo.",
     );
     expect(generatedImageSize("k3f9qz")).toEqual({
       width: 1536,

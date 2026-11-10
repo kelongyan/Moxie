@@ -24,7 +24,7 @@ const open = async (
 ) => {
   const t = await openView(
     markdown,
-    { language, textusAi: true, enableCompletion: true },
+    { language, moxieAi: true, enableCompletion: true },
     { ai: true },
   );
   vi.useFakeTimers();

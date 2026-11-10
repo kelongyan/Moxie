@@ -2,7 +2,7 @@
 // Templater plugin fill them: textus.dates and textus.templates (host.js).
 // Kept on one object of its own, so a plugin's own copy of these never
 // meets it. Plain JavaScript, put into the host frame as is.
-var __textusText = {};
+var __moxieText = {};
 (function (root) {
   "use strict";
 
@@ -365,7 +365,7 @@ var __textusText = {};
     notePath: notePath,
     weekDays: weekDays,
   };
-})(__textusText);
+})(__moxieText);
 
 (function (root) {
   var dates = root.dates;
@@ -515,4 +515,4 @@ var __textusText = {};
   }
 
   root.templater = { fill: fill, place: place };
-})(__textusText);
+})(__moxieText);

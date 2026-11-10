@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 /** The runtime's text.js, as the host frame runs it. */
 const text: any = new Function(
-  `${readFileSync(new URL("./text.js", import.meta.url), "utf8")}; return __textusText;`,
+  `${readFileSync(new URL("./text.js", import.meta.url), "utf8")}; return __moxieText;`,
 )();
 
 /** {{key}} and {{key:FORMAT}} filled in from values (runtime/text.js). */

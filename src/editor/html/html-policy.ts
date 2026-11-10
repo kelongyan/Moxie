@@ -321,7 +321,7 @@ const SCHEME_RE = /prefers-color-scheme\s*:\s*(dark|light)/i;
 
 /**
  * A README's <picture> of a light and a dark logo: one <img> for each,
- * classed by scheme, so Textus's theme picks it (the browser's own choice
+ * classed by scheme, so Moxie's theme picks it (the browser's own choice
  * would follow the system, not the theme). Without such sources, its <img>.
  */
 function pictureImages(picture: Element, doc: Document): Element[] {

@@ -135,23 +135,23 @@ fn the_catalog_keeps_only_packages_from_its_own_releases() {
     let entries = parse(&text).unwrap();
     assert_eq!(entries.len(), 1);
     assert_eq!(entries[0].id, "catvinci.tasks");
-    // Read from Textus's own site, never from GitHub.
+    // Read from Moxie's own site, never from GitHub.
     assert_eq!(
         entries[0].url,
         format!("{MIRROR_PREFIX}catvinci.tasks-v1.0.0/a.zip")
     );
     assert!(parse(r#"{"schema": 2, "plugins": []}"#)
         .unwrap_err()
-        .contains("newer Textus"));
+        .contains("newer Moxie"));
 }
 
 /// A package through the install counter and on to GitHub, as an install
-/// fetches it. Needs the network and a counter: TEXTUS_EXT_STATS set to
+/// fetches it. Needs the network and a counter: MOXIE_EXT_STATS set to
 /// `wrangler dev`'s (services/ext-stats/README.md).
 #[test]
 #[ignore = "network: the published catalog and a local install counter"]
 fn a_package_comes_through_the_install_counter() {
-    let base = std::env::var("TEXTUS_EXT_STATS").expect("TEXTUS_EXT_STATS");
+    let base = std::env::var("MOXIE_EXT_STATS").expect("MOXIE_EXT_STATS");
     tauri::async_runtime::block_on(async {
         let entries = parse(&fetch().await.expect("the catalog")).expect("readable");
         let tasks = entries.iter().find(|e| e.id == "catvinci.tasks").unwrap();

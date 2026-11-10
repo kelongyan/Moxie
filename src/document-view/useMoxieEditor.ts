@@ -36,7 +36,7 @@ export interface EditorBridges {
 
 /** Builds this tab's Milkdown instance, with the listener that reports the
  *  document. */
-export function useTextusEditor({
+export function useMoxieEditor({
   initialValue,
   reporting,
   settingsRef,

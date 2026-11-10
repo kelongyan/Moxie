@@ -22,7 +22,7 @@ import {
 } from "./memory-text";
 
 /**
- * What Textus AI keeps for a project: style, instructions, library, then what
+ * What Moxie AI keeps for a project: style, instructions, library, then what
  * it remembered. Each is a file of its own, so Edit opens it as a document.
  * Library entries the AI was given (`libraryUse`, picked by Rust) are marked.
  */
@@ -99,7 +99,7 @@ export function MemorySections({
           {info.style && (
             <button
               type="button"
-              title=".textus/style.md"
+              title=".moxie/style.md"
               onClick={onOpenStyle}
             >
               {t.memoryEdit}
@@ -135,7 +135,7 @@ export function MemorySections({
           {t.memoryInstructions}
           <button
             type="button"
-            title=".textus/agent.md"
+            title=".moxie/agent.md"
             onClick={onOpenInstructions}
           >
             {t.memoryEdit}

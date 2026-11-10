@@ -301,7 +301,7 @@ export type PluginEntry_Serialize = {
 	official?: boolean,
 };
 
-/**  A plugin's files as text, by path in the plugin, as Textus AI writes them. */
+/**  A plugin's files as text, by path in the plugin, as Moxie AI writes them. */
 export type PluginFile = {
 	path: string,
 	text: string,
@@ -375,13 +375,13 @@ export type SkillEntry_Deserialize = {
 	author?: string,
 	official?: boolean,
 	/**
-	 *  The panel modes it works in (its file's `textus-modes`); Write's
+	 *  The panel modes it works in (its file's `moxie-modes`); Write's
 	 *  when the catalog doesn't say.
 	 */
 	modes?: AgentMode_Deserialize[],
 	/**
 	 *  Its name and one-line hint by UI language code, for the market to
-	 *  show (its file's `textus-label-<code>`).
+	 *  show (its file's `moxie-label-<code>`).
 	 */
 	labels?: { [key in string]: SkillLabel },
 	url: string,
@@ -401,13 +401,13 @@ export type SkillEntry_Serialize = {
 	author: string,
 	official: boolean,
 	/**
-	 *  The panel modes it works in (its file's `textus-modes`); Write's
+	 *  The panel modes it works in (its file's `moxie-modes`); Write's
 	 *  when the catalog doesn't say.
 	 */
 	modes: AgentMode_Serialize[],
 	/**
 	 *  Its name and one-line hint by UI language code, for the market to
-	 *  show (its file's `textus-label-<code>`).
+	 *  show (its file's `moxie-label-<code>`).
 	 */
 	labels: { [key in string]: SkillLabel },
 	url: string,

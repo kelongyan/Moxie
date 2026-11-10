@@ -253,7 +253,7 @@ test("a card opens the plugin's own page: its settings, what it adds, its permis
   await expect(own.locator(".plugin-page-title")).toHaveText(
     "Calendar & Daily Notes",
   );
-  // Its settings, drawn as Textus's own rows.
+  // Its settings, drawn as Moxie's own rows.
   const settings = own.locator(".settings-group", { hasText: "Settings" });
   await expect(
     settings.locator("input.plugin-setting-input").first(),
@@ -346,7 +346,7 @@ test("a plugin's setting can be the project's own, over the general one", async 
       page.evaluate(
         () =>
           (window as unknown as { __devFs: Record<string, string> }).__devFs[
-            "/work/notes/.textus/settings.json"
+            "/work/notes/.moxie/settings.json"
           ] ?? "",
       ),
     )

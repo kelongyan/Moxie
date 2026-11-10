@@ -21,7 +21,7 @@ for (const display of ["final", "original", "inline"] as const)
     await page.setViewportSize({ width: 1400, height: 900 });
     await openApp(page, {
       settings: { language: "en", revisionDisplay: display },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
     });
     await pasteMarkdown(page, DOC);
     const ids = await blockIds(page, DOC);
@@ -69,7 +69,7 @@ test(
     await page.setViewportSize({ width: 1400, height: 900 });
     await openApp(page, {
       settings: { language: "en", revisionDisplay: "final" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await pasteMarkdown(page, DOC);

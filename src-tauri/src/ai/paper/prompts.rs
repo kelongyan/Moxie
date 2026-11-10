@@ -11,7 +11,7 @@
 //! genres share is written once (shared.md).
 //!
 //! To try a prompt without building again - a test run, or a live run
-//! against another wording (live.rs) - point TEXTUS_PAPER_PROMPTS at a
+//! against another wording (live.rs) - point MOXIE_PAPER_PROMPTS at a
 //! folder laid out as prompts/ is: each file in it is read in place of
 //! the one compiled in, as the prompts are first used. Only a debug build
 //! reads it; the app as released says what is compiled in. A run's
@@ -45,7 +45,7 @@ const FILES: &[(&str, &str, &str)] = files![
 ];
 
 /// Where a debug build reads prompt files in place of its own.
-const OVERRIDE: &str = "TEXTUS_PAPER_PROMPTS";
+const OVERRIDE: &str = "MOXIE_PAPER_PROMPTS";
 
 /// The prompt files' texts: each from the folder OVERRIDE names where it
 /// has one (debug builds only), else compiled in.

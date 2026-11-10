@@ -5,7 +5,7 @@
  */
 export type WhenContext = Record<string, string | boolean | undefined>;
 
-/** Every key Textus sets for a `when` (plugin-contributions.ts whenContext). */
+/** Every key Moxie sets for a `when` (plugin-contributions.ts whenContext). */
 export const WHEN_KEYS: readonly string[] = [
   "documentOpen",
   "editorHasSelection",

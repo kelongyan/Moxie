@@ -2,17 +2,17 @@ import { expect, test } from "@playwright/test";
 import { openApp, openPhone, PHONE } from "./helpers";
 
 // The window bar's AI panel button: the app icon's quill, struck through
-// while Textus AI is off. The phone's title row draws the same button.
+// while Moxie AI is off. The phone's title row draws the same button.
 
-const button = '.window-bar-toggle[aria-label="Textus AI"]';
+const button = '.window-bar-toggle[aria-label="Moxie AI"]';
 
-test("the AI panel's button is Textus AI, untranslated, with its shortcut in the tooltip", async ({
+test("the AI panel's button is Moxie AI, untranslated, with its shortcut in the tooltip", async ({
   page,
 }) => {
   // In Chinese: the product's name is not translated.
   await openApp(page, { settings: { language: "zh" } });
   const toggle = page.locator(button);
-  await expect(toggle).toHaveAccessibleDescription(/^Textus AI \(.+L\) · /);
+  await expect(toggle).toHaveAccessibleDescription(/^Moxie AI \(.+L\) · /);
   // The quill, one filled shape.
   await expect(toggle.locator("svg path")).toHaveCount(1);
   await toggle.click();
@@ -48,7 +48,7 @@ test("the panel has no close button; the quill and its menu close it", async ({
 test.describe("on a phone", () => {
   test.use(PHONE);
 
-  test("Textus AI is the title row's capsule, and the quill again while off", async ({
+  test("Moxie AI is the title row's capsule, and the quill again while off", async ({
     page,
   }) => {
     await openPhone(page);
@@ -56,10 +56,10 @@ test.describe("on a phone", () => {
     await page.getByRole("button", { name: "AI", exact: true }).tap();
     await expect(page.locator(".agent-panel-view")).toBeVisible();
 
-    await openPhone(page, { settings: { textusAi: false } });
+    await openPhone(page, { settings: { moxieAi: false } });
     await expect(page.locator(".page-switch")).toHaveCount(0);
     await expect(
-      page.locator(".window-bar-toggle.textus-ai-button-off"),
+      page.locator(".window-bar-toggle.moxie-ai-button-off"),
     ).toBeVisible();
   });
 });

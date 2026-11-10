@@ -5,7 +5,7 @@ import { useTutorialDocumentEvaluation } from "../onboarding/useTutorialDocument
 import { useAppUpdate } from "./useAppUpdate";
 import { useZoom } from "./useZoom";
 import { useDraftAutosave } from "../document/draft-autosave";
-import { useTextusAi, useTextusAiResume } from "../ai/TextusAiSwitch";
+import { useMoxieAi, useMoxieAiResume } from "../ai/MoxieAiSwitch";
 import { useTabState } from "./tabs/useTabState";
 import { useSidePanels } from "./useSidePanels";
 import { useWordImported } from "./AppNotices";
@@ -14,7 +14,7 @@ import { useKeepTabs } from "../document/reload-tabs";
 import type { Settings, useSettings } from "../prefs/SettingsContext";
 
 /**
- * A window's frame: tabs, the close prompt, Textus AI's switch, side panels,
+ * A window's frame: tabs, the close prompt, Moxie AI's switch, side panels,
  * Settings, updates, zoom, the tour and draft recovery.
  */
 export function useWindowShell({
@@ -27,13 +27,13 @@ export function useWindowShell({
   const tabState = useTabState();
   // The one save/discard/cancel prompt.
   const [pendingClose, setPendingClose] = useState<PendingClose | null>(null);
-  const textusAi = useTextusAi();
-  useTextusAiResume();
-  const panels = useSidePanels(textusAi.on);
+  const moxieAi = useMoxieAi();
+  useMoxieAiResume();
+  const panels = useSidePanels(moxieAi.on);
   const settingsOpening = useSettingsOpening();
   const appUpdate = useAppUpdate(settings.updateChannel);
   useZoom(settings.zoom, (zoom) => setSettings({ zoom }));
-  const tutorial = useTutorial(textusAi.on);
+  const tutorial = useTutorial(moxieAi.on);
   const evaluateTutorialDocumentChange =
     useTutorialDocumentEvaluation(tutorial);
   const cancelDraftFlushes = useDraftAutosave(
@@ -52,7 +52,7 @@ export function useWindowShell({
     tabState,
     pendingClose,
     setPendingClose,
-    textusAi,
+    moxieAi,
     panels,
     settingsOpening,
     appUpdate,

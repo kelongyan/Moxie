@@ -30,8 +30,8 @@ const bumped = {
     'version = "9.9.9"',
   ),
   "src-tauri/Cargo.lock": current["src-tauri/Cargo.lock"].replace(
-    `name = "textus"\nversion = "${version}"`,
-    'name = "textus"\nversion = "9.9.9"',
+    `name = "moxie"\nversion = "${version}"`,
+    'name = "moxie"\nversion = "9.9.9"',
   ),
   "src-tauri/tauri.conf.json": current["src-tauri/tauri.conf.json"].replace(
     `"version": "${version}"`,

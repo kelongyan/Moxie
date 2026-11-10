@@ -25,7 +25,7 @@ function subscribeWindowResize(onChange: () => void) {
 }
 
 /**
- * Layout state of the sidebar and the docked Agent panel. `aiOn` is Textus
+ * Layout state of the sidebar and the docked Agent panel. `aiOn` is Moxie
  * AI's switch: off, the AI panel closes and its toggles do nothing.
  */
 export function useSidePanels(aiOn: boolean) {

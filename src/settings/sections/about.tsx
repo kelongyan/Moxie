@@ -5,7 +5,7 @@ import { links } from "../../platform/ipc";
 import { UpdateButton, UpdateChannelRow } from "./general";
 import appIcon from "../../../src-tauri/icons/128x128@2x.png";
 
-/** Settings › General › About Textus: the app, its version and updates,
+/** Settings › General › About Moxie: the app, its version and updates,
  *  its code, where to talk with us, and who made it. */
 export function AboutSection({
   t,
@@ -26,7 +26,7 @@ export function AboutSection({
   return (
     <div className="settings-about">
       <img className="settings-about-icon" src={appIcon} alt="" />
-      <div className="settings-about-name">Textus</div>
+      <div className="settings-about-name">Moxie</div>
       <div className="settings-about-version">
         {version ? t.aboutVersion.replace("{version}", version) : " "}
       </div>

@@ -181,7 +181,7 @@ export function configureEditorRoot(
   // sets the value before the first increment.
   ctx.set(orderedListAttr.key, (node) => {
     const order = (node.attrs.order as number) ?? 1;
-    return order === 1 ? {} : { style: `--textus-ol-start: ${order - 1}` };
+    return order === 1 ? {} : { style: `--moxie-ol-start: ${order - 1}` };
   });
 }
 

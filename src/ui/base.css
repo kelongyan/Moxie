@@ -7,7 +7,7 @@
    faces take just those characters from the CJK face, and lead the stacks in a
    Chinese or Japanese UI. Single quotes stay Latin: ’ is also the apostrophe. */
 @font-face {
-  font-family: "Textus Punct SC";
+  font-family: "Moxie Punct SC";
   src:
     local("PingFang SC"), local("PingFangSC-Regular"),
     local("Noto Sans CJK SC"), local("Noto Sans SC"),
@@ -15,7 +15,7 @@
   unicode-range: U+2014, U+201C-201D, U+2026;
 }
 @font-face {
-  font-family: "Textus Punct TC";
+  font-family: "Moxie Punct TC";
   src:
     local("PingFang TC"), local("PingFangTC-Regular"),
     local("Noto Sans CJK TC"), local("Noto Sans TC"),
@@ -23,28 +23,28 @@
   unicode-range: U+2014, U+201C-201D, U+2026;
 }
 @font-face {
-  font-family: "Textus Punct JP";
+  font-family: "Moxie Punct JP";
   src:
     local("Hiragino Sans"), local("HiraginoSans-W3"), local("Noto Sans CJK JP"),
     local("Noto Sans JP"), local("Source Han Sans JP"), local("Yu Gothic");
   unicode-range: U+2014, U+201C-201D, U+2026;
 }
 @font-face {
-  font-family: "Textus Punct Serif SC";
+  font-family: "Moxie Punct Serif SC";
   src:
     local("Songti SC"), local("STSongti-SC-Regular"),
     local("Noto Serif CJK SC"), local("Source Han Serif SC"), local("SimSun");
   unicode-range: U+2014, U+201C-201D, U+2026;
 }
 @font-face {
-  font-family: "Textus Punct Serif TC";
+  font-family: "Moxie Punct Serif TC";
   src:
     local("Songti TC"), local("STSongti-TC-Regular"),
     local("Noto Serif CJK TC"), local("Source Han Serif TC"), local("PMingLiU");
   unicode-range: U+2014, U+201C-201D, U+2026;
 }
 @font-face {
-  font-family: "Textus Punct Serif JP";
+  font-family: "Moxie Punct Serif JP";
   src:
     local("Hiragino Mincho ProN"), local("HiraMinProN-W3"),
     local("Noto Serif CJK JP"), local("Source Han Serif JP"), local("Yu Mincho");
@@ -72,8 +72,8 @@
   --font-text-sans: Inter, var(--font-system-ui), var(--font-cjk-sans);
   /* A family that doesn't exist: outside a Chinese or Japanese UI the
      punctuation faces above stay out of the stacks. */
-  --font-cjk-punct: "Textus No Punct";
-  --font-cjk-punct-serif: "Textus No Punct";
+  --font-cjk-punct: "Moxie No Punct";
+  --font-cjk-punct-serif: "Moxie No Punct";
   --font-sans:
     var(--font-cjk-punct), var(--font-apple-system), "SF Pro Text",
     var(--font-text-sans), sans-serif;
@@ -173,18 +173,18 @@
 }
 
 :root:lang(zh) {
-  --font-cjk-punct: "Textus Punct SC";
-  --font-cjk-punct-serif: "Textus Punct Serif SC";
+  --font-cjk-punct: "Moxie Punct SC";
+  --font-cjk-punct-serif: "Moxie Punct Serif SC";
 }
 
 :root:is(:lang(zh-Hant), :lang(zh-TW), :lang(zh-HK), :lang(zh-MO)) {
-  --font-cjk-punct: "Textus Punct TC";
-  --font-cjk-punct-serif: "Textus Punct Serif TC";
+  --font-cjk-punct: "Moxie Punct TC";
+  --font-cjk-punct-serif: "Moxie Punct Serif TC";
 }
 
 :root:lang(ja) {
-  --font-cjk-punct: "Textus Punct JP";
-  --font-cjk-punct-serif: "Textus Punct Serif JP";
+  --font-cjk-punct: "Moxie Punct JP";
+  --font-cjk-punct-serif: "Moxie Punct Serif JP";
 }
 
 /* Dark when the system prefers dark and the user hasn't forced light, or

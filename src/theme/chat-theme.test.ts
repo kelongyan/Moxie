@@ -121,7 +121,7 @@ describe("the theme skill and its sample", () => {
     expect(new TextEncoder().encode(css).length).toBeLessThan(200 * 1024);
     expect(css).not.toMatch(/!important|@import|font-synthesis/);
     expect(reply).toContain(
-      "https://github.com/CatVinci-Studio/textus-themes/issues/1",
+      "https://github.com/CatVinci-Studio/moxie-themes/issues/1",
     );
   });
 });

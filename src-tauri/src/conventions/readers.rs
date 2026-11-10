@@ -6,7 +6,7 @@ use super::text::{flat_key, json, json_bool, json_str, moment_format, read, Date
 use super::{Conventions, Daily, Setting, TemplateFormats};
 use std::path::Path;
 
-/// The readers in the order one folder's apps are asked: Textus's own
+/// The readers in the order one folder's apps are asked: Moxie's own
 /// settings first, then the note apps, the site generators, VS Code, git.
 pub(super) const READERS: &[fn(&Path) -> Option<Conventions>] = &[
     textus,
@@ -59,12 +59,12 @@ impl At<'_> {
     }
 }
 
-/// `.textus/settings.json`'s "conventions": the same fields, the user's own.
+/// `.moxie/settings.json`'s "conventions": the same fields, the user's own.
 fn textus(dir: &Path) -> Option<Conventions> {
-    let settings = json(&dir.join(".textus/settings.json"))?;
+    let settings = json(&dir.join(".moxie/settings.json"))?;
     let c = settings.get("conventions")?;
     let at = At {
-        app: "textus",
+        app: "moxie",
         root: dir,
     };
     let s = |key: &str| json_str(c, key);
@@ -120,7 +120,7 @@ fn obsidian(dir: &Path) -> Option<Conventions> {
     out.link_path = at.set(text("newLinkFormat").unwrap_or_else(|| "shortest".into()));
     out.attachments = at.set(text("attachmentFolderPath").unwrap_or_else(|| "/".into()));
     out.soft_breaks = at.set(!json_bool(&app, "strictLineBreaks").unwrap_or(false));
-    // Off means Obsidian asks; left unset, Textus updates them.
+    // Off means Obsidian asks; left unset, Moxie updates them.
     let always = json_bool(&app, "alwaysUpdateLinks").unwrap_or(true);
     out.update_links = at.set(if always { "always" } else { "ask" }.into());
     out.new_notes = match text("newFileLocation").as_deref() {

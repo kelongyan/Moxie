@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 import base from "./playwright.config";
 
 /**
- * The e2e flows in the oldest WebView2 Textus supports, Chromium 105, set by
+ * The e2e flows in the oldest WebView2 Moxie supports, Chromium 105, set by
  * OLD_CHROMIUM. Runs the built frontend, since only the build lowers syntax;
  * not run by CI.
  */

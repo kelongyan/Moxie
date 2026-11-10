@@ -3,11 +3,11 @@
 // Every call goes to the window as JSON-RPC (rpc.ts's createEndpoint, put
 // in front of this file); the window checks it against what the plugin was
 // granted. The API is docs/dev/textus.d.ts, which
-// src/plugins/host/textus-types.test.ts keeps in step with this file.
+// src/plugins/host/moxie-types.test.ts keeps in step with this file.
 //
 // Plain JavaScript, put into the frame as is: no imports, nothing of the
 // app's build.
-/* global createEndpoint, __textusText */
+/* global createEndpoint, __moxieText */
 (function () {
   "use strict";
   var API_VERSION = "1.4";
@@ -196,7 +196,7 @@
   // A file of the plugin's, for the webview's HTML: the window puts the
   // file itself in its place when the HTML is set.
   Webview.prototype.asWebviewUri = function (path) {
-    return "textus-resource:" + String(path).replace(/^\.?\//, "");
+    return "moxie-resource:" + String(path).replace(/^\.?\//, "");
   };
   Webview.prototype.setTitle = function (title) {
     return call("webview.setTitle", { webview: this.id, title: String(title) });
@@ -298,7 +298,7 @@
   }
 
   // What the plugin keeps for one document: one value in its global
-  // store, `doc:<path>`, that Textus moves when the document is renamed
+  // store, `doc:<path>`, that Moxie moves when the document is renamed
   // (store/document-data.ts).
   function documentPlace(path) {
     var key = "doc:" + String(path);
@@ -440,7 +440,7 @@
     }
     var values = Object.assign({}, o.values);
     if (o.title !== undefined && !("title" in values)) values.title = o.title;
-    var T = __textusText.dates;
+    var T = __moxieText.dates;
     var body = o.format
       ? T.fillNote(text, day, {
           format: o.format,
@@ -457,7 +457,7 @@
           timeFormat: o.timeFormat || formats.time || undefined,
           values: values,
         });
-    var done = __textusText.templater.fill(body, {
+    var done = __moxieText.templater.fill(body, {
       title: o.title === undefined ? "" : String(o.title),
       folder: o.folder || "",
       now: day,
@@ -670,7 +670,7 @@
       onDidChangeActiveTab: on("activeTab"),
       onDidChangeLayout: on("layout"),
       // Which of the window's panels are open: the sidebar (and its tab),
-      // Textus AI's.
+      // Moxie AI's.
       panels: function () {
         return call("layout.panels");
       },
@@ -836,14 +836,14 @@
     // Dates and templates: computed here, no permission, nothing sent.
     dates: {
       format: function (date, form, options) {
-        return __textusText.dates.format(
+        return __moxieText.dates.format(
           asDate(date),
           form || "YYYY-MM-DD",
           languageOf(options),
         );
       },
       parse: function (text, form, options) {
-        return __textusText.dates.parse(
+        return __moxieText.dates.parse(
           String(text),
           form || "YYYY-MM-DD",
           languageOf(options),
@@ -1045,7 +1045,7 @@
       onDidChange: on("settings"),
     },
     ai: {
-      // Runs one of the manifest's contributes.aiTools when Textus AI
+      // Runs one of the manifest's contributes.aiTools when Moxie AI
       // calls it (ai.tools): `run(args)` answers with text for the model.
       registerTool: function (name, run) {
         aiTools.set(String(name), run);
@@ -1053,7 +1053,7 @@
           aiTools.delete(String(name));
         });
       },
-      // What Textus AI is doing and with which model, never what it says.
+      // What Moxie AI is doing and with which model, never what it says.
       state: function () {
         return call("ai.state");
       },
@@ -1098,7 +1098,7 @@
         });
       },
     },
-    // Jobs Rust keeps and fires on time, with Textus's windows open or not.
+    // Jobs Rust keeps and fires on time, with Moxie's windows open or not.
     schedule: {
       set: function (id, job) {
         return call("schedule.set", { id: String(id), job: plain(job) });
@@ -1128,7 +1128,7 @@
   };
 
   // Background code has no editor, UI or layout to reach.
-  if (window.__textusBackground)
+  if (window.__moxieBackground)
     [
       "editor",
       "ui",
@@ -1435,7 +1435,7 @@
   window.addEventListener("message", function receive(event) {
     if (event.source !== window.parent || app) return;
     var data = event.data;
-    if (!data || data.textus !== "init" || !event.ports[0]) return;
+    if (!data || data.moxie !== "init" || !event.ports[0]) return;
     window.removeEventListener("message", receive);
     env = data.env;
     app = createEndpoint(event.ports[0], handlers, 0);
@@ -1462,11 +1462,11 @@
 
   // The plugin's code, wrapped by frames.ts: CommonJS style, as VS Code's
   // extensions are - `exports.activate = (ctx) => {...}`.
-  window.__textusDefine = function (factory) {
-    delete window.__textusDefine;
+  window.__moxieDefine = function (factory) {
+    delete window.__moxieDefine;
     factory.call(module.exports, module, module.exports, textus);
   };
   // For code that reaches for the API without the wrapper's argument.
-  window.textus = textus;
-  window.parent.postMessage({ textus: "ready" }, "*");
+  window.moxie = textus;
+  window.parent.postMessage({ moxie: "ready" }, "*");
 })();

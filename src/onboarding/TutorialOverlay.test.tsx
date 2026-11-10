@@ -124,7 +124,7 @@ describe("TutorialOverlay", () => {
       stepId: "continuation",
       primary: { label: "Continue", onClick: onNext },
       watch: { label: "Watch the animation", onClick: onWatch },
-      note: "Connect an AI later in Settings › Textus AI to try it yourself.",
+      note: "Connect an AI later in Settings › Moxie AI to try it yourself.",
     });
     expect(screen.getByText(/Connect an AI later/)).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));

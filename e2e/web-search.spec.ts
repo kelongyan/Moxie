@@ -9,7 +9,7 @@ import { emit, mockInvoke, openApp } from "./helpers";
 // English labels.
 const t = {
   settingsTitle: "Settings",
-  navAi: "Textus AI",
+  navAi: "Moxie AI",
   searchServiceLabel: "Search service",
   searchServiceNone:
     "Nothing to search with yet - choose a service and add its key.",
@@ -102,7 +102,7 @@ const composer = (page: Page) => page.locator(".agent-panel-view textarea");
 async function ask(page: Page, turns: unknown[]) {
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await mockInvoke(page, {
     ai_agent_message: turns,

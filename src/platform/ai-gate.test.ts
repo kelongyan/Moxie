@@ -51,7 +51,7 @@ describe("requests to an AI service", () => {
   });
 
   it.each(requests)(
-    "%s never reaches Rust while Textus AI is off",
+    "%s never reaches Rust while Moxie AI is off",
     async (command, send) => {
       gateAiRequests(() => false);
       const refused = await send().catch((err: unknown) => err);

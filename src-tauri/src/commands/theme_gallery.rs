@@ -1,5 +1,5 @@
 //! The public theme gallery, browsed from Settings. Every request goes to
-//! Textus's own site, which passes the gallery repository's files on, by a
+//! Moxie's own site, which passes the gallery repository's files on, by a
 //! path checked against the gallery's shape, so nothing can point the app at
 //! another host.
 
@@ -385,7 +385,7 @@ mod tests {
             "themes": [
                 {"id": "plain", "name": "Plain", "author": "CatVinci-Studio",
                  "description": "Default look.", "license": "MIT",
-                 "source": "https://github.com/CatVinci-Studio/textus-themes",
+                 "source": "https://github.com/CatVinci-Studio/moxie-themes",
                  "created": "2026-10-18T04:55:06Z", "updated": "2026-10-18T04:55:06Z",
                  "css": "themes/plain/theme.css", "darkCss": "themes/plain/theme-dark.css",
                  "previews": ["themes/plain/preview.png", "https://evil.test/x.png", "themes/plain/b.jpg", "themes/plain/c.webp"]},

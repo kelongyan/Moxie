@@ -390,7 +390,7 @@ describe("both views read the one policy", () => {
     expect(html).toContain('style="text-align: center"');
     expect(html).toContain('class="katex"');
     expect(html).toContain('<div class="agent-math">');
-    expect(html).not.toContain("textus-math");
+    expect(html).not.toContain("moxie-math");
   });
 
   it("the split view renders an inline SVG inside a paragraph as a picture", () => {

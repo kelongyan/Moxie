@@ -1,4 +1,4 @@
-//! MCP servers: programs or web services that give Textus AI more tools. Each
+//! MCP servers: programs or web services that give Moxie AI more tools. Each
 //! one turned on runs in the background; a request offers the tools of every
 //! ready one. They come from settings.json's `mcpServers`.
 
@@ -332,7 +332,7 @@ fn mcp_tool<'a>(
             description: description.into(),
             parameters,
         },
-        // A server's tool may change things outside Textus: one call at a
+        // A server's tool may change things outside Moxie: one call at a
         // time, in the order asked.
         access: Access::Proposes,
         modes: EVERY_MODE,

@@ -1,4 +1,4 @@
-//! Pictures from Textus AI: the image model chosen in Settings (none by
+//! Pictures from Moxie AI: the image model chosen in Settings (none by
 //! default, as a picture costs money), the generate_image tool, and the pictures
 //! waiting in memory for the user's decision. Only Accept saves one.
 

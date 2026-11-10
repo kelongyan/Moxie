@@ -54,9 +54,9 @@ export function storedImageFolder(stored: unknown): string {
   return DEFAULT_IMAGE_SUBFOLDER;
 }
 
-/** Names as each app calls itself; Textus's own as the file it keeps. */
+/** Names as each app calls itself; Moxie's own as the file it keeps. */
 const APP_NAMES: Record<string, string> = {
-  textus: ".textus/settings.json",
+  moxie: ".moxie/settings.json",
   obsidian: "Obsidian",
   logseq: "Logseq",
   dendron: "Dendron",

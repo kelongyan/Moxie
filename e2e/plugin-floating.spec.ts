@@ -37,7 +37,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Floats a pet.",
-  engines: { textus: "^1.3.0" },
+  engines: { moxie: "^1.3.0" },
   main: "host.js",
   icon: "icon.svg",
   activationEvents: ["*"],

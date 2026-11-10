@@ -17,7 +17,7 @@ test("each note of a reply shows in the margin as soon as it is written, and the
   await page.setViewportSize({ width: 1800, height: 900 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, DOC);
   const ids = await blockIds(page, DOC);
@@ -132,7 +132,7 @@ test("a reply's many notes fold in the chat to their first three", async ({
   await page.setViewportSize({ width: 1800, height: 900 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const doc = Array.from({ length: 6 }, (_, i) => `Line ${i + 1} here.`).join(
     "\n\n",

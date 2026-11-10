@@ -1,4 +1,4 @@
-//! Textus AI's scratch space: a folder per conversation in the system's
+//! Moxie AI's scratch space: a folder per conversation in the system's
 //! temporary folder, for the files attached to it and the work the agent
 //! does without a project folder. Never inside the user's own folders.
 
@@ -16,7 +16,7 @@ fn base() -> Result<PathBuf, String> {
         .map(PathBuf::from)
         .filter(|p| p.is_dir())
         .unwrap_or_else(std::env::temp_dir);
-    let dir = temp.join("textus-agent");
+    let dir = temp.join("moxie-agent");
     private_dir(&dir)?;
     Ok(dir)
 }

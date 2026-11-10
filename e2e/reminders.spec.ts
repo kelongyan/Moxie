@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { hasPlugin, openPath, openWithPlugins } from "./plugin-helpers";
 
 // The Reminders plugin: `(@date time)` marks in the folder's documents kept
-// as Textus jobs that notify, and dropped when the line goes or is ticked.
+// as Moxie jobs that notify, and dropped when the line goes or is ticked.
 
 const ID = "catvinci.reminders";
 test.skip(!hasPlugin(ID), `${ID} is not in this checkout`);

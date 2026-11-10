@@ -74,36 +74,36 @@ it("an image typed mid-sentence goes in where it was typed", async () => {
 it("words typed after a pasted link are not part of it", async () => {
   const t = await open();
   t.type("See ");
-  t.paste("[Textus](https://a.org)");
+  t.paste("[Moxie](https://a.org)");
   t.type(" now");
-  expect(links(t.view.state.doc)).toEqual(["Textus -> https://a.org"]);
+  expect(links(t.view.state.doc)).toEqual(["Moxie -> https://a.org"]);
   t.press("Enter");
-  expect(t.markdown()).toBe("See [Textus](https://a.org) now");
+  expect(t.markdown()).toBe("See [Moxie](https://a.org) now");
 });
 
 it("a URL pasted between the parentheses autopair put in makes the link", async () => {
   const t = await open();
-  t.type("See [Textus](");
+  t.type("See [Moxie](");
   t.paste("https://a.org");
   // Past the ")" the autopair put in, rather than typing it.
   t.select(t.view.state.selection.from + 1);
   t.type(" now");
-  expect(links(t.view.state.doc)).toEqual(["Textus -> https://a.org"]);
-  expect(t.markdown()).toBe("See [Textus](https://a.org) now");
+  expect(links(t.view.state.doc)).toEqual(["Moxie -> https://a.org"]);
+  expect(t.markdown()).toBe("See [Moxie](https://a.org) now");
 });
 
 it("a link written as []() first, then filled in, is one once the caret leaves", async () => {
   const t = await open();
   t.type("See []() now");
   t.caretAt("[]", 1);
-  t.type("Textus");
+  t.type("Moxie");
   t.caretAt("](", 2);
   t.paste("https://a.org");
   // Still inside its parentheses: still being written, the URL as text.
   expect(links(t.view.state.doc)).toEqual([]);
   const end = t.view.state.doc.firstChild!.nodeSize - 1;
   t.select(end);
-  expect(links(t.view.state.doc)).toEqual(["Textus -> https://a.org"]);
+  expect(links(t.view.state.doc)).toEqual(["Moxie -> https://a.org"]);
   // An undo takes the link back to its text, which then stays text.
   t.press("Mod+z");
   expect(links(t.view.state.doc)).toEqual([]);
@@ -112,7 +112,7 @@ it("a link written as []() first, then filled in, is one once the caret leaves",
   t.press("Mod+Shift+z");
   t.select(t.view.state.doc.firstChild!.nodeSize - 1);
   t.press("Enter");
-  expect(t.markdown()).toBe("See [Textus](https://a.org) now");
+  expect(t.markdown()).toBe("See [Moxie](https://a.org) now");
 });
 
 it("escaped brackets read from a file stay text when the paragraph is edited", async () => {

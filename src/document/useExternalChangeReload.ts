@@ -9,7 +9,7 @@ import { fileTextFor } from "./tracked-file";
 // file changed on disk reload; dirty tabs wait for the save-time prompt.
 // While the window shows, the documents on screen are also checked every
 // moment, so another app writing one shows up without a click back into
-// Textus. `liveTabs` includes edits the editor hasn't reported yet.
+// Moxie. `liveTabs` includes edits the editor hasn't reported yet.
 
 /** How often the shown documents' times are read while the window shows. */
 const WATCH_MS = 1500;

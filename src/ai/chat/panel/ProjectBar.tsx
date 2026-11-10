@@ -49,7 +49,7 @@ function useProjectWorkspace(
       .catch(() => setInfo(null));
   }, [docPath, workspaceRoot]);
   useEffect(reload, [reload]);
-  // Files under .textus/ change outside this component (edited in a tab):
+  // Files under .moxie/ change outside this component (edited in a tab):
   // re-read whenever the window regains focus.
   useEffect(() => {
     window.addEventListener("focus", reload);
@@ -98,7 +98,7 @@ function useEntryNaming() {
 
 /**
  * The project the conversation works in, under the AI panel's header: the
- * folder Textus AI may read, and the files kept in its .textus/ folder.
+ * folder Moxie AI may read, and the files kept in its .moxie/ folder.
  */
 export function ProjectBar({
   docPath,
@@ -238,7 +238,7 @@ export function ProjectBar({
         ]
       : []),
   ];
-  // iOS: the app's own Documents folder is "Textus" in the Files app, and
+  // iOS: the app's own Documents folder is "Moxie" in the Files app, and
   // "Documents" was English in every language.
   const trimmed = root.replace(/[\\/]+$/, "");
   const documents = knownDocumentsDir()?.replace(/[\\/]+$/, "");

@@ -81,7 +81,7 @@ if (related.length > 0)
   run(
     "npx",
     ["vitest", "related", "--run", "--passWithNoTests", ...related],
-    roundtrip ? {} : { TEXTUS_SKIP_ROUNDTRIP: "1" },
+    roundtrip ? {} : { MOXIE_SKIP_ROUNDTRIP: "1" },
   );
 run("node", ["scripts/check-versions.mjs"]);
 console.log("\nQuick checks passed; run npm run check before a pull request.");

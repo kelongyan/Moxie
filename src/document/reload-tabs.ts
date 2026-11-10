@@ -9,7 +9,7 @@ import { tabIsDirty, type DocTab, type HelpDoc } from "./doc-tabs";
  * window starts with an empty sessionStorage, and so with none of this.
  */
 
-const KEY = "textus-reload-tabs";
+const KEY = "moxie-reload-tabs";
 
 /** How long the tabs rest before they are written down again. */
 const WRITE_MS = 1000;

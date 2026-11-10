@@ -110,7 +110,7 @@ export async function film(
     width: box.width * scale,
     height: box.height * scale,
   };
-  const dir = mkdtempSync(path.join(tmpdir(), "textus-film-"));
+  const dir = mkdtempSync(path.join(tmpdir(), "moxie-film-"));
   try {
     const args = ["-loop", "0", "-lossy", "-q", "82", "-m", "4"];
     let last: Buffer | null = null;
@@ -136,8 +136,8 @@ export async function film(
     const out = path.join(dir, "film.webp");
     execFileSync("img2webp", [...args, "-o", out]);
     writeFileSync(file, readFileSync(out));
-    // For a look at what went in: TEXTUS_FILM_FRAMES=<dir> keeps the frames.
-    const keep = process.env.TEXTUS_FILM_FRAMES;
+    // For a look at what went in: MOXIE_FILM_FRAMES=<dir> keeps the frames.
+    const keep = process.env.MOXIE_FILM_FRAMES;
     if (keep)
       cpSync(dir, path.join(keep, path.basename(file, ".webp")), {
         recursive: true,

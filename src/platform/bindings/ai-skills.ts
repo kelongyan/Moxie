@@ -21,23 +21,23 @@ export const commands = {
 	list_skills: (docPath: string | null, workspaceRoot: string | null) => __TAURI_INVOKE<AgentSkill_Serialize[]>("list_skills", { docPath, workspaceRoot }),
 	/**
 	 *  Customize…: copies a built-in skill into the global skills/, where it
-	 *  replaces the built-in, marked `textus-based-on`, and returns its path. An
+	 *  replaces the built-in, marked `moxie-based-on`, and returns its path. An
 	 *  existing skill of that name is never overwritten: its path is returned.
 	 */
 	customize_builtin_skill: (name: string) => __TAURI_INVOKE<string>("customize_builtin_skill", { name }),
 	/**
 	 *  Reset to built-in: deletes the Customize… copies (those with
-	 *  `textus-based-on`); a same-named skill the user wrote is NOT_A_COPY. Returns
+	 *  `moxie-based-on`); a same-named skill the user wrote is NOT_A_COPY. Returns
 	 *  the deleted paths, so the frontend can close tabs that would write them back.
 	 */
 	reset_builtin_skill: (name: string) => __TAURI_INVOKE<string[]>("reset_builtin_skill", { name }),
 	/**
-	 *  Sets the panel modes a user's skill applies in, rewriting `textus-modes` in
+	 *  Sets the panel modes a user's skill applies in, rewriting `moxie-modes` in
 	 *  its file. A built-in's modes are fixed.
 	 */
 	set_skill_modes: (name: string, source: SkillSource, docPath: string | null, workspaceRoot: string | null, modes: AgentMode_Deserialize[]) => __TAURI_INVOKE<null>("set_skill_modes", { name, source, docPath, workspaceRoot, modes }),
 	/**
-	 *  Turns a user's skill off for now, or on again, rewriting `textus-off` in
+	 *  Turns a user's skill off for now, or on again, rewriting `moxie-off` in
 	 *  its file. A built-in is always on.
 	 */
 	set_skill_off: (name: string, source: SkillSource, docPath: string | null, workspaceRoot: string | null, off: boolean) => __TAURI_INVOKE<null>("set_skill_off", { name, source, docPath, workspaceRoot, off }),
@@ -108,30 +108,30 @@ export type AgentMode_Serialize =
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill = AgentSkill_Serialize | AgentSkill_Deserialize;
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill_Deserialize = {
 	name: string,
 	description: string,
 	prompt: string,
 	/**
-	 *  `textus-category`: write, revise, check or format (the `/` menu's
+	 *  `moxie-category`: write, revise, check or format (the `/` menu's
 	 *  groups). None for a user skill that doesn't say.
 	 */
 	category?: string | null,
 	/**
-	 *  `textus-modes`: the panel modes the skill applies in. Write for a skill
+	 *  `moxie-modes`: the panel modes the skill applies in. Write for a skill
 	 *  that doesn't say.
 	 */
 	modes: AgentMode_Deserialize[],
 	/**
-	 *  `textus-off`: turned off in Settings for now, its modes kept for when
+	 *  `moxie-off`: turned off in Settings for now, its modes kept for when
 	 *  it is turned on again. Neither the model nor the `/` menu offers it.
 	 */
 	off: boolean,
@@ -144,26 +144,26 @@ export type AgentSkill_Deserialize = {
 	overridesBuiltin: boolean,
 	/**
 	 *  What people see it called, and its one-line hint, per UI language code
-	 *  (`textus-label-<code>`, `textus-hint-<code>`), for market or user skills.
+	 *  (`moxie-label-<code>`, `moxie-hint-<code>`), for market or user skills.
 	 */
 	labels: { [key in string]: SkillLabel },
 	/**
 	 *  Extra words the user can type after `/`, per UI language code
-	 *  (`textus-aliases-<code>`, comma-separated).
+	 *  (`moxie-aliases-<code>`, comma-separated).
 	 */
 	aliases: { [key in string]: string[] },
 	/**
-	 *  `textus-packs`: the reference-pack sections appended to the body when the
+	 *  `moxie-packs`: the reference-pack sections appended to the body when the
 	 *  skill is used ("craft#fiction", "standards#dialogue").
 	 */
 	packs: string[],
 	/**
-	 *  `textus-version` of a built-in skill (bumped when its behaviour
+	 *  `moxie-version` of a built-in skill (bumped when its behaviour
 	 *  changes).
 	 */
 	version?: string | null,
 	/**
-	 *  `textus-based-on: "<name>@<version>"`, written into a Customize… copy;
+	 *  `moxie-based-on: "<name>@<version>"`, written into a Customize… copy;
 	 *  what allows Reset to delete it.
 	 */
 	basedOn?: string | null,
@@ -173,24 +173,24 @@ export type AgentSkill_Deserialize = {
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill_Serialize = {
 	name: string,
 	description: string,
 	prompt: string,
 	/**
-	 *  `textus-category`: write, revise, check or format (the `/` menu's
+	 *  `moxie-category`: write, revise, check or format (the `/` menu's
 	 *  groups). None for a user skill that doesn't say.
 	 */
 	category: string | null,
 	/**
-	 *  `textus-modes`: the panel modes the skill applies in. Write for a skill
+	 *  `moxie-modes`: the panel modes the skill applies in. Write for a skill
 	 *  that doesn't say.
 	 */
 	modes: AgentMode_Serialize[],
 	/**
-	 *  `textus-off`: turned off in Settings for now, its modes kept for when
+	 *  `moxie-off`: turned off in Settings for now, its modes kept for when
 	 *  it is turned on again. Neither the model nor the `/` menu offers it.
 	 */
 	off: boolean,
@@ -203,26 +203,26 @@ export type AgentSkill_Serialize = {
 	overridesBuiltin: boolean,
 	/**
 	 *  What people see it called, and its one-line hint, per UI language code
-	 *  (`textus-label-<code>`, `textus-hint-<code>`), for market or user skills.
+	 *  (`moxie-label-<code>`, `moxie-hint-<code>`), for market or user skills.
 	 */
 	labels: { [key in string]: SkillLabel },
 	/**
 	 *  Extra words the user can type after `/`, per UI language code
-	 *  (`textus-aliases-<code>`, comma-separated).
+	 *  (`moxie-aliases-<code>`, comma-separated).
 	 */
 	aliases: { [key in string]: string[] },
 	/**
-	 *  `textus-packs`: the reference-pack sections appended to the body when the
+	 *  `moxie-packs`: the reference-pack sections appended to the body when the
 	 *  skill is used ("craft#fiction", "standards#dialogue").
 	 */
 	packs: string[],
 	/**
-	 *  `textus-version` of a built-in skill (bumped when its behaviour
+	 *  `moxie-version` of a built-in skill (bumped when its behaviour
 	 *  changes).
 	 */
 	version: string | null,
 	/**
-	 *  `textus-based-on: "<name>@<version>"`, written into a Customize… copy;
+	 *  `moxie-based-on: "<name>@<version>"`, written into a Customize… copy;
 	 *  what allows Reset to delete it.
 	 */
 	basedOn: string | null,
@@ -231,7 +231,7 @@ export type AgentSkill_Serialize = {
 };
 
 /**
- *  Who may start a skill (`metadata.textus-invocation`). `Both`: the model and
+ *  Who may start a skill (`metadata.moxie-invocation`). `Both`: the model and
  *  /name. `UserOnly`: /name only. `Hidden`: neither; loaded by exact name with
  *  use_skill (the reference packs).
  */

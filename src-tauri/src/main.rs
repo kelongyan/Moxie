@@ -14,8 +14,8 @@ fn main() {
     }
     // `textus help`, `textus search ...`: answered and gone before any window.
     #[cfg(not(any(target_os = "ios", target_os = "android")))]
-    if let Some(code) = textus_lib::cli::entry() {
+    if let Some(code) = moxie_lib::cli::entry() {
         std::process::exit(code);
     }
-    textus_lib::run()
+    moxie_lib::run()
 }

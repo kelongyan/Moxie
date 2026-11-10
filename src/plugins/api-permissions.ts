@@ -95,7 +95,7 @@ const API_PERMISSIONS: readonly {
     calls: ["env.readClipboard", "env.writeClipboard"],
   },
   { permission: "notifications", methods: ["notify.show"] },
-  // Checked in Rust, when Textus AI calls the tool.
+  // Checked in Rust, when Moxie AI calls the tool.
   { permission: "ai.tools", methods: [], calls: ["ai.registerTool"] },
 ];
 

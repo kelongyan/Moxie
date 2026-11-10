@@ -52,7 +52,7 @@ export interface RetryableSend {
 export function useAgentConversation(
   docPath: string | null,
   /** The chosen project folder, or null for the document's folder. Decides
-   *  where `.textus/` is read from and how far file tools may reach. */
+   *  where `.moxie/` is read from and how far file tools may reach. */
   workspaceRoot: string | null,
   provider: string,
   webSearch: boolean,
@@ -111,7 +111,7 @@ export function useAgentConversation(
     searxngUrl: settings.searxngUrl,
   });
   const [error, setError] = useState<string | null>(null);
-  // A screen reader hears that Textus AI started and finished, or why it
+  // A screen reader hears that Moxie AI started and finished, or why it
   // stopped; the reply itself is read in the conversation.
   const wasBusy = useRef(false);
   useEffect(() => {
@@ -132,7 +132,7 @@ export function useAgentConversation(
   const next = useNextMessage(
     provider,
     model ?? "",
-    settings.suggestNextMessage && settings.textusAi,
+    settings.suggestNextMessage && settings.moxieAi,
   );
 
   // Every exchange updates the conversation's saved copy, so past chats can
@@ -160,7 +160,7 @@ export function useAgentConversation(
     options: AgentRequestOptions = { mode: "review", webSearch },
   ): Promise<AgentTurn[] | undefined> {
     const trimmed = message.trim();
-    if (!trimmed || busy || !settings.textusAi) return undefined;
+    if (!trimmed || busy || !settings.moxieAi) return undefined;
     lastOptionsRef.current = options;
     next.clear();
     setBusy(true);
@@ -311,10 +311,10 @@ export function useAgentConversation(
     if (requestIdRef.current) void ai.cancelAgentMessage(requestIdRef.current);
   }
 
-  // Textus AI was turned off - here, in Settings or in another window: a
+  // Moxie AI was turned off - here, in Settings or in another window: a
   // request still running stops, as Stop would stop it, keeping what has
   // streamed so far.
-  const aiOn = settings.textusAi;
+  const aiOn = settings.moxieAi;
   useEffect(() => {
     if (!aiOn && requestIdRef.current)
       void ai.cancelAgentMessage(requestIdRef.current);

@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp, pasteMarkdown } from "./helpers";
 
 /**
- * While Textus AI writes, the page follows the writing until the reader
+ * While Moxie AI writes, the page follows the writing until the reader
  * scrolls away, then stays where they put it.
  */
 
@@ -69,7 +69,7 @@ async function start(page: Page) {
   await page.setViewportSize({ width: 1200, height: 700 });
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "The tide went out before dawn.");
   await streamAppend(page, LONG);

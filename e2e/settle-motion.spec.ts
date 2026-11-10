@@ -20,7 +20,7 @@ async function propose(page: Page, display: string) {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: display },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
     animations: true,
   });
   await pasteMarkdown(page, ORIGINAL);
@@ -166,7 +166,7 @@ test(
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, {
       settings: { language: "en", revisionDisplay: "inline" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await pasteMarkdown(page, paras.join("\n\n"));
@@ -228,7 +228,7 @@ for (const zoom of [1.5, 0.8])
     await page.setViewportSize({ width: 1500, height: 900 });
     await openApp(page, {
       settings: { language: "en", revisionDisplay: "inline" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await page.evaluate(

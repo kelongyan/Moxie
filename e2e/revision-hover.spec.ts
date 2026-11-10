@@ -243,7 +243,7 @@ for (const [[display, sides, margin, steps], colorScheme] of CASES) {
       await page.setViewportSize({ width: 1800, height: 900 });
       await openApp(page, {
         settings: { language: "en", revisionDisplay: display },
-        storage: { "textus-agent-panel-open": "1" },
+        storage: { "moxie-agent-panel-open": "1" },
         colorScheme,
         // Entrances must not replay: keep the motion on.
         animations: true,
@@ -293,7 +293,7 @@ test("the ✓ / ✕ darken their pair under the pointer and still decide it", as
   await page.setViewportSize({ width: 1800, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await proposeRevision(page);
   const take = page.locator(".milkdown .pending-pick-take").first();

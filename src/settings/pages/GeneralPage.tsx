@@ -152,7 +152,7 @@ export function GeneralPage({
           label={t.menuHelpCommunity}
           onOpen={() => void links.openCommunityPage(settings.language)}
         />
-        <LinkRow label={t.aboutTextus} onOpen={() => setSubpage("about")} />
+        <LinkRow label={t.aboutMoxie} onOpen={() => setSubpage("about")} />
       </SettingsGroup>
     </>
   );

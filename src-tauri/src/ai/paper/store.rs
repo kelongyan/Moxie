@@ -1,4 +1,4 @@
-//! A paper kept with its project's data in Textus's config folder
+//! A paper kept with its project's data in Moxie's config folder
 //! (ai::project_data), `papers/<id>/`, so a stopped run can resume and the
 //! user can read what the research found.
 
@@ -60,7 +60,7 @@ pub(crate) fn paper_dir(base: &Path, id: &str) -> Result<PathBuf, String> {
 /// The folder paper `id` is kept under: its project's data folder, or the
 /// scratch space while there is no project folder. A paper begun in scratch
 /// moves to the project the first time it is asked for there, and one an
-/// older Textus kept in the project's `.textus/papers/` moves out of it.
+/// older Moxie kept in the project's `.moxie/papers/` moves out of it.
 pub(crate) fn paper_root(
     app: &tauri::AppHandle,
     doc_path: Option<&str>,
@@ -107,7 +107,7 @@ fn move_paper(from: &Path, to: &Path) -> std::io::Result<()> {
         return Ok(());
     }
     crate::ai::project_data::copy_dir(from, to)?;
-    // The copy is whole; what is left is Textus's own scratch copy.
+    // The copy is whole; what is left is Moxie's own scratch copy.
     let _ = std::fs::remove_dir_all(from);
     Ok(())
 }
@@ -227,7 +227,7 @@ pub(crate) fn keep_attachments(
     Ok(attached.is_dir().then_some(files))
 }
 
-/// A file attached as text by an older Textus, kept in materials.json.
+/// A file attached as text by an older Moxie, kept in materials.json.
 #[derive(serde::Deserialize)]
 struct Material {
     name: String,

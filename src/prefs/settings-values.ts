@@ -114,7 +114,7 @@ export const COMPLETION_TONES: CompletionTone[] = [
   "concise",
 ];
 
-/// What Textus's own web_search uses when the chat model can't search.
+/// What Moxie's own web_search uses when the chat model can't search.
 /// "auto" takes the first of the DeepSeek, Zhipu and Kimi keys saved.
 export type SearchService =
   | "auto"
@@ -153,7 +153,7 @@ export interface UserThemeMeta {
   gallery?: GalleryOrigin;
 }
 
-/** What Textus AI made and the user installed from a reply's card: a
+/** What Moxie AI made and the user installed from a reply's card: a
  *  plugin (its manifest id), a user theme (its `UserThemeMeta.id`) or a
  *  global skill (its name). Each still lives in its own store; this only
  *  remembers which of them came from Create, for its "Made here" list. */

@@ -18,7 +18,7 @@ test("a run of proposals for one reason is one card, decided row by row or all a
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, PARAS.join("\n\n"));
   const edit = (i: number, reason: string) => [
@@ -100,7 +100,7 @@ test("many proposals in a row fold to their first rows, each with its own reason
   const paras = Array.from({ length: 6 }, (_, i) => `Line number ${i + 1}.`);
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, paras.join("\n\n"));
   await mockInvoke(page, {

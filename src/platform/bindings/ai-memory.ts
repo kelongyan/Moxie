@@ -107,7 +107,7 @@ export type Exchange = {
 };
 
 /**
- *  Which library entries reached Textus AI, for the Memory tab's marks: sent or
+ *  Which library entries reached Moxie AI, for the Memory tab's marks: sent or
  *  left out, and whether from the last request (`lastRequest`) or from the
  *  document's text alone.
  */
@@ -218,7 +218,7 @@ export type Remembering_Serialize = {
 
 /**
  *  Whose a memory is: the user's in general (the global config folder) or
- *  this project's (its `.textus/`).
+ *  this project's (its `.moxie/`).
  */
 export type Scope = "project" | "personal";
 

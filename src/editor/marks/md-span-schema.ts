@@ -198,7 +198,7 @@ export const mdSpanSchema = $nodeSchema("md_span", () => ({
   },
   parseDOM: [
     {
-      // Not tag-specific: toDOM picks the tag by delim/rung, and Textus's own
+      // Not tag-specific: toDOM picks the tag by delim/rung, and Moxie's own
       // re-pasted content must match whichever it rendered as.
       tag: '[data-type="md_span"]',
       getAttrs: (dom) => ({
@@ -219,7 +219,7 @@ export const mdSpanSchema = $nodeSchema("md_span", () => ({
       },
     },
     // Standard tags, for formatting pasted from anywhere else. Lower priority,
-    // so Textus's own data-type content resolves through its own attrs.
+    // so Moxie's own data-type content resolves through its own attrs.
     { tag: "strong", priority: 40, getAttrs: () => ({ delim: "*", rung: 2 }) },
     { tag: "b", priority: 40, getAttrs: () => ({ delim: "*", rung: 2 }) },
     { tag: "em", priority: 40, getAttrs: () => ({ delim: "*", rung: 1 }) },

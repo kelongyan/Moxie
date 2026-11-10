@@ -15,7 +15,7 @@ export default {
   },
   plugin: {
     label: "做外掛",
-    hint: "依你的描述做一個 Textus 小外掛，一鍵安裝",
+    hint: "依你的描述做一個 Moxie 小外掛，一鍵安裝",
     aliases: ["外掛", "小工具", "擴充"],
   },
   skill: {

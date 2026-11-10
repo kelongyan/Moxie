@@ -56,11 +56,11 @@ describe("imported theme chrome", () => {
   );
   it("clears only the derived stylesheet when returning to a built-in theme", () => {
     document.head.innerHTML =
-      '<style id="textus-imported-chrome"></style><style id="textus-custom-theme"></style>';
+      '<style id="moxie-imported-chrome"></style><style id="moxie-custom-theme"></style>';
     clearThemeChrome();
-    expect(document.getElementById("textus-imported-chrome")).toBeNull();
-    expect(document.getElementById("textus-custom-theme")).not.toBeNull();
-    document.getElementById("textus-custom-theme")?.remove();
+    expect(document.getElementById("moxie-imported-chrome")).toBeNull();
+    expect(document.getElementById("moxie-custom-theme")).not.toBeNull();
+    document.getElementById("moxie-custom-theme")?.remove();
   });
 });
 

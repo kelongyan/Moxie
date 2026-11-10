@@ -15,7 +15,7 @@ import type {
 import { looksLikeLatex } from "../../utils/markdown-math";
 
 /** The mdast shapes this file reads and makes (remark-math's own types live
- *  in a package Textus doesn't depend on directly). */
+ *  in a package Moxie doesn't depend on directly). */
 interface MdastNode {
   type: string;
   value?: string;

@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp } from "./helpers";
 
 /**
- * textus:// links reach the plugin they name, whether they arrive before
+ * moxie:// links reach the plugin they name, whether they arrive before
  * the window or after; a command link asks first.
  */
 
@@ -26,7 +26,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Takes clips from the browser.",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     contributes: {
       commands: [{ command: "test.clip.count", title: "Count Clips" }],
@@ -45,7 +45,7 @@ async function open(page: Page) {
       allOn: true,
       plugins: { [entry.id]: { enabled: true, granted: [] } },
     };
-    w.__devPluginUris = ["textus://test.clip/save?title=First"];
+    w.__devPluginUris = ["moxie://test.clip/save?title=First"];
   }, ENTRY);
   await openApp(page, { settings: { language: "en" } });
 }
@@ -66,12 +66,12 @@ test("a link waiting at start and one that comes later reach their plugin; one f
 }) => {
   await open(page);
   await expect(page.getByText("/save First")).toBeVisible();
-  await arrive(page, "textus://test.clip/again?title=Second");
+  await arrive(page, "moxie://test.clip/again?title=Second");
   await expect(page.getByText("/again Second")).toBeVisible();
   // One for no plugin that is on says so.
-  await arrive(page, "textus://someone.else/x");
+  await arrive(page, "moxie://someone.else/x");
   await expect(page.locator(".app-dialog")).toContainText(
-    "No plugin that is turned on opens this link: textus://someone.else/x",
+    "No plugin that is turned on opens this link: moxie://someone.else/x",
   );
 });
 
@@ -80,13 +80,13 @@ test("a command link runs its command once the user says so", async ({
 }) => {
   await open(page);
   await expect(page.getByText("/save First")).toBeVisible();
-  await arrive(page, "textus://command/test.clip.count?scope=all");
+  await arrive(page, "moxie://command/test.clip.count?scope=all");
   const dialog = page.locator(".app-dialog");
   await expect(dialog).toContainText("A link asks to run “Count Clips”.");
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await expect(page.getByText("counted all")).toHaveCount(0);
 
-  await arrive(page, "textus://command/test.clip.count?scope=all");
+  await arrive(page, "moxie://command/test.clip.count?scope=all");
   await dialog.getByRole("button", { name: "Run" }).click();
   // Its second item: the two share the plugin's place in the window bar.
   await page.locator('[data-status-plugin="test.clip"]').click();

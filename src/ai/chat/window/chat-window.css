@@ -105,7 +105,7 @@
   background: var(--ui-surface);
 }
 
-/* Textus AI turned off: its note in the same place. */
+/* Moxie AI turned off: its note in the same place. */
 .chat-window-ai-off {
   flex: 1;
   min-height: 0;

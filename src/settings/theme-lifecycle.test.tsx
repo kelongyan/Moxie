@@ -19,7 +19,7 @@ vi.mock("../platform/ipc", () => ({
 vi.mock("../theme/theme-chrome", () => ({
   applyThemeChrome: vi.fn(),
   clearThemeChrome: () =>
-    document.getElementById("textus-imported-chrome")?.remove(),
+    document.getElementById("moxie-imported-chrome")?.remove(),
 }));
 function Controls() {
   const { setSettings } = useSettings();
@@ -59,8 +59,8 @@ afterEach(() => {
   cleanup();
   localStorage.clear();
   vi.unstubAllGlobals();
-  document.getElementById("textus-custom-theme")?.remove();
-  document.getElementById("textus-imported-chrome")?.remove();
+  document.getElementById("moxie-custom-theme")?.remove();
+  document.getElementById("moxie-imported-chrome")?.remove();
   document.documentElement.removeAttribute("data-frosted-title-bar");
 });
 it("puts the frosted title bar choice on the page, and takes it off again", () => {
@@ -92,11 +92,11 @@ it("applies imported chrome and removes both styles on returning to default", as
     ),
   );
   const derived = document.createElement("style");
-  derived.id = "textus-imported-chrome";
+  derived.id = "moxie-imported-chrome";
   document.head.appendChild(derived);
   fireEvent.click(screen.getByText("Default"));
-  expect(document.getElementById("textus-custom-theme")).toBeNull();
-  expect(document.getElementById("textus-imported-chrome")).toBeNull();
+  expect(document.getElementById("moxie-custom-theme")).toBeNull();
+  expect(document.getElementById("moxie-imported-chrome")).toBeNull();
 });
 it("does not let a late light-theme response replace a newer dark selection", async () => {
   let resolveLight!: (css: string) => void;
@@ -123,7 +123,7 @@ it("does not let a late light-theme response replace a newer dark selection", as
   await act(async () => {
     resolveLight("body { color: black; }");
   });
-  expect(document.getElementById("textus-custom-theme")?.textContent).toBe(
+  expect(document.getElementById("moxie-custom-theme")?.textContent).toBe(
     "body { color: white; }",
   );
   expect(applyThemeChrome).toHaveBeenCalledTimes(1);
@@ -146,6 +146,6 @@ it("does not restore an import after switching to a built-in theme", async () =>
   await act(async () => {
     finish("body { background: black; }");
   });
-  expect(document.getElementById("textus-custom-theme")).toBeNull();
+  expect(document.getElementById("moxie-custom-theme")).toBeNull();
   expect(applyThemeChrome).not.toHaveBeenCalled();
 });

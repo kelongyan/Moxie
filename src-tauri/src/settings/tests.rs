@@ -6,7 +6,7 @@ static DIR_COUNTER: AtomicU32 = AtomicU32::new(0);
 /// A fresh, empty directory per test.
 fn temp_dir() -> PathBuf {
     let dir = std::env::temp_dir().join(format!(
-        "textus-settings-test-{}-{}",
+        "moxie-settings-test-{}-{}",
         std::process::id(),
         DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
     ));

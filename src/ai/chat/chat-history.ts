@@ -39,7 +39,7 @@ export interface ChatHistoryEntry extends ChatSummary {
 }
 
 /** Where the browser fallback (no Rust) keeps the list. */
-const CHAT_HISTORY_KEY = "textus-chat-history";
+const CHAT_HISTORY_KEY = "moxie-chat-history";
 /** Keep in step with Rust's MAX_CONVERSATIONS. */
 const MAX_ENTRIES = 500;
 const MAX_TITLE_CHARS = 60;
@@ -161,7 +161,7 @@ export function saveConversation(entry: ChatHistoryEntry) {
   history.upsert(entry);
 }
 
-/** A document Textus saved under a new path (Save As, a rename) takes its
+/** A document Moxie saved under a new path (Save As, a rename) takes its
  *  conversations along, so they reopen with it. */
 export function moveConversations(from: string, to: string) {
   if (from === to || !readBoot()) return;

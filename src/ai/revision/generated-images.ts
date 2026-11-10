@@ -7,7 +7,7 @@ import { currentStrings } from "../../i18n/current";
  *  Until then the Markdown names each by a placeholder src, and only the
  *  preview holds its bytes, never the saved conversation. */
 
-const PREFIX = "textus-generated:";
+const PREFIX = "moxie-generated:";
 
 /** The src a waiting picture has in its proposal's text. */
 export function generatedImageSrc(id: string): string {
@@ -16,7 +16,7 @@ export function generatedImageSrc(id: string): string {
 
 /** A whole placeholder: its id up to the src's closing parenthesis - not
  *  the start of one a stream has typed only so far. */
-const PLACEHOLDER = /textus-generated:([0-9a-z]+)(?=[)>\s"])/g;
+const PLACEHOLDER = /moxie-generated:([0-9a-z]+)(?=[)>\s"])/g;
 
 /** A picture as a blob: URL, decoded once. A data: URL would put megabytes
  *  of base64 into Markdown parsed again on every typewriter frame. */
@@ -292,8 +292,8 @@ export function generatedImageSize(
  *  carried as a media-type parameter: the preview's Markdown renderer
  *  keeps a data: src and drops one in our own scheme. */
 const STUB = (id: string) =>
-  `data:image/gif;textus-generated=${id};base64,R0lGODlhAQABAAAAACw=`;
-const STUB_ID = /^data:image\/gif;textus-generated=([0-9a-z]+);/;
+  `data:image/gif;moxie-generated=${id};base64,R0lGODlhAQABAAAAACw=`;
+const STUB_ID = /^data:image\/gif;moxie-generated=([0-9a-z]+);/;
 
 /** The src a waiting picture is drawn by in the preview: its blob: URL
  *  once loaded, else a stand-in. */
@@ -396,8 +396,8 @@ export function joinedText(
 }
 
 /** The src of a picture line the model writes into new text, as in
- *  `![alt](textus-picture:16:9 what it shows)`. Keep in step with the backend. */
-const PICTURE_LINE = "textus-picture:";
+ *  `![alt](moxie-picture:16:9 what it shows)`. Keep in step with the backend. */
+const PICTURE_LINE = "moxie-picture:";
 
 /** The picture begun for each picture line, by call, announced before the
  *  line arrives. Only the latest calls are kept. */

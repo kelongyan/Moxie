@@ -67,7 +67,7 @@ export function Byline({
   manifest: PluginManifest;
   official: boolean;
   dev?: boolean;
-  /** Made by Textus AI in Create. */
+  /** Made by Moxie AI in Create. */
   madeHere?: boolean;
   t: Strings;
   /** More about it after the version: its installs. */
@@ -76,7 +76,7 @@ export function Byline({
   return (
     <div className="plugin-byline">
       {official && <span className="plugin-official">{t.pluginOfficial}</span>}
-      {madeHere && <span className="plugin-official">{t.madeByTextusAi}</span>}
+      {madeHere && <span className="plugin-official">{t.madeByMoxieAi}</span>}
       <span>
         {t.pluginBy.replace("{author}", manifest.author || manifest.publisher)}
       </span>

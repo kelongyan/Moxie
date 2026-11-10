@@ -4,9 +4,9 @@ description: >-
   Writing conventions for Russian: quotation marks, dashes and spacing, numbers and units, ё and official-language rules, dialogue, commas and letters.
 license: MIT
 metadata:
-  textus-version: "1"
-  textus-invocation: "hidden"
-  textus-sources: "Our own text. Quoted or summarised from Правила русской орфографии и пунктуации (1956), 52-ФЗ and распоряжение 1102-р (official texts); summarised from ГОСТ 8.417-2002 and Еськова 2012; talkstream/ru-text (MIT, ideas)."
+  moxie-version: "1"
+  moxie-invocation: "hidden"
+  moxie-sources: "Our own text. Quoted or summarised from Правила русской орфографии и пунктуации (1956), 52-ФЗ and распоряжение 1102-р (official texts); summarised from ГОСТ 8.417-2002 and Еськова 2012; talkstream/ru-text (MIT, ideas)."
 ---
 
 ## typography

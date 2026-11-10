@@ -55,7 +55,7 @@ describe("plugin AI tools", () => {
 });
 
 describe("a plugin's tools", () => {
-  it("are offered to Textus AI only with the ai.tools grant", async () => {
+  it("are offered to Moxie AI only with the ai.tools grant", async () => {
     const { offered } = await import("./ai-tools");
     expect(offered().map((t) => t.name)).toEqual(["list_tasks"]);
   });

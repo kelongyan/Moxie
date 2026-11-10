@@ -142,7 +142,7 @@ const RESERVED_COMBOS = new Set([
   ...Object.values(EDITOR_BLOCK_COMBOS),
   // Fullscreen by convention (and the app's own handler on Windows).
   "f11",
-  // Round the window's regions, and through Textus AI's changes.
+  // Round the window's regions, and through Moxie AI's changes.
   "f6",
   "shift+f6",
   "f7",

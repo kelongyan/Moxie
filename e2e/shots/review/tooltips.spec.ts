@@ -1,11 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 import { openApp } from "../../helpers";
 
-// Review screenshots of the hover tooltips. Runs only with TEXTUS_SHOTS_DIR
+// Review screenshots of the hover tooltips. Runs only with MOXIE_SHOTS_DIR
 // set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const NAMES = { zh: "深度思考", en: "Deep thinking" } as const;
 
@@ -22,7 +22,7 @@ async function open(
   await openApp(page, {
     colorScheme,
     settings: { language },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
 }
 

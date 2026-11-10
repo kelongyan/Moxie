@@ -122,7 +122,7 @@ function usePageEvents(
   }, [editorRef]);
 }
 
-/** Textus in a browser tab: documents kept in this browser, opened from
+/** Moxie in a browser tab: documents kept in this browser, opened from
  *  and saved to files on disk. */
 export function Playground({ settings }: { settings: Settings }) {
   const t = resolveStrings(settings.language);

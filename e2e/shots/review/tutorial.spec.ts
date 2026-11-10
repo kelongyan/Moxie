@@ -2,14 +2,14 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp, openPhone, PHONE } from "../../helpers";
 
 // Review screenshots of the first-run tour, AI lessons against canned
-// answers. Runs only with TEXTUS_SHOTS_DIR set to where the PNGs go.
+// answers. Runs only with MOXIE_SHOTS_DIR set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 test.setTimeout(240_000);
 
 const at = (stepId: string, extra: Record<string, unknown> = {}) => ({
-  "textus-tutorial-progress": JSON.stringify({
+  "moxie-tutorial-progress": JSON.stringify({
     active: true,
     stepId,
     tabId: null,
@@ -43,7 +43,7 @@ const UI = {
     tutorialDoneTitle: "All done",
     tutorialWatchNote: "Connect an AI later in",
     tutorialDoneMemory:
-      "Textus AI remembers your requirements and style over time; see the Project tab in the AI panel.",
+      "Moxie AI remembers your requirements and style over time; see the Project tab in the AI panel.",
   },
   zh: {
     appMenu: "菜单",
@@ -69,7 +69,7 @@ const UI = {
     tutorialDoneTitle: "完成",
     tutorialWatchNote: "之后在",
     tutorialDoneMemory:
-      "Textus AI 会慢慢记住你的要求和风格，可以在 AI 面板的“项目”里查看。",
+      "Moxie AI 会慢慢记住你的要求和风格，可以在 AI 面板的“项目”里查看。",
   },
 };
 

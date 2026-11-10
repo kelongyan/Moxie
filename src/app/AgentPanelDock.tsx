@@ -2,7 +2,7 @@ import type { PresenceHandle } from "../ui/usePresence";
 import { AGENT_PANEL_DEFAULT_WIDTH } from "../ai/chat/panel/agent-panel";
 import { ResizeHandle } from "../ui/ResizeHandle";
 import type { Strings } from "../i18n/strings";
-import { TextusAiOffNote } from "../ai/TextusAiSwitch";
+import { MoxieAiOffNote } from "../ai/MoxieAiSwitch";
 
 /** The docked Agent panel's frame (a page of its own on a phone); the
  *  active tab's editor renders its conversation into the mount point here. */
@@ -31,7 +31,7 @@ export function AgentPanelDock({
   /** The active tab is in source mode or split view. */
   sourceMode: boolean;
   onToggleSourceMode: () => void;
-  /** Textus AI is on. A panel opened anyway (a tour lesson) offers to turn
+  /** Moxie AI is on. A panel opened anyway (a tour lesson) offers to turn
    *  it back on. */
   aiOn: boolean;
   t: Strings;
@@ -58,7 +58,7 @@ export function AgentPanelDock({
       <div className="agent-panel-mount" ref={mountRef} />
       {/* Source mode, split view and AI off have no conversation, so say so
         instead of an empty column. */}
-      {!aiOn && <TextusAiOffNote className="agent-panel-placeholder" />}
+      {!aiOn && <MoxieAiOffNote className="agent-panel-placeholder" />}
       {aiOn && sourceMode && (
         <div className="agent-panel-placeholder">
           <p>{t.agentPanelSourceMode}</p>

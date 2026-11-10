@@ -120,7 +120,7 @@ export function assemble({ version, notes, fragments }) {
   const parsed = notes
     ? parseNotes(notes)
     : {
-        head: `## What's new\n\nTextus ${version} ${SUMMARY_PLACEHOLDER}.`,
+        head: `## What's new\n\nMoxie ${version} ${SUMMARY_PLACEHOLDER}.`,
         sections: {},
         tail: CLOSING,
       };

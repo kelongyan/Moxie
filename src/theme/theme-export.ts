@@ -2,7 +2,7 @@ import contentBaseCss from "./content-base.css?raw";
 
 const ORNAMENT_PREFIX = ":root:not([data-user-theme]) .milkdown ";
 
-/** Textus's own ornaments rewritten as plain `#write` rules. Importing any
+/** Moxie's own ornaments rewritten as plain `#write` rules. Importing any
  *  theme switches those ornaments off, so an exported theme must carry them. */
 export function ornamentRules(css: string = contentBaseCss): string {
   const rules: string[] = [];

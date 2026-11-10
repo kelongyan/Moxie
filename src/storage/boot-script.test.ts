@@ -16,8 +16,8 @@ function boot(
 ) {
   new Function(BOOT_JS)();
   (
-    window as unknown as { __textusBoot: (b: unknown, c: unknown) => void }
-  ).__textusBoot({ rev: 1, label: "main", uiState, settings }, themeCss);
+    window as unknown as { __moxieBoot: (b: unknown, c: unknown) => void }
+  ).__moxieBoot({ rev: 1, label: "main", uiState, settings }, themeCss);
 }
 
 const text = (id: string) => document.getElementById(id)?.textContent ?? null;
@@ -48,16 +48,16 @@ describe("the boot script and an imported theme", () => {
       light: THEME_CSS,
       dark: "#write thead th { color: rgb(4, 5, 6); }",
     });
-    expect(text("textus-custom-theme")).toBe(
+    expect(text("moxie-custom-theme")).toBe(
       "#write tr[data-is-header] th { color: rgb(4, 5, 6); }",
     );
     expect(document.documentElement.getAttribute("data-user-theme")).toBe("");
-    expect(document.head.lastElementChild?.id).toBe("textus-user-css");
+    expect(document.head.lastElementChild?.id).toBe("moxie-user-css");
   });
 
   it("puts the chrome colours it remembers for this theme on the first frame", () => {
     boot(mine("light", false), { light: THEME_CSS, dark: null }, remembered());
-    expect(text("textus-imported-chrome")).toBe(CHROME);
+    expect(text("moxie-imported-chrome")).toBe(CHROME);
   });
 
   it.each([
@@ -68,7 +68,7 @@ describe("the boot script and an imported theme", () => {
     "keeps chrome colours remembered for %s off the first frame",
     (_name, theme, uiState) => {
       boot(mine(theme, false), { light: THEME_CSS, dark: null }, uiState);
-      expect(text("textus-imported-chrome")).toBeNull();
+      expect(text("moxie-imported-chrome")).toBeNull();
     },
   );
 });

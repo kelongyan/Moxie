@@ -216,7 +216,7 @@ impl Profile {
     }
 }
 
-/// What `.textus/style.md` says about conventions.
+/// What `.moxie/style.md` says about conventions.
 #[derive(Serialize, Clone, Debug, Default, PartialEq)]
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]

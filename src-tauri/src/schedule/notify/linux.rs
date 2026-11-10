@@ -1,6 +1,6 @@
 //! Linux: org.freedesktop.Notifications over D-Bus, with a "default" action
-//! the server invokes on a click, heard by one thread listening while Textus
-//! runs. After Textus quit a click does nothing; a server without actions
+//! the server invokes on a click, heard by one thread listening while Moxie
+//! runs. After Moxie quit a click does nothing; a server without actions
 //! gets the activation fallback.
 
 use std::collections::HashMap;

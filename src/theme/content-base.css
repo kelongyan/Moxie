@@ -1,10 +1,10 @@
 /* How document elements look, apart from milkdown-theme.css, which holds what
    makes the editor work. All of it sits in a cascade layer so any unlayered
    theme or custom CSS wins whatever its specificity; the
-   `:not([data-user-theme])` rules are Textus's own ornaments, off under an
+   `:not([data-user-theme])` rules are Moxie's own ornaments, off under an
    imported theme. */
 
-@layer textus-content {
+@layer moxie-content {
   /* The document's type. The size grows from 16.5px at the 760px standard
      measure to 18px as the column widens; cqi is the column's zoomed width,
      hence the divide. A theme sets its own with --doc-font-size and
@@ -30,7 +30,7 @@
   }
 
   /* An imported Typora theme sets the type on body or html; let it reach
-     the document instead of Textus's own. */
+     the document instead of Moxie's own. */
   :root[data-user-theme] .milkdown {
     font-size: inherit;
     line-height: inherit;
@@ -311,7 +311,7 @@
     pointer-events: none;
   }
 
-  /* Textus's own ornaments. Theme export writes each out as a #write rule, so
+  /* Moxie's own ornaments. Theme export writes each out as a #write rule, so
      keep them one selector per rule under this exact prefix. */
   :root:not([data-user-theme]) .milkdown h2 {
     padding-bottom: 0.3em;

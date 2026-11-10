@@ -3,7 +3,7 @@ import { emit, openApp } from "./helpers";
 
 // Another app's settings found in a folder are offered on a corner card and
 // never applied by themselves; taking them writes the project's own
-// .textus/settings.json.
+// .moxie/settings.json.
 
 async function open(page: Page, files: Record<string, string>) {
   await page.addInitScript((fs) => {
@@ -30,7 +30,7 @@ const VAULT = {
   "/vault/notes/a.md": "# Alpha\n\none\ntwo\n",
 };
 
-test("an Obsidian vault's settings are offered, and taken into .textus", async ({
+test("an Obsidian vault's settings are offered, and taken into .moxie", async ({
   page,
 }) => {
   await open(page, VAULT);
@@ -44,7 +44,7 @@ test("an Obsidian vault's settings are offered, and taken into .textus", async (
   await expect(card).toHaveCount(0);
   await expect
     .poll(async () =>
-      JSON.parse((await disk(page, "/vault/.textus/settings.json")) ?? "{}"),
+      JSON.parse((await disk(page, "/vault/.moxie/settings.json")) ?? "{}"),
     )
     .toMatchObject({
       conventions: { attachments: "Attachments", detected: "followed" },
@@ -59,14 +59,14 @@ test("turned down, nothing applies and the folder isn't asked again", async ({
   await card.getByRole("button", { name: "Keep Current" }).click();
   await expect
     .poll(async () =>
-      JSON.parse((await disk(page, "/vault/.textus/settings.json")) ?? "{}"),
+      JSON.parse((await disk(page, "/vault/.moxie/settings.json")) ?? "{}"),
     )
     .toEqual({ conventions: { detected: "declined" } });
 });
 
 test("Settings says where the project puts pictures", async ({ page }) => {
   await open(page, {
-    "/vault/.textus/settings.json": JSON.stringify({
+    "/vault/.moxie/settings.json": JSON.stringify({
       conventions: { attachments: "./pics" },
     }),
     "/vault/notes/a.md": "# Alpha\n",
@@ -75,7 +75,7 @@ test("Settings says where the project puts pictures", async ({ page }) => {
   const panel = page.getByRole("dialog", { name: "Settings" });
   await panel.getByRole("button", { name: "Editor & Appearance" }).click();
   await expect(panel).toContainText(
-    "This project keeps pictures in pics/ (set in .textus/settings.json).",
+    "This project keeps pictures in pics/ (set in .moxie/settings.json).",
   );
   // Nothing to choose there: the project decides.
   await expect(panel.getByRole("combobox", { name: "Folder" })).toHaveCount(0);

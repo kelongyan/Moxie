@@ -95,7 +95,7 @@ const RAW = JSON.stringify({
 async function open(page: Page) {
   await openApp(page, {
     settings: { language: "en", imageModelProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `${FIRST}\n\nThe second paragraph.`);
   await mockInvoke(page, {

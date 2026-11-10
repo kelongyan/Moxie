@@ -4,7 +4,7 @@ import { emit, mockInvoke, openApp, openPhone, PHONE } from "./helpers";
 // The Settings panel.
 
 // Keep in step with the English locale; e2e can't import it.
-const AI_NAME = "Textus AI";
+const AI_NAME = "Moxie AI";
 const t = {
   navAbout: "About",
   imageGenerationGroupLabel: "Pictures",
@@ -34,9 +34,9 @@ const t = {
   shortcutAiGroupLabel: "AI & Writing",
   shortcutHeadingsGroupLabel: "Headings",
   shortcutFixedGroupLabel: "Fixed Shortcuts",
-  menuTextusAi: AI_NAME,
-  textusAiToggleLabel: `Enable ${AI_NAME}`,
-  textusAiOffHint: "Off: nothing is sent to any AI service.",
+  menuMoxieAi: AI_NAME,
+  moxieAiToggleLabel: `Enable ${AI_NAME}`,
+  moxieAiOffHint: "Off: nothing is sent to any AI service.",
   aiAccountLabel: "Connection",
   writingFeaturesLabel: "Writing Assistance",
   writingModelLabel: "Assist model",
@@ -56,7 +56,7 @@ const t = {
   privacyClearButton: "Clear",
   privacyClearDrafts: "Delete Recovery Drafts",
   pdfPageNumbersLabel: "Show page numbers in exports",
-  aboutTextus: "About Textus",
+  aboutMoxie: "About Moxie",
   aboutMadeBy: "Made by CatVinci Studio",
   updateCheckButton: "Check for Updates",
   updateLatest: "You're on the latest version.",
@@ -64,10 +64,10 @@ const t = {
   updateChannelStable: "Stable",
   updateChannelBeta: "Beta",
   defaultEditorLabel: "Default Markdown editor",
-  defaultEditorIsDefault: "Textus is the default",
-  defaultEditorNotDefault: "Textus is not the default",
+  defaultEditorIsDefault: "Moxie is the default",
+  defaultEditorNotDefault: "Moxie is not the default",
   defaultEditorButton: "Set as Default",
-  defaultEditorChooseHint: "In Default apps, choose Textus for .md files.",
+  defaultEditorChooseHint: "In Default apps, choose Moxie for .md files.",
   defaultEditorUnsupported:
     "Only an installed package (.deb, .rpm or AUR) can be the default, not the AppImage.",
 };
@@ -89,7 +89,7 @@ async function openSettings(page: Page) {
 }
 
 test.describe("desktop", () => {
-  test("a text field takes Textus's own menu, and its Select All selects the text", async ({
+  test("a text field takes Moxie's own menu, and its Select All selects the text", async ({
     page,
   }) => {
     await openApp(page, { settings: { language: "en" } });
@@ -128,7 +128,7 @@ test.describe("desktop", () => {
     await panel.getByRole("button", { name: t.navAi, exact: true }).click();
 
     await expect(panel.locator(".settings-group-title")).toHaveText([
-      t.menuTextusAi,
+      t.menuMoxieAi,
       t.aiAccountLabel,
       t.writingFeaturesLabel,
       t.aiAskLabel,
@@ -173,7 +173,7 @@ test.describe("desktop", () => {
 
     await expect(chat).not.toBeChecked();
     await expect(panel.locator(".settings-group-title")).toHaveText([
-      t.menuTextusAi,
+      t.menuMoxieAi,
       t.aiAccountLabel,
       t.writingFeaturesLabel,
       t.aiAskLabel,
@@ -187,17 +187,17 @@ test.describe("desktop", () => {
     await chat.click();
     await expect(panel.locator(".settings-group-title")).toHaveCount(6);
 
-    // Textus AI itself off: only its own switch is left.
-    const textusAi = panel.getByRole("checkbox", {
-      name: t.textusAiToggleLabel,
+    // Moxie AI itself off: only its own switch is left.
+    const moxieAi = panel.getByRole("checkbox", {
+      name: t.moxieAiToggleLabel,
       exact: true,
     });
-    await textusAi.click();
+    await moxieAi.click();
     await expect(panel.locator(".settings-group-title")).toHaveText([
-      t.menuTextusAi,
+      t.menuMoxieAi,
     ]);
-    await expect(panel.getByText(t.textusAiOffHint)).toBeVisible();
-    await textusAi.click();
+    await expect(panel.getByText(t.moxieAiOffHint)).toBeVisible();
+    await moxieAi.click();
     await expect(panel.locator(".settings-group-title")).toHaveCount(6);
     await expect(chat).toBeChecked();
   });
@@ -372,7 +372,7 @@ test.describe("desktop", () => {
   }) => {
     await openApp(page, { settings: { language: "en" } });
     let panel = await openSettings(page);
-    await panel.getByRole("button", { name: t.aboutTextus }).click();
+    await panel.getByRole("button", { name: t.aboutMoxie }).click();
     await expect(
       panel.getByRole("button", { name: t.updateCheckButton }),
     ).toBeVisible();
@@ -410,7 +410,7 @@ test.describe("desktop", () => {
     await page.reload();
     await page.waitForSelector('[data-active-tab="true"] .ProseMirror');
     panel = await openSettings(page);
-    await panel.getByRole("button", { name: t.aboutTextus }).click();
+    await panel.getByRole("button", { name: t.aboutMoxie }).click();
     await expect(
       panel.getByRole("combobox", { name: t.updateChannel }),
     ).toHaveText(t.updateChannelBeta);
@@ -628,7 +628,7 @@ test.describe("phone", () => {
 
     // A page inside a page goes back to the one that held it.
     await items.filter({ hasText: t.navGeneral }).tap();
-    await panel.getByRole("button", { name: t.aboutTextus }).tap();
+    await panel.getByRole("button", { name: t.aboutMoxie }).tap();
     await expect(header).toContainText(t.navAbout);
     await header.getByRole("button", { name: t.navGeneral }).tap();
     await expect(header).toContainText(t.navGeneral);
@@ -695,7 +695,7 @@ test.describe("phone", () => {
       .getByRole("button", { name: t.settingsTitle });
     // No default editor row: iOS has no default app to set.
     await panel.getByRole("button", { name: t.navGeneral }).tap();
-    await expect(panel.getByText(t.aboutTextus)).toBeVisible();
+    await expect(panel.getByText(t.aboutMoxie)).toBeVisible();
     await expect(panel.getByText(t.defaultEditorLabel)).toHaveCount(0);
 
     // No PDF page number switch, with no PDF export.
@@ -707,7 +707,7 @@ test.describe("phone", () => {
     // No update button or channel: the App Store updates the app.
     await back.tap();
     await panel.getByRole("button", { name: t.navGeneral }).tap();
-    await panel.getByRole("button", { name: t.aboutTextus }).tap();
+    await panel.getByRole("button", { name: t.aboutMoxie }).tap();
     await expect(panel.getByText(t.aboutMadeBy)).toBeVisible();
     await expect(panel.getByText(t.updateCheckButton)).toHaveCount(0);
     await expect(panel.getByText(t.updateChannel)).toHaveCount(0);
@@ -738,7 +738,7 @@ test.describe("phone", () => {
     await editor.focus();
     await page.evaluate(() =>
       window.dispatchEvent(
-        new CustomEvent("textus:insert-block", { detail: "table" }),
+        new CustomEvent("moxie:insert-block", { detail: "table" }),
       ),
     );
     const dialog = page.getByRole("dialog", { name: "Insert Table" });

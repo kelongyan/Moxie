@@ -110,11 +110,11 @@ export function CreateChat({ t }: { t: Strings }) {
           </span>
           <h2 className="create-studio-title">{t.createTitle}</h2>
           <p className="create-studio-intro">
-            {settings.textusAi ? t.createIntro : t.createAiOff}
+            {settings.moxieAi ? t.createIntro : t.createAiOff}
           </p>
         </div>
       )}
-      {(settings.textusAi || !empty) && (
+      {(settings.moxieAi || !empty) && (
         <ChatBody
           document={NO_DOCUMENT}
           selectedText={null}
@@ -157,7 +157,7 @@ export function CreateChat({ t }: { t: Strings }) {
           onRejectAll={() => {}}
         />
       )}
-      {empty && settings.textusAi && (
+      {empty && settings.moxieAi && (
         <ul className="create-studio-examples" aria-label={t.createExamples}>
           {EXAMPLES.map(([k, key]) => (
             <li key={key}>

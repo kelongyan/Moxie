@@ -7,9 +7,9 @@ use std::process::{Command, Stdio};
 
 /// Set by the installed `textus` script, so the binary knows a terminal
 /// started it rather than the system.
-pub const SCRIPT_ENV: &str = "TEXTUS_CLI";
+pub const SCRIPT_ENV: &str = "MOXIE_CLI";
 
-/// The .app holding this binary (…/Textus.app/Contents/MacOS/textus).
+/// The .app holding this binary (…/Moxie.app/Contents/MacOS/textus).
 #[cfg(target_os = "macos")]
 fn bundle() -> Option<std::path::PathBuf> {
     let exe = std::env::current_exe().ok()?;
@@ -42,8 +42,8 @@ pub fn launch(args: &[String]) -> Result<(), String> {
     let started = command.spawn().map(|_| true);
     match started {
         Ok(true) => Ok(()),
-        Ok(false) => Err("Textus couldn't open that.".into()),
-        Err(e) => Err(format!("Textus couldn't be started: {e}")),
+        Ok(false) => Err("Moxie couldn't open that.".into()),
+        Err(e) => Err(format!("Moxie couldn't be started: {e}")),
     }
 }
 
@@ -80,11 +80,11 @@ fn detached(program: &Path) -> Command {
 }
 
 /// Each argument that names a file made absolute against `cwd`; flags and
-/// textus:// links stay as they are.
+/// moxie:// links stay as they are.
 pub fn absolute(args: &[String], cwd: &Path) -> Vec<String> {
     args.iter()
         .map(|a| {
-            if a.starts_with('-') || crate::plugins::uri::is_textus_uri(a) {
+            if a.starts_with('-') || crate::plugins::uri::is_moxie_uri(a) {
                 a.clone()
             } else {
                 cwd.join(a).to_string_lossy().into_owned()
@@ -126,5 +126,5 @@ pub fn connect_or_launch() -> Result<impl std::io::Read + std::io::Write, String
             return Ok(stream);
         }
     }
-    Err("Textus was started but didn't answer within 30 seconds.".into())
+    Err("Moxie was started but didn't answer within 30 seconds.".into())
 }

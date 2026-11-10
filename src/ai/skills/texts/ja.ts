@@ -14,7 +14,7 @@ export default {
   },
   plugin: {
     label: "プラグインを作る",
-    hint: "説明どおりの小さな Textus プラグインを作り、すぐ入れられる",
+    hint: "説明どおりの小さな Moxie プラグインを作り、すぐ入れられる",
     aliases: ["プラグイン", "拡張"],
   },
   skill: {

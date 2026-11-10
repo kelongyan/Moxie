@@ -33,7 +33,7 @@ export function collectVersions(readFile = reader(ownRoot)) {
     ),
     "src-tauri/Cargo.lock (textus)": tomlVersion(
       readFile("src-tauri/Cargo.lock"),
-      '^\\[\\[package\\]\\]\\s*\\nname = "textus"\\s*$',
+      '^\\[\\[package\\]\\]\\s*\\nname = "moxie"\\s*$',
     ),
     "src-tauri/tauri.conf.json": tauri.version,
   };

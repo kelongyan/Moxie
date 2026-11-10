@@ -53,14 +53,14 @@ test("the font stacks follow the language: CJK faces, Latin first elsewhere, CJK
   const stack = (lang: string, selector: string) =>
     faces(page, lang, selector).then((f) => f[0]);
   const editor = ".milkdown .ProseMirror";
-  expect(await stack("zh-CN", "body")).toBe("Textus Punct SC");
-  expect(await stack("zh-CN", editor)).toBe("Textus Punct SC");
-  expect(await stack("zh-Hant", "body")).toBe("Textus Punct TC");
-  expect(await stack("ja", "body")).toBe("Textus Punct JP");
+  expect(await stack("zh-CN", "body")).toBe("Moxie Punct SC");
+  expect(await stack("zh-CN", editor)).toBe("Moxie Punct SC");
+  expect(await stack("zh-Hant", "body")).toBe("Moxie Punct TC");
+  expect(await stack("ja", "body")).toBe("Moxie Punct JP");
   // Elsewhere the faces stay out, so English and French quotes and
   // apostrophes keep their Latin shapes.
   for (const lang of ["en", "fr", "ko"])
-    expect(await stack(lang, "body")).toBe("Textus No Punct");
+    expect(await stack(lang, "body")).toBe("Moxie No Punct");
 
   // WebView2 on a Chinese Windows resolves `monospace` to NSimSun, so a named
   // face holding Chinese must come ahead of it.

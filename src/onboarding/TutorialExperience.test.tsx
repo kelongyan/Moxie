@@ -47,7 +47,7 @@ vi.mock("../prefs/SettingsContext", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../prefs/SettingsContext")>()),
   useSettings: () => ({
     settings: {
-      textusAi: true,
+      moxieAi: true,
       aiProvider: "openai",
       themeId: "default",
       userThemes: [],
@@ -106,7 +106,7 @@ function Harness({
 
 function resumeAt(stepId: string, extra: object = {}) {
   localStorage.setItem(
-    "textus-tutorial-progress",
+    "moxie-tutorial-progress",
     JSON.stringify({ active: true, stepId, tabId: "practice", ...extra }),
   );
 }
@@ -139,7 +139,7 @@ describe("the connect lesson", () => {
     fireEvent.click(screen.getByRole("button", { name: "Skip for now" }));
     const write = screen.getByRole("dialog", { name: t.tutorialWriteTitle });
     expect(write).toHaveTextContent(
-      "Connect an AI later in Settings › Textus AI to try it yourself.",
+      "Connect an AI later in Settings › Moxie AI to try it yourself.",
     );
   });
 

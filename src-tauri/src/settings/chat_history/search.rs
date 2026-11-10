@@ -1,5 +1,5 @@
 //! Searching saved conversations' messages and replies, newest first, for the
-//! history list and for Textus AI's search_conversations.
+//! history list and for Moxie AI's search_conversations.
 
 use super::*;
 

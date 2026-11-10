@@ -287,7 +287,7 @@ export function runPluginCommand(
   return askPlugin(id, "$executeCommand", { command, args });
 }
 
-/** Runs a tool the plugin gave Textus AI, starting it first. */
+/** Runs a tool the plugin gave Moxie AI, starting it first. */
 export function runPluginAiTool(
   id: string,
   name: string,
@@ -468,7 +468,7 @@ export async function reloadPlugin(id: string): Promise<void> {
   await loadPlugins(true);
 }
 
-/** A package or folder at `source`, or files Textus AI wrote, installed. */
+/** A package or folder at `source`, or files Moxie AI wrote, installed. */
 export async function installPlugin(
   source: string | PluginFile[],
 ): Promise<string> {

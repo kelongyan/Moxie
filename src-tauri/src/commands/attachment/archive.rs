@@ -14,7 +14,7 @@ const MAX_BYTES: u64 = 512 * 1024 * 1024;
 pub(super) fn unpack(archive: &Path, to: &Path) -> Result<Vec<String>, String> {
     let reader = std::fs::File::open(archive).map_err(|e| e.to_string())?;
     let mut zip = zip::ZipArchive::new(reader)
-        .map_err(|_| "That archive isn't a zip file Textus can open.".to_string())?;
+        .map_err(|_| "That archive isn't a zip file Moxie can open.".to_string())?;
     let mut files = Vec::new();
     let mut total = 0u64;
     for i in 0..zip.len() {
@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn unpacks_files_and_skips_what_could_escape() {
-        let dir = std::env::temp_dir().join(format!("textus-unpack-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-unpack-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         let archive = dir.join("notes.zip");

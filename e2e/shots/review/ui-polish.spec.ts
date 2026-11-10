@@ -2,10 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { mockInvoke, openApp, pasteMarkdown, PHONE } from "../../helpers";
 
 // Review screenshots of the AI panel and the app's other surfaces. Runs only
-// with TEXTUS_SHOTS_DIR set to where the PNGs go.
+// with MOXIE_SHOTS_DIR set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const DOC = {
   en: {
@@ -74,8 +74,8 @@ async function open(
       form === "phone"
         ? {}
         : {
-            "textus-agent-panel-open": "1",
-            "textus-agent-panel-width": form === "narrow" ? "300" : "400",
+            "moxie-agent-panel-open": "1",
+            "moxie-agent-panel-width": form === "narrow" ? "300" : "400",
           },
   });
   await pasteMarkdown(page, DOC[language].doc);
@@ -237,7 +237,7 @@ for (const language of ["en", "zh"] as Lang[]) {
       await openApp(page, {
         colorScheme: scheme,
         settings: { language, typewriterMode: true },
-        storage: { "textus-agent-panel-open": "1" },
+        storage: { "moxie-agent-panel-open": "1" },
       });
       await pasteMarkdown(
         page,

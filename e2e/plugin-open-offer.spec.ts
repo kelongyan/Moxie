@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { openApp } from "./helpers";
 import { minimalPdf, openPath, tabFrame } from "./plugin-helpers";
 
-// No plugin comes with Textus: a PDF opened without one offers the PDF
+// No plugin comes with Moxie: a PDF opened without one offers the PDF
 // Viewer from the market, and Install and open opens the file with it.
 
 async function openWithPdf(page: import("@playwright/test").Page) {

@@ -58,7 +58,7 @@ function keysTaken(p: PluginScope) {
 }
 
 /** A change as the runtime sends it, placed by block ids against the
- *  document as it is now, as Textus AI's edits are. */
+ *  document as it is now, as Moxie AI's edits are. */
 function editOf(
   doc: ActiveDocumentAccess,
   change: unknown,

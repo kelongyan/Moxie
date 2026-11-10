@@ -109,7 +109,7 @@ impl Connection {
                 json!({
                     "protocolVersion": PROTOCOL_VERSION,
                     "capabilities": {},
-                    "clientInfo": {"name": "Textus", "version": env!("CARGO_PKG_VERSION")},
+                    "clientInfo": {"name": "Moxie", "version": env!("CARGO_PKG_VERSION")},
                 }),
                 START_TIMEOUT,
             ),
@@ -274,7 +274,7 @@ impl Connection {
 fn spawn(program: &str, args: &[String], env: &[(String, String)]) -> Result<Stdio, String> {
     let path = super::path::login_path();
     let resolved = super::path::find_program(program, &path).ok_or_else(|| {
-        format!("`{program}` isn't installed, or isn't on the PATH Textus sees ({path})")
+        format!("`{program}` isn't installed, or isn't on the PATH Moxie sees ({path})")
     })?;
     let mut command = tokio::process::Command::new(resolved);
     command
@@ -344,7 +344,7 @@ fn dispatch(waiting: &Waiting, message: Value) -> Option<Value> {
         return Some(if method == "ping" {
             json!({"jsonrpc": "2.0", "id": id, "result": {}})
         } else {
-            json!({"jsonrpc": "2.0", "id": id, "error": {"code": -32601, "message": "Not offered by Textus"}})
+            json!({"jsonrpc": "2.0", "id": id, "error": {"code": -32601, "message": "Not offered by Moxie"}})
         });
     }
     let id = message["id"].as_u64()?;

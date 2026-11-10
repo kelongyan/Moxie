@@ -72,7 +72,7 @@ export const commands = {
 	floating_window_position: (view: string) => __TAURI_INVOKE<[number | null, number | null] | null>("floating_window_position", { view }),
 	/**
 	 *  The editor window a floating view belongs to, brought to the front: a
-	 *  view on the desktop opens Textus from its menu.
+	 *  view on the desktop opens Moxie from its menu.
 	 */
 	show_floating_owner: (owner: string) => __TAURI_INVOKE<void>("show_floating_owner", { owner }),
 	/**
@@ -254,7 +254,7 @@ export type ChatHandoff = {
 };
 
 /**
- *  What Settings shows: `Outdated` is a script an older Textus wrote,
+ *  What Settings shows: `Outdated` is a script an older Moxie wrote,
  *  which only opens the app.
  */
 export type CliStatus = "installed" | "outdated" | "missing";

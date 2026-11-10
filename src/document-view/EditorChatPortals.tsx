@@ -38,7 +38,7 @@ export function EditorChatPortals({
     <>
       {/* Off, the panel shows that instead. */}
       {panelContainer &&
-        settings.textusAi &&
+        settings.moxieAi &&
         createPortal(
           <EditorAgentPanel
             run={run}

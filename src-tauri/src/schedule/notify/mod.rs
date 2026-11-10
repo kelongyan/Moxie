@@ -1,7 +1,7 @@
-//! Plugins' system notifications, and their click: Textus comes up with the
+//! Plugins' system notifications, and their click: Moxie comes up with the
 //! file the notification names open at its line. Each system has its own
 //! backend; where a click can't come back (an unbundled macOS build, a Linux
-//! notification server without actions) the next time Textus becomes active
+//! notification server without actions) the next time Moxie becomes active
 //! within a minute stands in for it.
 
 #[cfg(target_os = "linux")]
@@ -31,7 +31,7 @@ use tauri::{Emitter, Manager};
 pub const OPEN_EVENT: &str = "notification-open";
 
 /// How many clicked-to-be targets are kept, and for how long: a click can
-/// come after Textus restarted (Windows starts it for one).
+/// come after Moxie restarted (Windows starts it for one).
 const KEPT: usize = 50;
 const KEPT_MS: i64 = 7 * 24 * 3_600_000;
 /// How long "the next activation" stands in for a click that can't come.
@@ -91,7 +91,7 @@ fn now_ms() -> i64 {
     chrono::Utc::now().timestamp_millis()
 }
 
-/// An id no one can guess, so a textus:// link from a web page can't name one.
+/// An id no one can guess, so a moxie:// link from a web page can't name one.
 fn new_id() -> String {
     uuid::Uuid::new_v4().simple().to_string()
 }
@@ -164,7 +164,7 @@ pub fn clicked(app: &tauri::AppHandle, id: &str) {
     }
 }
 
-/// Textus came to the front: a click that couldn't come back, shortly after.
+/// Moxie came to the front: a click that couldn't come back, shortly after.
 pub fn activated(app: &tauri::AppHandle) {
     let Some(state) = app.try_state::<Notifications>() else {
         return;
@@ -181,7 +181,7 @@ pub fn activated(app: &tauri::AppHandle) {
     }
 }
 
-/// Brings Textus up with `open` waiting for a window: the front editor
+/// Brings Moxie up with `open` waiting for a window: the front editor
 /// window is told, or one opens and takes it as it mounts.
 fn open_target(app: &tauri::AppHandle, open: NotificationOpen) {
     *app.state::<Notifications>()

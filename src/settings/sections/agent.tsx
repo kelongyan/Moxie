@@ -21,7 +21,7 @@ import { explainError } from "../../utils/error-explain";
 
 /** Fired after a model list is fetched, so both pickers (writing and
  *  chat) pick up the new list from the cache at once. */
-const MODELS_FETCHED_EVENT = "textus-models-fetched";
+const MODELS_FETCHED_EVENT = "moxie-models-fetched";
 
 /** The provider's sign-in models while that sign-in is the active login: its
  *  token can't list models and only accepts its own presets. Null otherwise. */

@@ -15,7 +15,7 @@ export default {
   },
   plugin: {
     label: "做插件",
-    hint: "按你的描述做一个 Textus 小插件，一键安装",
+    hint: "按你的描述做一个 Moxie 小插件，一键安装",
     aliases: ["插件", "小工具", "扩展"],
   },
   skill: {

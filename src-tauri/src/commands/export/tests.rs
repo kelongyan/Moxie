@@ -18,9 +18,9 @@ fn a_folder_that_shows_single_newlines_exports_them_as_breaks() {
     let path = dir.path().to_str().unwrap();
     assert_eq!(breaks_extension(Some(path)), "");
     assert_eq!(breaks_extension(None), "");
-    std::fs::create_dir(dir.path().join(".textus")).unwrap();
+    std::fs::create_dir(dir.path().join(".moxie")).unwrap();
     std::fs::write(
-        dir.path().join(".textus/settings.json"),
+        dir.path().join(".moxie/settings.json"),
         r#"{"conventions":{"softBreaks":true}}"#,
     )
     .unwrap();

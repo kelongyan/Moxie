@@ -3,7 +3,7 @@ import { editorViewCtx } from "@milkdown/kit/core";
 import { contextMenuTarget } from "../editor/editor-menu";
 import { usePopupDismiss } from "./usePopupDismiss";
 import { useEditorWindowEvents } from "./useEditorWindowEvents";
-import { useTextusAiOff } from "./useTextusAiOff";
+import { useMoxieAiOff } from "./useMoxieAiOff";
 import type { EditorMenuState } from "./EditorContextMenu";
 import type { EditorSetup } from "./useEditorSetup";
 import type { EditorChat } from "./useEditorChat";
@@ -88,7 +88,7 @@ export function useEditorPopups({
       requestAnimationFrame(onGrammarCaret);
   };
   const findReplace = useFindReplace(run);
-  useTextusAiOff(run, settings.textusAi, {
+  useMoxieAiOff(run, settings.moxieAi, {
     quickAsk: inlineChat.hide,
     grammarCard: grammar.hide,
   });

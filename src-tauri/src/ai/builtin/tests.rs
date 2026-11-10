@@ -98,13 +98,13 @@ fn every_builtin_skill_parses_and_follows_the_format() {
             "{stem}: no < or > in the description"
         );
         assert!(d.contains("Use when"), "{stem}: says when to use it");
-        // The index shows `textus-index` instead of the description: the
+        // The index shows `moxie-index` instead of the description: the
         // description's "Use when" clause without the request words in
         // other languages, kept in step with it.
         let line = skill
             .index_line
             .as_deref()
-            .unwrap_or_else(|| panic!("{stem}: metadata textus-index"));
+            .unwrap_or_else(|| panic!("{stem}: metadata moxie-index"));
         assert!(line.starts_with("Use when"), "{stem}: index line {line:?}");
         assert!(line.is_ascii(), "{stem}: index line has no request words");
         assert!(
@@ -117,12 +117,12 @@ fn every_builtin_skill_parses_and_follows_the_format() {
             "{stem}"
         );
         for key in [
-            "textus-version",
-            "textus-index",
-            "textus-invocation",
-            "textus-category",
-            "textus-packs",
-            "textus-sources",
+            "moxie-version",
+            "moxie-index",
+            "moxie-invocation",
+            "moxie-category",
+            "moxie-packs",
+            "moxie-sources",
         ] {
             assert!(fm.metadata.contains_key(key), "{stem}: metadata {key}");
         }
@@ -159,10 +159,10 @@ fn every_builtin_skill_parses_and_follows_the_format() {
                     .any(|w| w == "MUST"),
                 "{stem}: no MUST"
             );
-            // The plugin skill's webview code calls acquireTextusApi(): an
+            // The plugin skill's webview code calls acquireMoxieApi(): an
             // API's name, not the product named to the model.
             assert!(
-                !text.replace("acquireTextusApi", "").contains("Textus"),
+                !text.replace("acquireMoxieApi", "").contains("Moxie"),
                 "{stem}: names no product"
             );
         }
@@ -233,7 +233,7 @@ fn every_pack_parses_with_named_sections() {
             Some("MIT"),
             "{stem}"
         );
-        assert!(fm.metadata.contains_key("textus-sources"), "{stem}");
+        assert!(fm.metadata.contains_key("moxie-sources"), "{stem}");
         let pack = pack(stem).unwrap();
         assert!(!pack.sections.is_empty(), "{stem}");
         for (name, body) in &pack.sections {
@@ -248,10 +248,10 @@ fn every_pack_parses_with_named_sections() {
                 !model.contains("(M)") && !model.contains("(S)"),
                 "{stem}#{name}: bookkeeping stripped"
             );
-            // The plugin skill's webview code calls acquireTextusApi(): an
+            // The plugin skill's webview code calls acquireMoxieApi(): an
             // API's name, not the product named to the model.
             assert!(
-                !text.replace("acquireTextusApi", "").contains("Textus"),
+                !text.replace("acquireMoxieApi", "").contains("Moxie"),
                 "{stem}: names no product"
             );
         }
@@ -312,7 +312,7 @@ fn attribution_covers_every_adapted_source() {
     let mut sources = String::new();
     for (_, text) in SKILL_FILES.iter().chain(PACK_FILES) {
         let (fm, _) = split_frontmatter(text);
-        sources.push_str(fm.unwrap().metadata.get("textus-sources").unwrap());
+        sources.push_str(fm.unwrap().metadata.get("moxie-sources").unwrap());
         sources.push('\n');
     }
     let needs: &[(&str, &str)] = &[
@@ -482,7 +482,7 @@ fn expansion_appends_the_declared_packs_for_the_documents_language() {
     // A market skill's packs, as continue-story declares them.
     let skill = &parse_skill_file(
         "continue-story",
-        "---\nname: continue-story\nmetadata:\n  textus-packs: \"contract craft#fiction standards#dialogue standards#ai-tells\"\n---\nContinue the story.",
+        "---\nname: continue-story\nmetadata:\n  moxie-packs: \"contract craft#fiction standards#dialogue standards#ai-tells\"\n---\nContinue the story.",
     );
     let text = expand_skill(skill, doc_zh(), "en", "", None);
     assert!(text.starts_with(&skill.prompt));
@@ -518,7 +518,7 @@ fn expansion_appends_the_declared_packs_for_the_documents_language() {
     let notice = expand_skill(
         &parse_skill_file(
             "notice",
-            "---\nname: notice\nmetadata:\n  textus-packs: \"contract standards#official standards#numbers\"\n---\nWrite the notice.",
+            "---\nname: notice\nmetadata:\n  moxie-packs: \"contract standards#official standards#numbers\"\n---\nWrite the notice.",
         ),
         "이번 업데이트에서는 자료를 내보낼 수 있습니다. 몇일 뒤에 다시 안내해 드리겠습니다.",
         "ko",
@@ -535,7 +535,7 @@ fn a_translating_skill_attaches_the_target_language() {
     // As the market's Translate says it: its packs follow the target.
     let skill = parse_skill_file(
         "translate",
-        "---\nname: translate\ndescription: d\nmetadata:\n  textus-packs: \"contract\"\n  textus-target-packs: \"typography numbers register\"\n---\nBody.\n",
+        "---\nname: translate\ndescription: d\nmetadata:\n  moxie-packs: \"contract\"\n  moxie-target-packs: \"typography numbers register\"\n---\nBody.\n",
     );
     let skill = &skill;
     let text = expand_skill(skill, doc_zh(), "zh", "译成日语", None);

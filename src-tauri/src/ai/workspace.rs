@@ -17,19 +17,19 @@ pub(crate) use layers::*;
 /// The project's settings folder. The project folder is the document's own
 /// unless the user chose another; the global config folder applies to every
 /// document, and a project skill shadows a global one of the same name.
-pub const WORKSPACE_DIR_NAME: &str = ".textus";
+pub const WORKSPACE_DIR_NAME: &str = ".moxie";
 
-/// Where a project's settings live: `<project folder>/.textus/`.
+/// Where a project's settings live: `<project folder>/.moxie/`.
 pub fn project_dir(root: &Path) -> PathBuf {
     root.join(WORKSPACE_DIR_NAME)
 }
 
-/// One project file, when it exists: `.textus/<rel>`.
+/// One project file, when it exists: `.moxie/<rel>`.
 pub fn project_file(root: &Path, rel: &str) -> Option<PathBuf> {
     Some(project_dir(root).join(rel)).filter(|path| path.is_file())
 }
 
-/// Who may start a skill (`metadata.textus-invocation`). `Both`: the model and
+/// Who may start a skill (`metadata.moxie-invocation`). `Both`: the model and
 /// /name. `UserOnly`: /name only. `Hidden`: neither; loaded by exact name with
 /// use_skill (the reference packs).
 #[derive(Serialize, Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -63,7 +63,7 @@ pub struct SkillLabel {
 }
 
 /// One skill as the app sees it: the frontmatter's name and description, the
-/// body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+/// body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
 #[derive(Serialize, Clone, Debug)]
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
@@ -71,13 +71,13 @@ pub struct AgentSkill {
     pub name: String,
     pub description: String,
     pub prompt: String,
-    /// `textus-category`: write, revise, check or format (the `/` menu's
+    /// `moxie-category`: write, revise, check or format (the `/` menu's
     /// groups). None for a user skill that doesn't say.
     pub category: Option<String>,
-    /// `textus-modes`: the panel modes the skill applies in. Write for a skill
+    /// `moxie-modes`: the panel modes the skill applies in. Write for a skill
     /// that doesn't say.
     pub modes: Vec<AgentMode>,
-    /// `textus-off`: turned off in Settings for now, its modes kept for when
+    /// `moxie-off`: turned off in Settings for now, its modes kept for when
     /// it is turned on again. Neither the model nor the `/` menu offers it.
     pub off: bool,
     pub invocation: Invocation,
@@ -86,27 +86,27 @@ pub struct AgentSkill {
     /// replaces.
     pub overrides_builtin: bool,
     /// What people see it called, and its one-line hint, per UI language code
-    /// (`textus-label-<code>`, `textus-hint-<code>`), for market or user skills.
+    /// (`moxie-label-<code>`, `moxie-hint-<code>`), for market or user skills.
     pub labels: BTreeMap<String, SkillLabel>,
     /// Extra words the user can type after `/`, per UI language code
-    /// (`textus-aliases-<code>`, comma-separated).
+    /// (`moxie-aliases-<code>`, comma-separated).
     pub aliases: BTreeMap<String, Vec<String>>,
-    /// `textus-packs`: the reference-pack sections appended to the body when the
+    /// `moxie-packs`: the reference-pack sections appended to the body when the
     /// skill is used ("craft#fiction", "standards#dialogue").
     pub packs: Vec<String>,
-    /// `textus-version` of a built-in skill (bumped when its behaviour
+    /// `moxie-version` of a built-in skill (bumped when its behaviour
     /// changes).
     pub version: Option<String>,
-    /// `textus-based-on: "<name>@<version>"`, written into a Customize… copy;
+    /// `moxie-based-on: "<name>@<version>"`, written into a Customize… copy;
     /// what allows Reset to delete it.
     pub based_on: Option<String>,
     /// A customized copy whose built-in has a newer version since.
     pub builtin_updated: bool,
-    /// `textus-target-packs`: sections of the TARGET language's pack to
+    /// `moxie-target-packs`: sections of the TARGET language's pack to
     /// attach when the request names one (translate).
     #[serde(skip)]
     pub target_packs: Vec<String>,
-    /// `textus-index`: what the model's skill index says of a built-in skill,
+    /// `moxie-index`: what the model's skill index says of a built-in skill,
     /// in place of its description, which also carries the request words in
     /// other languages for tools that read the file elsewhere.
     #[serde(skip)]
@@ -151,7 +151,7 @@ pub struct AgentWorkspace {
     /// The global writing instructions (the global config folder's
     /// agent.md, comments stripped), in prompt order.
     pub instructions: Vec<String>,
-    /// The project's writing instructions (`.textus/agent.md`), sent after
+    /// The project's writing instructions (`.moxie/agent.md`), sent after
     /// the global ones and winning where the two conflict.
     pub project_instructions: Option<String>,
     /// Merged skills: the built-ins (turned-off ones too, so Settings can list
@@ -161,18 +161,18 @@ pub struct AgentWorkspace {
     /// The project folder, the sandbox root for the agent's file tools. None for
     /// an unsaved draft, and for a folder too broad to expose.
     pub root: Option<String>,
-    /// `.textus/style.md` - the author's style profile.
+    /// `.moxie/style.md` - the author's style profile.
     pub style: Option<String>,
-    /// `.textus/library/*.md` - the project's people, places and terms.
+    /// `.moxie/library/*.md` - the project's people, places and terms.
     pub library: Vec<crate::ai::project::LibraryEntry>,
     /// Where `root` came from, or why there is none, so the agent can tell the
     /// user which folder it reads and how to change that.
     pub root_source: RootSource,
     /// The writing conventions the style profile's front matter sets.
     pub conventions: crate::ai::rules::ProjectConventions,
-    /// What Textus AI remembered by itself, with which of them fit in the prompt.
+    /// What Moxie AI remembered by itself, with which of them fit in the prompt.
     pub memories: crate::ai::memory::Memories,
-    /// Whether Textus AI may remember things by itself.
+    /// Whether Moxie AI may remember things by itself.
     pub remember: bool,
     /// Whether this request's conversation has files attached (ai::scratch).
     #[serde(skip)]
@@ -194,12 +194,12 @@ impl AgentWorkspace {
 #[serde(rename_all = "camelCase")]
 pub enum RootSource {
     /// No folder opened or chosen, and none above the document with
-    /// `.textus/`.
+    /// `.moxie/`.
     #[default]
     None,
-    /// The nearest folder above the document that has a `.textus/` folder.
+    /// The nearest folder above the document that has a `.moxie/` folder.
     EnclosingProject,
-    /// The folder the user chose (the project menu, or Settings > Textus AI).
+    /// The folder the user chose (the project menu, or Settings > Moxie AI).
     Chosen,
     /// The folder would be the home folder or a drive root, never opened to the
     /// agent.
@@ -332,7 +332,7 @@ pub async fn import_agent_skill(
 }
 
 /// Customize…: copies a built-in skill into the global skills/, where it
-/// replaces the built-in, marked `textus-based-on`, and returns its path. An
+/// replaces the built-in, marked `moxie-based-on`, and returns its path. An
 /// existing skill of that name is never overwritten: its path is returned.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
@@ -345,7 +345,7 @@ pub async fn customize_builtin_skill(app: AppHandle, name: String) -> Result<Str
 }
 
 /// Reset to built-in: deletes the Customize… copies (those with
-/// `textus-based-on`); a same-named skill the user wrote is NOT_A_COPY. Returns
+/// `moxie-based-on`); a same-named skill the user wrote is NOT_A_COPY. Returns
 /// the deleted paths, so the frontend can close tabs that would write them back.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
@@ -356,7 +356,7 @@ pub async fn reset_builtin_skill(app: AppHandle, name: String) -> Result<Vec<Str
         .map_err(|e| e.to_string())?
 }
 
-/// Sets the panel modes a user's skill applies in, rewriting `textus-modes` in
+/// Sets the panel modes a user's skill applies in, rewriting `moxie-modes` in
 /// its file. A built-in's modes are fixed.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
@@ -381,7 +381,7 @@ pub async fn set_skill_modes(
         .map_err(|e| e.to_string())?
 }
 
-/// Turns a user's skill off for now, or on again, rewriting `textus-off` in
+/// Turns a user's skill off for now, or on again, rewriting `moxie-off` in
 /// its file. A built-in is always on.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]

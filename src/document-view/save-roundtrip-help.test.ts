@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { hashString, roundTripFile } from "./save-roundtrip";
 
 // The save round trip on the help guides in English, Chinese and Japanese,
-// which cover the alphabet, CJK and its punctuation. TEXTUS_ROUNDTRIP_ALL=1
+// which cover the alphabet, CJK and its punctuation. MOXIE_ROUNDTRIP_ALL=1
 // runs every language.
 
 const LANGUAGES = /\.(en|zh|ja)\.md$/;
@@ -42,13 +42,13 @@ function markdownFiles(dir: string): [string, string][] {
 
 // CI runs these once, only for changes that can reach saving; the native
 // jobs set this to skip them.
-describe.skipIf(process.env.TEXTUS_SKIP_ROUNDTRIP === "1")(
+describe.skipIf(process.env.MOXIE_SKIP_ROUNDTRIP === "1")(
   "saving after an edit keeps the rest of the help guides and loses nothing",
   () => {
     it.each(
       markdownFiles("src/help").filter(
         ([path]) =>
-          process.env.TEXTUS_ROUNDTRIP_ALL === "1" || LANGUAGES.test(path),
+          process.env.MOXIE_ROUNDTRIP_ALL === "1" || LANGUAGES.test(path),
       ),
     )(
       "%s",

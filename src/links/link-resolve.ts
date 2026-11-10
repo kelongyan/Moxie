@@ -254,7 +254,7 @@ function namedAs(
   return shown(to);
 }
 
-/** The link Textus writes from `from` to `to` (both from the root):
+/** The link Moxie writes from `from` to `to` (both from the root):
  *  `[[#Heading]]` within the same note. */
 export function noteLinkIn(
   index: NoteIndex,

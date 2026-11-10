@@ -49,7 +49,7 @@ describe("cleanPastedHtml", () => {
     );
   });
 
-  it("leaves Textus's own copies as they are", () => {
+  it("leaves Moxie's own copies as they are", () => {
     const own =
       '<p data-pm-slice="1 1 []"><span style="font-weight:700">x</span></p><p></p>';
     expect(cleanPastedHtml(own)).toBe(own);

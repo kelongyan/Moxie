@@ -206,7 +206,7 @@ fn a_missed_time_fires_once_or_is_skipped_and_the_next_is_after_now() {
         minutes: 60,
         anchor,
     };
-    // Textus was closed for five hours: one catch-up, not five.
+    // Moxie was closed for five hours: one catch-up, not five.
     let due = anchor + 60 * 60_000;
     let now = anchor + 5 * 60 * 60_000 + 10 * 60_000;
     let (fire, next) = on_due(every, CatchUp::Once, due, now, &Central);

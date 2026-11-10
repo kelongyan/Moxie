@@ -73,7 +73,7 @@ test("an agent reply shows a reasoned edit, a sentence picker and a comment", as
   await page.setViewportSize({ width: 1440, height: 900 });
   await openApp(page, {
     settings: { revisionDisplay: "original" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, SAMPLE_DOC);
   const anchor =
@@ -155,7 +155,7 @@ test("the last sentence decided in the text applies the edit", async ({
   await page.setViewportSize({ width: 900, height: 780 });
   await openApp(page, {
     settings: { revisionDisplay: "original" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, SAMPLE_DOC);
   const anchor =
@@ -203,7 +203,7 @@ test("the last sentence decided in the text applies the edit", async ({
 test("an accepted new table row and nested item land inside the table and list", async ({
   page,
 }) => {
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(
     page,
     "| Component | Owner |\n| --- | --- |\n| Search | Tom |\n\n- Transport\n  - WebSocket\n\nThe end.",
@@ -262,7 +262,7 @@ test("an accepted new table row and nested item land inside the table and list",
 test("a pending replace keeps its strike on its text while the user types above it", async ({
   page,
 }) => {
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(page, "Alpha one.\n\nBravo two words here.");
   await mockInvoke(page, {
     ai_agent_message: [
@@ -390,7 +390,7 @@ test("Quick Ask has its own conversation and hands it to the panel", async ({
   page,
 }) => {
   // The panel is open: Quick Ask still opens at the caret.
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   await pasteMarkdown(page, SAMPLE_DOC);
   await mockInvoke(page, {
     ai_agent_message: [
@@ -539,7 +539,7 @@ test("a one-character CJK fix reads with its neighbour on the grammar card", asy
     ],
   });
   await page.evaluate(() =>
-    window.dispatchEvent(new Event("textus:trigger-grammar-check")),
+    window.dispatchEvent(new Event("moxie:trigger-grammar-check")),
   );
   await page.locator(".milkdown .grammar-issue").hover();
   const card = page.locator(".grammar-popover");

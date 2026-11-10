@@ -32,7 +32,7 @@ test(
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, {
       settings: { language: "en", revisionDisplay: "final" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await pasteMarkdown(page, ORIGINAL);

@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe("the default editor row", () => {
-  it("makes Textus the default where the system allows it", async () => {
+  it("makes Moxie the default where the system allows it", async () => {
     status.mockResolvedValueOnce({
       supported: true,
       isDefault: false,

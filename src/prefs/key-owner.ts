@@ -31,7 +31,7 @@ function actionLabels(t: Strings): Record<ShortcutAction, string> {
     triggerCompletion: t.shortcutTriggerCompletion,
     triggerGrammarCheck: t.shortcutTriggerGrammarCheck,
     toggleFloatingChat: t.shortcutToggleFloatingChat,
-    toggleTextusAi: t.shortcutToggleTextusAi,
+    toggleMoxieAi: t.shortcutToggleMoxieAi,
     findReplace: plain(t.menuFindReplace),
     toggleSidebar: t.menuToggleSidebar,
     toggleAgentPanel: t.menuToggleAgentPanel,

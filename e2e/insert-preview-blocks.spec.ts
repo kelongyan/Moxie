@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp, pasteMarkdown, END } from "./helpers";
 
 /**
- * Text Textus AI writes after the document's last block is shown as the
+ * Text Moxie AI writes after the document's last block is shown as the
  * blocks it will be (paragraphs, a list, a footnote) while it streams in and
  * before it is taken, not as its Markdown.
  */
@@ -73,7 +73,7 @@ test("appended text is shown as its blocks while it streams and before it is tak
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "Prior work found this.");
   await streamAppend(page, TEXT);
@@ -104,7 +104,7 @@ test("text written at the caret inside a paragraph lands as whole blocks: a head
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "Prior work found this.");
   await page.locator(`${editor} p`).first().click();

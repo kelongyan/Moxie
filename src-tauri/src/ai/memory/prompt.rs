@@ -5,7 +5,7 @@ use super::*;
 
 // ------------------------------------------------------------------- prompt
 
-/// The prompt sections for what Textus AI remembered: personal first, then the
+/// The prompt sections for what Moxie AI remembered: personal first, then the
 /// project's, which wins a conflict. Facts go with the library instead.
 pub fn memory_sections(memories: &Memories) -> Vec<String> {
     let line = |m: &Memory| format!("- ({}) {}", m.kind.as_str(), m.text);

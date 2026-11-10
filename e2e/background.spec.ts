@@ -8,7 +8,7 @@ const t = {
   group: "Application",
   toggle: "Keep running in the background",
   trayUnavailable:
-    "This desktop has no tray: libayatana-appindicator isn’t installed. Textus still keeps running; open it again from your launcher.",
+    "This desktop has no tray: libayatana-appindicator isn’t installed. Moxie still keeps running; open it again from your launcher.",
 };
 
 async function openSettings(

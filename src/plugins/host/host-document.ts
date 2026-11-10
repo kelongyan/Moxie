@@ -11,10 +11,10 @@ export function hostDocument(pluginCode: string, background = false): string {
     "<!doctype html><html><head><meta charset='utf-8'>",
     `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'">`,
     ...(background
-      ? ["<script>window.__textusBackground = true;</script>"]
+      ? ["<script>window.__moxieBackground = true;</script>"]
       : []),
     `<script>${inElement(`${RPC_SOURCE}\n${textRuntime}\n${hostRuntime}`, "script")}</script>`,
-    `<script>__textusDefine(function (module, exports, textus) {\n${inElement(pluginCode, "script")}\n});</script>`,
+    `<script>__moxieDefine(function (module, exports, textus) {\n${inElement(pluginCode, "script")}\n});</script>`,
     "</head><body></body></html>",
   ].join("\n");
 }

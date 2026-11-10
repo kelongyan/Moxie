@@ -206,7 +206,7 @@ input[type="checkbox"].tx-switch:active::after,
   transition-duration: calc(var(--dur-fast) * var(--motion-travel));
 }
 
-/* A value picked from a few: a capsule that opens Textus's menu
+/* A value picked from a few: a capsule that opens Moxie's menu
    (api.menu), its chevron at its end. */
 .tx-select {
   display: inline-flex;

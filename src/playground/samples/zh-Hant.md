@@ -1,6 +1,6 @@
-# 歡迎使用 Textus
+# 歡迎使用 Moxie
 
-Textus 是一款所見即所得的 Markdown 編輯器。點任意位置開始打字：Markdown 標記只在游標所在處出現，所以**粗體**、_斜體_、==醒目提示==、~~刪除線~~和`行內程式碼`在寫作時依然好讀。
+Moxie 是一款所見即所得的 Markdown 編輯器。點任意位置開始打字：Markdown 標記只在游標所在處出現，所以**粗體**、_斜體_、==醒目提示==、~~刪除線~~和`行內程式碼`在寫作時依然好讀。
 
 ## 清單與待辦
 
@@ -42,4 +42,4 @@ flowchart LR
 
 ---
 
-這裡只有編輯器。桌面版還有能和你一起寫作、修改的 Textus AI，以及資料夾、主題、圖片、匯出 PDF、Word、HTML 等功能。[下載 Textus](https://textus.md/zh-hant/#download)，macOS、Windows 和 Linux 都免費。
+這裡只有編輯器。桌面版還有能和你一起寫作、修改的 Moxie AI，以及資料夾、主題、圖片、匯出 PDF、Word、HTML 等功能。[下載 Moxie](https://textus.md/zh-hant/#download)，macOS、Windows 和 Linux 都免費。

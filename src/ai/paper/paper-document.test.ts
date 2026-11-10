@@ -81,16 +81,16 @@ describe("the paper as it is written", () => {
     expect(sectionBody('Below.\n\n```chart\n{"type": "ba')).toBe(
       'Below.\n\n```chart\n{"type": "ba\n```',
     );
-    expect(sectionBody("Below.\n\n<!-- textus-figure web: Roo")).toBe("Below.");
+    expect(sectionBody("Below.\n\n<!-- moxie-figure web: Roo")).toBe("Below.");
     expect(
-      sectionBody("<!-- textus-figure web: Roof | roof -->\n\nAfter."),
-    ).toBe("<!-- textus-figure web: Roof | roof -->\n\nAfter.");
+      sectionBody("<!-- moxie-figure web: Roof | roof -->\n\nAfter."),
+    ).toBe("<!-- moxie-figure web: Roof | roof -->\n\nAfter.");
   });
 
   it("is written first without its pictures, their captions kept", () => {
     expect(
       withoutPictures(
-        "Text.\n\n![Roof](textus-generated:ab12)\n\n*Figure 1. Roof*\n\nMore.",
+        "Text.\n\n![Roof](moxie-generated:ab12)\n\n*Figure 1. Roof*\n\nMore.",
       ),
     ).toBe("Text.\n\n*Figure 1. Roof*\n\nMore.");
   });

@@ -45,11 +45,11 @@ export interface PluginTabInfo {
 export interface ActiveDocumentAccess {
   path: string | null;
   text(): string;
-  /** Its blocks as Textus AI is shown them: what an edit names by `block`. */
+  /** Its blocks as Moxie AI is shown them: what an edit names by `block`. */
   blocks(): SentBlock[];
   /** The selection: its plain text, and as Markdown (null when empty). */
   selection(): { text: string; markdown: string | null };
-  /** Shows an edit as a proposal the user accepts or rejects, as Textus
+  /** Shows an edit as a proposal the user accepts or rejects, as Moxie
    *  AI's are; false when it can't be placed. */
   propose(callId: string, proposal: EditProposal): boolean;
   /** Makes the edits at once, as one undo step; false when one can't be
@@ -182,9 +182,9 @@ export interface PluginEventMap {
   settings: { key: string; value: unknown };
   /** A key the editor handed the plugin holding the keyboard, to it only. */
   editorKey: string;
-  /** A Textus window came to the front, went behind, or the last closed. */
+  /** A Moxie window came to the front, went behind, or the last closed. */
   appState: AppState;
-  /** What Textus AI is doing and with which model, never what it says. */
+  /** What Moxie AI is doing and with which model, never what it says. */
   aiState: AiState;
   /** Which of the window's panels are open. */
   panels: PanelsState;

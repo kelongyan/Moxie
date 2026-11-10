@@ -165,7 +165,7 @@ mod tests {
     fn records_carry_to_another_computer_and_only_add() {
         let (from, to) = (tempfile::tempdir().unwrap(), tempfile::tempdir().unwrap());
         let (data_a, data_b) = (from.path().join("data"), to.path().join("data"));
-        let (global_a, global_b) = (from.path().join("textus"), to.path().join("textus"));
+        let (global_a, global_b) = (from.path().join("moxie"), to.path().join("moxie"));
         let a = ChatHistory::load(&data_a);
         a.save(conversation("c1", 10, "tides"));
         a.save(conversation("c2", 20, "gauges, newer there"));

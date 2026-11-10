@@ -27,12 +27,12 @@ import { errorText } from "../../utils/error-text";
 import { matchesWords } from "../../utils/match-words";
 import { explainError } from "../../utils/error-explain";
 
-// Settings > Textus AI: skills and the Writing conventions row. Skills are
+// Settings > Moxie AI: skills and the Writing conventions row. Skills are
 // files, so these rows mirror and open them rather than embedding an editor.
 
 /** Fired after a skill changes here, so every section showing the list
  *  reloads it. */
-export const SKILLS_CHANGED_EVENT = "textus-skills-changed";
+export const SKILLS_CHANGED_EVENT = "moxie-skills-changed";
 
 export function announceChange() {
   window.dispatchEvent(new Event(SKILLS_CHANGED_EVENT));
@@ -193,7 +193,7 @@ export function OwnSkillsList({
                   </span>
                 )}
                 {madeHere(skill.name) && (
-                  <span className="settings-skill-tag">{t.madeByTextusAi}</span>
+                  <span className="settings-skill-tag">{t.madeByMoxieAi}</span>
                 )}
               </span>
               <span className="settings-skill-desc">

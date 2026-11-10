@@ -25,7 +25,7 @@ fn a_server_is_started_asked_for_its_tools_and_called() {
         eprintln!("no node - skipping");
         return;
     }
-    let script = std::env::temp_dir().join(format!("textus-mcp-echo-{}.js", std::process::id()));
+    let script = std::env::temp_dir().join(format!("moxie-mcp-echo-{}.js", std::process::id()));
     std::fs::write(&script, ECHO_SERVER).unwrap();
     tauri::async_runtime::block_on(async {
         let connection = Connection::open(&Endpoint::Command {
@@ -69,7 +69,7 @@ fn a_published_server_answers_as_ours_does() {
             env: vec![(
                 "MEMORY_FILE_PATH".into(),
                 std::env::temp_dir()
-                    .join(format!("textus-mcp-memory-{}.json", std::process::id()))
+                    .join(format!("moxie-mcp-memory-{}.json", std::process::id()))
                     .to_string_lossy()
                     .to_string(),
             )],
@@ -92,7 +92,7 @@ fn a_published_server_answers_as_ours_does() {
 #[test]
 fn a_command_not_installed_says_so() {
     let failed = tauri::async_runtime::block_on(Connection::open(&Endpoint::Command {
-        program: "textus-no-such-server".into(),
+        program: "moxie-no-such-server".into(),
         args: vec![],
         env: vec![],
     }));

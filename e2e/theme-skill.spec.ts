@@ -9,7 +9,7 @@ const reply = readFileSync("src/theme/fixtures/theme-skill-reply.md", "utf8");
 
 const injectedTheme = (page: import("@playwright/test").Page) =>
   page.evaluate(
-    () => document.getElementById("textus-custom-theme")?.textContent ?? "",
+    () => document.getElementById("moxie-custom-theme")?.textContent ?? "",
   );
 
 test("Use this theme installs the reply's theme and applies it", async ({
@@ -17,7 +17,7 @@ test("Use this theme installs the reply's theme and applies it", async ({
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const message = "/theme a calm dark page for night writing";
   await mockInvoke(page, {

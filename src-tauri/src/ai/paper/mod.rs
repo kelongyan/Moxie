@@ -54,7 +54,7 @@ fn session_root(session: &Session, id: Option<&str>) -> Result<std::path::PathBu
     paper_root(session.app, session.doc_path, session.workspace_root, id)
 }
 
-/// One paper being written. Kept as `.textus/papers/<id>/paper.json`.
+/// One paper being written. Kept as `.moxie/papers/<id>/paper.json`.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
@@ -214,7 +214,7 @@ pub struct FigurePlan {
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
 pub enum FigureKind {
-    /// A picture made by the image service (`textus-picture:`).
+    /// A picture made by the image service (`moxie-picture:`).
     Generated,
     Mermaid,
     /// A ```chart block from the dossier's data.
@@ -253,7 +253,7 @@ pub struct PaperRequest {
 }
 
 /// Researches and outlines a paper on `topic` in the document's project,
-/// kept in `.textus/papers/<id>/`; a paper begun before goes on from what
+/// kept in `.moxie/papers/<id>/`; a paper begun before goes on from what
 /// it kept. Stopped like any request, by `ai_cancel` with `request_id`.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]

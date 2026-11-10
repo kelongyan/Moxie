@@ -13,7 +13,7 @@ import {
 } from "./sidebar-width";
 
 // No boot snapshot here: ui-state keeps the width in localStorage.
-const KEY = "textus-sidebar-width";
+const KEY = "moxie-sidebar-width";
 
 beforeAll(installTestLocalStorage);
 beforeEach(() => localStorage.clear());

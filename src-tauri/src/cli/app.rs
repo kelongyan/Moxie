@@ -93,7 +93,7 @@ pub fn start(app: &AppHandle) {
 async fn listen(app: AppHandle) {
     use std::os::unix::fs::{MetadataExt, PermissionsExt};
     let Some(path) = ipc::endpoint() else { return };
-    // Another Textus (a dev build beside an installed one) answers already.
+    // Another Moxie (a dev build beside an installed one) answers already.
     if std::os::unix::net::UnixStream::connect(&path).is_ok() {
         return;
     }
@@ -133,7 +133,7 @@ async fn listen(app: AppHandle) {
             .reject_remote_clients(true)
             .create(&name)
     };
-    // Fails when another Textus has the pipe already.
+    // Fails when another Moxie has the pipe already.
     let Ok(mut server) = create(true) else { return };
     loop {
         if server.connect().await.is_err() {
@@ -161,7 +161,7 @@ async fn handle(app: AppHandle, request: Request) -> Answer {
         "skill" => skills(&app, &request).await,
         "export" => export(&app, request).await,
         "commands" | "plugin" | "theme" => in_window(&app, request).await,
-        other => Answer::fail(format!("'{other}' is not a textus command."), 2),
+        other => Answer::fail(format!("'{other}' is not a moxie command."), 2),
     }
 }
 
@@ -205,7 +205,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
         .collect();
     if tools.is_empty() {
         return Answer::fail(
-            format!("'{word}' is not a textus command or a plugin's. See 'textus help'."),
+            format!("'{word}' is not a moxie command or a plugin's. See 'textus help'."),
             2,
         );
     }
@@ -215,7 +215,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
         .and_then(|name| tools.iter().find(|(_, t)| &t.name == name))
     else {
         let list = format!(
-            "Usage: textus {word} <tool>\n\nTools:\n{}",
+            "Usage: moxie {word} <tool>\n\nTools:\n{}",
             tool_lines(&tools)
         );
         return if help {
@@ -250,7 +250,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
 
 async fn skills(app: &AppHandle, request: &Request) -> Answer {
     if request.args.iter().map(String::as_str).ne(["list"]) {
-        return Answer::fail("Usage: textus skill list", 2);
+        return Answer::fail("Usage: moxie skill list", 2);
     }
     let skills = crate::ai::workspace::list_skills(app.clone(), None, None).await;
     if request.json {
@@ -276,7 +276,7 @@ async fn skills(app: &AppHandle, request: &Request) -> Answer {
 /// Hands the request to a window and waits for its answer.
 async fn in_window(app: &AppHandle, request: Request) -> Answer {
     let Some(window) = listening_window(app).await else {
-        return Answer::fail("No Textus window could take the command.", 1);
+        return Answer::fail("No Moxie window could take the command.", 1);
     };
     let id = format!("cli-{}", CALLS.fetch_add(1, Ordering::Relaxed));
     let (send, answer) = oneshot::channel();
@@ -292,13 +292,13 @@ async fn in_window(app: &AppHandle, request: Request) -> Answer {
     };
     if app.emit_to(&window, "cli-request", event).is_err() {
         waiting().remove(&id);
-        return Answer::fail("The Textus window closed.", 1);
+        return Answer::fail("The Moxie window closed.", 1);
     }
     match tokio::time::timeout(WINDOW_ANSWERS_WITHIN, answer).await {
         Ok(Ok(answer)) => answer,
         _ => {
             waiting().remove(&id);
-            Answer::fail("Textus didn't answer in time.", 1)
+            Answer::fail("Moxie didn't answer in time.", 1)
         }
     }
 }
@@ -371,7 +371,7 @@ async fn export(app: &AppHandle, request: Request) -> Answer {
         Answer::ok(target)
     } else {
         Answer::fail(
-            "The export didn't finish; Textus says why in its window.",
+            "The export didn't finish; Moxie says why in its window.",
             1,
         )
     };
@@ -392,7 +392,7 @@ pub(super) fn export_job(request: &Request) -> Result<ExportJob, String> {
     let to = super::take_option(&mut args, "--to")?;
     let out = super::take_option(&mut args, "--out")?;
     let [file] = args.as_slice() else {
-        return Err("Usage: textus export <file> --to <format> [--out <file>]".into());
+        return Err("Usage: moxie export <file> --to <format> [--out <file>]".into());
     };
     let cwd = Path::new(&request.cwd);
     let file = cwd.join(file);
@@ -403,7 +403,7 @@ pub(super) fn export_job(request: &Request) -> Result<ExportJob, String> {
     let &(format, ext) = EXPORT_FORMATS
         .iter()
         .find(|(name, _)| *name == to)
-        .ok_or_else(|| format!("Textus doesn't export to '{to}'. See 'textus help export'."))?;
+        .ok_or_else(|| format!("Moxie doesn't export to '{to}'. See 'textus help export'."))?;
     let out = match out {
         Some(out) => cwd.join(out),
         None => file.with_extension(ext),

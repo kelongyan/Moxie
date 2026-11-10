@@ -142,7 +142,7 @@ export const fs = {
     command("document_link_root", docPath, folder),
   /** How the folder of a document (or a folder) is written, whichever app
    *  made it: links, pictures, line breaks, templates, daily notes. Read
-   *  only; a field no app sets is left to Textus's settings. */
+   *  only; a field no app sets is left to Moxie's settings. */
   folderConventions: (path: string) => command("folder_conventions", path),
   /** `sourceDocPath`: the file a Save As started from, whose relative
    *  images are copied along. */

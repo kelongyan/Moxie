@@ -16,7 +16,7 @@ export type PluginCheck =
   /** A command, tab or view the manifest declares that the code never
    *  registers: its menu item or tab does nothing. */
   | { kind: "unregistered"; id: string }
-  /** A menu item's `when` reads a key Textus doesn't set: it never shows. */
+  /** A menu item's `when` reads a key Moxie doesn't set: it never shows. */
   | { kind: "when"; key: string };
 
 /** Timers are the frame's own and fine; anything else on these is the
@@ -72,7 +72,7 @@ function registered(source: string, pluginId: string, id: string): boolean {
   return ['"', "'", "`"].some((q) => source.includes(`${rest}${q}`));
 }
 
-/** The keys the manifest's menu `when` clauses read that Textus never sets. */
+/** The keys the manifest's menu `when` clauses read that Moxie never sets. */
 function unknownWhenKeys(manifest: PluginManifest): string[] {
   const keys = new Set<string>();
   for (const items of Object.values(manifest.contributes.menus ?? {}))

@@ -15,7 +15,7 @@ import { runMenuAction } from "./menu/app-menu-actions";
 import { paletteNow, type PaletteEntry } from "./command-palette";
 
 /**
- * The `textus` commands a window answers: the command palette, plugins,
+ * The `moxie` commands a window answers: the command palette, plugins,
  * themes and export. Rust's listener (src-tauri/src/cli/app.rs) hands them
  * over; plugins' tools and skills it answers itself.
  */
@@ -90,7 +90,7 @@ const commands: Handler = async (request) => {
       })),
     );
   if (verb !== "run" || !id || rest.length > 0)
-    return fail("Usage: textus commands [list | run <id>]", 2);
+    return fail("Usage: moxie commands [list | run <id>]", 2);
   const entry = entries.find((e) => entryId(e) === id);
   if (!entry) return fail(`No command '${id}' can run now.`);
   if ("command" in entry.run) runCommand(entry.run.command);
@@ -116,12 +116,12 @@ const theme: Handler = async (request, window) => {
       })),
     );
   if (verb !== "set" || !wanted || rest.length > 0)
-    return fail("Usage: textus theme list | set <id>", 2);
+    return fail("Usage: moxie theme list | set <id>", 2);
   const lower = wanted.toLowerCase();
   const found = themes.find(
     (th) => th.id === wanted || th.name.toLowerCase() === lower,
   );
-  if (!found) return fail(`No theme '${wanted}'. See 'textus theme list'.`);
+  if (!found) return fail(`No theme '${wanted}'. See 'moxie theme list'.`);
   window().setSettings({ themeId: found.id });
   return ok("");
 };
@@ -153,7 +153,7 @@ const plugin: Handler = async (request) => {
     !["install", "enable", "disable"].includes(verb)
   )
     return fail(
-      "Usage: textus plugin list | install <id or path> | enable <id> | disable <id>",
+      "Usage: moxie plugin list | install <id or path> | enable <id> | disable <id>",
       2,
     );
   if (verb === "install") {
@@ -187,7 +187,7 @@ const exportDocument: Handler = async (request, window) => {
     !document.querySelector('[data-active-tab="true"] .milkdown')
   ) {
     if (Date.now() > deadline)
-      return fail(`${path} didn't open in Textus's editor.`);
+      return fail(`${path} didn't open in Moxie's editor.`);
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   const [event, payload] =
@@ -211,7 +211,7 @@ export async function answerCliRequest(
   window: () => CliWindow,
 ): Promise<CliAnswer> {
   const handler = HANDLERS[request.command];
-  if (!handler) return fail(`'${request.command}' is not a textus command.`, 2);
+  if (!handler) return fail(`'${request.command}' is not a moxie command.`, 2);
   try {
     return await handler(request, window);
   } catch (err) {

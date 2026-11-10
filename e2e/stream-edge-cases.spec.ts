@@ -17,7 +17,7 @@ async function open(page: Page, display: string) {
   await page.setViewportSize({ width: 1500, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: display },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `${FIRST}\n\n${SECOND}`);
 }
@@ -188,7 +188,7 @@ test("Result only with no room for the margin shows everything in the text, and 
   await page.setViewportSize({ width: 1280, height: 800 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "final" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `${FIRST}\n\n${SECOND}`);
   await streamRevise(page, CALLS);

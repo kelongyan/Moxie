@@ -229,7 +229,7 @@ test(
     await openApp(page, {
       animations: true,
       settings: { language: "en", revisionDisplay: "original" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
     });
     await pasteMarkdown(page, STORY);
     await mockInvoke(page, {

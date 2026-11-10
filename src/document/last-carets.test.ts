@@ -21,7 +21,7 @@ import {
   useLastCarets,
 } from "./last-carets";
 
-const KEY = "textus-last-carets";
+const KEY = "moxie-last-carets";
 const stored = () => JSON.parse(localStorage.getItem(KEY) ?? "null");
 
 beforeAll(installTestLocalStorage);

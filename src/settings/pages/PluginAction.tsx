@@ -11,7 +11,7 @@ import {
   catalogSnapshot,
   subscribeCatalog,
   updateFor,
-  neededTextus,
+  neededMoxie,
 } from "../../plugins/store/catalog";
 import { canSwitch } from "../../plugins/store/lifecycle";
 import { usePluginInstall } from "./usePluginInstall";
@@ -35,7 +35,7 @@ export function usePluginActions(t: Strings) {
         name={pluginName(record ?? { id, manifest: item?.manifest ?? null })}
         record={record}
         update={record ? updateFor(id, catalog) : null}
-        needs={item ? neededTextus(item) : null}
+        needs={item ? neededMoxie(item) : null}
         installing={installing === id}
         onInstall={() => item && void install(item)}
         onUpdate={() => item && void install(item)}
@@ -78,7 +78,7 @@ export function PluginAction({
   record: PluginRecord | undefined;
   /** The catalog's newer version, if there is one. */
   update: string | null;
-  /** The newer Textus the catalog's version needs, if it doesn't run here. */
+  /** The newer Moxie the catalog's version needs, if it doesn't run here. */
   needs: string | null;
   installing: boolean;
   onInstall: () => void;
@@ -90,7 +90,7 @@ export function PluginAction({
   const menu: Action[] = [];
   if (!record && needs) {
     main = {
-      label: t.pluginNeedsTextus.replace("{version}", needs),
+      label: t.pluginNeedsMoxie.replace("{version}", needs),
       run: () => {},
       unavailable: true,
     };

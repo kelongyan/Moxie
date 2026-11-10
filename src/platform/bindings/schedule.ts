@@ -29,7 +29,7 @@ export const commands = {
 
 /* Types */
 export type AppState = 
-/**  A Textus window has the focus. */
+/**  A Moxie window has the focus. */
 "active" | 
 /**  Windows are open, none focused. */
 "inactive" | 
@@ -37,7 +37,7 @@ export type AppState =
 "background";
 
 export type CatchUp = 
-/**  A time missed fires once when Textus is next running. */
+/**  A time missed fires once when Moxie is next running. */
 "once" | 
 /**  A time missed is let go. */
 "skip";

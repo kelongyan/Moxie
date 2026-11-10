@@ -9,7 +9,7 @@ import {
 import { appVersion } from "../../platform/app-info";
 
 /**
- * Tools plugins give Textus AI: the window tells Rust the tools of its on
+ * Tools plugins give Moxie AI: the window tells Rust the tools of its on
  * plugins granted `ai.tools`, started or not; a call comes back as an event,
  * runs in the plugin and is answered.
  */
@@ -40,7 +40,7 @@ export function offered() {
 
 /** The app's own tools that run in the window, called as a plugin's are
  *  (Rust's create tools): by name. */
-const APP_TOOLS_OWNER = "textus";
+const APP_TOOLS_OWNER = "moxie";
 async function appTool(name: string, args: unknown): Promise<string> {
   if (name === "check_plugin") {
     const [{ checkWrittenPlugin }, version] = await Promise.all([

@@ -42,8 +42,8 @@ export function fillPendingHtml(span: HTMLElement, source: string) {
 }
 
 /** A waiting picture's placeholder, as an address the document renderer's
- *  HTML policy keeps (it drops blob: and textus-generated:). */
-export const PICTURE_STAND_IN = "https://textus.invalid/generated/";
+ *  HTML policy keeps (it drops blob: and moxie-generated:). */
+export const PICTURE_STAND_IN = "https://moxie.invalid/generated/";
 
 /** New text between two blocks, rendered as the blocks it will be, as
  *  inline text would show its Markdown. */
@@ -58,7 +58,7 @@ export function fillPendingBlocks(el: HTMLElement, source: string) {
       return [pendingDiagram(part, previous[diagrams++])];
     const html = document.createElement("template");
     html.innerHTML = renderDocumentHtml(
-      part.text.replace(/textus-generated:/g, PICTURE_STAND_IN),
+      part.text.replace(/moxie-generated:/g, PICTURE_STAND_IN),
     );
     for (const img of html.content.querySelectorAll("img")) {
       const src = img.getAttribute("src") ?? "";

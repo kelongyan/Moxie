@@ -1,6 +1,6 @@
 //! The skills and writing-standards reference packs bundled with the app,
 //! compiled in with `include_str!`. The user's own skill of the same name
-//! overrides a built-in; a skill's `textus-packs` sections come with its body.
+//! overrides a built-in; a skill's `moxie-packs` sections come with its body.
 
 use crate::ai::workspace::{parse_skill_file, AgentSkill, Invocation, SkillSource};
 use std::sync::OnceLock;
@@ -75,7 +75,7 @@ pub fn builtin_skills_attribution() -> &'static str {
     ATTRIBUTION
 }
 
-/// The `/` menu's groups, in menu order (`textus-category`).
+/// The `/` menu's groups, in menu order (`moxie-category`).
 pub(crate) const CATEGORY_ORDER: &[&str] = &["write", "revise", "check", "format", "create"];
 
 /// The built-in skills, parsed once.
@@ -105,10 +105,10 @@ pub(crate) fn raw(name: &str) -> Option<&'static str> {
         .map(|(_, text)| *text)
 }
 
-/// A built-in skill's file with `textus-based-on` added under `metadata:`,
+/// A built-in skill's file with `moxie-based-on` added under `metadata:`,
 /// for the copy Customize… writes.
 pub(crate) fn with_based_on(raw: &str, based_on: &str) -> String {
-    let line = format!("  textus-based-on: \"{based_on}\"");
+    let line = format!("  moxie-based-on: \"{based_on}\"");
     let mut out = Vec::new();
     let mut added = false;
     for l in raw.lines() {

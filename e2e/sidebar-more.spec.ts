@@ -19,11 +19,11 @@ test("tabs past the sidebar's width go under More, the one shown keeps its butto
 }) => {
   await openApp(page, { settings: { language: "en" } });
   await page.waitForFunction(
-    () => !!(window as unknown as { __textusPlugins?: Api }).__textusPlugins,
+    () => !!(window as unknown as { __moxiePlugins?: Api }).__moxiePlugins,
   );
   await page.evaluate(() => {
-    const { sidebarTabs } = (window as unknown as { __textusPlugins: Api })
-      .__textusPlugins;
+    const { sidebarTabs } = (window as unknown as { __moxiePlugins: Api })
+      .__moxiePlugins;
     for (const n of [1, 2, 3, 4, 5, 6])
       sidebarTabs.register({
         id: `example-${n}`,
@@ -54,11 +54,11 @@ test("a tab dragged along the bar takes the place it is let go at", async ({
   await swallowHtmlDrop(page);
   await openApp(page, { settings: { language: "en" } });
   await page.waitForFunction(
-    () => !!(window as unknown as { __textusPlugins?: Api }).__textusPlugins,
+    () => !!(window as unknown as { __moxiePlugins?: Api }).__moxiePlugins,
   );
   await page.evaluate(() => {
-    const { sidebarTabs } = (window as unknown as { __textusPlugins: Api })
-      .__textusPlugins;
+    const { sidebarTabs } = (window as unknown as { __moxiePlugins: Api })
+      .__moxiePlugins;
     sidebarTabs.register({
       id: "example-1",
       label: () => "Example 1",

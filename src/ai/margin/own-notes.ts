@@ -2,7 +2,7 @@ import type { Node as ProseNode } from "@milkdown/kit/prose/model";
 import type { ReviewNote } from "./review-notes-plugin";
 
 /** A writer's note as kept: its words plus a little text before them, to tell
- *  repeats apart. No positions, as the file can change outside Textus. */
+ *  repeats apart. No positions, as the file can change outside Moxie. */
 export interface StoredOwnNote {
   id: string;
   comment: string;

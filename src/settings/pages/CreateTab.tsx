@@ -3,7 +3,7 @@ import { CreateChat } from "./create-chat-lazy";
 import type { Strings } from "../../i18n/strings";
 
 /**
- * Settings › Extensions › Create: say what you want, and Textus AI makes the
+ * Settings › Extensions › Create: say what you want, and Moxie AI makes the
  * plugin, theme or skill in a conversation of its own, here in the store -
  * installed, tried and changed without leaving it, and without touching the
  * document behind.

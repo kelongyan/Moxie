@@ -138,7 +138,7 @@ for (const [name, theme] of Object.entries(THEMES)) {
     for (const mode of ["Light", "Dark"] as const) {
       await setAppearance(page, mode);
       await expect(page.locator("html")).toHaveAttribute("data-user-theme", "");
-      // Textus's ornaments are off under an imported theme.
+      // Moxie's ornaments are off under an imported theme.
       expect(await computed(page, "#write h4::before", "content")).toBe("none");
       expect(await computed(page, "#write h3", "border-left-style")).toBe(
         "none",
@@ -174,7 +174,7 @@ test("an imported theme's own interface variables win over the derived ones", as
 }) => {
   // A theme author sets the sidebar, a fill's label, Find's highlight and a
   // card's shadow; the window takes them in light and in dark instead of
-  // the colours Textus derives from the page.
+  // the colours Moxie derives from the page.
   const OWN = {
     "--ui-subtle": "rgb(10, 20, 30)",
     "--ui-on-fill": "rgb(1, 1, 1)",
@@ -254,17 +254,17 @@ test("custom CSS wins over the Default theme and an imported one, in light and d
   const order = await page.evaluate(() =>
     Array.from(document.head.querySelectorAll("style[id]")).map((s) => s.id),
   );
-  expect(order.indexOf("textus-user-css")).toBeGreaterThan(
-    order.indexOf("textus-custom-theme"),
+  expect(order.indexOf("moxie-user-css")).toBeGreaterThan(
+    order.indexOf("moxie-custom-theme"),
   );
-  expect(order.indexOf("textus-user-css")).toBeGreaterThan(
-    order.indexOf("textus-imported-chrome"),
+  expect(order.indexOf("moxie-user-css")).toBeGreaterThan(
+    order.indexOf("moxie-imported-chrome"),
   );
   await setAppearance(page, "Dark");
   await expectCustomCssWins(page, "imported dark");
 });
 
-test("the document's look sits in the one textus-content layer", async ({
+test("the document's look sits in the one moxie-content layer", async ({
   page,
 }) => {
   await openApp(page, { settings: { language: "en" } });
@@ -319,7 +319,7 @@ test("the document's look sits in the one textus-content layer", async ({
       const href =
         node?.getAttribute("data-vite-dev-id") ?? node?.id ?? sheet.href ?? "";
       // The theme and the user's CSS are unlayered on purpose.
-      if (/textus-(custom-theme|user-css|imported-chrome)/.test(href)) continue;
+      if (/moxie-(custom-theme|user-css|imported-chrome)/.test(href)) continue;
       // So is the test harness's own no-animation sheet.
       if (!href.includes("/src/")) continue;
       walk(sheet.cssRules, href, false);
@@ -330,7 +330,7 @@ test("the document's look sits in the one textus-content layer", async ({
       unlayered,
     };
   });
-  expect(report.layers).toEqual(["textus-content"]);
+  expect(report.layers).toEqual(["moxie-content"]);
   expect(report.layeredFrom).toHaveLength(1);
   expect(report.layeredFrom[0]).toContain("content-base.css");
   expect(report.unlayered).toEqual([]);
@@ -381,7 +381,7 @@ test("export then import keeps the ornaments and fonts, readable in dark", async
           window as unknown as {
             __themeStore: { written: Record<string, string> };
           }
-        ).__themeStore.written["/exports/textus-theme.css"],
+        ).__themeStore.written["/exports/moxie-theme.css"],
     )
     .then((h) => h.jsonValue() as Promise<string>);
   await page.keyboard.press("Escape");
@@ -390,7 +390,7 @@ test("export then import keeps the ornaments and fonts, readable in dark", async
   expect(css).toMatch(/^\s*--doc-bg:\s*\S/m);
   expect(css).toMatch(/^\s*--doc-font:\s*\S/m);
 
-  await importTheme(page, "/exports/textus-theme.css");
+  await importTheme(page, "/exports/moxie-theme.css");
   for (const mode of ["Light", "Dark"] as const) {
     await setAppearance(page, mode);
     for (let i = 0; i < ORNAMENTS.length; i++) {

@@ -9,9 +9,9 @@
 //! ```
 //!
 //! MiniMax by default, its key read in place from the app's key file (or
-//! MINIMAX_API_KEY); TEXTUS_PAPER_TOPIC, TEXTUS_PAPER_GENRE ("paper",
-//! "report"), TEXTUS_PAPER_LANGUAGE, TEXTUS_PAPER_CHARS,
-//! TEXTUS_PAPER_AT_ONCE and TEXTUS_EVAL_AGENT_MODEL change the run. TEXTUS_PAPER_PROMPTS runs it on
+//! MINIMAX_API_KEY); MOXIE_PAPER_TOPIC, MOXIE_PAPER_GENRE ("paper",
+//! "report"), MOXIE_PAPER_LANGUAGE, MOXIE_PAPER_CHARS,
+//! MOXIE_PAPER_AT_ONCE and MOXIE_EVAL_AGENT_MODEL change the run. MOXIE_PAPER_PROMPTS runs it on
 //! prompts of another wording, read from a folder laid out as prompts/ is
 //! (prompts.rs): copy the files to change, edit them, and compare the two
 //! runs' output - each is kept under its prompts' fingerprint.
@@ -29,7 +29,7 @@ fn minimax_key() -> Option<String> {
         return Some(key);
     }
     let path = std::path::PathBuf::from(std::env::var_os("HOME")?)
-        .join("Library/Application Support/com.catvinci.textus/provider_keys.json");
+        .join("Library/Application Support/com.catvinci.moxie/provider_keys.json");
     let keys: serde_json::Value =
         serde_json::from_str(&std::fs::read_to_string(path).ok()?).ok()?;
     keys["minimax"]
@@ -54,7 +54,7 @@ fn live_paper() {
     };
     let entry = crate::ai::catalog::find("minimax").expect("minimax");
     let base_url = entry.base_url.expect("base_url");
-    let model = env_or("TEXTUS_EVAL_AGENT_MODEL", "MiniMax-M3.1-Flash");
+    let model = env_or("MOXIE_EVAL_AGENT_MODEL", "MiniMax-M3.1-Flash");
     let agent = AgentProvider {
         id: "minimax".into(),
         model: model.clone(),
@@ -68,9 +68,9 @@ fn live_paper() {
         native_search: None,
         enforce_binding: false,
     };
-    // As the app steps it: TEXTUS_PAPER_AT_ONCE calls at once, else
+    // As the app steps it: MOXIE_PAPER_AT_ONCE calls at once, else
     // MiniMax's.
-    let at_once = env_or("TEXTUS_PAPER_AT_ONCE", "0")
+    let at_once = env_or("MOXIE_PAPER_AT_ONCE", "0")
         .parse()
         .ok()
         .filter(|n| *n > 0)
@@ -82,11 +82,11 @@ fn live_paper() {
     budget.limits.images = 0;
     let paper = Paper {
         id: new_id(),
-        topic: env_or("TEXTUS_PAPER_TOPIC", "屋顶绿化如何缓解城市热岛效应"),
-        genre: serde_json::from_value(json!(env_or("TEXTUS_PAPER_GENRE", "paper")))
-            .expect("TEXTUS_PAPER_GENRE"),
-        language: env_or("TEXTUS_PAPER_LANGUAGE", "zh"),
-        target_chars: env_or("TEXTUS_PAPER_CHARS", "5000").parse().unwrap_or(5000),
+        topic: env_or("MOXIE_PAPER_TOPIC", "屋顶绿化如何缓解城市热岛效应"),
+        genre: serde_json::from_value(json!(env_or("MOXIE_PAPER_GENRE", "paper")))
+            .expect("MOXIE_PAPER_GENRE"),
+        language: env_or("MOXIE_PAPER_LANGUAGE", "zh"),
+        target_chars: env_or("MOXIE_PAPER_CHARS", "5000").parse().unwrap_or(5000),
         budget,
         stage: PaperStage::Researching,
         sub_helpers: false,
@@ -98,7 +98,7 @@ fn live_paper() {
     let write = |name: &str, text: &str| std::fs::write(out.join(name), text).unwrap();
     let mut stats = serde_json::Map::new();
     stats.insert("prompts".into(), json!(prompts::fingerprint()));
-    if let Ok(folder) = std::env::var("TEXTUS_PAPER_PROMPTS") {
+    if let Ok(folder) = std::env::var("MOXIE_PAPER_PROMPTS") {
         stats.insert("prompts_from".into(), json!(folder));
     }
     let started = Instant::now();

@@ -3,7 +3,7 @@ import { openApp } from "./helpers";
 
 /**
  * Official plugins written for the old plugin API move to their rewrites
- * when a window starts; Split Panes, now part of Textus, is removed.
+ * when a window starts; Split Panes, now part of Moxie, is removed.
  */
 
 const old = (id: string, permissions: string[]) => ({
@@ -15,7 +15,7 @@ const old = (id: string, permissions: string[]) => ({
     version: "1.0.4",
     publisher: "catvinci",
     description: "Before the plugin API 1.0.",
-    engines: { textus: "^1.3.0-beta.1" },
+    engines: { moxie: "^1.3.0-beta.1" },
     main: "host.js",
     permissions,
   }),

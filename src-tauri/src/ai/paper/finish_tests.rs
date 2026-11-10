@@ -120,7 +120,7 @@ async fn twenty_titles_looked_up_six_at_a_time_take_a_fifth_of_the_time() {
 /// nothing for.
 fn marked(s: usize) -> String {
     let marks: Vec<String> = (0..3)
-        .map(|m| format!("<!-- textus-figure web: Picture {s}{m} | words {s}{m} -->"))
+        .map(|m| format!("<!-- moxie-figure web: Picture {s}{m} | words {s}{m} -->"))
         .collect();
     format!(
         "Section {s}.\n\n{}\n\nEnd {s}.",
@@ -152,15 +152,15 @@ async fn web_pictures_land_where_their_marks_were_four_searches_at_a_time() {
     })
     .await;
     assert_eq!(searches.most.load(SeqCst), web_figures::AT_ONCE);
-    let ids = regex::Regex::new(r"textus-generated:[^)]+").unwrap();
+    let ids = regex::Regex::new(r"moxie-generated:[^)]+").unwrap();
     for (s, section) in resolved.iter().enumerate() {
         let expected = format!(
             "Section {s}.\n\n\
-             ![Picture {s}0](textus-generated:ID)\n\n*Credit {s}0*\n\nBetween.\n\n\
-             ![Picture {s}1](textus-generated:ID)\n\n*Credit {s}1*\n\nBetween.\n\n\
-             ![Picture {s}2](textus-picture:16:9 Picture {s}2 (words {s}2))\n\nEnd {s}."
+             ![Picture {s}0](moxie-generated:ID)\n\n*Credit {s}0*\n\nBetween.\n\n\
+             ![Picture {s}1](moxie-generated:ID)\n\n*Credit {s}1*\n\nBetween.\n\n\
+             ![Picture {s}2](moxie-picture:16:9 Picture {s}2 (words {s}2))\n\nEnd {s}."
         );
-        assert_eq!(ids.replace_all(section, "textus-generated:ID"), expected);
+        assert_eq!(ids.replace_all(section, "moxie-generated:ID"), expected);
     }
 }
 

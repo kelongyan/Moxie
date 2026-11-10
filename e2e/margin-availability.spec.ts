@@ -11,7 +11,7 @@ const t = {
   original: "Original in the text, changes in the margin",
   noRoom: "Not enough room - close the sidebar or the AI panel",
   settingsTitle: "Settings",
-  navAi: "Textus AI",
+  navAi: "Moxie AI",
   revisionDisplayLabel: "Show revisions",
 };
 
@@ -63,8 +63,8 @@ async function openSettings(page: Page) {
 }
 
 const open = {
-  "textus-agent-panel-open": "1",
-  "textus-sidebar-open": "1",
+  "moxie-agent-panel-open": "1",
+  "moxie-sidebar-open": "1",
 };
 
 test("with no room for the margin, its views can't be picked and the chosen one waits; with room, every view can be picked", async ({
@@ -136,7 +136,7 @@ test("the adaptive column leaves room for the margin views beside the AI panel a
   await page.setViewportSize({ width: 1341, height: 800 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "original" },
-    storage: { "textus-agent-panel-open": "1", "textus-sidebar-open": "0" },
+    storage: { "moxie-agent-panel-open": "1", "moxie-sidebar-open": "0" },
   });
   await proposeRevision(page);
   await expect(page.locator(".revision-note")).toHaveCount(2);
@@ -160,7 +160,7 @@ test("the line being read stays put as revisions move between the text and the m
       contentWidth: "standard",
       revisionDisplay: "original",
     },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   // WebKit has no scroll anchoring: take Chromium's away too.
   await page.addStyleTag({

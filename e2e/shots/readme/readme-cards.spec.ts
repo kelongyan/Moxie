@@ -2,7 +2,7 @@
  * The README's pictures: one large window of the Markdown tour, then small
  * cards, each cut around the thing it shows with an even margin. Light,
  * Default theme, at 2x, in each README language's UI. Not a test.
- * Env: LANGS (as shot-kit.ts), TEXTUS_PLUGINS_DIR for the plugin cards.
+ * Env: LANGS (as shot-kit.ts), MOXIE_PLUGINS_DIR for the plugin cards.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -318,7 +318,7 @@ async function start(page: Page, options: Parameters<typeof launch>[1]) {
 function pluginWord(id: string, key: string, ui: string): string {
   const root = pluginsCheckout();
   if (!root)
-    throw new Error("no textus-plugins checkout: set TEXTUS_PLUGINS_DIR");
+    throw new Error("no textus-plugins checkout: set MOXIE_PLUGINS_DIR");
   const manifest = JSON.parse(
     readFileSync(path.join(root, "plugins", id, "textus-plugin.json"), "utf8"),
   ) as { l10n: Record<string, Record<string, string>> };
@@ -421,7 +421,7 @@ for (const lang of LANGS) {
         },
         // Larger words for a small card.
         settings: { enableCompletion: true },
-        storage: panel ? { "textus-agent-panel-open": "1" } : {},
+        storage: panel ? { "moxie-agent-panel-open": "1" } : {},
       });
     }
 
@@ -578,7 +578,7 @@ for (const lang of LANGS) {
       });
       // Create, in Settings › Extensions: its / menu holds what it makes.
       await page.evaluate(() =>
-        window.dispatchEvent(new Event("textus-open-create")),
+        window.dispatchEvent(new Event("moxie-open-create")),
       );
       const composer = page.locator(".create-studio textarea");
       await composer.fill("/");
@@ -610,7 +610,7 @@ for (const lang of LANGS) {
         ).__devEmitTauriEvent("menu-open-settings"),
       );
       await page
-        .locator(".settings-nav-item", { hasText: "Textus AI" })
+        .locator(".settings-nav-item", { hasText: "Moxie AI" })
         .click();
       await page.locator(".provider-picker .combobox-trigger").click();
       const list = page.locator(".combobox-list");

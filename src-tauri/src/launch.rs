@@ -123,7 +123,7 @@ pub(crate) fn paths_from_argv(
 ) -> Vec<String> {
     args.into_iter()
         .skip(1)
-        .filter(|a| !a.starts_with('-') && !crate::plugins::uri::is_textus_uri(a))
+        .filter(|a| !a.starts_with('-') && !crate::plugins::uri::is_moxie_uri(a))
         .map(|a| cwd.join(&a).to_string_lossy().into_owned())
         .collect()
 }
@@ -206,10 +206,10 @@ pub(crate) fn take_pending_open_paths(pending: State<PendingOpenPaths>) -> Vec<S
 }
 
 /// Files the system asked to open: Finder's "Open With" on macOS (never
-/// argv) and "Open in Textus" on iOS.
+/// argv) and "Open in Moxie" on iOS.
 #[cfg(any(target_os = "macos", target_os = "ios"))]
 pub(crate) fn open_urls(app: &tauri::AppHandle, urls: Vec<tauri::Url>) {
-    // iOS hands over a security-scoped URL, kept as a URL so the textus-files
+    // iOS hands over a security-scoped URL, kept as a URL so the moxie-files
     // plugin can open its scope.
     #[cfg(target_os = "ios")]
     let paths: Vec<String> = urls

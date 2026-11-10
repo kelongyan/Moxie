@@ -12,7 +12,7 @@ const result = spawnSync(
   {
     cwd: join(root, "src-tauri"),
     stdio: "inherit",
-    env: { ...process.env, TEXTUS_WRITE_BINDINGS: "1" },
+    env: { ...process.env, MOXIE_WRITE_BINDINGS: "1" },
   },
 );
 if (result.error) {

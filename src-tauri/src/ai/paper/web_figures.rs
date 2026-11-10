@@ -1,4 +1,4 @@
-//! A paper's web pictures: each `<!-- textus-figure web: caption | search
+//! A paper's web pictures: each `<!-- moxie-figure web: caption | search
 //! words -->` mark the writers left becomes the best match on Wikimedia
 //! Commons, kept in the picture store like a generated picture - shown in
 //! place, saved with the paper - with the credit its licence asks for on
@@ -37,7 +37,7 @@ pub(crate) const AT_ONCE: usize = 4;
 
 /// `sections` with their web-picture marks replaced by pictures `find`
 /// finds - the picture and its credit - each kept in the picture store. A
-/// mark `find` finds nothing for becomes a `textus-picture:` line, begun
+/// mark `find` finds nothing for becomes a `moxie-picture:` line, begun
 /// with the planned generated pictures, or left out with them when there is
 /// no image model. The marks are searched for a few at a time, whichever
 /// section they are in, and each lands where its mark was.
@@ -111,9 +111,9 @@ fn place(section: &str, found: &mut impl Iterator<Item = Option<(String, String)
 fn generated_instead(caption: &str, words: &str) -> String {
     let alt = caption.replace(['[', ']'], "");
     if words == caption {
-        format!("![{alt}](textus-picture:16:9 {alt})")
+        format!("![{alt}](moxie-picture:16:9 {alt})")
     } else {
-        format!("![{alt}](textus-picture:16:9 {alt} ({words}))")
+        format!("![{alt}](moxie-picture:16:9 {alt} ({words}))")
     }
 }
 

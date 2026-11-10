@@ -149,7 +149,7 @@ impl ChatHistory {
         let _ = std::fs::remove_dir(&trash);
         // The files are gone now; the index says so at once too.
         if let Err(e) = self.index.flush() {
-            eprintln!("textus: cannot write {}: {e}", self.index.path.display());
+            eprintln!("moxie: cannot write {}: {e}", self.index.path.display());
         }
     }
 
@@ -196,7 +196,7 @@ impl ChatHistory {
         let files = self.files.lock().unwrap();
         for store in files.values().chain([&self.index]) {
             if let Err(e) = store.flush() {
-                eprintln!("textus: cannot write {}: {e}", store.path.display());
+                eprintln!("moxie: cannot write {}: {e}", store.path.display());
             }
         }
     }
@@ -218,7 +218,7 @@ impl ChatHistory {
         }
         let trash = self.dir.join(TRASH);
         if let Err(e) = std::fs::create_dir_all(&trash) {
-            eprintln!("textus: cannot create {}: {e}", trash.display());
+            eprintln!("moxie: cannot create {}: {e}", trash.display());
             return;
         }
         for id in dropped.iter().filter_map(id_str).filter(|id| safe_id(id)) {
@@ -226,14 +226,14 @@ impl ChatHistory {
             // the latest; then nothing more may write it.
             let store = files.remove(id);
             if let Some(Err(e)) = store.as_ref().map(|s| s.flush()) {
-                eprintln!("textus: cannot write {}: {e}", file_of(id));
+                eprintln!("moxie: cannot write {}: {e}", file_of(id));
             }
             let _held = store.as_ref().map(|s| s.discard());
             let name = file_of(id);
             match std::fs::rename(self.dir.join(&name), trash.join(&name)) {
                 Ok(()) => {}
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-                Err(e) => eprintln!("textus: cannot move {name} to the trash: {e}"),
+                Err(e) => eprintln!("moxie: cannot move {name} to the trash: {e}"),
             }
         }
         let mut trashed = conversation_files(&trash);
@@ -288,7 +288,7 @@ fn remove_file(path: &Path) {
     match std::fs::remove_file(path) {
         Ok(()) => {}
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-        Err(e) => eprintln!("textus: cannot delete {}: {e}", path.display()),
+        Err(e) => eprintln!("moxie: cannot delete {}: {e}", path.display()),
     }
 }
 

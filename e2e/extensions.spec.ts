@@ -86,15 +86,15 @@ test("Extensions has a tab each for themes, plugins, skills and MCP, and one to 
   await expect(panel.getByRole("menu")).toHaveCount(0);
 });
 
-test("the Skills tab lists the skills added, never the built-ins, which Textus AI's page lists and links back from", async ({
+test("the Skills tab lists the skills added, never the built-ins, which Moxie AI's page lists and links back from", async ({
   page,
 }) => {
   await openApp(page, { settings: { language: "en" } });
   const panel = await openExtensions(page);
   await panel.getByRole("tab", { name: "Skills" }).click();
   await expect(panel.locator('[data-skill="proofread"]')).toHaveCount(0);
-  // They are with Textus AI's settings, always on.
-  await panel.locator(".settings-nav-item", { hasText: "Textus AI" }).click();
+  // They are with Moxie AI's settings, always on.
+  await panel.locator(".settings-nav-item", { hasText: "Moxie AI" }).click();
   await panel.locator(".settings-builtin-skills summary").click();
   const proofread = panel.locator('[data-skill="proofread"]');
   await expect(proofread).toContainText("Built-in");

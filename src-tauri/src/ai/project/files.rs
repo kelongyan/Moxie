@@ -1,4 +1,4 @@
-//! The project folder's files as Textus AI reads them: which are text,
+//! The project folder's files as Moxie AI reads them: which are text,
 //! the walk over them, and reading one whole or in parts (documents
 //! through extract/, cached) or as an image.
 
@@ -229,7 +229,7 @@ pub(crate) fn document_text(path: &Path) -> Result<Arc<String>, String> {
     // Extracted outside the lock: a slow PDF holds up no other read.
     let ext = crate::extract::extension_of(path);
     let text = crate::extract::document_text(path, &ext)
-        .unwrap_or_else(|| Err("It isn't a document Textus can read.".to_string()))?;
+        .unwrap_or_else(|| Err("It isn't a document Moxie can read.".to_string()))?;
     if text.trim().is_empty() {
         return Err("It has no readable text.".to_string());
     }
@@ -379,20 +379,20 @@ pub(crate) fn excerpt(rel: &str, text: &str, range: LineRange) -> String {
     reply.trim_end().to_string()
 }
 
-/// read_file of an image, within the size every provider accepts. Textus can't
+/// read_file of an image, within the size every provider accepts. Moxie can't
 /// shrink an image, so a larger one is refused with why.
 pub fn read_image(root: &Path, rel: &str) -> Result<aicompat::agent::ImageAttachment, String> {
     let (path, rel) = resolve(root, rel)?;
     let ext = crate::extract::extension_of(&path);
     let Some(mime) = crate::extract::image_mime(&ext) else {
         return Err(format!(
-            "`{rel}` isn't an image Textus can show (PNG, JPEG, GIF or WebP) - read_file reads text and documents."
+            "`{rel}` isn't an image Moxie can show (PNG, JPEG, GIF or WebP) - read_file reads text and documents."
         ));
     };
     let size = size_of(&path);
     if size > crate::extract::MAX_IMAGE_BYTES {
         return Err(format!(
-            "`{rel}` is too large to show ({}; the limit is {}), and Textus can't make images smaller - ask the user for a smaller copy.",
+            "`{rel}` is too large to show ({}; the limit is {}), and Moxie can't make images smaller - ask the user for a smaller copy.",
             megabytes(size),
             megabytes(crate::extract::MAX_IMAGE_BYTES)
         ));

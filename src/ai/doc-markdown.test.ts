@@ -104,8 +104,8 @@ describe("matchTarget", () => {
   // Words an edit is about repeat across paragraphs; the block says which.
   it("tells words that repeat in the document apart by their block", () => {
     const doc = blocks(
-      "I used GPT 5.6 sol to build Textus.",
-      "Textus brings the **latest LLMs, including GPT 5.6 sol**, to markdown.",
+      "I used GPT 5.6 sol to build Moxie.",
+      "Moxie brings the **latest LLMs, including GPT 5.6 sol**, to markdown.",
     );
     const match = matchTarget(doc, { block: doc[1].id, anchor: "GPT 5.6 sol" });
     expect(match!.from).toBe(doc[1].from);

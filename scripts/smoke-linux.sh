@@ -44,7 +44,7 @@ fail() {
 
 version="$(node -p "require('$root/package.json').version")"
 binary="$root/src-tauri/target/release/textus"
-deb="$root/src-tauri/target/release/bundle/deb/Textus_${version}_amd64.deb"
+deb="$root/src-tauri/target/release/bundle/deb/Moxie_${version}_amd64.deb"
 
 if [ "$build" = 1 ]; then
   # No updater artifacts: signing them needs the release key, which only CI has.
@@ -55,7 +55,7 @@ fi
 [ -f "$deb" ] || fail "no package at $deb (run with --build)"
 
 if pgrep -x textus > /dev/null; then
-  fail "Textus is already running; quit it first (a second instance would forward to it)"
+  fail "Moxie is already running; quit it first (a second instance would forward to it)"
 fi
 
 work="$(mktemp -d)"

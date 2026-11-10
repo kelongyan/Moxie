@@ -86,7 +86,7 @@ export function imageMarkdownHtml(attrs: ImageAttrs): string | null {
 }
 
 /** An image title split into its caption and the older title-kept width
- *  (`{textus-width=N%}`); a rotation there is left out of the caption too. */
+ *  (`{moxie-width=N%}`); a rotation there is left out of the caption too. */
 export function readImagePresentation(title: string | null | undefined): {
   title: string;
   widthPercent: number | null;

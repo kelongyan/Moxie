@@ -141,7 +141,7 @@ export function fixedShortcutGroups(
       { label: t.shortcutMoveBlockDown, combos: ["alt+arrowdown"] },
     ],
   });
-  // The keyboard's way round the window and through Textus AI's changes.
+  // The keyboard's way round the window and through Moxie AI's changes.
   groups.push({
     title: t.shortcutKeyboardGroupLabel,
     items: [

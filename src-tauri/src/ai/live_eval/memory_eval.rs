@@ -1,4 +1,4 @@
-//! Live checks of what Textus AI remembers by itself: what it keeps, where, what
+//! Live checks of what Moxie AI remembers by itself: what it keeps, where, what
 //! it must not keep, and that a memory is followed later. Run with
 //! `cargo test --lib live_eval::memory_eval -- --ignored --nocapture --test-threads=1`.
 
@@ -22,7 +22,7 @@ impl Folders {
         std::fs::create_dir_all(&global).unwrap();
         let project = project.then(|| {
             let root = dir.path().join("novel");
-            std::fs::create_dir_all(root.join(".textus")).unwrap();
+            std::fs::create_dir_all(root.join(".moxie")).unwrap();
             root
         });
         Folders {
@@ -43,12 +43,12 @@ impl Folders {
             .expect("a memory kept");
     }
 
-    /// The library entries Textus AI wrote (facts), by file name.
+    /// The library entries Moxie AI wrote (facts), by file name.
     fn facts(&self) -> Vec<String> {
         let Some(root) = &self.project else {
             return Vec::new();
         };
-        let dir = root.join(".textus").join("library");
+        let dir = root.join(".moxie").join("library");
         std::fs::read_dir(&dir)
             .map(|entries| {
                 entries

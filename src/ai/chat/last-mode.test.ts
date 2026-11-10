@@ -4,7 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { initialMode, rememberMode } from "./last-mode";
 import { installTestLocalStorage } from "../../dev/test-local-storage";
 
-const KEY = "textus-agent-last-mode";
+const KEY = "moxie-agent-last-mode";
 
 describe("the mode a conversation starts in", () => {
   beforeAll(installTestLocalStorage);

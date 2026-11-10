@@ -1,5 +1,5 @@
 // A webview's runtime: what a plugin's panel, view or editor page is given
-// as `textus` (acquireTextusApi() returns the same), run before the
+// as `textus` (acquireMoxieApi() returns the same), run before the
 // plugin's HTML in the sandboxed frame (frames.ts). It talks to its own
 // plugin's host only, through the window - as a VS Code webview does.
 //
@@ -65,7 +65,7 @@
     },
     { passive: false },
   );
-  // No engine menu on a page, as in the window. A text field gets Textus's
+  // No engine menu on a page, as in the window. A text field gets Moxie's
   // own (undo, cut, copy, paste, select all), drawn by the window and done
   // here; a right-click the page itself didn't answer goes to the window,
   // whose menu has what it can do to the page there (a block's: delete it).
@@ -155,13 +155,13 @@
   }
 
   // The window's theme as CSS variables, kept current: a plugin's page
-  // styled with var(--ui-text), var(--ui-bg) follows Textus's theme and dark
+  // styled with var(--ui-text), var(--ui-bg) follows Moxie's theme and dark
   // mode.
   function setTheme(css, dark) {
-    var style = document.getElementById("textus-theme");
+    var style = document.getElementById("moxie-theme");
     if (!style) {
       style = document.createElement("style");
-      style.id = "textus-theme";
+      style.id = "moxie-theme";
       (document.head || document.documentElement).prepend(style);
     }
     style.textContent = css;
@@ -195,14 +195,14 @@
   // this script (frames.ts), so the page's own scripts have them at once.
   var locale = { language: "", l10n: {} };
   try {
-    locale = JSON.parse(document.getElementById("textus-locale").textContent);
+    locale = JSON.parse(document.getElementById("moxie-locale").textContent);
   } catch {
     // A page made without them: English, and the keys.
   }
   var l10n = locale.l10n || {};
 
   var api = {
-    // The UI's language, as Textus's settings have it ("zh", "en").
+    // The UI's language, as Moxie's settings have it ("zh", "en").
     language: locale.language || document.documentElement.lang || "en",
     // A string of the plugin's manifest in that language.
     t: function (key) {
@@ -234,12 +234,12 @@
       send("state", { state: value });
       return value;
     },
-    // Textus's own menu over the page - its look, keys and motion - for a
+    // Moxie's own menu over the page - its look, keys and motion - for a
     // right-click or a dropdown. Items: { label, value, checked, danger,
     // disabled }, "separator", or { label, items } for a submenu. Gives
     // the chosen item's value (its label without one), or null.
     // A text field's actions, for a page that puts them in a menu of its
-    // own: textItems(field) gives them labelled in Textus's language (as
+    // own: textItems(field) gives them labelled in Moxie's language (as
     // menu items, value the action), editText(field, action) does one.
     textItems: function (field) {
       return call("textItems", { selected: selectedIn(field) });
@@ -272,7 +272,7 @@
   window.addEventListener("message", function receive(event) {
     if (event.source !== window.parent || app) return;
     var data = event.data;
-    if (!data || data.textus !== "init" || !event.ports[0]) return;
+    if (!data || data.moxie !== "init" || !event.ports[0]) return;
     window.removeEventListener("message", receive);
     state = data.state === undefined ? null : data.state;
     api.language = data.language || "en";
@@ -378,9 +378,9 @@
       }
     });
 
-  window.textus = api;
-  window.acquireTextusApi = function () {
+  window.moxie = api;
+  window.acquireMoxieApi = function () {
     return api;
   };
-  window.parent.postMessage({ textus: "ready" }, "*");
+  window.parent.postMessage({ moxie: "ready" }, "*");
 })();

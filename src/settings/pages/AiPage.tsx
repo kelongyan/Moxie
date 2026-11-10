@@ -43,8 +43,8 @@ import {
 } from "../../platform/capabilities";
 import { openExtensionsTab } from "./extensions-tab";
 
-/** Textus AI: its own switch, then the account and each feature beside the
- *  model it drives. With Textus AI off every other row is hidden, so none
+/** Moxie AI: its own switch, then the account and each feature beside the
+ *  model it drives. With Moxie AI off every other row is hidden, so none
  *  may reach a provider. */
 export function AiPage({
   t,
@@ -60,15 +60,15 @@ export function AiPage({
 }: SettingsPageProps) {
   return (
     <>
-      <SettingsGroup title={t.menuTextusAi}>
+      <SettingsGroup title={t.menuMoxieAi}>
         <ToggleRow
-          label={t.textusAiToggleLabel}
-          hint={settings.textusAi ? undefined : t.textusAiOffHint}
-          checked={settings.textusAi}
-          onChange={(v) => setSettings({ textusAi: v })}
+          label={t.moxieAiToggleLabel}
+          hint={settings.moxieAi ? undefined : t.moxieAiOffHint}
+          checked={settings.moxieAi}
+          onChange={(v) => setSettings({ moxieAi: v })}
         />
       </SettingsGroup>
-      {settings.textusAi && (
+      {settings.moxieAi && (
         <>
           <SettingsGroup title={t.aiAccountLabel}>
             <ProviderListPanel t={t} />

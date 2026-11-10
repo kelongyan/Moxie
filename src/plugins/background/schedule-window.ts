@@ -12,7 +12,7 @@ import { currentAppState, watchAppState } from "./app-state";
 import { runWaitingJobs } from "./run-jobs";
 
 /**
- * An editor window's part in plugins' schedules: whether Textus is in front,
+ * An editor window's part in plugins' schedules: whether Moxie is in front,
  * the background runs Rust hands it, and the file a clicked notification
  * opens - each taken once at start too, for what came before the window did.
  * Returns the function that stops listening.

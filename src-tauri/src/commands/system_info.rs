@@ -1,4 +1,4 @@
-//! Help > Report a Problem: what Textus runs on, and sending the report.
+//! Help > Report a Problem: what Moxie runs on, and sending the report.
 
 use serde::{Deserialize, Serialize};
 use std::time::Duration;

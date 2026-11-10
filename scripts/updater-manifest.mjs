@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-// The in-app updater's manifest, and the guard that keeps Textus releases
+// The in-app updater's manifest, and the guard that keeps Moxie releases
 // away from Levis installs: Levis polls `latest.json` through the renamed
-// repository and trusts the same key, so a Textus release never carries one.
+// repository and trusts the same key, so a Moxie release never carries one.
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** What Textus's updater reads and the release workflow uploads. */
-export const MANIFEST_NAME = "textus-latest.json";
-/** What Levis's updater reads. Never on a Textus release. */
+/** What Moxie's updater reads and the release workflow uploads. */
+export const MANIFEST_NAME = "moxie-latest.json";
+/** What Levis's updater reads. Never on a Moxie release. */
 export const LEVIS_MANIFEST_NAME = "latest.json";
 /** What the beta channel reads: the newest release of any kind, kept on the
  *  download bucket since GitHub's releases/latest skips pre-releases. */
-export const BETA_MANIFEST_NAME = "textus-beta.json";
+export const BETA_MANIFEST_NAME = "moxie-beta.json";
 /** Where the app finds the beta manifest's URL. */
 const BETA_ENDPOINT_SOURCE = "src-tauri/src/commands/update.rs";
 
@@ -231,7 +231,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     if (bad.length > 0)
       fail([
         ...bad,
-        `every Levis install reads ${LEVIS_MANIFEST_NAME} from this repository and trusts the same signing key, so it would install Textus over itself. Delete the asset from the draft and run the job again.`,
+        `every Levis install reads ${LEVIS_MANIFEST_NAME} from this repository and trusts the same signing key, so it would install Moxie over itself. Delete the asset from the draft and run the job again.`,
       ]);
   } else {
     fail([

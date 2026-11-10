@@ -7,7 +7,7 @@ const BUDGET_BYTES = 1_250_000;
 
 export function startupBudget(): Plugin {
   return {
-    name: "textus-startup-budget",
+    name: "moxie-startup-budget",
     apply: "build",
     generateBundle(_, bundle) {
       for (const chunk of Object.values(bundle)) {

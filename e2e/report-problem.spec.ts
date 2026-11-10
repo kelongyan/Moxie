@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { emit, mockInvoke, openApp } from "./helpers";
 
-// Help > Report a Problem: the user's words and what Textus fills in, sent
+// Help > Report a Problem: the user's words and what Moxie fills in, sent
 // to GitHub's bug form already filled, or copied.
 
 test("a report opens GitHub's bug form filled with the words, the system and the version", async ({
@@ -33,7 +33,7 @@ test("a report opens GitHub's bug form filled with the words, the system and the
         .url,
   );
   const url = new URL(opened);
-  expect(url.pathname).toBe("/CatVinci-Studio/Textus/issues/new");
+  expect(url.pathname).toBe("/CatVinci-Studio/Moxie/issues/new");
   expect(url.searchParams.get("template")).toBe("2-bug-report-zh.yml");
   expect(url.searchParams.get("platform")).toBe("macOS");
   expect(url.searchParams.get("os-version")).toBe("macOS 26.1");
@@ -60,7 +60,7 @@ test("a report is sent from the app, labelled by what it is, and says which issu
   await openApp(page, { settings: { language: "en" } });
   await mockInvoke(page, {
     send_problem_report: {
-      url: "https://github.com/CatVinci-Studio/Textus/issues/7",
+      url: "https://github.com/CatVinci-Studio/Moxie/issues/7",
       number: 7,
     },
   });

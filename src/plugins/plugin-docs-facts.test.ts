@@ -22,14 +22,14 @@ it("states the API version the runtime answers", () => {
     read("src/plugins/host/runtime/host.js"),
   )![1];
   expect(read("docs/dev/textus.d.ts")).toContain(
-    `The Textus plugin API, ${version}:`,
+    `The Moxie plugin API, ${version}:`,
   );
   expect(read("docs/dev/textus.d.ts")).toContain(
     `This API's version: "${version}"`,
   );
 });
 
-it("names only menu conditions Textus sets", () => {
+it("names only menu conditions Moxie sets", () => {
   for (const doc of DOCS)
     for (const m of read(doc).matchAll(/`(\w+) [=!]= /g))
       expect(WHEN_KEYS, `${doc}: ${m[1]}`).toContain(m[1]);

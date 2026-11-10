@@ -116,7 +116,7 @@ async function open(
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline", ...settings },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
     animations,
   });
   await pasteMarkdown(page, markdown);
@@ -333,7 +333,7 @@ test("two rewrites in a row each stream in by sentence", async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const second = "A gull cried. It was far off. The tide was turning.";
   await pasteMarkdown(page, `${ORIGINAL}\n\n${second}`);
@@ -366,7 +366,7 @@ test("asked again before deciding, an edit of the rewrite's new text shows in it
   await page.setViewportSize({ width: 1400, height: 900 });
   await openApp(page, {
     settings: { language: "en", revisionDisplay: "inline" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, ORIGINAL);
   await streamRevise(page, [REVISE]);

@@ -49,18 +49,18 @@ impl ProposalLedger {
     }
 
     /// What becomes of the picture lines in `text`, for its result: each now reads
-    /// `textus-generated:ID`. Unexplained, models took that for an invented id and
+    /// `moxie-generated:ID`. Unexplained, models took that for an invented id and
     /// spent the request trying to fix it.
     pub fn pictures_placed(&self, text: &str) -> String {
         let placed = self
             .pictures
             .iter()
-            .filter(|id| text.contains(&format!("textus-generated:{id}")))
+            .filter(|id| text.contains(&format!("moxie-generated:{id}")))
             .count();
         match placed {
             0 => String::new(),
-            1 => " Its picture line is being made into its picture: in the text it now reads `textus-generated:` and the picture's id, which Textus wrote - nothing to fix.".to_string(),
-            n => format!(" Its {n} picture lines are being made into their pictures: in the text each now reads `textus-generated:` and its picture's id, which Textus wrote - nothing to fix."),
+            1 => " Its picture line is being made into its picture: in the text it now reads `moxie-generated:` and the picture's id, which Moxie wrote - nothing to fix.".to_string(),
+            n => format!(" Its {n} picture lines are being made into their pictures: in the text each now reads `moxie-generated:` and its picture's id, which Moxie wrote - nothing to fix."),
         }
     }
 
@@ -82,14 +82,14 @@ impl ProposalLedger {
             return None;
         }
         let mut used: Vec<&str> = Vec::new();
-        for (at, _) in text.match_indices("textus-generated:") {
-            let id: String = text[at + "textus-generated:".len()..]
+        for (at, _) in text.match_indices("moxie-generated:") {
+            let id: String = text[at + "moxie-generated:".len()..]
                 .chars()
                 .take_while(|c| c.is_ascii_alphanumeric())
                 .collect();
             let Some(known) = self.pictures.iter().find(|p| **p == id) else {
                 let missing: Vec<&str> = self.pictures.iter().map(String::as_str).collect();
-                return Some(format!("Not proposed: `textus-generated:{id}` is no picture of this request. Its pictures are: {}.", missing.join(", ")));
+                return Some(format!("Not proposed: `moxie-generated:{id}` is no picture of this request. Its pictures are: {}.", missing.join(", ")));
             };
             if used.contains(&known.as_str()) {
                 let left: Vec<&str> = self

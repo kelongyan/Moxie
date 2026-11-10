@@ -46,7 +46,7 @@ const none = {
   ignore: [],
   detected: null,
 };
-/** An Obsidian vault whose settings weren't taken into .textus: renames
+/** An Obsidian vault whose settings weren't taken into .moxie: renames
  *  still follow its "update links" (the owner's rule for vaults). */
 const vault = (update = "always") => ({
   ...none,

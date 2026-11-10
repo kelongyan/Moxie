@@ -44,7 +44,7 @@ function changeGallery(
 
 const injectedTheme = (page: Page) =>
   page.evaluate(
-    () => document.getElementById("textus-custom-theme")?.textContent ?? "",
+    () => document.getElementById("moxie-custom-theme")?.textContent ?? "",
   );
 
 test.describe("theme gallery", () => {

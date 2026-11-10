@@ -13,7 +13,7 @@ import { auth } from "../../platform/ipc";
 import { Select } from "../../ui/Select";
 import { SecretInput, SettingRow, VERBATIM_INPUT } from "./controls";
 
-/** Settings › Textus AI › Web search: the service Textus searches with when
+/** Settings › Moxie AI › Web search: the service Moxie searches with when
  *  the model has none of its own, and its key. */
 
 /** Where each search service's key is kept: the AI provider's own key for
@@ -51,7 +51,7 @@ function searchServiceName(t: Strings, id: string): string {
   return "key" in name ? t[name.key] : name.brand;
 }
 
-/** Settings › Textus AI › Search service: what web_search uses when the chat
+/** Settings › Moxie AI › Search service: what web_search uses when the chat
  *  model can't search itself. Shown only when that matters, or when a service
  *  was chosen before. */
 export function SearchServiceSection({ t }: { t: Strings }) {

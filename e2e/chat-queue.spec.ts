@@ -17,7 +17,7 @@ const composer = (page: Page) => page.locator(".agent-panel-view textarea");
 async function open(page: Page) {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, "A short note.");
   // Each reply waits for release(), so more can be sent meanwhile.

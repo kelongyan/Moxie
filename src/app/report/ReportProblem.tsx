@@ -40,7 +40,7 @@ const SEVERITY_TEXT: Record<ReportChoice["severity"], TextKey> = {
 };
 
 /**
- * What went wrong, in the user's words, with what Textus fills in shown
+ * What went wrong, in the user's words, with what Moxie fills in shown
  * below it: sent to be filed as an issue, opened in GitHub's form, or
  * copied for a chat or an email. Nothing leaves without a button pressed.
  */

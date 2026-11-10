@@ -2,7 +2,7 @@ import { useSettings } from "../prefs/SettingsContext";
 import "./PageSwitch.css";
 
 /**
- * The phone's two pages, the document and Textus AI, as a capsule in the
+ * The phone's two pages, the document and Moxie AI, as a capsule in the
  * title row. The pill slides between halves of equal width, so nothing is
  * measured.
  */
@@ -10,7 +10,7 @@ export function PageSwitch({
   ai,
   onChange,
 }: {
-  /** Textus AI's page is showing. */
+  /** Moxie AI's page is showing. */
   ai: boolean;
   onChange: (ai: boolean) => void;
 }) {

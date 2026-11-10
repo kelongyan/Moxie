@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { emit, openApp } from "./helpers";
 
 /**
- * A plugin's tools for Textus AI: offered from the manifest before the
+ * A plugin's tools for Moxie AI: offered from the manifest before the
  * plugin starts, a call starts it, and without ai.tools nothing is offered.
  */
 
@@ -24,8 +24,8 @@ function plugin(granted: string[]) {
         name: "Tools",
         version: "1.0.0",
         publisher: "test",
-        description: "Counts words for Textus AI.",
-        engines: { textus: "^1.3.0" },
+        description: "Counts words for Moxie AI.",
+        engines: { moxie: "^1.3.0" },
         main: "host.js",
         permissions: ["ai.tools"],
         contributes: {
@@ -67,7 +67,7 @@ const offered = (page: Page) =>
     () => (window as unknown as { __devAiTools?: unknown[] }).__devAiTools,
   );
 
-test("a plugin's tool is offered to Textus AI and runs when called", async ({
+test("a plugin's tool is offered to Moxie AI and runs when called", async ({
   page,
 }) => {
   await open(page, ["ai.tools"]);

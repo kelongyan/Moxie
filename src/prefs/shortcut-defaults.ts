@@ -10,7 +10,7 @@ export type ShortcutAction =
   | "triggerCompletion"
   | "triggerGrammarCheck"
   | "toggleFloatingChat"
-  | "toggleTextusAi"
+  | "toggleMoxieAi"
   | "toggleSidebar"
   | "toggleAgentPanel"
   | "toggleSplitView"
@@ -47,7 +47,7 @@ export function defaultShortcuts(mac = modIsMeta()): Shortcuts {
     triggerCompletion: "mod+shift+space",
     triggerGrammarCheck: "mod+shift+g",
     toggleFloatingChat: "mod+shift+k",
-    toggleTextusAi: "",
+    toggleMoxieAi: "",
     toggleSidebar: "mod+\\",
     toggleAgentPanel: "mod+shift+l",
     toggleSplitView: "mod+shift+e",

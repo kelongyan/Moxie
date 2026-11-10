@@ -1,4 +1,4 @@
-//! What Textus knows of the open folder's documents, for plugins: titles, front
+//! What Moxie knows of the open folder's documents, for plugins: titles, front
 //! matter, headings, links, tags and tasks, re-read only when a file's size or
 //! time changes. Built on the first request. Lines count from 0.
 

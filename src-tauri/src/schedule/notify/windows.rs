@@ -1,6 +1,6 @@
 //! Windows: a WinRT toast. Its click is a protocol activation of
-//! `textus://notification/<id>`, the scheme Textus already answers: a running
-//! Textus gets it through single-instance and deep-link, and one that has quit
+//! `moxie://notification/<id>`, the scheme Moxie already answers: a running
+//! Moxie gets it through single-instance and deep-link, and one that has quit
 //! is started with it. The toast names the app by the id the installer gives
 //! its shortcut; a development build borrows PowerShell's, as
 //! tauri-plugin-notification does.
@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn the_toast_escapes_its_text_and_links_to_its_id() {
         let xml = toast_xml("abc", "Tea & <cake>", "\"now\"");
-        assert!(xml.contains("launch=\"textus://notification/abc\""));
+        assert!(xml.contains("launch=\"moxie://notification/abc\""));
         assert!(xml.contains("Tea &amp; &lt;cake&gt;"));
         assert!(xml.contains("&quot;now&quot;"));
     }

@@ -67,8 +67,8 @@ describe("the languages", () => {
     expect(localeLoaded("en")).toBe(true);
     await loadLocale("ko");
     expect(localeLoaded("ko")).toBe(true);
-    expect(resolveStrings("ko").textusAiClosePanel).toBe(
-      LOCALES.ko.default.textusAiClosePanel,
+    expect(resolveStrings("ko").moxieAiClosePanel).toBe(
+      LOCALES.ko.default.moxieAiClosePanel,
     );
   });
 });

@@ -12,7 +12,7 @@ import type {
 /**
  * Plugins' floating views that are open (contributes.floatingViews): where
  * each one sits, whether it is folded to a dot, and where it floats - over
- * the desktop or in Textus's window. Kept per device: a view reopens where
+ * the desktop or in Moxie's window. Kept per device: a view reopens where
  * the user left it.
  */
 export interface FloatingView {

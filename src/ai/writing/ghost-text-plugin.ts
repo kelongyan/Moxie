@@ -135,7 +135,7 @@ export async function triggerGhostTextNow(
   );
 }
 
-/** Takes back the suggestion on offer, if any - Textus AI was turned off
+/** Takes back the suggestion on offer, if any - Moxie AI was turned off
  *  while it showed. */
 export function dismissGhostText(view: EditorView): void {
   if (!ghostTextKey.getState(view.state)?.suggestion) return;

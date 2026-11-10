@@ -201,10 +201,10 @@ export type AiRecords = {
 	memories: MemoryFile[],
 };
 
-/**  A folder's conventions; a field no app sets is left to Textus's settings. */
+/**  A folder's conventions; a field no app sets is left to Moxie's settings. */
 export type Conventions = Conventions_Serialize | Conventions_Deserialize;
 
-/**  A folder's conventions; a field no app sets is left to Textus's settings. */
+/**  A folder's conventions; a field no app sets is left to Moxie's settings. */
 export type Conventions_Deserialize = {
 	/**  The apps whose settings were found, nearest first. */
 	sources: Source[],
@@ -237,13 +237,13 @@ export type Conventions_Deserialize = {
 	ignore: string[],
 	/**
 	 *  Another app's settings found here and not yet taken or turned down:
-	 *  offered to the user, who may copy them into `.textus/settings.json`.
+	 *  offered to the user, who may copy them into `.moxie/settings.json`.
 	 *  They never apply by themselves.
 	 */
 	detected?: Conventions_Deserialize | null,
 };
 
-/**  A folder's conventions; a field no app sets is left to Textus's settings. */
+/**  A folder's conventions; a field no app sets is left to Moxie's settings. */
 export type Conventions_Serialize = {
 	/**  The apps whose settings were found, nearest first. */
 	sources: Source[],
@@ -276,7 +276,7 @@ export type Conventions_Serialize = {
 	ignore: string[],
 	/**
 	 *  Another app's settings found here and not yet taken or turned down:
-	 *  offered to the user, who may copy them into `.textus/settings.json`.
+	 *  offered to the user, who may copy them into `.moxie/settings.json`.
 	 *  They never apply by themselves.
 	 */
 	detected: Conventions_Serialize | null,
@@ -465,7 +465,7 @@ export type SavedImage_Serialize = {
 export type Setting<T> = {
 	value: T,
 	/**
-	 *  "textus", "typora", "obsidian", "logseq", "dendron", "foam",
+	 *  "moxie", "typora", "obsidian", "logseq", "dendron", "foam",
 	 *  "vscode", "mkdocs", "hugo", "docusaurus", "jekyll", "quarto", "git".
 	 */
 	app: string,

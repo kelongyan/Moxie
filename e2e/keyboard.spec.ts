@@ -5,7 +5,7 @@ import { emit, mockInvoke, openApp, pasteMarkdown, END } from "./helpers";
  * The window without a mouse: F6 through the regions and back to the
  * caret, the arrow keys in the sidebar's trees, the tab strip and the
  * context menu, Escape closing what is on top and the focus going back,
- * and Textus AI's changes stepped through and decided from the keyboard.
+ * and Moxie AI's changes stepped through and decided from the keyboard.
  */
 
 /** Long enough between its headings that a jump to one scrolls. */
@@ -43,7 +43,7 @@ function focusedIn(page: Page, selector: string) {
 test("F6 and Shift+F6 go round the regions and back to the caret", async ({
   page,
 }) => {
-  await open(page, { "textus-agent-panel-open": "1" });
+  await open(page, { "moxie-agent-panel-open": "1" });
   await openFolder(page);
   await page.locator(editor).click();
   await page.keyboard.type("Hello");
@@ -120,7 +120,7 @@ test("the tab strip is a tab list the arrow keys walk", async ({ page }) => {
   await pasteMarkdown(page, "First tab.");
   await page.evaluate(() =>
     window.dispatchEvent(
-      new CustomEvent("textus:open-file-in-tab", {
+      new CustomEvent("moxie:open-file-in-tab", {
         detail: "/work/notes/b.md",
       }),
     ),
@@ -197,11 +197,11 @@ test("Escape closes the topmost thing in Settings, and the focus goes back", asy
   expect(await focusedIn(page, editor)).toBe(true);
 });
 
-test("Textus AI's changes are stepped through and decided from the keyboard", async ({
+test("Moxie AI's changes are stepped through and decided from the keyboard", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await open(page, { "textus-agent-panel-open": "1" });
+  await open(page, { "moxie-agent-panel-open": "1" });
   const original = "One cat sat. Two dogs ran. Three birds sang.";
   await pasteMarkdown(page, original);
   await mockInvoke(page, {

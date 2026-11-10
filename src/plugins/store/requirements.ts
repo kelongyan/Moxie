@@ -3,7 +3,7 @@ import type { Strings } from "../../i18n/strings";
 import type { RequiredSetting, Requirement } from "./manifest";
 
 /**
- * The Textus settings a plugin may say it needs: what each is called in
+ * The Moxie settings a plugin may say it needs: what each is called in
  * Settings, whether it is on, and how to turn it on.
  */
 const SETTINGS: Record<

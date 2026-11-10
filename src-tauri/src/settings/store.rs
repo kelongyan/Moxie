@@ -75,7 +75,7 @@ impl Store {
             // profile nor write it (see `unreadable`).
             Err(e) => {
                 eprintln!(
-                    "textus: cannot read {}: {e}; using defaults for this session and leaving the file alone",
+                    "moxie: cannot read {}: {e}; using defaults for this session and leaving the file alone",
                     path.display()
                 );
                 unreadable = true;
@@ -144,7 +144,7 @@ impl Store {
             // schedules another write instead of being left unwritten.
             store.flush_scheduled.store(false, Ordering::Release);
             if let Err(e) = store.flush() {
-                eprintln!("textus: cannot write {}: {e}", store.path.display());
+                eprintln!("moxie: cannot write {}: {e}", store.path.display());
             }
         });
     }
@@ -283,11 +283,11 @@ pub(crate) fn move_aside(path: &Path) {
     let aside = path.with_file_name(format!("{name}.corrupt-{stamp}"));
     match std::fs::rename(path, &aside) {
         Ok(()) => eprintln!(
-            "textus: {} was unreadable; moved to {} and starting from defaults",
+            "moxie: {} was unreadable; moved to {} and starting from defaults",
             path.display(),
             aside.display()
         ),
-        Err(e) => eprintln!("textus: cannot move aside {}: {e}", path.display()),
+        Err(e) => eprintln!("moxie: cannot move aside {}: {e}", path.display()),
     }
 }
 

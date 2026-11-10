@@ -21,7 +21,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Settings of every kind.",
-    engines: { textus: "^1.3.0" },
+    engines: { moxie: "^1.3.0" },
     main: "host.js",
     contributes: {
       commands: [{ command: "test.kinds.rebuild", title: "Rebuild" }],

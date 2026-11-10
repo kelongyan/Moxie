@@ -13,7 +13,7 @@ import {
   type ImageProviderEntry,
 } from "../../ai/image-models";
 
-// Settings › Textus AI › Image model: which service makes the pictures, and
+// Settings › Moxie AI › Image model: which service makes the pictures, and
 // with which model. Defaults to the chat provider's own; a key is asked for
 // only when the service has none from chat.
 

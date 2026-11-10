@@ -112,7 +112,7 @@ describe("diagramRenderer", () => {
     const draw = diagramRenderer("pele", { width: 600 });
     const { svg, engine } = await draw('{"data": [1, 2]}', "d1", "chart");
     expect(engine).toBe("chart");
-    expect(svg).toContain('class="textus-chart"');
+    expect(svg).toContain('class="moxie-chart"');
     expect(pele.renderAsync).not.toHaveBeenCalled();
     expect(mermaid.render).not.toHaveBeenCalled();
     await expect(draw("{oops", "d2", "chart")).rejects.toThrow(

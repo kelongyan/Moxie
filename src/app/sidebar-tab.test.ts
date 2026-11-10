@@ -5,7 +5,7 @@ import { installTestLocalStorage } from "../dev/test-local-storage";
 import { storeSidebarTab, storedSidebarTab } from "./sidebar-tab";
 
 // No boot snapshot here: ui-state keeps the tab in localStorage.
-const KEY = "textus-sidebar-tab";
+const KEY = "moxie-sidebar-tab";
 
 beforeAll(installTestLocalStorage);
 beforeEach(() => localStorage.clear());

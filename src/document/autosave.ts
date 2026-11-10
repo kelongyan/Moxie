@@ -201,7 +201,7 @@ export function useAutosave(opts: {
     if (left !== activeTabId) void flush([left]);
   }, [activeTabId, flush]);
 
-  // Leaving the window (another app, another Textus window) or hiding the
+  // Leaving the window (another app, another Moxie window) or hiding the
   // page (minimised; on iOS, going to the background) writes everything.
   useEffect(() => {
     const unlisten = thisWindow().onFocusChanged(({ payload: focused }) => {

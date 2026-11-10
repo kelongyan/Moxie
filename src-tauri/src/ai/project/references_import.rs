@@ -116,7 +116,7 @@ impl Importer {
     fn zip(&mut self, path: &Path) -> Result<(), String> {
         let file = std::fs::File::open(path).map_err(|e| e.to_string())?;
         let mut archive = zip::ZipArchive::new(file)
-            .map_err(|e| format!("Not a zip file Textus can open: {e}"))?;
+            .map_err(|e| format!("Not a zip file Moxie can open: {e}"))?;
         let name = component(
             &path
                 .file_stem()

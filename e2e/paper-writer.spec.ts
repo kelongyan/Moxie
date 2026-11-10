@@ -92,7 +92,7 @@ test("a paper is researched, its outline approved, and written into the document
   );
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
 
   const panel = page.locator(".agent-panel-view");
@@ -177,7 +177,7 @@ test("a paused paper goes on from what it kept, in place of what it wrote", asyn
   );
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const panel = page.locator(".agent-panel-view");
   await panel.getByRole("combobox", { name: /^Mode/ }).click();
@@ -252,7 +252,7 @@ test("a kind of piece picked is the one asked for, and the card says it at once"
   });
   await openApp(page, {
     settings: { language: "en", agentDefaultMode: "write" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const panel = page.locator(".agent-panel-view");
   await panel.getByRole("combobox", { name: /^Mode/ }).click();

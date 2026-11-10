@@ -6,7 +6,7 @@ import { showConfirm } from "../../ui/app-dialog";
 import { CheckIcon } from "../../ui/icons";
 import { clearAllConversations } from "../../ai/chat/chat-history";
 import { drafts } from "../../platform/ipc";
-import { hasTextusAi, isDesktopApp } from "../../platform/capabilities";
+import { hasMoxieAi, isDesktopApp } from "../../platform/capabilities";
 import { SettingsFileSection } from "./settings-file";
 
 // Settings > Privacy: a switch per kind of local history, plus a clear. A
@@ -58,7 +58,7 @@ export function PrivacySection({ t }: { t: Strings }) {
 
   return (
     <>
-      {hasTextusAi && (
+      {hasMoxieAi && (
         <section className="settings-group">
           <h2 className="settings-group-title">{t.privacyChatHistoryLabel}</h2>
           <div className="settings-group-body">

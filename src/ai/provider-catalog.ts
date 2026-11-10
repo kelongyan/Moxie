@@ -108,14 +108,14 @@ export function useProviderCatalog(): ProviderCatalogEntry[] {
 
 /** Fired when a search service's key is saved or cleared; a key isn't a
  *  setting, so nothing else would ask again. */
-const WEB_SEARCH_SETUP = "textus:web-search-setup";
+const WEB_SEARCH_SETUP = "moxie:web-search-setup";
 
 export function notifyWebSearchSetup() {
   window.dispatchEvent(new Event(WEB_SEARCH_SETUP));
 }
 
 /// What the composer's Web search button can do with the chosen chat provider
-/// and model: its own search, or Textus's search service. Null until known.
+/// and model: its own search, or Moxie's search service. Null until known.
 export function useWebSearchStatus(): WebSearchStatus | null {
   const { settings } = useSettings();
   const provider = settings.aiProvider;

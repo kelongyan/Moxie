@@ -56,9 +56,9 @@ async function bootLikeRust(
       new Function(script)();
       (
         window as unknown as {
-          __textusBoot: (boot: unknown, css: unknown) => void;
+          __moxieBoot: (boot: unknown, css: unknown) => void;
         }
-      ).__textusBoot(snapshot, themeCss);
+      ).__moxieBoot(snapshot, themeCss);
       // "interactive" comes before the deferred module scripts run.
       document.addEventListener("readystatechange", () => {
         if (document.readyState !== "interactive") return;
@@ -70,12 +70,12 @@ async function bootLikeRust(
           userTheme: root.getAttribute("data-user-theme"),
           lang: root.getAttribute("lang"),
           themeCss:
-            document.getElementById("textus-custom-theme")?.textContent ?? null,
+            document.getElementById("moxie-custom-theme")?.textContent ?? null,
           chrome:
-            document.getElementById("textus-imported-chrome")?.textContent ??
+            document.getElementById("moxie-imported-chrome")?.textContent ??
             null,
           customCss:
-            document.getElementById("textus-user-css")?.textContent ?? null,
+            document.getElementById("moxie-user-css")?.textContent ?? null,
           // The user's CSS goes last, after the page's own styles.
           lastInHead: document.head.lastElementChild?.id ?? null,
         };
@@ -128,17 +128,17 @@ test("the boot script puts the appearance on the document before the app runs", 
     themeCss: null,
     chrome: null,
     customCss: SETTINGS.customCss,
-    lastInHead: "textus-user-css",
+    lastInHead: "moxie-user-css",
   });
   // The snapshot, not localStorage (which openApp seeded with zh/light).
   const html = page.locator("html");
   await expect(html).toHaveAttribute("data-theme", "dark");
   await expect(html).toHaveAttribute("lang", "ja");
   // React took over the boot script's <style> rather than adding another.
-  await expect(page.locator("style#textus-user-css")).toHaveCount(1);
+  await expect(page.locator("style#moxie-user-css")).toHaveCount(1);
   expect(
     await page
-      .locator("style#textus-user-css")
+      .locator("style#moxie-user-css")
       .evaluate((el) => el.textContent),
   ).toBe(SETTINGS.customCss);
 });
@@ -303,17 +303,17 @@ test("the imported theme's chrome colours are on the first frame too", async ({
   await openApp(page);
   const first = await firstPaint(page);
   expect(first.chrome).toBe(CHROME);
-  expect(first.lastInHead).toBe("textus-user-css");
+  expect(first.lastInHead).toBe("moxie-user-css");
   // The frontend derives them afresh and keeps that order: the user's CSS
   // after them, so the first frame and the next agree on who wins.
   await expect
     .poll(() =>
       page.evaluate(() => {
         const ids = Array.from(document.head.children, (el) => el.id);
-        const chrome = document.getElementById("textus-imported-chrome");
+        const chrome = document.getElementById("moxie-imported-chrome");
         return (
           !!chrome?.textContent?.includes("--ui-surface") &&
-          ids.indexOf("textus-imported-chrome") < ids.indexOf("textus-user-css")
+          ids.indexOf("moxie-imported-chrome") < ids.indexOf("moxie-user-css")
         );
       }),
     )

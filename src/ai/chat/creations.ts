@@ -4,7 +4,7 @@ import type { Creation, CreationKind } from "../../prefs/settings-values";
  * What Create made, across the three stores it installs into: plugins,
  * user themes and global skills each keep their own files, and the
  * settings' `creations` only remembers which entries came from a reply's
- * card, so Settings can say "Made with Textus AI".
+ * card, so Settings can say "Made with Moxie AI".
  */
 
 /** `list` with `made` first, over an earlier entry for the same thing. */

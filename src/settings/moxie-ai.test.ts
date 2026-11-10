@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { aiFeatures } from "./textus-ai";
+import { aiFeatures } from "./moxie-ai";
 
 const all = {
-  textusAi: true,
+  moxieAi: true,
   enableCompletion: true,
   enableGrammarCheck: true,
   enableAskAi: true,
 };
 
 describe("aiFeatures", () => {
-  it("offers each feature turned on while Textus AI is on", () => {
+  it("offers each feature turned on while Moxie AI is on", () => {
     expect(aiFeatures(all)).toEqual({
       on: true,
       completion: true,
@@ -21,8 +21,8 @@ describe("aiFeatures", () => {
     ).toEqual({ on: true, completion: false, grammar: true, chat: false });
   });
 
-  it("offers nothing while Textus AI is off, whatever the features say", () => {
-    expect(aiFeatures({ ...all, textusAi: false })).toEqual({
+  it("offers nothing while Moxie AI is off, whatever the features say", () => {
+    expect(aiFeatures({ ...all, moxieAi: false })).toEqual({
       on: false,
       completion: false,
       grammar: false,
@@ -30,9 +30,9 @@ describe("aiFeatures", () => {
     });
   });
 
-  it("offers the tour its conversation with chat off, but not with Textus AI off", () => {
+  it("offers the tour its conversation with chat off, but not with Moxie AI off", () => {
     const chatOff = { ...all, enableAskAi: false };
     expect(aiFeatures(chatOff, true).chat).toBe(true);
-    expect(aiFeatures({ ...chatOff, textusAi: false }, true).chat).toBe(false);
+    expect(aiFeatures({ ...chatOff, moxieAi: false }, true).chat).toBe(false);
   });
 });

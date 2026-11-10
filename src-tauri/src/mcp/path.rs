@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn a_program_is_found_on_the_path_and_a_path_is_taken_as_given() {
-        let dir = std::env::temp_dir().join(format!("textus-mcp-path-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-mcp-path-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let tool = dir.join(if cfg!(windows) { "tool.exe" } else { "tool" });
         std::fs::write(&tool, "").unwrap();

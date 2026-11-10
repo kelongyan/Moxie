@@ -1,4 +1,4 @@
-//! The plugins Textus offers to install, from the textus-plugins catalog. Only
+//! The plugins Moxie offers to install, from the textus-plugins catalog. Only
 //! Rust fetches the catalog and packages, from fixed addresses, and checks each
 //! package's SHA-256, so "Official" is decided here, not by the window.
 
@@ -16,7 +16,7 @@ use std::sync::Mutex;
 /// releases. Anything else in it is left out.
 const PACKAGE_PREFIX: &str = "https://github.com/CatVinci-Studio/textus-plugins/releases/download/";
 
-/// Where the app reads them: Textus's own site passes each release file on,
+/// Where the app reads them: Moxie's own site passes each release file on,
 /// so the store works where GitHub can't be reached.
 const MIRROR_PREFIX: &str = "https://textus.md/plugin-release/";
 const CATALOG_URL: &str = "https://textus.md/plugin-release/catalog/index.json";
@@ -85,12 +85,12 @@ pub struct SkillEntry {
     pub author: String,
     #[serde(default)]
     pub official: bool,
-    /// The panel modes it works in (its file's `textus-modes`); Write's
+    /// The panel modes it works in (its file's `moxie-modes`); Write's
     /// when the catalog doesn't say.
     #[serde(default = "write_mode")]
     pub modes: Vec<crate::ai::agent::AgentMode>,
     /// Its name and one-line hint by UI language code, for the market to
-    /// show (its file's `textus-label-<code>`).
+    /// show (its file's `moxie-label-<code>`).
     #[serde(default)]
     pub labels: std::collections::BTreeMap<String, crate::ai::workspace::SkillLabel>,
     pub url: String,
@@ -123,17 +123,17 @@ static FETCHED_SKILLS: Mutex<Vec<SkillEntry>> = Mutex::new(Vec::new());
 /// A skill file this large is not a skill.
 const MAX_SKILL: u64 = 256 * 1024;
 
-/// The catalog's address: the published one, or TEXTUS_PLUGIN_CATALOG for
+/// The catalog's address: the published one, or MOXIE_PLUGIN_CATALOG for
 /// testing one before it is published.
 fn catalog_url() -> String {
-    std::env::var("TEXTUS_PLUGIN_CATALOG").unwrap_or_else(|_| CATALOG_URL.to_string())
+    std::env::var("MOXIE_PLUGIN_CATALOG").unwrap_or_else(|_| CATALOG_URL.to_string())
 }
 
 fn parse_all(text: &str) -> Result<(Vec<CatalogEntry>, Vec<SkillEntry>), String> {
     let catalog: Catalog =
         serde_json::from_str(text).map_err(|e| format!("The plugin catalog can't be read: {e}"))?;
     if catalog.schema != 1 {
-        return Err("The plugin catalog is for a newer Textus - update Textus to see it.".into());
+        return Err("The plugin catalog is for a newer Moxie - update Moxie to see it.".into());
     }
     let plugins = catalog
         .plugins

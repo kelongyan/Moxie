@@ -8,7 +8,7 @@ import {
   release,
 } from "./helpers";
 
-// A picture Textus AI makes is a proposal like any other insertion: saved
+// A picture Moxie AI makes is a proposal like any other insertion: saved
 // only on Accept, Reject leaves nothing, undo restores it without a second file.
 
 const editor = '[data-active-tab="true"] .ProseMirror';
@@ -48,7 +48,7 @@ const made = {
 async function open(page: Page, imageModelProvider = "openai") {
   await openApp(page, {
     settings: { language: "en", imageModelProvider },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `${FIRST}\n\nThe second paragraph.`);
 }
@@ -162,7 +162,7 @@ test("Illustrate this paragraph asks for a picture of the paragraph right-clicke
     ai_generated_image: { mime: "image/png", ext: "png", dataBase64: PNG },
   });
   await page.locator(`${editor} p`).first().click({ button: "right" });
-  await menuItem(page, "Textus AI").click();
+  await menuItem(page, "Moxie AI").click();
   await menuItem(page, "Illustrate this paragraph").click();
   await expect(page.locator(pending)).toHaveCount(1, { timeout: 10_000 });
   const [sent] = (await calls(page, "ai_agent_message")) as unknown as {
@@ -179,7 +179,7 @@ test("Illustrate this paragraph asks for a picture of the paragraph right-clicke
 test("without an image model the menu offers no picture", async ({ page }) => {
   await open(page, "");
   await page.locator(`${editor} p`).first().click({ button: "right" });
-  await menuItem(page, "Textus AI").click();
+  await menuItem(page, "Moxie AI").click();
   await expect(menuItem(page, "Ask AI…")).toBeVisible();
   await expect(menuItem(page, "Illustrate this paragraph")).toHaveCount(0);
 });
@@ -335,7 +335,7 @@ async function writeWithPictureInside(page: Page, refusal?: string) {
         name: "propose_edit",
         arguments: JSON.stringify({
           action: "append",
-          text: "The tide went out before dawn.\n\n![A harbour at dusk](textus-generated:abc123)\n\nThe boats came back at dusk.",
+          text: "The tide went out before dawn.\n\n![A harbour at dusk](moxie-generated:abc123)\n\nThe boats came back at dusk.",
         }),
       },
       { kind: "ToolResult", call_id: "w1", output: "Edit proposed" },
@@ -358,7 +358,7 @@ test("a picture written into its text is one proposal with it, its frame until t
 }) => {
   await openApp(page, {
     settings: { language: "en", imageModelProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await writeWithPictureInside(page);
   const proposal = page.locator(`${editor} .pending-insert`);
@@ -389,7 +389,7 @@ test("a picture in the text that wasn't made is left out when the text is accept
 }) => {
   await openApp(page, {
     settings: { language: "en", imageModelProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await writeWithPictureInside(
     page,
@@ -415,7 +415,7 @@ test("a picture asked for next to text not accepted yet joins that text, which s
 }) => {
   await openApp(page, {
     settings: { language: "en", imageModelProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const draft =
     "The tide went out before dawn.\n\nThe boats came back at dusk.";
@@ -552,7 +552,7 @@ async function openSaved(page: Page, settings: Record<string, unknown> = {}) {
   );
   await openApp(page, {
     settings: { language: "en", ...settings },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const path = "/notes/harbour.md";
   await page.evaluate(
@@ -666,12 +666,12 @@ test("kept, the old picture's file stays where it is", async ({ page }) => {
   expect(await calls(page, "move_picture_to_trash")).toHaveLength(0);
 });
 
-test("a picture's own menu asks Textus AI to change it, about that picture", async ({
+test("a picture's own menu asks Moxie AI to change it, about that picture", async ({
   page,
 }) => {
   await openSaved(page);
   await page.locator(`${editor} .image-view img`).click({ button: "right" });
-  await menuItem(page, "Change this picture with Textus AI…").click();
+  await menuItem(page, "Change this picture with Moxie AI…").click();
   // Quick Ask, at the picture, with the picture as what it is about: the
   // request carries its Markdown, for generate_image's `replace`.
   const quick = page.locator(".inline-chat");
@@ -715,7 +715,7 @@ test("pictures per request is a setting, sent with each request", async ({
   await emit(page, "menu-open-settings");
   const settings = page.getByRole("dialog", { name: "Settings" });
   await settings
-    .getByRole("button", { name: "Textus AI", exact: true })
+    .getByRole("button", { name: "Moxie AI", exact: true })
     .click();
   await settings
     .getByRole("combobox", { name: "Pictures per request" })
@@ -769,8 +769,8 @@ async function streamTextWithPicture(page: Page, lines: string[]) {
         text: lines
           .join("")
           .replace(
-            /!\[(.*?)\]\(textus-picture:[^\n]*\)/,
-            "![$1](textus-generated:pic1)",
+            /!\[(.*?)\]\(moxie-picture:[^\n]*\)/,
+            "![$1](moxie-generated:pic1)",
           ),
       });
       let at = streamed.indexOf('"text":"') + '"text":"'.length;
@@ -808,7 +808,7 @@ async function streamTextWithPicture(page: Page, lines: string[]) {
             return;
           }
           const encoded = JSON.stringify(line).slice(1, -1);
-          const picture = line.match(/^(!\[.*?\]\(textus-picture:.*\))\n/);
+          const picture = line.match(/^(!\[.*?\]\(moxie-picture:.*\))\n/);
           if (picture) {
             // Most of the line, then the event, then its end.
             const cut = encoded.length - 4;
@@ -850,7 +850,7 @@ test("a picture written into streaming text shows as its frame from the moment i
 }) => {
   await openApp(page, {
     settings: { language: "en", imageModelProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
     animations: true,
   });
   await mockInvoke(page, {
@@ -863,7 +863,7 @@ test("a picture written into streaming text shows as its frame from the moment i
   });
   await streamTextWithPicture(page, [
     "The tide went out before dawn.\n\n",
-    "![A harbour](textus-picture:16:9 A harbour at dusk, boats coming in)\n\n",
+    "![A harbour](moxie-picture:16:9 A harbour at dusk, boats coming in)\n\n",
     "The boats came back at dusk.",
   ]);
   await send(page, "Write about the harbour, with a picture");
@@ -882,7 +882,7 @@ test("a picture written into streaming text shows as its frame from the moment i
       return box ? Math.round((box.width / box.height) * 10) / 10 : 0;
     })
     .toBeCloseTo(1536 / 1024, 1);
-  await expect(page.locator(editor)).not.toContainText("textus-picture");
+  await expect(page.locator(editor)).not.toContainText("moxie-picture");
   await nextLine(page);
   await nextLine(page);
   await expect(insert).toContainText("The boats came back at dusk.");
@@ -1050,7 +1050,7 @@ test("a rewrite that carries the picture not accepted yet takes it in: one propo
 }) => {
   await pictureThenRewrite(
     page,
-    "The harbour lay still before dawn.\n\n![A quiet harbour](textus-generated:abc123)",
+    "The harbour lay still before dawn.\n\n![A quiet harbour](moxie-generated:abc123)",
   );
   // The picture's own proposal gave way to the text that carries it.
   await expect(page.locator(pending)).toHaveCount(1);

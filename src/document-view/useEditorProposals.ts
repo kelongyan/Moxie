@@ -402,7 +402,7 @@ export function useEditorProposals({
     },
     [addPreviews],
   );
-  // A plugin's edits are proposals too, shown as Textus AI's are.
+  // A plugin's edits are proposals too, shown as Moxie AI's are.
   usePluginDocumentAccess({ run, isActive, filePath, addPreviews });
 
   return {

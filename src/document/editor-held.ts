@@ -1,4 +1,4 @@
-// Tabs whose editor must stay loaded though out of sight: Textus AI has a
+// Tabs whose editor must stay loaded though out of sight: Moxie AI has a
 // conversation, Quick Ask or a proposal open in it, or changes in it wait
 // to be decided. Reported by each editor, read when a hidden tab would be
 // let go.

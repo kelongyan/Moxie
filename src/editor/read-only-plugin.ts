@@ -9,7 +9,7 @@ import { $prose } from "@milkdown/kit/utils";
 
 /** Fired on the editor when a change was refused because the document is
  *  read-only. */
-export const READ_ONLY_REFUSED = "textus:read-only-refused";
+export const READ_ONLY_REFUSED = "moxie:read-only-refused";
 
 const readOnlyKey = new PluginKey<boolean>("read-only");
 

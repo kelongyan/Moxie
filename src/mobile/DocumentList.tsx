@@ -28,7 +28,7 @@ import {
 import "./DocumentList.css";
 
 /**
- * The iPhone's list of documents opened in Textus, newest first, as rows or
+ * The iPhone's list of documents opened in Moxie, newest first, as rows or
  * thumbnails. A document picked elsewhere in Files only granted access to the
  * file itself, so it can't be renamed or deleted.
  */
@@ -304,7 +304,7 @@ export function DocumentList({
             fresh={seen.current !== null && !seen.current.has(entry.path)}
             detail={[
               when(entry.mtime),
-              entry.local ? "Textus" : basename(dirname(entry.path)),
+              entry.local ? "Moxie" : basename(dirname(entry.path)),
             ]
               .filter(Boolean)
               .join(" · ")}

@@ -1,4 +1,4 @@
-//! What Textus AI remembers by itself: the user's standing requirements,
+//! What Moxie AI remembers by itself: the user's standing requirements,
 //! preferences and style, one Markdown file each under `memory/` (personal or
 //! the project's), facts about the work in the library. Named by id, e.g.
 //! `personal/memory/no-semicolons`.
@@ -37,13 +37,13 @@ pub const MAX_MEMORY_CHARS: usize = 4_000;
 /// A memory is a sentence or a few, not a document.
 const MAX_TEXT_CHARS: usize = 600;
 
-/// The settings.json field of Settings > Textus AI > Remember automatically.
+/// The settings.json field of Settings > Moxie AI > Remember automatically.
 /// Missing means on.
 pub(crate) const REMEMBER_SETTING: &str = "rememberAutomatically";
 
-/// The front-matter mark on what Textus AI wrote.
+/// The front-matter mark on what Moxie AI wrote.
 const MARK_KEY: &str = "remembered-by";
-const MARK: &str = "textus-ai";
+const MARK: &str = "moxie-ai";
 
 /// The frontend-owned log of accepted and rejected kinds of revision. One
 /// hidden file beside the personal memories: never listed, never sent.
@@ -56,7 +56,7 @@ const MAX_CHOICES_BYTES: usize = 64 * 1024;
 pub(crate) const MEMORY_FOLDER: &str = "memory";
 const LIBRARY_FOLDER: &str = "library";
 
-/// Whether Textus AI may remember things by itself.
+/// Whether Moxie AI may remember things by itself.
 pub fn remember_enabled(app: &tauri::AppHandle) -> bool {
     crate::settings::read_setting(app, REMEMBER_SETTING)
         .and_then(|v| v.as_bool())
@@ -97,7 +97,7 @@ impl MemoryKind {
 }
 
 /// Whose a memory is: the user's in general (the global config folder) or
-/// this project's (its `.textus/`).
+/// this project's (its `.moxie/`).
 #[derive(Serialize, Clone, Copy, Debug, PartialEq, Eq)]
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
@@ -138,7 +138,7 @@ pub struct Remembered {
 }
 
 impl Remembered {
-    /// The record in a file Textus AI wrote (`remembered-by: textus-ai`);
+    /// The record in a file Moxie AI wrote (`remembered-by: moxie-ai`);
     /// None for one the user wrote.
     pub fn from_file(content: &str) -> Option<Self> {
         let (front, _) = split_frontmatter(content);

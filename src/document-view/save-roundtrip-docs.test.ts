@@ -39,7 +39,7 @@ function markdownFiles(dir: string): [string, string][] {
 
 // CI runs these once, only for changes that can reach saving; the native
 // jobs set this to skip them.
-describe.skipIf(process.env.TEXTUS_SKIP_ROUNDTRIP === "1")(
+describe.skipIf(process.env.MOXIE_SKIP_ROUNDTRIP === "1")(
   "saving after an edit keeps the rest of the developer and design docs and loses nothing",
   () => {
     it.each(markdownFiles("docs"))(

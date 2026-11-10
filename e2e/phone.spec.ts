@@ -20,7 +20,7 @@ test("the phone menu: short, finger-sized rows; Documents, the sidebar drawer an
     "Share…",
     "Find & Replace…",
     "Sidebar",
-    "Textus AI",
+    "Moxie AI",
     "Plugins",
     "Settings…",
   ]);
@@ -79,7 +79,7 @@ test("the phone menu: short, finger-sized rows; Documents, the sidebar drawer an
   ).toBeAttached();
 });
 
-test("opening Textus AI while typing puts the keyboard away", async ({
+test("opening Moxie AI while typing puts the keyboard away", async ({
   page,
 }) => {
   await openPhone(page);
@@ -98,7 +98,7 @@ test("opening Textus AI while typing puts the keyboard away", async ({
   ).toBe("none");
 });
 
-test("Textus AI is a page of its own, switched to from the title row", async ({
+test("Moxie AI is a page of its own, switched to from the title row", async ({
   page,
 }) => {
   await openPhone(page);
@@ -336,7 +336,7 @@ test("opening the sidebar closes the find bar, without bringing the keyboard up"
   await openPhone(page);
   await pasteMarkdown(page, "plain words");
   await page.evaluate(() =>
-    window.dispatchEvent(new CustomEvent("textus:toggle-find-replace")),
+    window.dispatchEvent(new CustomEvent("moxie:toggle-find-replace")),
   );
   const bar = page.locator(".find-replace-bar");
   await expect(bar).toBeVisible();

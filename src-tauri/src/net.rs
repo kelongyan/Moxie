@@ -10,7 +10,7 @@ pub fn client(connect: Duration, total: Duration) -> reqwest::ClientBuilder {
     reqwest::Client::builder()
         .connect_timeout(connect)
         .timeout(total)
-        .user_agent(concat!("Textus/", env!("CARGO_PKG_VERSION")))
+        .user_agent(concat!("Moxie/", env!("CARGO_PKG_VERSION")))
 }
 
 /// [`client`] for servers on the public internet: through the app's network

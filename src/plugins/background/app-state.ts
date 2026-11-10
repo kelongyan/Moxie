@@ -6,7 +6,7 @@ import { listenToThisWindow, unlistenAll } from "../../platform/events";
 import { emitPluginEvent } from "../app-bridge";
 
 /**
- * Whether a Textus window is in front ("active"), open behind others
+ * Whether a Moxie window is in front ("active"), open behind others
  * ("inactive") or none is ("background"), as Rust tells every window
  * (src-tauri/src/schedule/app_state.rs). Plugins read it as textus.app.state.
  */

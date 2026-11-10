@@ -103,7 +103,7 @@ test(
     await page.setViewportSize({ width: 1200, height: 700 });
     await openApp(page, {
       settings: { language: "en" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await pasteMarkdown(page, DOC);
@@ -173,7 +173,7 @@ test(
     await page.setViewportSize({ width: 1200, height: 900 });
     await openApp(page, {
       settings: { language: "en" },
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       animations: true,
     });
     await pasteMarkdown(page, DOC);

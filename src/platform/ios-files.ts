@@ -18,7 +18,7 @@ export function isScopedUrl(path: string): boolean {
 type Picked = { url: string | null; name?: string; folder?: boolean };
 
 const call = <T>(command: string, args?: Record<string, unknown>) =>
-  invoke<T>(`plugin:textus-files|${command}`, args ? { args } : undefined);
+  invoke<T>(`plugin:moxie-files|${command}`, args ? { args } : undefined);
 
 /** A pick from the app's own Documents folder as its plain path, or the
  *  same file opens twice, once per spelling. */
@@ -116,7 +116,7 @@ export async function restoreFolderAccess(): Promise<void> {
   );
 }
 
-/** The app's Documents folder ("On My iPhone > Textus"); null until it
+/** The app's Documents folder ("On My iPhone > Moxie"); null until it
  *  resolves, and always on desktop. */
 export function useIOSDocumentsFolder(): string | null {
   const [dir, setDir] = useState<string | null>(null);

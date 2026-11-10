@@ -156,7 +156,7 @@ test("a double click on a bold or italic word selects that word", async ({
 test("Backspace right after a link takes one character of its source, not the link", async ({
   page,
 }) => {
-  await open(page, "see [Textus](https://a.com) end");
+  await open(page, "see [Moxie](https://a.com) end");
   await expect(page.locator(`${editor} a`)).toHaveCount(1);
   // The caret where ProseMirror puts it just after the link.
   await page.evaluate((sel) => {
@@ -178,7 +178,7 @@ test("Backspace right after a link takes one character of its source, not the li
   await selectionRead(page);
   await page.keyboard.press("Backspace");
   await expect(page.locator(editor)).toContainText(
-    "[Textus](https://a.com end",
+    "[Moxie](https://a.com end",
   );
 });
 

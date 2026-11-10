@@ -10,7 +10,7 @@ import { pluginsAtStart } from "./plugin-helpers";
 
 test.use(PHONE);
 
-/** Bookmarks, and Quick Notes, which keeps Textus running in the
+/** Bookmarks, and Quick Notes, which keeps Moxie running in the
  *  background: the desktop's only. */
 const BOTH = {
   "catvinci.bookmarks": ["editor.read", "files.read"],

@@ -170,7 +170,7 @@ pub(crate) fn request_user_text(context: &str, message: &str) -> String {
 }
 
 /// The current user message on the tool path: the preamble (the mode, what
-/// Textus AI remembers), the request context, then what the user wrote.
+/// Moxie AI remembers), the request context, then what the user wrote.
 pub(crate) fn request_message(
     workspace: &AgentWorkspace,
     mode: AgentMode,

@@ -86,7 +86,7 @@ pub fn check_pandoc_args(args: Vec<String>) -> Option<String> {
 }
 
 /// Pandoc's extension for a single newline: a line break where the
-/// document's folder shows one (its `.textus` conventions), else nothing.
+/// document's folder shows one (its `.moxie` conventions), else nothing.
 #[cfg(desktop)]
 fn breaks_extension(folder: Option<&str>) -> &'static str {
     match folder {
@@ -121,7 +121,7 @@ pub async fn export_via_pandoc(
 ) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(move || {
         if let Some(arg) = pandoc_options::owned_arg(&options.extra_args) {
-            return Err(format!("The Pandoc argument {arg} is set by Textus."));
+            return Err(format!("The Pandoc argument {arg} is set by Moxie."));
         }
         let mut args = pandoc_args(&format, &title);
         args[1].push_str(breaks_extension(resource_dir.as_deref()));

@@ -1,4 +1,4 @@
-//! Whether a Textus window is in front, open behind others, or none is open,
+//! Whether a Moxie window is in front, open behind others, or none is open,
 //! for `textus.app.state`. Moving from one window to another is a blur then
 //! a focus; the state is read once both have landed.
 
@@ -13,7 +13,7 @@ const SETTLE_MS: u64 = 100;
 #[cfg_attr(test, derive(specta::Type))]
 #[serde(rename_all = "camelCase")]
 pub enum AppState {
-    /// A Textus window has the focus.
+    /// A Moxie window has the focus.
     Active,
     /// Windows are open, none focused.
     Inactive,
@@ -21,7 +21,7 @@ pub enum AppState {
     Background,
 }
 
-/// A window of the user's: not one Textus keeps out of sight.
+/// A window of the user's: not one Moxie keeps out of sight.
 pub fn is_user_window(label: &str) -> bool {
     use crate::commands::chat_window::{is_editor_window, CHAT_LABEL_PREFIX};
     is_editor_window(label) || label.starts_with(CHAT_LABEL_PREFIX)

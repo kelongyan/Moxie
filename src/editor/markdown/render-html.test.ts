@@ -68,10 +68,10 @@ describe("renderDocumentHtml", () => {
     expect(
       renderDocumentHtml('<img src="a.png" alt="图" width="50%">'),
     ).toContain('width="50%"');
-    const old = renderDocumentHtml('![x](a.png "Cap {textus-width=30%}")');
+    const old = renderDocumentHtml('![x](a.png "Cap {moxie-width=30%}")');
     expect(old).toContain('width="30%"');
     expect(old).toContain('title="Cap"');
-    expect(old).not.toContain("textus-width");
+    expect(old).not.toContain("moxie-width");
     expect(renderDocumentHtml("![x](a.png)")).not.toContain("width");
   });
 

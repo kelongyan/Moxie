@@ -143,7 +143,7 @@ fn stage(source: &Path, attached: &Path) -> Result<ChatAttachment, String> {
     let text = match document_text(&copy, &ext) {
         Some(text) => text?,
         None => std::fs::read_to_string(&copy).map_err(|_| {
-            format!("`{name}` isn't a text file, and Textus can't read this format yet.")
+            format!("`{name}` isn't a text file, and Moxie can't read this format yet.")
         })?,
     };
     if text.trim().is_empty() {
@@ -232,7 +232,7 @@ mod tests {
     }
 
     fn scratch(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("textus-stage-{name}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("moxie-stage-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(dir.join("attached")).unwrap();
         dir

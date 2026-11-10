@@ -2,7 +2,7 @@ use super::*;
 use std::fs;
 
 fn scratch(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("textus-link-root-{name}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("moxie-link-root-{name}-{}", std::process::id()));
     fs::create_dir_all(&dir).unwrap();
     dir.canonicalize().unwrap()
 }

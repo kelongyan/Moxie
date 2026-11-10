@@ -1,4 +1,4 @@
-//! Tools plugins give Textus AI: each window reports its plugins' tools, a
+//! Tools plugins give Moxie AI: each window reports its plugins' tools, a
 //! request offers the asking window's, and a call goes back there. Like MCP
 //! tools, calls run one at a time, in order.
 
@@ -138,7 +138,7 @@ fn check_plugin_tool<'a>(app: &AppHandle, window: &str) -> Tool<'a> {
     Tool {
         spec: ToolSpec {
             name: "check_plugin".into(),
-            description: "Checks a plugin you wrote before you give it to the user, as Textus will read it at install: the manifest, the `local.` id, the files `main` names, the permissions the code needs, commands and views declared but never registered, menu conditions Textus never sets. Pass every file of the plugin. Fix what it reports and check again until it reports nothing.".into(),
+            description: "Checks a plugin you wrote before you give it to the user, as Moxie will read it at install: the manifest, the `local.` id, the files `main` names, the permissions the code needs, commands and views declared but never registered, menu conditions Moxie never sets. Pass every file of the plugin. Fix what it reports and check again until it reports nothing.".into(),
             parameters: json!({
                 "type": "object",
                 "properties": {
@@ -161,7 +161,7 @@ fn check_plugin_tool<'a>(app: &AppHandle, window: &str) -> Tool<'a> {
             let (app, window) = (app.clone(), window.clone());
             Box::pin(async move {
                 let tool = PluginAiTool {
-                    plugin: "textus".into(),
+                    plugin: "moxie".into(),
                     name: "check_plugin".into(),
                     description: String::new(),
                     parameters: json!({}),

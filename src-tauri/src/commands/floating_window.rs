@@ -140,7 +140,7 @@ pub fn floating_window_position(app: tauri::AppHandle, view: String) -> Option<(
 }
 
 /// The editor window a floating view belongs to, brought to the front: a
-/// view on the desktop opens Textus from its menu.
+/// view on the desktop opens Moxie from its menu.
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
 pub fn show_floating_owner(app: tauri::AppHandle, owner: String) {

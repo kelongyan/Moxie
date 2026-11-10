@@ -3,10 +3,10 @@ import { mockInvoke, openApp, openPhone, PHONE } from "../../helpers";
 
 // Review screenshots of the AI surfaces in the text, desktop and phone,
 // light and dark. The AI edits a reader's notes, never the quoted classic.
-// Runs only with TEXTUS_SHOTS_DIR set to where the PNGs go.
+// Runs only with MOXIE_SHOTS_DIR set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const QUOTE =
   "宝玉看罢，因笑道：“这个妹妹我曾见过的。”贾母笑道：“可又是胡说，你又何曾见过他？”";
@@ -100,7 +100,7 @@ async function grammar(page: Page) {
     ],
   });
   await page.evaluate(() =>
-    window.dispatchEvent(new Event("textus:trigger-grammar-check")),
+    window.dispatchEvent(new Event("moxie:trigger-grammar-check")),
   );
 }
 
@@ -116,7 +116,7 @@ for (const scheme of ["light", "dark"] as const) {
   test(`desktop ${scheme}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, {
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       colorScheme: scheme,
     });
     await paste(page);
@@ -163,21 +163,21 @@ for (const scheme of ["light", "dark"] as const) {
             name: "林黛玉",
             aliases: ["颦儿", "潇湘妃子"],
             include: "detected",
-            file: ".textus/library/林黛玉.md",
+            file: ".moxie/library/林黛玉.md",
             body: "林如海之女，寄居荣国府。",
           },
           {
             name: "贾宝玉",
             aliases: ["宝二爷"],
             include: "detected",
-            file: ".textus/library/贾宝玉.md",
+            file: ".moxie/library/贾宝玉.md",
             body: "衔玉而生，贾母最疼爱的孙子。",
           },
           {
             name: "木石前盟",
             aliases: ["绛珠草"],
             include: "detected",
-            file: ".textus/library/木石前盟.md",
+            file: ".moxie/library/木石前盟.md",
             body: "绛珠仙草与神瑛侍者的前世因缘。",
           },
         ],
@@ -234,7 +234,7 @@ for (const [themeId, scheme] of [
   test(`theme ${themeId} ${scheme}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, {
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       settings: { themeId },
       colorScheme: scheme,
     });
@@ -252,7 +252,7 @@ test("theme imported typora", async ({ page }) => {
     "utf8",
   );
   await page.setViewportSize({ width: 1440, height: 900 });
-  await openApp(page, { storage: { "textus-agent-panel-open": "1" } });
+  await openApp(page, { storage: { "moxie-agent-panel-open": "1" } });
   // Apply the theme's derived chrome the way an import does.
   await page.evaluate(async (css) => {
     // The dev server's own module, as the app loads it.
@@ -279,7 +279,7 @@ for (const revisionDisplay of ["inline", "original", "final"]) {
   test(`revision display ${revisionDisplay}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page, {
-      storage: { "textus-agent-panel-open": "1" },
+      storage: { "moxie-agent-panel-open": "1" },
       settings: { revisionDisplay },
     });
     await paste(page);

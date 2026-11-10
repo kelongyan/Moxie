@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 #[test]
 fn windows_lists_textus_under_open_with_without_taking_the_default() {
-    let exe = r"C:\Users\me\AppData\Local\Textus\Textus.exe";
+    let exe = r"C:\Users\me\AppData\Local\Moxie\Moxie.exe";
     let values = registry::values(exe);
     let find = |key: &str, name: &str| {
         values
@@ -15,20 +15,20 @@ fn windows_lists_textus_under_open_with_without_taking_the_default() {
         assert_eq!(
             find(
                 &format!(r"Software\Classes\{ext}\OpenWithProgids"),
-                "Textus.Markdown"
+                "Moxie.Markdown"
             ),
             Some(&registry::Data::Empty)
         );
         assert_eq!(
             find(
-                r"Software\Classes\Applications\Textus.exe\SupportedTypes",
+                r"Software\Classes\Applications\Moxie.exe\SupportedTypes",
                 ext
             ),
             Some(&registry::Data::Text(String::new()))
         );
         assert_eq!(
-            find(r"Software\Textus\Capabilities\FileAssociations", ext),
-            Some(&registry::Data::Text("Textus.Markdown".into()))
+            find(r"Software\Moxie\Capabilities\FileAssociations", ext),
+            Some(&registry::Data::Text("Moxie.Markdown".into()))
         );
         // The extension's default value is not ours to set.
         assert!(find(&format!(r"Software\Classes\{ext}"), "").is_none());
@@ -36,20 +36,20 @@ fn windows_lists_textus_under_open_with_without_taking_the_default() {
     // The path is quoted: an install folder may have a space in it.
     let open = registry::Data::Text(format!("\"{exe}\" \"%1\""));
     assert_eq!(
-        find(r"Software\Classes\Textus.Markdown\shell\open\command", ""),
+        find(r"Software\Classes\Moxie.Markdown\shell\open\command", ""),
         Some(&open)
     );
     assert_eq!(
         find(
-            r"Software\Classes\Applications\Textus.exe\shell\open\command",
+            r"Software\Classes\Applications\Moxie.exe\shell\open\command",
             ""
         ),
         Some(&open)
     );
     assert_eq!(
-        find(r"Software\RegisteredApplications", "Textus"),
+        find(r"Software\RegisteredApplications", "Moxie"),
         Some(&registry::Data::Text(
-            r"Software\Textus\Capabilities".into()
+            r"Software\Moxie\Capabilities".into()
         ))
     );
     // Everything stays under HKEY_CURRENT_USER's Software.
@@ -60,7 +60,7 @@ fn windows_lists_textus_under_open_with_without_taking_the_default() {
 fn windows_opens_default_apps_at_the_registered_name() {
     assert_eq!(
         registry::settings_uri(),
-        "ms-settings:defaultapps?registeredAppUser=Textus"
+        "ms-settings:defaultapps?registeredAppUser=Moxie"
     );
 }
 
@@ -87,9 +87,9 @@ fn linux_finds_the_packaged_desktop_entry_in_search_order() {
     assert_eq!(
         installed_desktop_id(
             &dirs,
-            installed(&["/usr/share/applications/Textus.desktop"])
+            installed(&["/usr/share/applications/Moxie.desktop"])
         ),
-        Some("Textus.desktop")
+        Some("Moxie.desktop")
     );
     assert_eq!(
         installed_desktop_id(
@@ -105,10 +105,10 @@ fn linux_finds_the_packaged_desktop_entry_in_search_order() {
 #[test]
 fn linux_sets_both_markdown_mime_types() {
     assert_eq!(
-        xdg_mime_default_args("Textus.desktop"),
+        xdg_mime_default_args("Moxie.desktop"),
         [
             "default",
-            "Textus.desktop",
+            "Moxie.desktop",
             "text/markdown",
             "text/x-markdown"
         ]

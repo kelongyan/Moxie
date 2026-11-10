@@ -8,7 +8,7 @@ const manifest = (more: Record<string, unknown> = {}) =>
     version: "0.1.0",
     publisher: "local",
     description: "Counts.",
-    engines: { textus: ">=1.3.10" },
+    engines: { moxie: ">=1.3.10" },
     main: "host.js",
     permissions: [],
     contributes: { commands: [{ command: "local.count.run", title: "Count" }] },
@@ -25,7 +25,7 @@ it("passes a plugin that installs and asks for what it uses", () => {
       ],
       "1.3.10",
     ),
-  ).toMatch(/^No problems found.*Textus 1\.3\.10/);
+  ).toMatch(/^No problems found.*Moxie 1\.3\.10/);
 });
 
 it("names what install refuses or what would silently do nothing", () => {
@@ -35,7 +35,7 @@ it("names what install refuses or what would silently do nothing", () => {
         path: "textus-plugin.json",
         text: manifest({
           id: "jane.count",
-          engines: { textus: ">=2.0.0" },
+          engines: { moxie: ">=2.0.0" },
           contributes: {
             commands: [{ command: "jane.count.run", title: "Count" }],
           },
@@ -50,7 +50,7 @@ it("names what install refuses or what would silently do nothing", () => {
   );
   expect(out).toContain('must start with "local."');
   expect(out).toContain(
-    'engines.textus ">=2.0.0" leaves out this Textus (1.3.10)',
+    'engines.moxie ">=2.0.0" leaves out this Moxie (1.3.10)',
   );
   expect(out).toContain('"editor.read"');
   expect(

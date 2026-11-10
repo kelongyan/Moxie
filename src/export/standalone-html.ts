@@ -348,7 +348,7 @@ export function buildStandaloneHtml(
         ? "dark"
         : "light"));
   const contentTheme = root.getAttribute("data-content-theme");
-  // An imported theme switches Textus's own ornaments off; the export must too.
+  // An imported theme switches Moxie's own ornaments off; the export must too.
   const userTheme = root.hasAttribute("data-user-theme");
   const imageAlign = root.getAttribute("data-image-align");
   const rootAttrs =

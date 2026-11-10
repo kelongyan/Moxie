@@ -76,7 +76,7 @@ export async function openWithPlugins(
   options: PluginsAtStart & { language?: string },
 ) {
   await pluginsAtStart(page, options);
-  // A plugin's settings live under Textus's settings' `plugins`.
+  // A plugin's settings live under Moxie's settings' `plugins`.
   await openApp(page, {
     settings: {
       language: options.language ?? "en",
@@ -116,7 +116,7 @@ export async function openSidebarTab(page: Page, name: string) {
   return page.frameLocator(".sidebar .plugin-webview-frame");
 }
 
-/** A plugin's list in the sidebar (views.registerList): drawn by Textus
+/** A plugin's list in the sidebar (views.registerList): drawn by Moxie
  *  in the page itself, not in a frame. */
 export async function openSidebarList(page: Page, name: string) {
   if (await page.locator(".sidebar.sidebar-collapsed").count())

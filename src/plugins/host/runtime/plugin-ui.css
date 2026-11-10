@@ -1,5 +1,5 @@
 /* @textus/plugin-ui: the base every plugin webview gets, so a panel looks
-   like the rest of Textus without its own CSS. Uses only the theme variables
+   like the rest of Moxie without its own CSS. Uses only the theme variables
    plugins are given. */
 
 :root {

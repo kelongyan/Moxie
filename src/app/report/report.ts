@@ -3,7 +3,7 @@ import { pluginsSnapshot } from "../../plugins/manager";
 import type { Settings } from "../../prefs/settings-types";
 import { recentErrors } from "./recent-errors";
 
-/** What a problem report says about this Textus, filled in for the user. */
+/** What a problem report says about this Moxie, filled in for the user. */
 export interface ReportFacts {
   os: string;
   arch: string;
@@ -40,7 +40,7 @@ export function reportDetails(facts: ReportFacts): string {
   );
   const errors = recentErrors();
   return [
-    `Textus ${APP_VERSION}`,
+    `Moxie ${APP_VERSION}`,
     `${facts.os} ${facts.arch}`,
     `WebView ${facts.webview || "?"}`,
     `Language ${facts.language}`,
@@ -108,10 +108,10 @@ export function reportUrl(
         : "";
   const params = new URLSearchParams({
     template: chinese ? "2-bug-report-zh.yml" : "1-bug-report.yml",
-    description: `${description.trim()}\n\n<details><summary>Textus</summary>\n\n\`\`\`\n${details}\n\`\`\`\n</details>`,
+    description: `${description.trim()}\n\n<details><summary>Moxie</summary>\n\n\`\`\`\n${details}\n\`\`\`\n</details>`,
     "os-version": facts.os,
     "app-version": APP_VERSION,
     ...(platform ? { platform } : {}),
   });
-  return `https://github.com/CatVinci-Studio/Textus/issues/new?${params}`;
+  return `https://github.com/kelongyan/Moxie/issues/new?${params}`;
 }

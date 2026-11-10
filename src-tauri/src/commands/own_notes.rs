@@ -1,6 +1,6 @@
 //! A writer's own notes and tracked changes for a document, kept in the app's
 //! data folder (named by a hash of the path), never in the Markdown. A file
-//! renamed outside Textus loses them.
+//! renamed outside Moxie loses them.
 
 use sha2::{Digest, Sha256};
 use std::path::PathBuf;

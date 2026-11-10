@@ -70,7 +70,7 @@ describe("assembling release notes", () => {
 
   it("adds bullets at the end of their sections and new sections in the template's order", () => {
     const notes =
-      "## What's new\n\nTextus 9.9.0 fixes things.\n\n### Fixed\n\n- Old fix. (#1)\n\nInstallers are below.\n";
+      "## What's new\n\nMoxie 9.9.0 fixes things.\n\n### Fixed\n\n- Old fix. (#1)\n\nInstallers are below.\n";
     const out = assemble({
       version: "9.9.0",
       notes,
@@ -80,7 +80,7 @@ describe("assembling release notes", () => {
       ],
     });
     expect(out).toBe(
-      "## What's new\n\nTextus 9.9.0 fixes things.\n\n### New\n\n- Adds a thing. (#2)\n\n### Fixed\n\n- Old fix. (#1)\n- New fix. (#3)\n\nInstallers are below.\n",
+      "## What's new\n\nMoxie 9.9.0 fixes things.\n\n### New\n\n- Adds a thing. (#2)\n\n### Fixed\n\n- Old fix. (#1)\n- New fix. (#3)\n\nInstallers are below.\n",
     );
   });
 
@@ -106,7 +106,7 @@ describe("assembling release notes", () => {
       fragments: [fragment("### Improved\n\n- Opens faster. (#4)\n")],
     });
     expect(out).toBe(
-      `## What's new\n\nTextus 9.9.0 ${SUMMARY_PLACEHOLDER}.\n\n### Improved\n\n- Opens faster. (#4)\n\nInstallers for macOS (Apple silicon and Intel), Windows and Linux (x64 and ARM64) are below; the app updates itself.\n`,
+      `## What's new\n\nMoxie 9.9.0 ${SUMMARY_PLACEHOLDER}.\n\n### Improved\n\n- Opens faster. (#4)\n\nInstallers for macOS (Apple silicon and Intel), Windows and Linux (x64 and ARM64) are below; the app updates itself.\n`,
     );
   });
 });
@@ -116,7 +116,7 @@ describe("tagging a stable release", () => {
     const dir = mkdtempSync(join(tmpdir(), "release-notes-"));
     mkdirSync(join(dir, "docs/releases/next"), { recursive: true });
     writeFileSync(join(dir, "docs/releases/next/README.md"), "# Fragments\n");
-    writeFileSync(join(dir, "docs/releases/9.9.0.md"), "Textus 9.9.0 fixes.\n");
+    writeFileSync(join(dir, "docs/releases/9.9.0.md"), "Moxie 9.9.0 fixes.\n");
     expect(unreleasedProblems(dir, "9.9.0")).toEqual([]);
 
     writeFileSync(
@@ -125,7 +125,7 @@ describe("tagging a stable release", () => {
     );
     writeFileSync(
       join(dir, "docs/releases/9.9.0.md"),
-      `Textus 9.9.0 ${SUMMARY_PLACEHOLDER}.\n`,
+      `Moxie 9.9.0 ${SUMMARY_PLACEHOLDER}.\n`,
     );
     expect(unreleasedProblems(dir, "9.9.0")).toEqual([
       expect.stringContaining("1 release-note fragment(s)"),

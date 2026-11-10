@@ -7,7 +7,7 @@ const EDGE = 28;
 const TRAVEL = 60;
 
 /** Whether a finger from `start` to `end` turns the page: from the
- *  screen's right edge leftwards to Textus AI, and from the AI panel's left
+ *  screen's right edge leftwards to Moxie AI, and from the AI panel's left
  *  edge (`panelLeft`: the screen's on a phone) rightwards back. */
 export function swipeTurnsPage(
   start: { x: number; y: number },
@@ -24,7 +24,7 @@ export function swipeTurnsPage(
     : start.x >= width - EDGE && dx < 0;
 }
 
-/** Edge swipes between the document and Textus AI: the phone's two pages,
+/** Edge swipes between the document and Moxie AI: the phone's two pages,
  *  or an iPad's docked panel. `enabled` false while there is no AI to show. */
 export function usePageSwipe(enabled: boolean, ai: boolean, turn: () => void) {
   const state = useRef({ ai, turn });

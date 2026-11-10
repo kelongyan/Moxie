@@ -23,8 +23,8 @@ import { errorText } from "../../utils/error-text";
 import { compareNames } from "../../utils/name-order";
 
 /**
- * The plugins Textus offers to install, from the textus-plugins catalog that
- * Rust fetches, checks and installs. No plugin comes with Textus.
+ * The plugins Moxie offers to install, from the textus-plugins catalog that
+ * Rust fetches, checks and installs. No plugin comes with Moxie.
  */
 
 export interface CatalogItem {
@@ -154,16 +154,16 @@ export function loadCatalog(force = false): Promise<void> {
   return fetching;
 }
 
-/** The Textus version the catalog's `item` needs, when it is newer than
+/** The Moxie version the catalog's `item` needs, when it is newer than
  *  this one; null when it runs here. */
-export function neededTextus(item: CatalogItem): string | null {
+export function neededMoxie(item: CatalogItem): string | null {
   const range = item.manifest.engine;
   if (engineSatisfied(range, APP_VERSION)) return null;
   return range.replace(/^(>=|\^)/, "").trim();
 }
 
 /** The catalog's newer version of an installed plugin, if it has one that
- *  runs on this Textus; one that needs a newer Textus waits for it. */
+ *  runs on this Moxie; one that needs a newer Moxie waits for it. */
 export function updateFor(
   id: string,
   from: CatalogState = state,
@@ -173,7 +173,7 @@ export function updateFor(
   const offered = from.items.find((i) => i.id === id);
   return installed &&
     offered &&
-    !neededTextus(offered) &&
+    !neededMoxie(offered) &&
     compareVersions(offered.version, installed) > 0
     ? offered.version
     : null;
@@ -181,14 +181,14 @@ export function updateFor(
 
 /** Installs (or updates) `id` from the catalog. A new plugin is turned on,
  *  which asks for its permissions; an update keeps it as it was. One that
- *  needs a newer Textus is refused before anything is fetched. */
+ *  needs a newer Moxie is refused before anything is fetched. */
 export async function installFromCatalog(id: string): Promise<void> {
   const offered =
     state.status === "ready" ? state.items.find((i) => i.id === id) : null;
-  const needs = offered && neededTextus(offered);
+  const needs = offered && neededMoxie(offered);
   if (needs)
     throw new Error(
-      currentStrings().pluginNeedsTextus.replace("{version}", needs),
+      currentStrings().pluginNeedsMoxie.replace("{version}", needs),
     );
   const before = pluginRecord(id);
   await pluginsIpc.installFromCatalog(id);

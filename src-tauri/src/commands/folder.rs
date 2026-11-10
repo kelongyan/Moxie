@@ -158,12 +158,12 @@ mod tests {
         assert_eq!(rels(&index), ["a.md"]);
     }
 
-    /// How long the walk takes on a real folder: `TEXTUS_INDEX_BENCH=<dir>
+    /// How long the walk takes on a real folder: `MOXIE_INDEX_BENCH=<dir>
     /// cargo test --release index_benchmark -- --ignored --nocapture`.
     #[test]
     #[ignore]
     fn index_benchmark() {
-        let Some(dir) = std::env::var_os("TEXTUS_INDEX_BENCH") else {
+        let Some(dir) = std::env::var_os("MOXIE_INDEX_BENCH") else {
             return;
         };
         let root = PathBuf::from(dir);

@@ -15,7 +15,7 @@ import { platformName } from "../platform/window-chrome";
 import { Presence } from "../ui/usePresence";
 import { FlipOnChange } from "../ui/flip";
 import { AgentPanelProvider } from "../ai/chat/panel/agent-panel";
-import { aiFeatures } from "../settings/textus-ai";
+import { aiFeatures } from "../settings/moxie-ai";
 import { useWindowShell } from "./useWindowShell";
 import { useWindowDocuments } from "./useWindowDocuments";
 import { useWindowWiring } from "./useWindowWiring";
@@ -60,7 +60,7 @@ function App() {
   const wiring = useWindowWiring({ shell, docs, settings, setSettings, t });
   const phone = usePhoneLayout();
 
-  const { textusAi, tutorial, settingsOpening, appUpdate, pendingClose } =
+  const { moxieAi, tutorial, settingsOpening, appUpdate, pendingClose } =
     shell;
   const { draftsRestoredCount, setDraftsRestoredCount, wordImported } = shell;
   const { tabs, activeTabId, setActiveTabId, addBlankTab, reorderTab } =
@@ -213,7 +213,7 @@ function App() {
             mountRef={setAgentPanelEl}
             sourceMode={!!activeTab.sourceMode}
             onToggleSourceMode={toggleSourceMode}
-            aiOn={textusAi.on}
+            aiOn={moxieAi.on}
             t={t}
           />
         )}
@@ -225,7 +225,7 @@ function App() {
           docPath={activeTab.path}
           fixedShortcuts={fixedShortcutGroups(t, platformName())}
           pluginCommands={commands()
-            // Textus's own (Save, Close Tab) have their keys under File.
+            // Moxie's own (Save, Close Tab) have their keys under File.
             .filter((c) => !c.id.startsWith("textus."))
             .map((c) => ({
               id: c.id,

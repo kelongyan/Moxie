@@ -75,7 +75,7 @@ const TYPORA_BASE: [string, string][] = [
   ],
 ];
 
-/** Rewrites an imported Typora theme's selectors onto Textus's editor DOM. */
+/** Rewrites an imported Typora theme's selectors onto Moxie's editor DOM. */
 export function adaptTyporaCss(css: string): string {
   let out = css;
   for (const [pattern, replacement] of SELECTORS)

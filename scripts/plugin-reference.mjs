@@ -68,12 +68,12 @@ export async function reference() {
     "change that file, then run the script; don't edit this page. How the",
     "parts fit together is in [the guide](guide.md).",
     "",
-    "`textus` is a `Textus.Api`; `activate` is given a `PluginContext`;",
-    "a webview's page has `acquireTextusApi()`, a `WebviewApi`.",
+    "`textus` is a `Moxie.Api`; `activate` is given a `PluginContext`;",
+    "a webview's page has `acquireMoxieApi()`, a `WebviewApi`.",
     "",
   ];
   const visit = (node) => {
-    if (ts.isModuleDeclaration(node) && node.name.text === "Textus") {
+    if (ts.isModuleDeclaration(node) && node.name.text === "Moxie") {
       for (const item of node.body.statements) {
         if (ts.isInterfaceDeclaration(item)) {
           out.push(`## ${item.name.text}`, "");

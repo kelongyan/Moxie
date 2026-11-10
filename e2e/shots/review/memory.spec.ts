@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { mockInvoke, openApp } from "../../helpers";
 
-// Review screenshots of what Textus AI remembers, in English and Chinese,
-// light and dark. Runs only with TEXTUS_SHOTS_DIR set.
+// Review screenshots of what Moxie AI remembers, in English and Chinese,
+// light and dark. Runs only with MOXIE_SHOTS_DIR set.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+const DIR = process.env.MOXIE_SHOTS_DIR;
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 const record = (title: string, at: string) => ({
   created: at,
@@ -107,14 +107,14 @@ for (const lang of ["en", "zh"] as const) {
           language: lang,
           theme: theme === "dark" ? "dark" : "light",
         },
-        storage: { "textus-agent-panel-open": "1" },
+        storage: { "moxie-agent-panel-open": "1" },
       });
       const library = [
         {
           name: copy.fact.name,
           aliases: [],
           include: "mentioned",
-          file: `.textus/library/${copy.fact.name}.md`,
+          file: `.moxie/library/${copy.fact.name}.md`,
           body: copy.fact.body,
           remembered: record(copy.ask.slice(0, 20), "2026-10-22T09:30:00Z"),
         },

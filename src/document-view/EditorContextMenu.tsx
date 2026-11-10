@@ -8,7 +8,7 @@ import {
 import { ContextMenu } from "../ui/ContextMenu";
 import { Presence } from "../ui/usePresence";
 import type { Settings } from "../prefs/SettingsContext";
-import { aiFeatures } from "../settings/textus-ai";
+import { aiFeatures } from "../settings/moxie-ai";
 import type { Strings } from "../i18n/strings";
 import type { ImageLocation } from "../editor/images/missing-image";
 import { useImageService } from "../ai/image-models";
@@ -55,7 +55,7 @@ export function EditorContextMenu({
   /** This is the tour's practice tab. */
   inTour: boolean;
   openAgentConversation: () => void;
-  /** Asks Textus AI for a picture for the paragraph. */
+  /** Asks Moxie AI for a picture for the paragraph. */
   illustrateParagraph: (at: { x: number; y: number }) => void;
   triggerCompletion: () => void;
   triggerGrammarCheck: () => void;
@@ -98,7 +98,7 @@ export function EditorContextMenu({
                     ]
                   : [],
               // Each AI item only while its feature is on, and none while
-              // Textus AI is off. The tour's practice tab always offers Ask
+              // Moxie AI is off. The tour's practice tab always offers Ask
               // AI so its lessons work.
               aiItems: [
                 ...(aiFeatures(settings, inTour).chat && !menu.phone

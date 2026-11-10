@@ -5,7 +5,7 @@ static DIR_COUNTER: AtomicU32 = AtomicU32::new(0);
 
 fn temp_dir() -> PathBuf {
     let dir = std::env::temp_dir().join(format!(
-        "textus-chat-history-test-{}-{}",
+        "moxie-chat-history-test-{}-{}",
         std::process::id(),
         DIR_COUNTER.fetch_add(1, Ordering::Relaxed)
     ));

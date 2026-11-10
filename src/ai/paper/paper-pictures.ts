@@ -11,7 +11,7 @@ export interface PaperPicture {
 }
 
 const PICTURE =
-  /^\s*!\[([^\]\n]*)\]\(textus-generated:([0-9a-z]+)[^)\n]*\)\s*$/;
+  /^\s*!\[([^\]\n]*)\]\(moxie-generated:([0-9a-z]+)[^)\n]*\)\s*$/;
 const CAPTION = /^\s*\*(.+)\*\s*$/;
 
 /** The pictures of the finished paper `markdown`, in reading order, each

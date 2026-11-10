@@ -57,7 +57,7 @@
   background: none;
 }
 
-/* A long press on a file opens Textus's own menu, not the system's link
+/* A long press on a file opens Moxie's own menu, not the system's link
    callout, and doesn't select the label. */
 :root[data-window-chrome="mobile"] .tree-row {
   -webkit-touch-callout: none;

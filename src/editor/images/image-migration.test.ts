@@ -47,7 +47,7 @@ describe("migrateDraftImages", () => {
 
   it("finds a draft image whose path has a space, written in angle brackets", async () => {
     const pasted =
-      "/Users/me/Library/Application Support/com.catvinci.textus/assets/image-1.png";
+      "/Users/me/Library/Application Support/com.catvinci.moxie/assets/image-1.png";
     migrate.mockResolvedValue([{ old: pasted, new: "assets/image-1.png" }]);
     const result = await migrateDraftImages(
       "/B/b.md",

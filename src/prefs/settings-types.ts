@@ -41,12 +41,12 @@ export interface Settings {
   theme: ThemeMode;
   /// Show the document through the window bar, blurred, as it scrolls under.
   frostedTitleBar: boolean;
-  /** Off, Textus AI makes no request to any AI service, whatever the
+  /** Off, Moxie AI makes no request to any AI service, whatever the
    *  features below are set to; they keep their values. Rust reads it too. */
-  textusAi: boolean;
+  moxieAi: boolean;
   /** When a pause from the window bar's AI button ends (ms since the epoch).
    *  Null while it is on, or off until turned back on. */
-  textusAiResumeAt: number | null;
+  moxieAiResumeAt: number | null;
   enableCompletion: boolean;
   enableGrammarCheck: boolean;
   /// How aggressive the grammar check is, from confident typos only up to
@@ -99,7 +99,7 @@ export interface Settings {
   /// checks follow for that language. A project's style profile overrides it.
   writingConventions: string;
   /// The composer's Web search button starts on. The provider's own
-  /// search where it has one, else Textus's web_search on `searchService`.
+  /// search where it has one, else Moxie's web_search on `searchService`.
   enableWebSearch: boolean;
   /// The image service ("" for none, the default: a picture costs money), its
   /// model ("" for its default) and, for an OpenAI-compatible endpoint, its address.
@@ -114,7 +114,7 @@ export interface Settings {
   /// The proposal card's "Add sources as footnotes": remembered from the last
   /// card, not set in Settings.
   sourcesAsFootnotes: boolean;
-  /// Textus AI may keep requirements, preferences, style and facts it learns
+  /// Moxie AI may keep requirements, preferences, style and facts it learns
   /// in a conversation. Rust reads it from settings.json.
   rememberAutomatically: boolean;
   /// In Research, a question's researcher may hand parts of it to helpers of
@@ -123,9 +123,9 @@ export interface Settings {
   /** Research checks every cited sentence against its sources' notes before
    *  the review's revision. Off: one more model call a section. */
   researchCheckClaims: boolean;
-  /// The MCP servers Textus AI may use; Rust reads them from the settings file.
+  /// The MCP servers Moxie AI may use; Rust reads them from the settings file.
   mcpServers: McpServer[];
-  /// Each plugin's settings, by plugin id; a project's `.textus/settings.json`
+  /// Each plugin's settings, by plugin id; a project's `.moxie/settings.json`
   /// holds the same, over these.
   plugins: Record<string, Record<string, unknown>>;
   /// After each reply, a likely next message, grey in the empty box for Tab
@@ -140,7 +140,7 @@ export interface Settings {
   /// Whether the detached Agent window floats above other windows. Kept
   /// here rather than per-window so the choice survives closing it.
   pinAgentWindow: boolean;
-  /// The project folder, or "" for the document's own folder. Its `.textus/`
+  /// The project folder, or "" for the document's own folder. Its `.moxie/`
   /// is read and it bounds the agent's file tools, so setting it lets the
   /// agent reach material that doesn't live next to the draft.
   agentWorkspaceRoot: string;
@@ -256,8 +256,8 @@ export const DEFAULT_SETTINGS: Settings = {
   languageChosen: false,
   theme: "system",
   frostedTitleBar: false,
-  textusAi: true,
-  textusAiResumeAt: null,
+  moxieAi: true,
+  moxieAiResumeAt: null,
   enableCompletion: true,
   enableGrammarCheck: true,
   grammarStrictness: "standard",

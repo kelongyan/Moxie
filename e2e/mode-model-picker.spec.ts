@@ -9,7 +9,7 @@ test("one control names the mode and the model, and its list switches either", a
 }) => {
   await openApp(page, {
     settings: { language: "en", aiProvider: "openai" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   const picker = page
     .locator(".agent-panel-view")

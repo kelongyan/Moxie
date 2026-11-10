@@ -970,7 +970,7 @@ fn a_chart_s_categories_labels_and_source_are_checked() {
 fn figures_are_numbered_through_the_paper_and_captioned_by_what_they_show() {
     let mut sections = vec![
         "## One\n\nText.\n\n```mermaid\nflowchart LR\n  A --> B\n```\n\n```rust\nfn main() {}\n```".to_string(),
-        "## Two\n\n```chart\n{\"title\": \"Temperatures\", \"caption\": \"Roof surfaces at noon\", \"series\": [{\"data\": [1]}]}\n```\n\n![A green roof in Basel](textus-picture:16:9 a roof)\n\n<!-- textus-figure web: satellite heat map -->".to_string(),
+        "## Two\n\n```chart\n{\"title\": \"Temperatures\", \"caption\": \"Roof surfaces at noon\", \"series\": [{\"data\": [1]}]}\n```\n\n![A green roof in Basel](moxie-picture:16:9 a roof)\n\n<!-- moxie-figure web: satellite heat map -->".to_string(),
     ];
     assert_eq!(finish::number_figures(&mut sections, "zh-CN"), 4);
     assert!(
@@ -992,7 +992,7 @@ fn figures_are_numbered_through_the_paper_and_captioned_by_what_they_show() {
         sections[1]
     );
     assert!(
-        sections[1].contains("(textus-picture:16:9 a roof)\n\n*图 3　A green roof in Basel*"),
+        sections[1].contains("(moxie-picture:16:9 a roof)\n\n*图 3　A green roof in Basel*"),
         "{}",
         sections[1]
     );
@@ -1102,11 +1102,11 @@ async fn the_opening_is_a_title_and_an_abstract_or_the_topic_alone() {
 #[tokio::test]
 async fn picture_lines_are_begun_up_to_the_limit_and_the_rest_left_out() {
     let run = crate::ai::images::ImageRun::offline(2);
-    let text = "Intro.\n\n![Roof](textus-picture:16:9 a green roof)\n\nMid.\n\n![Map](textus-picture:4:3 a heat map)\n\n![Third](textus-picture:1:1 one too many)\n\nEnd.";
+    let text = "Intro.\n\n![Roof](moxie-picture:16:9 a green roof)\n\nMid.\n\n![Map](moxie-picture:4:3 a heat map)\n\n![Third](moxie-picture:1:1 one too many)\n\nEnd.";
     let (placed, unmade) = crate::ai::images::place_pictures(&run, text);
-    assert_eq!(placed.matches("](textus-generated:").count(), 2, "{placed}");
-    assert!(placed.contains("![Roof](textus-generated:"), "{placed}");
-    assert!(!placed.contains("textus-picture:"), "{placed}");
+    assert_eq!(placed.matches("](moxie-generated:").count(), 2, "{placed}");
+    assert!(placed.contains("![Roof](moxie-generated:"), "{placed}");
+    assert!(!placed.contains("moxie-picture:"), "{placed}");
     assert!(!placed.contains("\n\n\n"), "{placed}");
     assert_eq!(unmade.len(), 1);
     assert!(placed.ends_with("End."));
@@ -1316,23 +1316,23 @@ async fn helpers_search_the_user_s_library_and_cite_its_files() {
 #[test]
 fn a_web_picture_mark_gives_its_caption_and_search_words() {
     assert_eq!(
-        web_figures::read_mark("<!-- textus-figure web: 苏黎世的屋顶绿化 | green roof Zurich -->"),
+        web_figures::read_mark("<!-- moxie-figure web: 苏黎世的屋顶绿化 | green roof Zurich -->"),
         Some((
             "苏黎世的屋顶绿化".to_string(),
             "green roof Zurich".to_string()
         ))
     );
     assert_eq!(
-        web_figures::read_mark("  <!-- textus-figure web: Basel rooftops -->"),
+        web_figures::read_mark("  <!-- moxie-figure web: Basel rooftops -->"),
         Some(("Basel rooftops".to_string(), "Basel rooftops".to_string()))
     );
-    assert_eq!(web_figures::read_mark("<!-- textus-figure web:  -->"), None);
+    assert_eq!(web_figures::read_mark("<!-- moxie-figure web:  -->"), None);
     assert_eq!(web_figures::read_mark("Plain text."), None);
 }
 
 #[tokio::test]
 async fn web_picture_marks_become_kept_pictures_with_credits_or_generated_ones() {
-    let section = "Intro.\n\n<!-- textus-figure web: A roof in Basel | green roof Basel -->\n\nMid.\n\n<!-- textus-figure web: Nothing | no such picture -->\n\nEnd.";
+    let section = "Intro.\n\n<!-- moxie-figure web: A roof in Basel | green roof Basel -->\n\nMid.\n\n<!-- moxie-figure web: Nothing | no such picture -->\n\nEnd.";
     let find = |words: String| async move {
         if words == "green roof Basel" {
             Ok((
@@ -1349,7 +1349,7 @@ async fn web_picture_marks_become_kept_pictures_with_credits_or_generated_ones()
     let lines: Vec<&str> = resolved.split("\n\n").collect();
     assert_eq!(lines[0], "Intro.");
     let id = lines[1]
-        .strip_prefix("![A roof in Basel](textus-generated:")
+        .strip_prefix("![A roof in Basel](moxie-generated:")
         .and_then(|rest| rest.strip_suffix(')'))
         .unwrap_or_else(|| panic!("{resolved}"));
     assert_eq!(
@@ -1361,7 +1361,7 @@ async fn web_picture_marks_become_kept_pictures_with_credits_or_generated_ones()
         &lines[3..],
         [
             "Mid.",
-            "![Nothing](textus-picture:16:9 Nothing (no such picture))",
+            "![Nothing](moxie-picture:16:9 Nothing (no such picture))",
             "End."
         ]
     );

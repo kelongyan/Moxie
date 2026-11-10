@@ -1,4 +1,4 @@
-/// The themes Textus AI writes in a reply: found in its Markdown, so the chat
+/// The themes Moxie AI writes in a reply: found in its Markdown, so the chat
 /// can offer "Use this theme" under it.
 
 import { replyFiles } from "../ai/chat/reply-files";

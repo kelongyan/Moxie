@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { useSettings } from "../prefs/SettingsContext";
-import { aiFeatures } from "../settings/textus-ai";
+import { aiFeatures } from "../settings/moxie-ai";
 import type { TableAction } from "../editor/editor-menu";
 import {
   BulletListIcon,

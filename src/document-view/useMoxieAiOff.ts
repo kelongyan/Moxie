@@ -4,9 +4,9 @@ import type { EditorRunner } from "../editor/useEditorRunner";
 import { dismissGhostText } from "../ai/writing/ghost-text-plugin";
 import { clearGrammarIssues } from "../ai/writing/grammar-check-plugin";
 
-/** Textus AI turned off: completion, grammar underlines and Quick Ask go
+/** Moxie AI turned off: completion, grammar underlines and Quick Ask go
  *  with it. Revisions already proposed stay, to decide as before. */
-export function useTextusAiOff(
+export function useMoxieAiOff(
   run: EditorRunner,
   aiOn: boolean,
   hide: { quickAsk: () => void; grammarCard: () => void },

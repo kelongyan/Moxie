@@ -63,10 +63,10 @@ pub struct Download<'a> {
     pub direct: &'a str,
 }
 
-/// The endpoint: TEXTUS_EXT_STATS for trying a local one; a debug build
+/// The endpoint: MOXIE_EXT_STATS for trying a local one; a debug build
 /// counts only there, so development never adds to the real counts.
 fn endpoint() -> Option<String> {
-    match std::env::var("TEXTUS_EXT_STATS") {
+    match std::env::var("MOXIE_EXT_STATS") {
         Ok(url) => Some(url),
         Err(_) if cfg!(debug_assertions) => None,
         Err(_) => Some(ENDPOINT.to_string()),
@@ -90,7 +90,7 @@ pub(crate) fn download_url(base: &str, d: &Download, event: Event) -> Option<Str
         .append_pair("id", d.id)
         .append_pair("version", d.version)
         .append_pair("event", event.name())
-        // Redirect to Textus's own site, not GitHub (older versions leave
+        // Redirect to Moxie's own site, not GitHub (older versions leave
         // this out).
         .append_pair("via", "site");
     // A theme's stylesheet may be named otherwise.

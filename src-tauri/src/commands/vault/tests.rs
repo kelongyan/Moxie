@@ -20,7 +20,7 @@ impl Drop for Scratch {
 }
 
 fn tempdir(name: &str) -> Scratch {
-    let dir = std::env::temp_dir().join(format!("textus-vault-{name}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("moxie-vault-{name}-{}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(&dir).unwrap();
     // Canonical, so paths compare equal to resolved ones on macOS

@@ -48,7 +48,7 @@ export interface MenuBridgeHandlers {
   /** Settings › Editor › Export, for a Pandoc export. */
   pandocSettings: PandocSettings;
   onOpenSettings: () => void;
-  /** Textus › Check for Updates…: Settings › About, checking. */
+  /** Moxie › Check for Updates…: Settings › About, checking. */
   onCheckUpdates: () => void;
   /** Settings › Extensions › Plugins, at plugin `id`'s page if given. */
   onOpenPluginSettings: (id?: string) => void;
@@ -57,9 +57,9 @@ export interface MenuBridgeHandlers {
   /** Opens the sidebar on the tab with this id. */
   showSidebarTab: (id: string) => void;
   onToggleAgentPanel: () => void;
-  /** Opens Textus AI's panel; left open if it is. */
+  /** Opens Moxie AI's panel; left open if it is. */
   onOpenAgentPanel: () => void;
-  onToggleTextusAi: () => void;
+  onToggleMoxieAi: () => void;
   onToggleSplitView: () => void;
   onToggleReadOnly: () => void;
   /** View › Mode › Default: the rendered editor, the document writable. */
@@ -202,7 +202,7 @@ export function useMenuBridge(handlers: MenuBridgeHandlers): void {
         h().onToggleAgentPanel(),
       ),
       listenToThisWindow(OPEN_AGENT_PANEL_EVENT, () => h().onOpenAgentPanel()),
-      listenToThisWindow("menu-toggle-textus-ai", () => h().onToggleTextusAi()),
+      listenToThisWindow("menu-toggle-moxie-ai", () => h().onToggleMoxieAi()),
       listenToThisWindow("menu-toggle-split-view", () =>
         h().onToggleSplitView(),
       ),

@@ -2,10 +2,10 @@
 //! manifest in a header comment:
 //!
 //! ```js
-//! // ==TextusScript==
+//! // ==MoxieScript==
 //! // @name        Word Count
 //! // @command     count Count Words
-//! // ==/TextusScript==
+//! // ==/MoxieScript==
 //! ```
 //!
 //! Its id is `local.<file name>` unless `@id` gives one.
@@ -16,8 +16,8 @@ use serde_json::json;
 
 use super::{install::InstalledPlugin, require_id};
 
-const START: &str = "==TextusScript==";
-const END: &str = "==/TextusScript==";
+const START: &str = "==MoxieScript==";
+const END: &str = "==/MoxieScript==";
 
 /// `scripts/` in the global config folder.
 pub(super) fn scripts_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -167,13 +167,13 @@ pub fn plugin_open_scripts_dir(app: tauri::AppHandle) -> Result<(), String> {
 mod tests {
     use super::*;
 
-    const SCRIPT: &str = "// ==TextusScript==\n\
+    const SCRIPT: &str = "// ==MoxieScript==\n\
         // @name        Word Count\n\
         // @description Counts words.\n\
         // @permission  editor.read\n\
         // @permission  files.read\n\
         // @command     count Count Words\n\
-        // ==/TextusScript==\n\
+        // ==/MoxieScript==\n\
         exports.activate = () => {};\n";
 
     #[test]

@@ -55,9 +55,9 @@ const TOGGLE_TYPEWRITER_MODE_ID: &str = "toggle-typewriter-mode";
 const TRACK_CHANGES_ID: &str = "track-changes";
 const TOGGLE_SIDEBAR_ID: &str = "toggle-sidebar";
 const TOGGLE_AGENT_PANEL_ID: &str = "toggle-agent-panel";
-/// Textus AI's master switch, flipped by the focused window, which owns the
+/// Moxie AI's master switch, flipped by the focused window, which owns the
 /// setting. Not in the View menu, but the iPhone's app-drawn menu runs it.
-const TOGGLE_TEXTUS_AI_ID: &str = "toggle-textus-ai";
+const TOGGLE_MOXIE_AI_ID: &str = "toggle-moxie-ai";
 const TOGGLE_SPLIT_VIEW_ID: &str = "toggle-split-view";
 const TOGGLE_ZEN_MODE_ID: &str = "toggle-zen-mode";
 /// View > Read Only: the document on screen can't be changed.
@@ -98,7 +98,7 @@ const HELP_DOC_PREFIX: &str = "help-doc:";
 const COMMUNITY_ID: &str = "help-community";
 /// Help > Report a Problem, the window's own dialog.
 const REPORT_ID: &str = "help-report";
-/// Textus > Check for Updates… (macOS): Settings › About, checking.
+/// Moxie > Check for Updates… (macOS): Settings › About, checking.
 const UPDATES_ID: &str = "check-updates";
 /// Help > Online Tutorials, opened the same way as Join the Community.
 const TUTORIALS_ID: &str = "help-tutorials";
@@ -384,8 +384,8 @@ fn dispatch(app_handle: &tauri::AppHandle, id: &str) {
         emit_to_focused(app_handle, "menu-toggle-sidebar");
     } else if id == TOGGLE_AGENT_PANEL_ID {
         emit_to_focused(app_handle, "menu-toggle-agent-panel");
-    } else if id == TOGGLE_TEXTUS_AI_ID {
-        emit_to_focused(app_handle, "menu-toggle-textus-ai");
+    } else if id == TOGGLE_MOXIE_AI_ID {
+        emit_to_focused(app_handle, "menu-toggle-moxie-ai");
     } else if id == TOGGLE_SPLIT_VIEW_ID {
         emit_to_focused(app_handle, "menu-toggle-split-view");
     } else if id == TOGGLE_ZEN_MODE_ID {

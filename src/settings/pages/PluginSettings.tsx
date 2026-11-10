@@ -22,7 +22,7 @@ import {
 import { basename } from "../../utils/path";
 import type { SettingContribution } from "../../plugins/store/manifest";
 
-/** A plugin's settings from its manifest, drawn like Textus's own: for every
+/** A plugin's settings from its manifest, drawn like Moxie's own: for every
  *  document, or, with a folder open, for this project over those. */
 export function PluginSettingRows({
   record,

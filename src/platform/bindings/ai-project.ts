@@ -36,7 +36,7 @@ export const commands = {
 	 */
 	read_project_file: (docPath: string | null, workspaceRoot: string | null, path: string) => __TAURI_INVOKE<string>("read_project_file", { docPath, workspaceRoot, path }),
 	/**
-	 *  Creates `.textus/<rel>` with `template` unless it already exists, and
+	 *  Creates `.moxie/<rel>` with `template` unless it already exists, and
 	 *  returns its absolute path.
 	 */
 	ensure_project_file: (docPath: string | null, workspaceRoot: string | null, rel: string, template: string) => __TAURI_INVOKE<string>("ensure_project_file", { docPath, workspaceRoot, rel, template }),
@@ -49,7 +49,7 @@ export const commands = {
 	 */
 	import_references_picked: (docPath: string | null, workspaceRoot: string | null, folder: boolean) => __TAURI_INVOKE<ImportedReferences | null>("import_references_picked", { docPath, workspaceRoot, folder }),
 	/**
-	 *  "Learn my style": analyses the picked samples and writes `.textus/style.md`
+	 *  "Learn my style": analyses the picked samples and writes `.moxie/style.md`
 	 *  (keeping the previous one as style.previous.md). Returns its path, which the
 	 *  frontend opens for review.
 	 */
@@ -108,30 +108,30 @@ export type AgentMode_Serialize =
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill = AgentSkill_Serialize | AgentSkill_Deserialize;
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill_Deserialize = {
 	name: string,
 	description: string,
 	prompt: string,
 	/**
-	 *  `textus-category`: write, revise, check or format (the `/` menu's
+	 *  `moxie-category`: write, revise, check or format (the `/` menu's
 	 *  groups). None for a user skill that doesn't say.
 	 */
 	category?: string | null,
 	/**
-	 *  `textus-modes`: the panel modes the skill applies in. Write for a skill
+	 *  `moxie-modes`: the panel modes the skill applies in. Write for a skill
 	 *  that doesn't say.
 	 */
 	modes: AgentMode_Deserialize[],
 	/**
-	 *  `textus-off`: turned off in Settings for now, its modes kept for when
+	 *  `moxie-off`: turned off in Settings for now, its modes kept for when
 	 *  it is turned on again. Neither the model nor the `/` menu offers it.
 	 */
 	off: boolean,
@@ -144,26 +144,26 @@ export type AgentSkill_Deserialize = {
 	overridesBuiltin: boolean,
 	/**
 	 *  What people see it called, and its one-line hint, per UI language code
-	 *  (`textus-label-<code>`, `textus-hint-<code>`), for market or user skills.
+	 *  (`moxie-label-<code>`, `moxie-hint-<code>`), for market or user skills.
 	 */
 	labels: { [key in string]: SkillLabel },
 	/**
 	 *  Extra words the user can type after `/`, per UI language code
-	 *  (`textus-aliases-<code>`, comma-separated).
+	 *  (`moxie-aliases-<code>`, comma-separated).
 	 */
 	aliases: { [key in string]: string[] },
 	/**
-	 *  `textus-packs`: the reference-pack sections appended to the body when the
+	 *  `moxie-packs`: the reference-pack sections appended to the body when the
 	 *  skill is used ("craft#fiction", "standards#dialogue").
 	 */
 	packs: string[],
 	/**
-	 *  `textus-version` of a built-in skill (bumped when its behaviour
+	 *  `moxie-version` of a built-in skill (bumped when its behaviour
 	 *  changes).
 	 */
 	version?: string | null,
 	/**
-	 *  `textus-based-on: "<name>@<version>"`, written into a Customize… copy;
+	 *  `moxie-based-on: "<name>@<version>"`, written into a Customize… copy;
 	 *  what allows Reset to delete it.
 	 */
 	basedOn?: string | null,
@@ -173,24 +173,24 @@ export type AgentSkill_Deserialize = {
 
 /**
  *  One skill as the app sees it: the frontmatter's name and description, the
- *  body (`prompt`, comments stripped) and the Textus-only `metadata:` keys.
+ *  body (`prompt`, comments stripped) and the Moxie-only `metadata:` keys.
  */
 export type AgentSkill_Serialize = {
 	name: string,
 	description: string,
 	prompt: string,
 	/**
-	 *  `textus-category`: write, revise, check or format (the `/` menu's
+	 *  `moxie-category`: write, revise, check or format (the `/` menu's
 	 *  groups). None for a user skill that doesn't say.
 	 */
 	category: string | null,
 	/**
-	 *  `textus-modes`: the panel modes the skill applies in. Write for a skill
+	 *  `moxie-modes`: the panel modes the skill applies in. Write for a skill
 	 *  that doesn't say.
 	 */
 	modes: AgentMode_Serialize[],
 	/**
-	 *  `textus-off`: turned off in Settings for now, its modes kept for when
+	 *  `moxie-off`: turned off in Settings for now, its modes kept for when
 	 *  it is turned on again. Neither the model nor the `/` menu offers it.
 	 */
 	off: boolean,
@@ -203,26 +203,26 @@ export type AgentSkill_Serialize = {
 	overridesBuiltin: boolean,
 	/**
 	 *  What people see it called, and its one-line hint, per UI language code
-	 *  (`textus-label-<code>`, `textus-hint-<code>`), for market or user skills.
+	 *  (`moxie-label-<code>`, `moxie-hint-<code>`), for market or user skills.
 	 */
 	labels: { [key in string]: SkillLabel },
 	/**
 	 *  Extra words the user can type after `/`, per UI language code
-	 *  (`textus-aliases-<code>`, comma-separated).
+	 *  (`moxie-aliases-<code>`, comma-separated).
 	 */
 	aliases: { [key in string]: string[] },
 	/**
-	 *  `textus-packs`: the reference-pack sections appended to the body when the
+	 *  `moxie-packs`: the reference-pack sections appended to the body when the
 	 *  skill is used ("craft#fiction", "standards#dialogue").
 	 */
 	packs: string[],
 	/**
-	 *  `textus-version` of a built-in skill (bumped when its behaviour
+	 *  `moxie-version` of a built-in skill (bumped when its behaviour
 	 *  changes).
 	 */
 	version: string | null,
 	/**
-	 *  `textus-based-on: "<name>@<version>"`, written into a Customize… copy;
+	 *  `moxie-based-on: "<name>@<version>"`, written into a Customize… copy;
 	 *  what allows Reset to delete it.
 	 */
 	basedOn: string | null,
@@ -239,7 +239,7 @@ export type AgentWorkspace_Deserialize = {
 	 */
 	instructions: string[],
 	/**
-	 *  The project's writing instructions (`.textus/agent.md`), sent after
+	 *  The project's writing instructions (`.moxie/agent.md`), sent after
 	 *  the global ones and winning where the two conflict.
 	 */
 	project_instructions?: string | null,
@@ -254,9 +254,9 @@ export type AgentWorkspace_Deserialize = {
 	 *  an unsaved draft, and for a folder too broad to expose.
 	 */
 	root?: string | null,
-	/**  `.textus/style.md` - the author's style profile. */
+	/**  `.moxie/style.md` - the author's style profile. */
 	style?: string | null,
-	/**  `.textus/library/*.md` - the project's people, places and terms. */
+	/**  `.moxie/library/*.md` - the project's people, places and terms. */
 	library: LibraryEntry_Deserialize[],
 	/**
 	 *  Where `root` came from, or why there is none, so the agent can tell the
@@ -265,9 +265,9 @@ export type AgentWorkspace_Deserialize = {
 	root_source: RootSource,
 	/**  The writing conventions the style profile's front matter sets. */
 	conventions: ProjectConventions,
-	/**  What Textus AI remembered by itself, with which of them fit in the prompt. */
+	/**  What Moxie AI remembered by itself, with which of them fit in the prompt. */
 	memories: Memories_Deserialize,
-	/**  Whether Textus AI may remember things by itself. */
+	/**  Whether Moxie AI may remember things by itself. */
 	remember: boolean,
 };
 
@@ -278,7 +278,7 @@ export type AgentWorkspace_Serialize = {
 	 */
 	instructions: string[],
 	/**
-	 *  The project's writing instructions (`.textus/agent.md`), sent after
+	 *  The project's writing instructions (`.moxie/agent.md`), sent after
 	 *  the global ones and winning where the two conflict.
 	 */
 	project_instructions: string | null,
@@ -293,9 +293,9 @@ export type AgentWorkspace_Serialize = {
 	 *  an unsaved draft, and for a folder too broad to expose.
 	 */
 	root: string | null,
-	/**  `.textus/style.md` - the author's style profile. */
+	/**  `.moxie/style.md` - the author's style profile. */
 	style: string | null,
-	/**  `.textus/library/*.md` - the project's people, places and terms. */
+	/**  `.moxie/library/*.md` - the project's people, places and terms. */
 	library: LibraryEntry_Serialize[],
 	/**
 	 *  Where `root` came from, or why there is none, so the agent can tell the
@@ -304,9 +304,9 @@ export type AgentWorkspace_Serialize = {
 	root_source: RootSource,
 	/**  The writing conventions the style profile's front matter sets. */
 	conventions: ProjectConventions,
-	/**  What Textus AI remembered by itself, with which of them fit in the prompt. */
+	/**  What Moxie AI remembered by itself, with which of them fit in the prompt. */
 	memories: Memories_Serialize,
-	/**  Whether Textus AI may remember things by itself. */
+	/**  Whether Moxie AI may remember things by itself. */
 	remember: boolean,
 };
 
@@ -346,7 +346,7 @@ export type ImportedReferences = {
 };
 
 /**
- *  Who may start a skill (`metadata.textus-invocation`). `Both`: the model and
+ *  Who may start a skill (`metadata.moxie-invocation`). `Both`: the model and
  *  /name. `UserOnly`: /name only. `Hidden`: neither; loaded by exact name with
  *  use_skill (the reference packs).
  */
@@ -361,7 +361,7 @@ export type LibraryEntry_Deserialize = {
 	/**  Path relative to the project root, for "open this entry". */
 	file: string,
 	body: string,
-	/**  Set on an entry Textus AI wrote, which the Memory tab also lists. */
+	/**  Set on an entry Moxie AI wrote, which the Memory tab also lists. */
 	remembered?: Remembered_Deserialize | null,
 };
 
@@ -372,7 +372,7 @@ export type LibraryEntry_Serialize = {
 	/**  Path relative to the project root, for "open this entry". */
 	file: string,
 	body: string,
-	/**  Set on an entry Textus AI wrote, which the Memory tab also lists. */
+	/**  Set on an entry Moxie AI wrote, which the Memory tab also lists. */
 	remembered: Remembered_Serialize | null,
 };
 
@@ -453,7 +453,7 @@ export type Memory_Serialize = {
 	included: boolean,
 };
 
-/**  What `.textus/style.md` says about conventions. */
+/**  What `.moxie/style.md` says about conventions. */
 export type ProjectConventions = {
 	/**  The `conventions:` values, in order. */
 	profiles: string[],
@@ -500,12 +500,12 @@ export type Remembered_Serialize = {
 export type RootSource = 
 /**
  *  No folder opened or chosen, and none above the document with
- *  `.textus/`.
+ *  `.moxie/`.
  */
 "none" | 
-/**  The nearest folder above the document that has a `.textus/` folder. */
+/**  The nearest folder above the document that has a `.moxie/` folder. */
 "enclosingProject" | 
-/**  The folder the user chose (the project menu, or Settings > Textus AI). */
+/**  The folder the user chose (the project menu, or Settings > Moxie AI). */
 "chosen" | 
 /**
  *  The folder would be the home folder or a drive root, never opened to the
@@ -515,7 +515,7 @@ export type RootSource =
 
 /**
  *  Whose a memory is: the user's in general (the global config folder) or
- *  this project's (its `.textus/`).
+ *  this project's (its `.moxie/`).
  */
 export type Scope = "project" | "personal";
 

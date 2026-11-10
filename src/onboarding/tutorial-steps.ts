@@ -1,11 +1,11 @@
 import type { TextKey } from "../i18n/strings";
 import type { AgentMode } from "../prefs/SettingsContext";
-import { hasTextusAi } from "../platform/capabilities";
+import { hasMoxieAi } from "../platform/capabilities";
 import { LESSON_DONE, WRITE_PART, WYSIWYG_PART } from "./tutorial-evaluation";
 
 /**
  * The first-run tour, short on purpose: Markdown typed for real, the command
- * palette and the store, connecting an AI, then Textus AI working on the
+ * palette and the store, connecting an AI, then Moxie AI working on the
  * learner's notes about a classic, never on the classic. Each lesson is one
  * card; the rest is on the website's tutorials page.
  */
@@ -67,7 +67,7 @@ export interface TutorialStep {
   tasks?: TutorialTask[];
   /** Its clip on the website's tutorials page, when it has one. */
   clip?: TutorialClipId;
-  /** A Textus AI lesson: with no AI connected it is watched, not done. */
+  /** A Moxie AI lesson: with no AI connected it is watched, not done. */
   ai?: boolean;
   /** The AI panel's mode this lesson needs; the tour sets it. */
   agentMode?: AgentMode;
@@ -182,10 +182,10 @@ const ALL_STEPS: TutorialStep[] = [
   },
 ];
 
-/** Without Textus AI (capabilities.ts) the tour ends after the writing
+/** Without Moxie AI (capabilities.ts) the tour ends after the writing
  *  lessons. */
 const offered = (chapter: TutorialChapterId) =>
-  hasTextusAi || (chapter !== "connect" && chapter !== "ai");
+  hasMoxieAi || (chapter !== "connect" && chapter !== "ai");
 
 export const TUTORIAL_CHAPTERS = ALL_CHAPTERS.filter((c) => offered(c.id));
 export const TUTORIAL_STEPS = ALL_STEPS.filter((s) => offered(s.chapter));

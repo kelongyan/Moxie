@@ -47,7 +47,7 @@ async function follow(
     return;
   }
   if (target.kind === "web") {
-    // A plugin that opens such links shows it in Textus.
+    // A plugin that opens such links shows it in Moxie.
     if (editorExtensions().openLink(target.url)) return;
     return links.openWebLink(target.url);
   }
@@ -56,7 +56,7 @@ async function follow(
   const fromRoot = /^\/(?!\/)/.test(href.trim());
   if (fromRoot || (await fs.fileMtimeMs(target.path)) === null)
     return followNoteLink(view, href, docPath, windowFolder());
-  // A Markdown file opens in a tab; another kind in a tab too when Textus
+  // A Markdown file opens in a tab; another kind in a tab too when Moxie
   // shows it (a Word file, a plugin's PDF), else the app asks to open it
   // outside.
   window.dispatchEvent(

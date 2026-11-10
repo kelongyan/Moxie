@@ -27,7 +27,7 @@ test("Import references… imports the picked files and says how many were left 
   }, workspace);
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await page
     .locator(".agent-panel-view")
@@ -36,7 +36,7 @@ test("Import references… imports the picked files and says how many were left 
   await page.locator(".project-bar-folder").click();
   await page.getByRole("menuitem", { name: "Import references…" }).click();
   await expect(page.locator(".project-bar")).toContainText(
-    "12 files added to references/ for Textus AI to search; 2 left out",
+    "12 files added to references/ for Moxie AI to search; 2 left out",
   );
   const calls = await page.evaluate(() =>
     (

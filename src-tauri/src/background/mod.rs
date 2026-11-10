@@ -1,4 +1,4 @@
-//! Background mode: with it on, closing the last window leaves Textus running
+//! Background mode: with it on, closing the last window leaves Moxie running
 //! with a tray icon. Off by default; desktop only. A windowless process keeps
 //! no webview, timer or watcher, and the tray exists only while the setting is on.
 

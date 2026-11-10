@@ -51,7 +51,7 @@ fn caption(language: &str, n: usize, text: &str) -> String {
 
 fn picture_line() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
-    RE.get_or_init(|| Regex::new(r"^\s*!\[([^\]]*)\]\(textus-(?:picture|generated):").unwrap())
+    RE.get_or_init(|| Regex::new(r"^\s*!\[([^\]]*)\]\(moxie-(?:picture|generated):").unwrap())
 }
 
 fn cited() -> &'static Regex {

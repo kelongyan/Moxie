@@ -1,5 +1,5 @@
 //! The few ways other apps write their folder settings, read just far enough
-//! for the keys Textus follows: JSON with comments (VS Code), a flat key on
+//! for the keys Moxie follows: JSON with comments (VS Code), a flat key on
 //! one line of YAML, TOML or EDN, and four date-format syntaxes. No parser
 //! crates: a setting we can't find falls back, nothing more.
 

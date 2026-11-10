@@ -98,7 +98,7 @@ export function markLatexAhead(node: Phrasing): void {
 }
 
 /**
- * Brackets escaped as text never pair into LaTeX math: Textus reads `\\[`
+ * Brackets escaped as text never pair into LaTeX math: Moxie reads `\\[`
  * `\\]` as maths, and remark escapes a link text's `[b]`. An escaped closer
  * after an escaped opener, or an escaped opener with a LaTeX formula after
  * it, is written as a character reference instead.

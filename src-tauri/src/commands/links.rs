@@ -77,11 +77,11 @@ pub fn open_community(app: &tauri::AppHandle, language: Option<&str>) -> Result<
         .map_err(|e| e.to_string())
 }
 
-/// Settings › About Textus links, by name so the frontend can only pick one.
+/// Settings › About Moxie links, by name so the frontend can only pick one.
 /// Discord and QQ go through the website's redirects, so invites can change.
 fn about_url(page: &str) -> Option<&'static str> {
     match page {
-        "github" => Some("https://github.com/CatVinci-Studio/Textus"),
+        "github" => Some("https://github.com/kelongyan/Moxie"),
         "discord" => Some("https://textus.md/discord"),
         "qq" => Some("https://textus.md/qq"),
         // Settings › Browse themes, when the gallery can't be reached.

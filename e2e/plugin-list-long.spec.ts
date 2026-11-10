@@ -38,7 +38,7 @@ test("a list of thousands of items draws a page at a time", async ({
           version: "1.0.0",
           publisher: "test",
           description: "Lists five thousand tasks.",
-          engines: { textus: "^1.3.0" },
+          engines: { moxie: "^1.3.0" },
           main: "host.js",
           contributes: {
             sidebarTabs: [

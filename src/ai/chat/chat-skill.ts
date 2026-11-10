@@ -3,13 +3,13 @@ import { storedAgentMode } from "../../prefs/settings-values";
 import { replyFiles } from "./reply-files";
 
 /**
- * A skill Textus AI wrote in a reply: one fenced block such as
+ * A skill Moxie AI wrote in a reply: one fenced block such as
  * ```markdown weekly-report.md whose text is a skill file with a `name`.
  */
 export interface ReplySkill {
   name: string;
   description: string;
-  /** What it says it is called in each UI language (`textus-label-<code>`). */
+  /** What it says it is called in each UI language (`moxie-label-<code>`). */
   labels: Record<string, string>;
   /** The modes its file asks for, Create left out - a skill there could
    *  write the next skill, so only the user ticks it; Write when none. */
@@ -51,9 +51,9 @@ export function skillsInReply(text: string): ReplySkill[] {
     const name = field(front[1], "name");
     if (!name || !file.slice(front[0].length).trim()) continue;
     const labels: Record<string, string> = {};
-    for (const l of front[1].matchAll(/^\s*textus-label-([\w-]+):\s*(.*)$/gm))
+    for (const l of front[1].matchAll(/^\s*moxie-label-([\w-]+):\s*(.*)$/gm))
       labels[l[1]] = l[2].trim().replace(/^"(.*)"$/, "$1");
-    const modes = (field(front[1], "textus-modes") ?? "")
+    const modes = (field(front[1], "moxie-modes") ?? "")
       .split(/[\s,]+/)
       .map(storedAgentMode)
       .filter((mode): mode is AgentMode => mode !== null);

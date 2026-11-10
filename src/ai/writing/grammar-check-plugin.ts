@@ -132,7 +132,7 @@ export function ignoreGrammarIssue(
   );
 }
 
-/// Takes every underline away - Textus AI was turned off. Turned back on,
+/// Takes every underline away - Moxie AI was turned off. Turned back on,
 /// the paragraphs are checked again as they are edited.
 export function clearGrammarIssues(view: EditorView): void {
   const set = grammarKey.getState(view.state) as DecorationSet | undefined;

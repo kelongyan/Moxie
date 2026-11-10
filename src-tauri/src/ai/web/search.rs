@@ -1,4 +1,4 @@
-//! The search services Textus's own web_search can use when the model has no
+//! The search services Moxie's own web_search can use when the model has no
 //! search of its own. Each is a request and a parse, tested against a local
 //! server and canned answers.
 
@@ -218,7 +218,7 @@ impl Service {
                 "This SearXNG server doesn't answer in JSON: add `json` under `search.formats` in its settings.yml. ({detail})"
             ),
             (_, 401 | 403) => format!(
-                "{label} refused the key - check it in Settings > Textus AI > Search service. ({detail})"
+                "{label} refused the key - check it in Settings > Moxie AI > Search service. ({detail})"
             ),
             (_, 402 | 429) => format!(
                 "{label} says the account is out of searches or credit for now. ({detail})"
@@ -227,7 +227,7 @@ impl Service {
         }
     }
 
-    /// DeepSeek's page reader, for a page Textus couldn't download itself
+    /// DeepSeek's page reader, for a page Moxie couldn't download itself
     /// (blocked where the user is, say). The title, and the page as
     /// Markdown.
     pub(crate) async fn fetch_page(&self, page: &str) -> Option<Result<(String, String), String>> {

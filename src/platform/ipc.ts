@@ -105,7 +105,7 @@ export const ai = {
    *  model (null: the provider's default). */
   canThinkDeeper: (provider: string, model: string | null) =>
     command("ai_can_think_deeper", provider, model),
-  /** The services Settings › Textus AI › Image model offers. */
+  /** The services Settings › Moxie AI › Image model offers. */
   listImageProviders: (): Promise<ImageProviderEntry[]> =>
     command("list_image_providers"),
   /** A picture generate_image made, waiting for Accept or Reject. */
@@ -200,7 +200,7 @@ export const ai = {
     blocks: SentBlock[];
     docPath: string | null;
     /** The folder opened or chosen, or null for none. Decides where
-     *  .textus/ is read from and how far file tools may reach. */
+     *  .moxie/ is read from and how far file tools may reach. */
     workspaceRoot: string | null;
     /** The conversation, whose attached files the file tools read. */
     conversation: string;
@@ -238,7 +238,7 @@ export const ai = {
     });
   },
   /** What the Web search button can do with this provider and model: its
-   *  own search, or the search service Textus would use (none: needs setup). */
+   *  own search, or the search service Moxie would use (none: needs setup). */
   webSearchStatus: (
     provider: string,
     model: string | null,
@@ -284,7 +284,7 @@ export const ai = {
     workspaceRoot: string | null,
     path: string,
   ) => command("read_project_file", docPath, workspaceRoot, path),
-  /** Creates `.textus/<rel>` from `template` if missing; returns its path. */
+  /** Creates `.moxie/<rel>` from `template` if missing; returns its path. */
   ensureProjectFile: (
     docPath: string | null,
     workspaceRoot: string | null,
@@ -408,7 +408,7 @@ export const ai = {
     workspaceRoot: string | null,
     document: string,
   ) => command("library_use", docPath, workspaceRoot, document),
-  /** "Learn my style": writes the project's .textus/style.md from the
+  /** "Learn my style": writes the project's .moxie/style.md from the
    *  picked samples and returns its path. */
   learnStyle: (args: {
     provider: string;

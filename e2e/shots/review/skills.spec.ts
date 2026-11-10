@@ -2,12 +2,12 @@ import { expect, test, type Page } from "@playwright/test";
 import { openApp, PHONE } from "../../helpers";
 
 // Review screenshots of the `/` menu, `@` empty state and skills settings.
-// Runs only with TEXTUS_SHOTS_DIR set to where the PNGs go.
+// Runs only with MOXIE_SHOTS_DIR set to where the PNGs go.
 
-const DIR = process.env.TEXTUS_SHOTS_DIR;
+const DIR = process.env.MOXIE_SHOTS_DIR;
 const LANGUAGES = ["zh", "en", "ja", "de"];
 
-test.skip(!DIR, "set TEXTUS_SHOTS_DIR to take the screenshots");
+test.skip(!DIR, "set MOXIE_SHOTS_DIR to take the screenshots");
 
 async function open(page: Page, language: string, phone: boolean) {
   if (phone)
@@ -16,7 +16,7 @@ async function open(page: Page, language: string, phone: boolean) {
     });
   await openApp(page, {
     settings: { language },
-    storage: phone ? {} : { "textus-agent-panel-open": "1" },
+    storage: phone ? {} : { "moxie-agent-panel-open": "1" },
   });
   if (phone) await page.locator(".window-bar-toggle").tap();
   const input = page.locator(".agent-panel .inline-chat-input");

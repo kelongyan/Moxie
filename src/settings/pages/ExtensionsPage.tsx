@@ -27,7 +27,7 @@ const TABS = extensionsTabs();
 /**
  * Settings › Extensions: themes, plugins, skills and MCP servers, a tab
  * each, all laid out alike: what is installed, then what is available; and
- * Create, where Textus AI makes one of them.
+ * Create, where Moxie AI makes one of them.
  * Desktop only, as plugins are.
  */
 export function ExtensionsPage(props: SettingsPageProps) {
@@ -102,7 +102,7 @@ export function ExtensionsPage(props: SettingsPageProps) {
               error={skillError}
               installedTitle={t.pluginsInstalledGroup}
               // Only the skills added here; each mode's own, always on,
-              // are under Textus AI.
+              // are under Moxie AI.
               installed={
                 <OwnSkillsList
                   t={t}

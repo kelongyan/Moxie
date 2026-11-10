@@ -1,4 +1,4 @@
-//! The one way Textus walks a folder, shared by the sidebar search and the AI's
+//! The one way Moxie walks a folder, shared by the sidebar search and the AI's
 //! project tools. Walks as fd does (the `ignore` crate), skipping hidden,
 //! ignored and SKIPPED_DIRS entries without following symlinks, in a fixed order.
 

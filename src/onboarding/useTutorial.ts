@@ -64,7 +64,7 @@ function loadProgress(): TutorialProgress {
  *  across relaunches; `phase` does not, as restarting a lesson is safe. Every
  *  phase advance is something the learner actually did. */
 export function useTutorial(
-  /** Textus AI's switch. */
+  /** Moxie AI's switch. */
   aiOn = true,
 ) {
   const [progress, setProgress] = useState<TutorialProgress>(loadProgress);
@@ -144,7 +144,7 @@ export function useTutorial(
   }, []);
 
   /** The practice tab's AI: live from the first AI lesson for a learner who
-   *  connected one and has Textus AI on, muted everywhere else in the tour. */
+   *  connected one and has Moxie AI on, muted everywhere else in the tour. */
   const live = aiMode === "live" && aiOn;
   const practiceAi: TourAi =
     live && progress.stepIndex >= FIRST_AI ? "live" : "muted";

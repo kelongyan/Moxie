@@ -3,7 +3,7 @@ import { emit, mockInvoke, openApp } from "./helpers";
 
 // An image's width is saved as `<img ... width="50%">`, which other editors
 // show too, and Image width: Auto saves `![]()` again. An older
-// `{textus-width=N%}` title or a Typora zoom opens at its width, saved as is.
+// `{moxie-width=N%}` title or a Typora zoom opens at its width, saved as is.
 
 const editor = '[data-active-tab="true"] .ProseMirror';
 // A 200x100 block, narrower than the page, so the widths differ.

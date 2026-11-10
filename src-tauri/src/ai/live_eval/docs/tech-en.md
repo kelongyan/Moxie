@@ -1,4 +1,4 @@
-# Uploading files with the Textus Sync API
+# Uploading files with the Moxie Sync API
 
 ## Quick start
 
@@ -9,7 +9,7 @@
 ```js
 import { SyncClient } from "@textus/sync";
 
-const client = new SyncClient({ token: process.env.TEXTUS_TOKEN });
+const client = new SyncClient({ token: process.env.MOXIE_TOKEN });
 
 async function uploadAll(paths) {
   for (const path of paths) {

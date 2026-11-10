@@ -3,7 +3,7 @@ import base from "./playwright.config";
 
 /**
  * Screenshot generators, not tests: they write images for a person to look
- * at. The review shots skip unless TEXTUS_SHOTS_DIR is set.
+ * at. The review shots skip unless MOXIE_SHOTS_DIR is set.
  */
 export default defineConfig({
   ...base,

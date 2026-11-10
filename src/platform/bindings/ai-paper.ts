@@ -10,7 +10,7 @@ import { invoke as __TAURI_INVOKE, Channel } from "@tauri-apps/api/core";
 export const commands = {
 	/**
 	 *  Researches and outlines a paper on `topic` in the document's project,
-	 *  kept in `.textus/papers/<id>/`; a paper begun before goes on from what
+	 *  kept in `.moxie/papers/<id>/`; a paper begun before goes on from what
 	 *  it kept. Stopped like any request, by `ai_cancel` with `request_id`.
 	 */
 	ai_paper_run: (request: PaperRequest_Deserialize, channel: Channel<PaperEvent_Deserialize>) => __TAURI_INVOKE<Paper_Serialize>("ai_paper_run", { request, channel }),
@@ -152,7 +152,7 @@ export type FigureBlock = {
 };
 
 export type FigureKind = 
-/**  A picture made by the image service (`textus-picture:`). */
+/**  A picture made by the image service (`moxie-picture:`). */
 "generated" | "mermaid" | 
 /**  A ```chart block from the dossier's data. */
 "chart" | 
@@ -271,7 +271,7 @@ export type OutlineSection = {
 	figures: FigurePlan[],
 };
 
-/**  One paper being written. Kept as `.textus/papers/<id>/paper.json`. */
+/**  One paper being written. Kept as `.moxie/papers/<id>/paper.json`. */
 export type Paper = Paper_Serialize | Paper_Deserialize;
 
 /**  One update from `ai_paper_run`. Display only: what is kept is on disk. */
@@ -514,7 +514,7 @@ export type PaperStage =
 /**  Written into its document. */
 "done";
 
-/**  One paper being written. Kept as `.textus/papers/<id>/paper.json`. */
+/**  One paper being written. Kept as `.moxie/papers/<id>/paper.json`. */
 export type Paper_Deserialize = {
 	id: string,
 	topic: string,
@@ -541,7 +541,7 @@ export type Paper_Deserialize = {
 	subHelpers?: boolean,
 };
 
-/**  One paper being written. Kept as `.textus/papers/<id>/paper.json`. */
+/**  One paper being written. Kept as `.moxie/papers/<id>/paper.json`. */
 export type Paper_Serialize = {
 	id: string,
 	topic: string,

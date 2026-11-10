@@ -16,7 +16,7 @@ for (const order of ["schema", "reason-first"])
       await page.setViewportSize({ width: 1700, height: 900 });
       await openApp(page, {
         settings: { language: "en", revisionDisplay: "final" },
-        storage: { "textus-agent-panel-open": "0" },
+        storage: { "moxie-agent-panel-open": "0" },
         animations: true,
       });
       await pasteMarkdown(page, DOC);

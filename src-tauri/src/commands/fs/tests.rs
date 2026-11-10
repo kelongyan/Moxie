@@ -3,7 +3,7 @@ use super::*;
 #[cfg(desktop)]
 #[test]
 fn only_a_picture_in_the_documents_folder_may_go_to_the_trash() {
-    let root = std::env::temp_dir().join(format!("textus-trash-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("moxie-trash-{}", std::process::id()));
     let notes = root.join("notes");
     let assets = notes.join("assets");
     let elsewhere = root.join("elsewhere");

@@ -44,7 +44,7 @@ async function typeAfter(page: Page, needle: string, text: string) {
 async function propose(page: Page) {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `# 笔记\n\n${NOTE}`);
   await mockInvoke(page, {
@@ -114,7 +114,7 @@ test("an edit while a rewrite streams in is kept, and the rewrite still lands ar
 }) => {
   await openApp(page, {
     settings: { language: "en" },
-    storage: { "textus-agent-panel-open": "1" },
+    storage: { "moxie-agent-panel-open": "1" },
   });
   await pasteMarkdown(page, `# 笔记\n\n${NOTE}`);
   // Streams the rewrite, waits for __release, then completes.

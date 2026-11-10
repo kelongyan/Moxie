@@ -66,7 +66,7 @@ describe("Pandoc arguments", () => {
     fireEvent.change(input, { target: { value: "-o out.docx" } });
     fireEvent.keyDown(input, { key: "Enter" });
     expect(
-      await screen.findByText("-o is set by Textus; take it out."),
+      await screen.findByText("-o is set by Moxie; take it out."),
     ).toBeInTheDocument();
     expect(state.setSettings).not.toHaveBeenCalled();
   });

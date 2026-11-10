@@ -17,7 +17,7 @@ function stack(heights: number[]): {
   });
   document.body.replaceChildren(root);
   const heightOf = (el: Element) =>
-    el.classList.contains("textus-page-spacer")
+    el.classList.contains("moxie-page-spacer")
       ? parseFloat((el as HTMLElement).style.height) || 0
       : Number((el as HTMLElement).dataset.h ?? 0);
   for (const el of [root, ...blocks]) {
@@ -40,7 +40,7 @@ describe("paginateDocument", () => {
     // at 110.
     const { root, blocks } = stack([60, 40]);
     paginateDocument(document, root, 100, 10);
-    const spacers = root.querySelectorAll(".textus-page-spacer");
+    const spacers = root.querySelectorAll(".moxie-page-spacer");
     expect(spacers).toHaveLength(2);
     expect(blocks[1].getBoundingClientRect().top).toBe(110);
   });
@@ -61,7 +61,7 @@ describe("paginateDocument", () => {
 // container as its children together, stacked from the top of `root`.
 function layOut(root: HTMLElement): void {
   const heightOf = (el: Element): number =>
-    el.classList.contains("textus-page-spacer")
+    el.classList.contains("moxie-page-spacer")
       ? parseFloat((el as HTMLElement).style.height) || 0
       : el.children.length
         ? Array.from(el.children).reduce((sum, c) => sum + heightOf(c), 0)
@@ -132,12 +132,12 @@ describe("splitBefore", () => {
   it("goes on counting an ordered list", () => {
     const list = document.createElement("ol");
     list.start = 3;
-    list.style.setProperty("--textus-ol-start", "2");
+    list.style.setProperty("--moxie-ol-start", "2");
     list.innerHTML = "<li>a</li><li>b</li><li>c</li>";
     document.body.replaceChildren(list);
     const rest = splitBefore(list, list.children[2]) as HTMLOListElement;
     expect(rest.start).toBe(5);
-    expect(rest.style.getPropertyValue("--textus-ol-start")).toBe("4");
+    expect(rest.style.getPropertyValue("--moxie-ol-start")).toBe("4");
     expect(rest.textContent).toBe("c");
   });
 

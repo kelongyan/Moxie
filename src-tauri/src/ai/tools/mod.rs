@@ -33,7 +33,7 @@ pub struct ToolContext<'a> {
     pub undecided: &'a [crate::ai::images::UndecidedEdit],
     /// The document and its blocks, as the editor sent them.
     pub document: &'a crate::ai::doc_blocks::Document,
-    /// The merged skills: built-in, global config folder, project .textus/.
+    /// The merged skills: built-in, global config folder, project .moxie/.
     pub skills: &'a [AgentSkill],
     /// The UI language: which language's conventions a skill gets when the
     /// document is too short to tell.
@@ -112,7 +112,7 @@ pub enum Access {
     /// together.
     ReadOnly,
     /// Proposes a change the user reviews, or changes something of
-    /// Textus AI's own (a memory): one call at a time, in call order.
+    /// Moxie AI's own (a memory): one call at a time, in call order.
     Proposes,
     /// Proposes, and records what it made in its own call (generate_image's
     /// picture), which is where the frontend reads the proposal from.

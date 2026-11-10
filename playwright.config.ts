@@ -48,8 +48,8 @@ export default defineConfig({
   testIgnore: ["shots/**"],
   // Stopwatch tests (@perf: frame budgets, frame-by-frame slides) depend on
   // the machine's load: they run with `npm run test:perf`, never in CI.
-  grepInvert: process.env.TEXTUS_PERF ? undefined : /@perf/,
-  grep: process.env.TEXTUS_PERF ? /@perf/ : undefined,
+  grepInvert: process.env.MOXIE_PERF ? undefined : /@perf/,
+  grep: process.env.MOXIE_PERF ? /@perf/ : undefined,
   // Screenshot baselines are Linux's alone: on a Mac fonts differ, so run
   // `npm run test:visual` in the Linux container (docs/dev/testing.md).
   ignoreSnapshots: process.platform === "darwin",

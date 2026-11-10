@@ -38,7 +38,7 @@ pub struct AgentRequest {
 }
 
 impl AgentRequest {
-    /// The request's session: refused while Textus AI is off, or for a
+    /// The request's session: refused while Moxie AI is off, or for a
     /// provider the catalog doesn't have.
     pub(crate) fn session<'a>(&'a self, app: &'a tauri::AppHandle) -> Result<Session<'a>, String> {
         Session::open(
@@ -74,7 +74,7 @@ pub(crate) struct Session<'a> {
 }
 
 impl<'a> Session<'a> {
-    /// Refused while Textus AI is off, or for a provider the catalog
+    /// Refused while Moxie AI is off, or for a provider the catalog
     /// doesn't have.
     pub(crate) fn open(
         app: &'a tauri::AppHandle,

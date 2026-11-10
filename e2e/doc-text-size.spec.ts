@@ -49,6 +49,6 @@ test("the document takes the reader's text size and line spacing, and follows a 
     .getByRole("listbox")
     .getByRole("option", { name: "Theme's" })
     .click();
-  // The theme's own spacing again: Textus's default 1.8.
+  // The theme's own spacing again: Moxie's default 1.8.
   await expect(text).toHaveCSS("line-height", "28.8px");
 });
