@@ -1,177 +1,98 @@
-<!-- The English README is the reference: every README.<lang>.md follows its
-     structure section by section (scripts/check-readmes.mjs): hero, download,
-     writing, Moxie AI, plugins, questions. -->
+# Moxie
 
-<p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
-</p>
+Windows 上的 Markdown 编辑器。基于 [Textus](https://github.com/CatVinci-Studio/Textus) 的 MIT
+源码分叉而来，换了自己的名字、图标和标识，按个人使用习惯继续维护。
 
-<h1 align="center">Moxie</h1>
+所见即所得与源码模式并存，写作、整理笔记、导出文档都在一个窗口里完成。
 
-<p align="center">
-  <strong>The next-generation Markdown editor.</strong><br>
-  You hold the pen. AI keeps your ink flowing.
-</p>
+## 这是什么
 
-<p align="center">
-  <a href="https://textus.md"><strong>Website</strong></a> ·
-  <a href="https://github.com/CatVinci-Studio/Textus/releases/latest"><strong>Download</strong></a>
-</p>
+这是一个**自用分支**，不是上游的官方发行版。
 
-<p align="center">
-  English ·
-  <a href="./README.zh.md">简体中文</a> ·
-  <a href="./README.zh-Hant.md">繁體中文</a> ·
-  <a href="./README.ja.md">日本語</a> ·
-  <a href="./README.ko.md">한국어</a> ·
-  <a href="./README.es.md">Español</a> ·
-  <a href="./README.fr.md">Français</a> ·
-  <a href="./README.de.md">Deutsch</a> ·
-  <a href="./README.ru.md">Русский</a> ·
-  <a href="./README.pt.md">Português</a>
-</p>
+- 代码基线：Textus 1.3.12（上游仍在活跃开发，本仓库不定期合并）。
+- 当前只维护 Windows 构建（NSIS 安装包）。上游的 macOS / Linux / iOS 代码保留在树里，
+  没有在这里验证过。
+- 保留上游几乎全部能力：富文本与源码双模式编辑、数学公式、图表、代码高亮、表格、
+  全文搜索、导出 PDF/HTML、AI 写作助手、插件系统、主题。
 
-<p align="center">
-  <a href="https://github.com/CatVinci-Studio/Textus/releases/latest"><img alt="version" src="https://img.shields.io/github/v/release/CatVinci-Studio/Textus"></a>
-  <a href="./LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-yellow"></a>
-  <a href="https://github.com/CatVinci-Studio/Textus/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/CatVinci-Studio/Textus/ci.yml?branch=main&label=CI"></a>
-  <a href="https://textus.md/discord"><img alt="Discord" src="https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white"></a>
-  <a href="https://github.com/jaywcjlove/awesome-mac"><img alt="Awesome Mac" src="https://img.shields.io/badge/Awesome-Mac-FC60A8?logo=awesomelists&logoColor=white"></a>
-</p>
+## 与上游的区别
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/307610?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-307610" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/307610/daily?language=TypeScript" alt="CatVinci-Studio%2FTextus | Trendshift" width="250" height="55"/></a>
-</p>
+| 方面 | 说明 |
+| --- | --- |
+| 品牌 | 产品名、图标、界面文案统一为 Moxie；窗口标题、安装器、安装目录随之改变 |
+| 标识 | 应用 identifier 为 `com.moxie.desktop`；项目内的数据目录从 `.textus/` 改为 `.moxie/` |
+| 深链 | `moxie://`（上游为 `textus://`） |
+| 自动更新 | **已关闭**：本机没有签名私钥，`createUpdaterArtifacts` 关闭，更新端点指向本仓库的 releases，目前没有发布任何版本 |
+| 对外契约 | 插件清单 `textus-plugin.json`、插件协议 `textus-plugin:`、`.textusplugin` 包扩展名、`engines.textus` 字段、插件市场目录**保持原名**——它们由上游目录和插件作者决定，改了会让官方插件全部失效 |
+| 文档 | 开发文档沿用上游 `docs/`，仍是英文，与上游保持一致以便合并 |
 
-https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
+## 上手
 
-<p align="center">
-  <a href="https://www.youtube.com/watch?v=k_ew9TRljz0">Watch on YouTube</a> ·
-  <a href="https://www.bilibili.com/video/BV19LJb6WEWb">Bilibili</a>
-</p>
+### 环境
 
-<p align="center">
-  <img src="docs/images/readme/en/hero.png" alt="Moxie with Hamlet and the reader’s notes on it open. Moxie AI tightens the notes sentence by sentence, each change in the margin, and pins a review note beside the play." width="860" /><br>
-  <sub><i>Hamlet</i>, William Shakespeare</sub>
-</p>
+- Node.js 22 或更高（`.nvmrc` 写了版本）
+- Rust：`src-tauri/rust-toolchain.toml` 固定了 `stable`。**Windows 上必须用 MSVC 工具链**，
+  见下面的注意事项
+- Visual Studio Build Tools（"使用 C++ 的桌面开发"）与 WebView2（Windows 10/11 自带）
 
-## Get Moxie
+### 命令
 
-Free and open source, under the MIT license.
+```sh
+npm install
+npm run tauri dev      # 开发模式，前后端一起，热更新
+npm run dev            # 只跑前端，后端用 dev 桩，适合调界面
+npm run tauri build    # 出 NSIS 安装包：src-tauri/target/release/bundle/nsis/
+```
 
-| Platform              | Download                                                                                              | Other ways to install                                                               |
-| --------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| macOS · Apple Silicon | [Download .dmg](https://github.com/CatVinci-Studio/Textus/releases/latest)                            | Homebrew: `brew install --cask textus`                                              |
-| macOS · Intel         | [Download .dmg](https://github.com/CatVinci-Studio/Textus/releases/latest)                            | Homebrew: `brew install --cask textus`                                              |
-| Windows · x64         | [Download .exe](https://github.com/CatVinci-Studio/Textus/releases/latest)                            | —                                                                                   |
-| Linux · x64           | [Download .AppImage](https://github.com/CatVinci-Studio/Textus/releases/latest) · Also as .deb · .rpm | Arch Linux: the [`[catvinci]` repository](https://github.com/CatVinci-Studio/arch-repo) |
+日常校验：
 
-> iPhone and iPad: on the App Store soon (not yet in mainland China).
+```sh
+npm run check:quick    # 改动文件的类型检查 + lint + 测试
+npm run check          # 全量：类型、lint、单测、格式、体积、循环依赖等
+npm run check:native   # Rust：rustfmt、clippy、测试
+```
 
-Beta: in **Settings › General › About Moxie**, set **Update channel** to **Beta**.
+### Windows 上的两个坑
 
-## Writing
+这台机器上的 `rustup` 默认 host 是 `x86_64-pc-windows-gnu`，会让
+`rust-toolchain.toml` 里的 `stable` 解析成 GNU 工具链，链接 Tauri 的 cdylib 时报
+`export ordinal too large`。打包时必须显式指定 MSVC：
 
-What you see is what you get, laid out with Markdown as you type. Export to PDF, Word, HTML and more.
+```sh
+RUSTUP_TOOLCHAIN=stable-x86_64-pc-windows-msvc npm run tauri build
+```
 
-<p align="center">
-  <img src="docs/images/readme/en/markdown.webp" alt="A document using every kind of Markdown mark - headings, bold and italic, quotes, lists, tasks, links, a note - all laid out" width="860" />
-</p>
+首次打包还要下载 NSIS，直连 GitHub 会超时，挂上本机代理即可：
 
-| Code blocks | Tables |
-| :---: | :---: |
-| <img src="docs/images/readme/en/code.webp" alt="A code block, coloured for its language" width="420" /> | <img src="docs/images/readme/en/table.webp" alt="A table, its columns lined up" width="420" /> |
-| **Math** | **Diagrams** |
-| <img src="docs/images/readme/en/formula.webp" alt="Formulas drawn as you type them" width="420" /> | <img src="docs/images/readme/en/diagram.webp" alt="A Mermaid flowchart" width="420" /> |
+```sh
+HTTPS_PROXY=http://127.0.0.1:7897 RUSTUP_TOOLCHAIN=stable-x86_64-pc-windows-msvc npm run tauri build
+```
 
-## Moxie AI
+### 测试数据不要混
 
-Works with online and local LLMs alike - AI that speeds your writing along.
+`npm run tauri dev` 之前把应用数据目录指到临时位置，别让开发构建读到真实数据。
+各平台的目录见 `docs/dev/storage.md`。
 
-| Continuation | Typos and grammar | Proposed edits |
-| :---: | :---: | :---: |
-| <img src="docs/images/readme/en/ai-continue.webp" alt="The next words in grey when you pause; Tab takes them" width="280" /> | <img src="docs/images/readme/en/ai-grammar.webp" alt="A slip underlined, fixed with Alt+Enter" width="280" /> | <img src="docs/images/readme/en/ai-revise.webp" alt="Edits sentence by sentence, each with its reason" width="280" /> |
-| **Review comments** | **Slash skills** | **Any model** |
-| <img src="docs/images/readme/en/ai-review.webp" alt="A comment pinned to its sentence" width="280" /> | <img src="docs/images/readme/en/ai-skills.webp" alt="The skills menu, opened with /" width="280" /> | <img src="docs/images/readme/en/ai-models.webp" alt="Choosing a provider in Settings" width="280" /> |
+## 已知限制
 
-## Plugins
+- 自动更新关闭，升级靠手动装新包。
+- 只有 Windows 打包得到验证；macOS / Linux / iOS 未在本仓库构建。
+- 插件与技能市场用的是上游目录（`textus.md`），因此装进来的官方插件与技能保持原名；
+  技能文件里的 `textus-` 元数据前缀在读取侧仍兼容。
+- 界面语言：上游的十种语言保留在 `src/i18n/locales/`，本仓库只保证中文与英文的观感。
 
-Not just writing: plugins add whatever else you need.
+## 致谢
 
-| Graph View | Vim |
-| :---: | :---: |
-| <img src="docs/images/readme/en/plugin-graph.webp" alt="Notes and their links drawn as a graph" width="420" /> | <img src="docs/images/readme/en/plugin-vim.webp" alt="Vim's flash labels and its mode in the window bar" width="420" /> |
-| **Quick Preview** | **Version History** |
-| <img src="docs/images/readme/en/plugin-preview.webp" alt="Resting on a link shows that note in a card" width="420" /> | <img src="docs/images/readme/en/plugin-history.webp" alt="A note's earlier versions beside it" width="420" /> |
+这个项目能存在，几乎全部功劳属于上游作者：
 
-Mind maps, Marp slides, Kanban boards, PDF and Word in a tab, Zotero citations, charts of every kind and more are in **Settings › Extensions**, on the computer and on iPhone and iPad.
+- **[Textus](https://github.com/CatVinci-Studio/Textus)** —— CatVinci Studio 出品的
+  Markdown 编辑器，本仓库的代码基线。它的编辑器内核、Markdown 往返保存、插件沙箱、
+  AI 写作助手，都是上游团队的成果。
+- 上游的贡献者与插件作者，以及 `docs/dev/` 里那些把设计取舍写清楚的文档作者。
 
-Many plugins also hand Moxie AI their own tools, so you can ask for what they do in a conversation. The plugins are in [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) and the themes in [textus-themes](https://github.com/CatVinci-Studio/textus-themes), where you can share your own.
+上游以 MIT 许可发布，本仓库同样如此：`LICENSE` 保留了 CatVinci Studio 的原始版权声明，
+`THIRD-PARTY-NOTICES.md` 列出了第三方组件。改品牌不等于改归属，这两份文件请勿删除。
 
-## Questions
+## 许可
 
-<details>
-<summary><strong>Is Moxie free?</strong></summary>
-
-Yes. It is free and open source under the MIT license, with no account and no subscription. If you use Moxie AI, your provider bills you directly, or not at all with a local model.
-
-</details>
-
-<details>
-<summary><strong>Which platforms does it run on?</strong></summary>
-
-macOS (Apple Silicon and Intel), Windows and Linux, and iPhone and iPad from the App Store (not yet in mainland China).
-
-</details>
-
-<details>
-<summary><strong>How much memory does it use?</strong></summary>
-
-We care a great deal about memory and measure it in every release. A window takes about 110 MB, and each further window about 55 MB more. Plugins load only when they are used, and a web page left in the background is let go and loads again when you come back to it.
-
-</details>
-
-<details>
-<summary><strong>Do I need an AI account?</strong></summary>
-
-No. The editor works fully without AI. For Moxie AI, connect a provider of your own: sign in with ChatGPT or Claude, add an API key, or run a local model with Ollama.
-
-</details>
-
-<details>
-<summary><strong>Does it work offline?</strong></summary>
-
-The editor does, completely. Moxie AI needs your provider, unless you run a local model.
-
-</details>
-
-<details>
-<summary><strong>Is it plain Markdown? What can I export?</strong></summary>
-
-Yes: plain .md files, with tables, task lists, footnotes, math and Mermaid. You can export to PDF, Word, HTML and more.
-
-</details>
-
-## Community
-
-- [Discord](https://textus.md/discord): announcements, help and feedback, in English.
-- Chinese-speaking: [QQ group](https://textus.md/qq) (1128285004) · [WeChat group](https://textus.md/wechat)
-
-Bug reports and feature requests are welcome in [GitHub Issues](https://github.com/CatVinci-Studio/Textus/issues).
-
-## Roadmap and contributing
-
-[ROADMAP.md](ROADMAP.md) shows where Moxie is heading. To build Moxie, run the checks or open a pull request, start with [CONTRIBUTING.md](CONTRIBUTING.md); AI coding assistants follow [AGENTS.md](AGENTS.md). Discussions are welcome in English or Chinese.
-
-## Star history
-
-<a href="https://star-history.com/#CatVinci-Studio/Textus&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=CatVinci-Studio/Textus&type=Date&theme=dark">
-    <img alt="Star history" src="https://api.star-history.com/svg?repos=CatVinci-Studio/Textus&type=Date">
-  </picture>
-</a>
-
-## License
-
-[MIT](./LICENSE) © CatVinci Studio
+MIT。上游部分 © 2026 CatVinci Studio；本仓库的改动 © 2026 kelongyan。

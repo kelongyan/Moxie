@@ -1,23 +1,17 @@
 #!/usr/bin/env node
 // Checks every README.<lang>.md still matches README.md's structure:
 // headings, code blocks, table rows, link targets and existing images.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const reference = "README.md";
-const translations = [
-  "README.zh.md",
-  "README.zh-Hant.md",
-  "README.ja.md",
-  "README.ko.md",
-  "README.es.md",
-  "README.fr.md",
-  "README.de.md",
-  "README.ru.md",
-  "README.pt.md",
-];
+// Whatever translations are here: this fork reads in one language, and a
+// translation added later is checked from the day it lands.
+const translations = readdirSync(root)
+  .filter((name) => /^README\.[A-Za-z-]+\.md$/.test(name))
+  .sort();
 
 function outline(file) {
   const text = readFileSync(join(root, file), "utf8");
