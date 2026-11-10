@@ -41,7 +41,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Draws shout blocks in capitals.",
-    engines: { moxie: "^1.3.0" },
+    engines: { textus: "^1.3.0" },
     main: "host.js",
     permissions: ["editor.write"],
     contributes: { codeBlocks: [{ language: "shout", title: "Shout" }] },

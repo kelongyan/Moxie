@@ -25,7 +25,7 @@ function entry(word: string) {
       version: "1.0.0",
       publisher: "test",
       description: "In the making.",
-      engines: { moxie: "^1.3.0" },
+      engines: { textus: "^1.3.0" },
       main: "host.js",
       activationEvents: ["onStartupFinished"],
       contributes: {

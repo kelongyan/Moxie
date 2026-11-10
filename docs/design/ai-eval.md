@@ -53,12 +53,12 @@ print the case ids a run would send, for sizing it first.
   corrected text, nothing flagged on code, URLs, math or names.
 
 **Judging** is reported, not asserted. Runs leave the API judge off
-(`TEXTUS_EVAL_JUDGE=0`, the default in the script), and the recorded rows
+(`MOXIE_EVAL_JUDGE=0`, the default in the script), and the recorded rows
 are graded afterwards on faithfulness, helpfulness, minimality, tone and
 correctness, with a verdict (good / acceptable / bad). Each
 `<suite>.jsonl` row has everything a judge needs: the input, every tool
 call and its result, the composed diff, and the case's rubric.
-`TEXTUS_EVAL_JUDGE=1` has a model judge each case instead (about three
+`MOXIE_EVAL_JUDGE=1` has a model judge each case instead (about three
 times the requests).
 
 ## Running it
@@ -91,17 +91,17 @@ cargo test --lib live_eval -- --ignored --nocapture --test-threads=1
 Keys come from the environment or `.env.local` at the repository root, one
 `NAME=value` per line. Useful variables:
 
-| Variable                    | Effect                                                                |
-| --------------------------- | --------------------------------------------------------------------- |
-| `TEXTUS_EVAL_FILTER`        | Only cases whose id contains one of these comma-separated substrings  |
-| `TEXTUS_EVAL_PROVIDER`      | Run the agent on `chatgpt`, `deepseek`, `minimax`, `doubao`, `vertex` |
-| `TEXTUS_EVAL_AGENT_MODEL`   | Run the agent matrix on another model                                 |
-| `TEXTUS_EVAL_WRITING_MODEL` | Run completion and grammar on another model                           |
-| `TEXTUS_EVAL_JUDGE=1`       | Also judge each case with a model                                     |
-| `TEXTUS_EVAL_JOBS`          | Concurrent cases (default 6)                                          |
-| `TEXTUS_EVAL_OUT`           | Output folder (default: a new folder under the system temp dir)       |
-| `TEXTUS_EVAL_BUDGET_USD`    | Stop starting cases once this run has spent this much (list prices)   |
-| `TEXTUS_EVAL_SPEND_FILE`    | A `{"spent_usd", "runs"}` ledger each finished suite adds its cost to |
+| Variable                   | Effect                                                                |
+| -------------------------- | --------------------------------------------------------------------- |
+| `MOXIE_EVAL_FILTER`        | Only cases whose id contains one of these comma-separated substrings  |
+| `MOXIE_EVAL_PROVIDER`      | Run the agent on `chatgpt`, `deepseek`, `minimax`, `doubao`, `vertex` |
+| `MOXIE_EVAL_AGENT_MODEL`   | Run the agent matrix on another model                                 |
+| `MOXIE_EVAL_WRITING_MODEL` | Run completion and grammar on another model                           |
+| `MOXIE_EVAL_JUDGE=1`       | Also judge each case with a model                                     |
+| `MOXIE_EVAL_JOBS`          | Concurrent cases (default 6)                                          |
+| `MOXIE_EVAL_OUT`           | Output folder (default: a new folder under the system temp dir)       |
+| `MOXIE_EVAL_BUDGET_USD`    | Stop starting cases once this run has spent this much (list prices)   |
+| `MOXIE_EVAL_SPEND_FILE`    | A `{"spent_usd", "runs"}` ledger each finished suite adds its cost to |
 
 Each suite writes `<suite>.jsonl` (one row per case), `<suite>.md` (the
 summary table), `<suite>.usage.json` (tokens and dollars) and

@@ -21,7 +21,7 @@ Principles, from the roadmap:
   none.
 - A plugin that fails or is slow is turned off and says why.
 - A plugin never changes a document by itself: an edit is a proposal the
-  user accepts, as Textus AI's are.
+  user accepts, as Moxie AI's are.
 
 ## 1. What a plugin is
 
@@ -77,11 +77,11 @@ let a plugin break the editor.
 | `sidebarTabs`             | A tab in the sidebar, its panel a webview                                                                                                                                                   | sidebar-tabs.tsx       |
 | `views`                   | A panel beside the document, or a tab of its own (like a document tab)                                                                                                                      | new: view slots        |
 | `customEditors`           | Open a file type in a tab: PDF, Word, images, SVG, CSV                                                                                                                                      | new: open-with         |
-| `configuration`           | Settings, declared as a schema; Textus draws the rows                                                                                                                                       | settings-pages.tsx     |
+| `configuration`           | Settings, declared as a schema; Moxie draws the rows                                                                                                                                        | settings-pages.tsx     |
 | `settingsPage`            | A page of its own in Settings, a webview, for what a schema can't say                                                                                                                       | settings-pages.tsx     |
 | `themes`                  | Document and interface themes (CSS), as the market's themes are                                                                                                                             | theme/                 |
-| `skills`                  | Skills for Textus AI (`.md`)                                                                                                                                                                | ai/skills              |
-| `aiTools`                 | Tools Textus AI may call - read-only or proposing - when the user allows it per plugin                                                                                                      | ai tools registry, new |
+| `skills`                  | Skills for Moxie AI (`.md`)                                                                                                                                                                 | ai/skills              |
+| `aiTools`                 | Tools Moxie AI may call - read-only or proposing - when the user allows it per plugin                                                                                                       | ai tools registry, new |
 | `slashCommands`           | `/name` in the AI composer and the editor                                                                                                                                                   | new                    |
 | `codeBlockRenderers`      | Draw a fenced block of a language (` ```chart `) in the preview and in exports                                                                                                              | new, like Mermaid's    |
 | `exporters` / `importers` | A format to export to or open from                                                                                                                                                          | export/, new           |
@@ -102,7 +102,7 @@ A plugin has a status - what Settings shows, decided in one table
 ```mermaid
 flowchart LR
     F([its files read]) -- "manifest can't be read" --> B[broken]
-    F -- "made for another Textus" --> C[incompatible]
+    F -- "made for another Moxie" --> C[incompatible]
     F -- "switch saved off" --> OFF[off]
     F -- "switch saved on" --> ON[on]
     OFF -- "switched on,<br/>permissions granted" --> ON
@@ -152,12 +152,12 @@ script-src 'unsafe-inline'`: no network, no other script. Everything goes
    `blob:` URL of that file, read from the plugin's folder only. Its CSP
    allows inline and `data:`/`blob:` scripts, styles and images, and frames
    (`frame-src`) only for a plugin granted the network for that host - the
-   web view. Textus injects its theme variables into each webview, and a
+   web view. Moxie injects its theme variables into each webview, and a
    small UI kit (`@textus/plugin-ui`: buttons, rows, inputs, the same CSS as
-   Settings), so a plugin's view looks like Textus and follows the theme
+   Settings), so a plugin's view looks like Moxie and follows the theme
    and dark mode.
 3. **Renderers** (`codeBlockRenderers`) - run in the plugin host; they return
-   SVG or HTML that Textus sanitizes (the same sanitizer as raw HTML in
+   SVG or HTML that Moxie sanitizes (the same sanitizer as raw HTML in
    documents) before it goes into the page.
 
 Watchdog, in the app (the broker, section 5):
@@ -192,7 +192,7 @@ webview  ⇄  broker (app window)  ⇄  plugin host (worker)
   (`textus.postMessage` / `onDidReceiveMessage`, as VS Code's webviews do),
   never to the app directly.
 - The API is versioned by `engines.textus`; a plugin asking for a version
-  this Textus doesn't have isn't loaded, and Settings says why.
+  this Moxie doesn't have isn't loaded, and Settings says why.
 
 The API, by namespace (first version):
 
@@ -207,7 +207,7 @@ The API, by namespace (first version):
 | `storage`   | get/set its own data and settings, secrets in the keychain   | -                  |
 | `net`       | fetch, to the hosts listed                                   | `network:<host>`   |
 | `clipboard` | read, write                                                  | `clipboard`        |
-| `ai`        | ask Textus AI with the user's model                          | `ai`               |
+| `ai`        | ask Moxie AI with the user's model                           | `ai`               |
 | `editor`    | registerCodeBlockRenderer, registerSlashCommand              | -                  |
 
 ## 6. Permissions in the backend
@@ -229,9 +229,9 @@ The API, by namespace (first version):
 - **Updates.** An update that asks for more is installed but left disabled
   until the user grants the new permissions.
 - **Proposals, not edits.** `document.propose` goes through the same
-  pending-edit path as Textus AI: shown in place, accepted or rejected by
+  pending-edit path as Moxie AI: shown in place, accepted or rejected by
   the user, undoable.
-- **AI.** A plugin's `aiTools` are offered to Textus AI only when the user
+- **AI.** A plugin's `aiTools` are offered to Moxie AI only when the user
   allows that plugin in the conversation's tools, and only read or propose.
   `ai` lets a plugin ask the user's model; the request is marked as the
   plugin's in the chat history.
@@ -247,14 +247,14 @@ A **Plugins** page in Settings (a built-in page in settings-pages.tsx):
   market…** (opens the market, section 8).
 - **Installed**: one row per plugin - icon, name, publisher, version, a
   switch, and why it isn't running when it isn't (its manifest can't be
-  read, it is made for another Textus, or it was turned off because it
+  read, it is made for another Moxie, or it was turned off because it
   failed: "PDF Viewer stopped answering - Turn back on"; section 3).
   Clicking a row opens its page.
 - **A plugin's page** (a page of its own inside the tab, as Get plugins is):
   - what it adds (commands, views, file types), its permissions with
     Revoke beside each, the folders it may read;
   - its settings, drawn from its `configuration` schema with the same rows
-    as Textus's own (a boolean is a switch, an enum a select, a string or
+    as Moxie's own (a boolean is a switch, an enum a select, a string or
     number a field), then its own `settingsPage` if it has one;
   - Update / Disable / Uninstall, its storage use, "Report a problem"
     (opens the plugin's repository issues).
@@ -271,7 +271,7 @@ Search in Settings finds plugins' setting rows too.
 
 ## 8. Extensions: where each kind comes from
 
-Settings › Extensions has a tab for each kind of thing added to Textus,
+Settings › Extensions has a tab for each kind of thing added to Moxie,
 each one a card with its switch (src/settings/pages/ExtensionsPage.tsx).
 Each kind comes from where it is simplest to keep and to review:
 
@@ -298,6 +298,6 @@ switch is on (src-tauri/src/mcp/).
    PDF viewer and version history as the first official plugins.
 2. **beta.2** - the market repository, its checks and publishing, the
    in-app market and install flow, the website's market; themes moved over.
-3. **beta.3** - the other official plugins, `aiTools`, `/plugin` (Textus AI
+3. **beta.3** - the other official plugins, `aiTools`, `/plugin` (Moxie AI
    writes a plugin), the template repository and `@textus/market` CLI.
 4. **1.3.0**.

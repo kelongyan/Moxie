@@ -1,4 +1,4 @@
-# What Textus stores, and where
+# What Moxie stores, and where
 
 Everything the app remembers between launches, so that it can be backed up
 and inspected.
@@ -13,19 +13,19 @@ changes.
 
 ## Directories
 
-The app identifier is `com.catvinci.textus`. Tauri's app directories:
+The app identifier is `com.moxie.desktop`. Tauri's app directories:
 
-| Platform | Config directory                                                        | Data directory                        |
-| -------- | ----------------------------------------------------------------------- | ------------------------------------- |
-| Linux    | `~/.config/com.catvinci.textus/`                                        | `~/.local/share/com.catvinci.textus/` |
-| macOS    | `~/Library/Application Support/com.catvinci.textus/`                    | the same directory                    |
-| Windows  | `%APPDATA%\com.catvinci.textus\`                                        | the same directory                    |
-| iOS      | `Library/Application Support/com.catvinci.textus/` in the app container | the same directory                    |
+| Platform | Config directory                                                      | Data directory                      |
+| -------- | --------------------------------------------------------------------- | ----------------------------------- |
+| Linux    | `~/.config/com.moxie.desktop/`                                        | `~/.local/share/com.moxie.desktop/` |
+| macOS    | `~/Library/Application Support/com.moxie.desktop/`                    | the same directory                  |
+| Windows  | `%APPDATA%\com.moxie.desktop\`                                        | the same directory                  |
+| iOS      | `Library/Application Support/com.moxie.desktop/` in the app container | the same directory                  |
 
 (`$XDG_CONFIG_HOME` and `$XDG_DATA_HOME` move the Linux ones.) The cache
-directory is `~/.cache/com.catvinci.textus/` on Linux,
-`~/Library/Caches/com.catvinci.textus/` on macOS and
-`%LOCALAPPDATA%\com.catvinci.textus\` on Windows.
+directory is `~/.cache/com.moxie.desktop/` on Linux,
+`~/Library/Caches/com.moxie.desktop/` on macOS and
+`%LOCALAPPDATA%\com.moxie.desktop\` on Windows.
 
 ## Files
 
@@ -36,24 +36,24 @@ an identifier, hence the directories).
 
 ### Config directory
 
-| File                                                                                | What                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `settings.json` †                                                                   | Every setting in Settings, plus zoom and the onboarding flags: `{"schemaVersion": 1, "settings": {...}}`. Field names and meanings are the `Settings` interface in `src/prefs/settings-types.ts` (defaults `DEFAULT_SETTINGS`; read back by `settings-normalise.ts`).                                                                                                                                                                                                |
-| `prefs.json`                                                                        | `editor_window_size`, written by Rust when an editor window closes.                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `session.json`                                                                      | The documents each window had open, for session restore (desktop). Closing the last window leaves it as it was: the next launch reopens those documents, and so does the Dock icon on macOS, where the app keeps running windowless. Where the caret was in each is in `ui-state.json` (`lastCarets`, the last 50 documents, by path).                                                                                                                               |
-| `recent_files.json`, `recent_folders.json`                                          | File > Open Recent (desktop): the files, and the folders opened with File > Open Folder… listed above them.                                                                                                                                                                                                                                                                                                                                                          |
-| `themes/<id>/light.css`, `dark.css`                                                 | Imported themes, and themes installed from the theme gallery (**Settings › Extensions › Themes**). `settings.userThemes` lists them; a gallery theme's entry also has `gallery: {id, updated, source}`, the version installed, which is how an update is noticed.                                                                                                                                                                                                    |
-| `textus/agent.md`, `textus/skills/`                                                 | The global config folder: global writing instructions and skills ([AI-CONCEPTS.md](../design/ai-concepts.md)), including copies of built-in skills made with Customize… (marked `textus-based-on`) and the skills installed from the market. `settings.skillsMovedToMarket` marks a profile whose skills that moved to the market in 1.3 have been installed back (a profile from before lists the built-ins it had turned off in `settings.disabledBuiltinSkills`). |
-| `textus/memory/<slug>.md`                                                           | What Textus AI remembered about the user for every project, one memory per file (`ai::memory`). Off with `settings.rememberAutomatically`.                                                                                                                                                                                                                                                                                                                           |
-| `textus/projects/<key>/`                                                            | What Textus AI keeps for one project folder, out of the user's folder (`ai::project_data`; the key is the folder's path made a file name, with a short hash): `memory/<slug>.md`, the project's memories, and `papers/<id>/`, the paper writer's runs. A `.textus/memory/` left by an older version is moved here when first read.                                                                                                                                   |
-| `textus/scripts/`                                                                   | Script plugins, one `.js` file each (`src-tauri/src/plugins/scripts.rs`; desktop).                                                                                                                                                                                                                                                                                                                                                                                   |
-| `plugin_secrets.json`                                                               | Every plugin's secrets, apart from its settings and storage; owner-only (`plugins/files.rs`).                                                                                                                                                                                                                                                                                                                                                                        |
-| `provider_keys.json`, `custom_endpoint.json`, `auth-codex.json`, `auth-claude.json` | AI credentials, and in `provider_keys.json` also the image hosts' tokens under ids starting `__image_host` (`credential_id` in `src-tauri/src/commands/image_host.rs`); owner-only on Unix.                                                                                                                                                                                                                                                                          |
+| File                                                                                | What                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `settings.json` †                                                                   | Every setting in Settings, plus zoom and the onboarding flags: `{"schemaVersion": 1, "settings": {...}}`. Field names and meanings are the `Settings` interface in `src/prefs/settings-types.ts` (defaults `DEFAULT_SETTINGS`; read back by `settings-normalise.ts`).                                                                                                                                                                                               |
+| `prefs.json`                                                                        | `editor_window_size`, written by Rust when an editor window closes.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `session.json`                                                                      | The documents each window had open, for session restore (desktop). Closing the last window leaves it as it was: the next launch reopens those documents, and so does the Dock icon on macOS, where the app keeps running windowless. Where the caret was in each is in `ui-state.json` (`lastCarets`, the last 50 documents, by path).                                                                                                                              |
+| `recent_files.json`, `recent_folders.json`                                          | File > Open Recent (desktop): the files, and the folders opened with File > Open Folder… listed above them.                                                                                                                                                                                                                                                                                                                                                         |
+| `themes/<id>/light.css`, `dark.css`                                                 | Imported themes, and themes installed from the theme gallery (**Settings › Extensions › Themes**). `settings.userThemes` lists them; a gallery theme's entry also has `gallery: {id, updated, source}`, the version installed, which is how an update is noticed.                                                                                                                                                                                                   |
+| `moxie/agent.md`, `moxie/skills/`                                                   | The global config folder: global writing instructions and skills ([AI-CONCEPTS.md](../design/ai-concepts.md)), including copies of built-in skills made with Customize… (marked `moxie-based-on`) and the skills installed from the market. `settings.skillsMovedToMarket` marks a profile whose skills that moved to the market in 1.3 have been installed back (a profile from before lists the built-ins it had turned off in `settings.disabledBuiltinSkills`). |
+| `moxie/memory/<slug>.md`                                                            | What Moxie AI remembered about the user for every project, one memory per file (`ai::memory`). Off with `settings.rememberAutomatically`.                                                                                                                                                                                                                                                                                                                           |
+| `moxie/projects/<key>/`                                                             | What Moxie AI keeps for one project folder, out of the user's folder (`ai::project_data`; the key is the folder's path made a file name, with a short hash): `memory/<slug>.md`, the project's memories, and `papers/<id>/`, the paper writer's runs. A `.moxie/memory/` left by an older version is moved here when first read.                                                                                                                                    |
+| `moxie/scripts/`                                                                    | Script plugins, one `.js` file each (`src-tauri/src/plugins/scripts.rs`; desktop).                                                                                                                                                                                                                                                                                                                                                                                  |
+| `plugin_secrets.json`                                                               | Every plugin's secrets, apart from its settings and storage; owner-only (`plugins/files.rs`).                                                                                                                                                                                                                                                                                                                                                                       |
+| `provider_keys.json`, `custom_endpoint.json`, `auth-codex.json`, `auth-claude.json` | AI credentials, and in `provider_keys.json` also the image hosts' tokens under ids starting `__image_host` (`credential_id` in `src-tauri/src/commands/image_host.rs`); owner-only on Unix.                                                                                                                                                                                                                                                                         |
 
 `settings.json`'s `writingConventions` is also read by Rust
 (`ai::conventions`), which owns its meaning: `"automatic"` (the default; a
 missing field means the same), one profile such as `"en-GB/govuk"` (what
-Settings > Textus AI > Writing conventions stores; it applies to documents in
+Settings > Moxie AI > Writing conventions stores; it applies to documents in
 that profile's language, the others stay Automatic), or `{ "zh-Hans": "zh-Hans-CN/tech", "en":
 "en-GB/govuk", "options": { "cjk-latin-space": "on" } }` - one profile per
 language key, `"automatic"` or a missing language meaning Automatic. The
@@ -69,7 +69,7 @@ the `quickNote*` and `openAtLogin` fields an rc.1 settings file may still
 have are read by nothing, and neither is the data directory's `quick-note/`
 folder.
 
-`settings.json`'s `updateChannel` is **Settings › General › About Textus ›
+`settings.json`'s `updateChannel` is **Settings › General › About Moxie ›
 Update channel**: `"stable"` (the default; a missing or unknown value means
 the same) or `"beta"`. Rust doesn't read the file for it: the frontend sends
 the channel with each update check (`check_for_update` in
@@ -84,8 +84,8 @@ the channel with each update check (`check_for_update` in
 | `clipboard-history.json` † | The clipboard history of versions before the Clipboard History plugin (1.3.10), newest first. Nothing in the app writes it now; a list there makes the app offer the plugin (`src/plugins/store/moved-offer.ts`).                                                       |
 | `drafts/`                  | Crash recovery for unsaved documents, one snapshot per tab ([documents.md](documents.md#drafts-unsaved-writing-survives-a-crash)).                                                                                                                                      |
 | `undo/`                    | A document's undo history once its editor is let go or closed, used when it opens at the same text again; old ones go after 30 days, the oldest first past 50 MB.                                                                                                       |
-| `own-notes/`               | The writer's own notes and tracked changes per document, named by a hash of its path, never in the Markdown. A file renamed outside Textus loses them.                                                                                                                  |
-| `pending/`                 | Textus AI's undecided proposals per document, named by a hash of its path, with the pictures it made beside them.                                                                                                                                                       |
+| `own-notes/`               | The writer's own notes and tracked changes per document, named by a hash of its path, never in the Markdown. A file renamed outside Moxie loses them.                                                                                                                   |
+| `pending/`                 | Moxie AI's undecided proposals per document, named by a hash of its path, with the pictures it made beside them.                                                                                                                                                        |
 | `plugins/<id>/`            | Installed plugins, each a folder with its `textus-plugin.json`.                                                                                                                                                                                                         |
 | `plugins/state.json`       | Whether plugins are on, each one's switch and the permissions granted.                                                                                                                                                                                                  |
 | `plugins/schedule.json`    | Plugins' scheduled jobs (desktop; `src-tauri/src/schedule/`); `plugins/notification-clicks.json` for their notifications.                                                                                                                                               |
@@ -125,7 +125,7 @@ rewrites only its own conversation and the index:
 - **Privacy › Clear chat history** deletes every conversation file in the
   folder and in `.trash/`, and empties the index. Deleting one conversation
   in the history list deletes its file (not into the trash).
-- A document saved under a new path by Textus (Save As, a rename in the
+- A document saved under a new path by Moxie (Save As, a rename in the
   iPhone's document list) takes its conversations along
   (`chat_history_move_document`).
 - An index that is missing or corrupt while conversation files are there is
@@ -190,9 +190,9 @@ in `src/storage/local.ts`.
   (`apply_app_theme`), on Linux it builds windows in the page's background
   colour and recolours open ones (`pinned_background`).
 
-## Project folders: `.textus/`
+## Project folders: `.moxie/`
 
-A project's own settings live in its `.textus/` folder
+A project's own settings live in its `.moxie/` folder
 ([AI-CONCEPTS.md](../design/ai-concepts.md)):
 
 | Path                            | What                                                                                                                                                 |
@@ -200,9 +200,9 @@ A project's own settings live in its `.textus/` folder
 | `agent.md`                      | The project's writing instructions.                                                                                                                  |
 | `settings.json`                 | Settings that go with the folder: plugins' values under `plugins`, the folder's conventions under `conventions` (`src/storage/project-settings.ts`). |
 | `style.md`, `style.previous.md` | The style profile, and the one "Learn my style" replaced.                                                                                            |
-| `library/<name>.md`             | The library, one entry per file; an entry Textus AI wrote has `remembered-by: textus-ai` in its front matter.                                        |
+| `library/<name>.md`             | The library, one entry per file; an entry Moxie AI wrote has `remembered-by: moxie-ai` in its front matter.                                          |
 | `skills/<name>.md`              | The project's skills.                                                                                                                                |
 
 The project folder is the nearest folder holding the document that has a
-`.textus/` (up to, never including, the home folder or a drive root), else
+`.moxie/` (up to, never including, the home folder or a drive root), else
 the document's own folder, unless one was chosen.

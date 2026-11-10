@@ -23,7 +23,8 @@ trap 'rm -rf "$stage"' EXIT
 app="$stage/Moxie"
 
 install -Dm755 "$binary" "$app/bin/textus"
-install -Dm644 "$root/packaging/linux/textus.desktop" \
+# Installed under the name the Arch package and its checks expect.
+install -Dm644 "$root/packaging/linux/moxie.desktop" \
   "$app/share/applications/textus.desktop"
 install -Dm644 "$root/LICENSE" "$app/share/licenses/textus/LICENSE"
 for pair in 32x32:32x32.png 64x64:64x64.png 128x128:128x128.png \

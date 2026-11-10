@@ -42,7 +42,7 @@ test("a plugin formats and reads dates and fills a template in the folder's form
           version: "1.0.0",
           publisher: "test",
           description: "Dates and templates.",
-          engines: { moxie: "^1.3.0" },
+          engines: { textus: "^1.3.0" },
           main: "host.js",
           permissions: ["ai.tools", "files.read"],
           contributes: {

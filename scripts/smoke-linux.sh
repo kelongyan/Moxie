@@ -43,7 +43,7 @@ fail() {
 }
 
 version="$(node -p "require('$root/package.json').version")"
-binary="$root/src-tauri/target/release/textus"
+binary="$root/src-tauri/target/release/Moxie"
 deb="$root/src-tauri/target/release/bundle/deb/Moxie_${version}_amd64.deb"
 
 if [ "$build" = 1 ]; then
@@ -70,14 +70,14 @@ echo "package: $(basename "$deb")"
 mkdir "$work/deb"
 (cd "$work/deb" && ar x "$deb" && mkdir data && tar -xf data.tar.* -C data)
 data="$work/deb/data"
-[ -x "$data/usr/bin/textus" ] && pass "binary in /usr/bin" || fail "no /usr/bin/textus in the package"
+[ -x "$data/usr/bin/Moxie" ] && pass "binary in /usr/bin" || fail "no /usr/bin/Moxie in the package"
 desktop="$(find "$data/usr/share/applications" -name '*.desktop' | head -n1)"
 [ -n "$desktop" ] || fail "no .desktop entry in the package"
 grep -qx 'Exec=textus %F' "$desktop" && pass ".desktop Exec takes files" ||
   fail ".desktop Exec line: $(grep '^Exec=' "$desktop")"
 grep -q '^MimeType=.*text/markdown' "$desktop" && pass ".desktop claims text/markdown" ||
   fail ".desktop has no Markdown MimeType"
-grep -qx 'StartupWMClass=textus' "$desktop" && pass ".desktop StartupWMClass" ||
+grep -qx 'StartupWMClass=moxie' "$desktop" && pass ".desktop StartupWMClass" ||
   fail ".desktop StartupWMClass missing"
 find "$data/usr/share/icons" -name 'textus.png' | grep -q . && pass "icons installed" ||
   fail "no textus.png icons in the package"

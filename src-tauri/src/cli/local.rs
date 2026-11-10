@@ -55,7 +55,7 @@ pub fn list(ctx: &Ctx, args: &[String], io: &mut Io) -> Result {
 
 pub fn read(ctx: &Ctx, args: &[String], io: &mut Io) -> Result {
     let [file] = args else {
-        return Err("Usage: moxie read <file>".into());
+        return Err("Usage: textus read <file>".into());
     };
     let path = ctx.cwd.join(file);
     let text = markdown_of(&path)?;
@@ -157,7 +157,7 @@ pub fn new(ctx: &Ctx, args: &[String], io: &mut Io) -> Result {
     let mut args = args.to_vec();
     let title = super::take_option(&mut args, "--title")?;
     let [file] = args.as_slice() else {
-        return Err("Usage: moxie new <file> [--title <title>]".into());
+        return Err("Usage: textus new <file> [--title <title>]".into());
     };
     let mut path = ctx.cwd.join(file);
     if path.extension().is_none() {
@@ -187,7 +187,7 @@ fn write_new(path: &Path, content: &str) -> std::result::Result<(), String> {
 
 pub fn move_entry(ctx: &Ctx, args: &[String], io: &mut Io) -> Result {
     let [from, to] = args else {
-        return Err("Usage: moxie move <from> <to>".into());
+        return Err("Usage: textus move <from> <to>".into());
     };
     let from = ctx.cwd.join(from);
     if std::fs::symlink_metadata(&from).is_err() {

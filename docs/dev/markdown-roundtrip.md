@@ -1,6 +1,6 @@
 # Markdown round trip
 
-What Textus writes to a Markdown file when you save it, and why most of
+What Moxie writes to a Markdown file when you save it, and why most of
 the file comes back exactly as it was. When a save happens - autosave,
 drafts, outside changes, the close prompt - is in
 [documents.md](documents.md). The code is in

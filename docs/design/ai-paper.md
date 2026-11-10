@@ -1,6 +1,6 @@
 # AI paper: the long-form writing agent
 
-How Textus AI writes a long paper (5,000-10,000 characters) from a topic:
+How Moxie AI writes a long paper (5,000-10,000 characters) from a topic:
 research, an outline the user approves, sections drafted in parallel, a
 review, references. Built in steps; this document says what each part is
 for and marks what exists so far.
@@ -357,7 +357,7 @@ it, lazily loaded. Each stage and helper is one run of
   limits - are in `tuning.rs`, each with the run it came from; a
   section's problems carry whether they are soft (`Problem { soft }`),
   so rewording a check can't change what is kept. To try other wording
-  without building again, point `TEXTUS_PAPER_PROMPTS` at a folder laid
+  without building again, point `MOXIE_PAPER_PROMPTS` at a folder laid
   out as `prompts/` with only the files to change (a debug build reads
   it; a release build never does); `live_paper` keeps each run under its
   prompts' fingerprint, so two wordings can be run and compared.

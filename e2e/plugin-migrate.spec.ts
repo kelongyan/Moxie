@@ -15,7 +15,7 @@ const old = (id: string, permissions: string[]) => ({
     version: "1.0.4",
     publisher: "catvinci",
     description: "Before the plugin API 1.0.",
-    engines: { moxie: "^1.3.0-beta.1" },
+    engines: { textus: "^1.3.0-beta.1" },
     main: "host.js",
     permissions,
   }),

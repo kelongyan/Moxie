@@ -1,18 +1,18 @@
 ---
 name: textus-plugin
 description: >-
-  Writes plugins for Textus, the Markdown editor and writing app: commands,
+  Writes plugins for Moxie, the Markdown editor and writing app: commands,
   menus, sidebar lists and pages, code blocks, file viewers, floating views,
-  tools for Textus AI. Use when asked to make, change or fix a Textus plugin,
+  tools for Moxie AI. Use when asked to make, change or fix a Moxie plugin,
   or to explain its API (textus.d.ts, textus-plugin.json).
 license: MIT
 ---
 
-# Writing a Textus plugin
+# Writing a Moxie plugin
 
 A plugin is a folder: `textus-plugin.json` (the manifest), `host.js` (its
 code), any pages it draws (`*.html`, `*.css`, `*.js`) and a `README.md`.
-The code runs in a hidden, sandboxed frame and reaches Textus only through
+The code runs in a hidden, sandboxed frame and reaches Moxie only through
 the `textus` object; pages are sandboxed frames that talk to the code with
 messages. The full API is in [references/textus.d.ts](references/textus.d.ts)
 (read the parts you use) and [references/reference.md](references/reference.md).
@@ -41,7 +41,7 @@ messages. The full API is in [references/textus.d.ts](references/textus.d.ts)
 
 - The `id` is `<publisher>.<name>`; every command, view and tab id starts
   with it.
-- `engines.textus` is the oldest Textus with every call the code makes.
+- `engines.textus` is the oldest Moxie with every call the code makes.
   `dates`, `templates`, `files.appSettings` and `layout.panels` need
   `">=1.3.10"`.
 - `permissions` lists only what the code uses: `editor.read`,
@@ -70,7 +70,7 @@ exports.activate = function (ctx) {
 ```
 
 - `host.js` has no DOM: anything it draws there never shows. Draw in a
-  webview (`textus.views.registerWebview`) or ask Textus to draw a list
+  webview (`textus.views.registerWebview`) or ask Moxie to draw a list
   (`"type": "list"` views and sidebar tabs).
 - Files: `textus.files.*`, paths absolute or relative to the open folder;
   how the folder is written (Obsidian, Logseq…) is
@@ -83,7 +83,7 @@ exports.activate = function (ctx) {
   `textus.dates.parse(text, format)`, and
   `textus.templates.fill(text, { title, values, date, format })` fill
   Obsidian's `{{date}}`-style templates and Templater's common tags.
-- Data: `ctx.storage.global` (Textus's config folder),
+- Data: `ctx.storage.global` (Moxie's config folder),
   `ctx.storage.project` (the open folder, needs `project.data`),
   `ctx.storage.document(path)`; settings from `contributes.settings` via
   `textus.settings.get(key)`.
@@ -91,11 +91,11 @@ exports.activate = function (ctx) {
 ## Pages
 
 - `acquireTextusApi()` gives `postMessage`, `onMessage`, `getState`,
-  `setState`, `menu(items, element)` (Textus's own menu) and `onExport`.
-- Textus's look comes free: buttons and inputs, and the `tx-` classes
+  `setState`, `menu(items, element)` (Moxie's own menu) and `onExport`.
+- Moxie's look comes free: buttons and inputs, and the `tx-` classes
   (`tx-bar`, `tx-button`, `tx-icon-button`, `tx-segmented`, `tx-chip`,
   `tx-tag`, `tx-card`, `tx-table`, `tx-empty`, `tx-icon`). Colours,
-  sizes and shapes only from Textus's CSS variables (`--ui-*`, `--doc-*`,
+  sizes and shapes only from Moxie's CSS variables (`--ui-*`, `--doc-*`,
   `--text-*`, `--space-*`, `--shape-*`). Animate only opacity and
   transform.
 - No HTML drag and drop (the window takes it): drag with pointer events.
@@ -104,7 +104,7 @@ exports.activate = function (ctx) {
 ## Before you hand it over
 
 - Every id the manifest declares is registered in the code; every
-  permission the code needs is listed; `engines` holds the Textus it was
+  permission the code needs is listed; `engines` holds the Moxie it was
   written for.
 - A README: `# Name`, one sentence on what it does, paragraphs on what it
   can do and how to reach it, then `## Changes`.

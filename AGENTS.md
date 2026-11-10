@@ -1,6 +1,6 @@
 # Agent guide
 
-We use AI coding assistants on Textus ourselves, and so do some of our
+We use AI coding assistants on Moxie ourselves, and so do some of our
 contributors. This file is what we hand them: where things are, and the
 few rules that have gone wrong before and must not again. The full rules
 are in [CONTRIBUTING.md](CONTRIBUTING.md) and the documents it links; if
@@ -8,10 +8,12 @@ this file and they ever disagree, they win - and please tell us.
 
 ## Where things are
 
-Textus is a Markdown editor for macOS, Windows, Linux, iPhone and iPad,
+Moxie is a Markdown editor for macOS, Windows, Linux, iPhone and iPad,
 built with Tauri 2: a React + TypeScript frontend in `src/` (the editor is
 Milkdown/ProseMirror, source mode CodeMirror 6) and a Rust backend in
-`src-tauri/`.
+`src-tauri/`. It is a fork of
+[Textus](https://github.com/CatVinci-Studio/Textus); where a name is still
+`textus` in the code, it is upstream's, kept for compatibility.
 
 | Need                                                   | Read                                                             |
 | ------------------------------------------------------ | ---------------------------------------------------------------- |
@@ -55,9 +57,9 @@ Milkdown/ProseMirror, source mode CodeMirror 6) and a Rust backend in
 - **Drag with pointer events** (`src/ui/pointer-drag.ts`), never HTML drag
   and drop: the window's file drop swallows it.
 - **The e2e plugin flows need a textus-plugins checkout** beside the
-  repository or at `TEXTUS_PLUGINS_DIR`; without one the catalog is empty
+  repository or at `MOXIE_PLUGINS_DIR`; without one the catalog is empty
   ([testing.md](docs/dev/testing.md#the-official-plugins)).
-- **Keep the code shape**: at most 600 lines a file and 8 hooks a
+- **Keep the code shape**: at most 500 lines a file and 8 hooks a
   component, pure logic apart from side effects, provider differences as
   data. Make the smallest change that fixes the cause, match the
   surrounding code, and write comments that say why, not what.
@@ -87,7 +89,7 @@ Milkdown/ProseMirror, source mode CodeMirror 6) and a Rust backend in
 
 - Never commit or print secrets: anything named `*.local`, API keys, tokens,
   `AuthKey_*.p8`, signing keys.
-- Never run an installed Textus (`/usr/bin/textus`, `/Applications/Textus.app`)
+- Never run an installed Moxie (`/usr/bin/textus`, `/Applications/Moxie.app`)
   for testing, and never point a test build at a real user's data. Run
   `npm run tauri dev` with throwaway data folders (on Linux set
   `XDG_DATA_HOME`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `XDG_STATE_HOME`
@@ -97,8 +99,9 @@ Milkdown/ProseMirror, source mode CodeMirror 6) and a Rust backend in
   scratch folder instead. Don't kill processes you didn't start.
 - Don't drive the user's desktop (synthetic key presses, focusing windows)
   without being asked.
-- The updater: Textus publishes `textus-latest.json`, never `latest.json`
-  (that name belongs to old Levis installs). `npm run check` guards this;
-  don't work around it.
+- The updater: Moxie publishes `moxie-latest.json` (and `moxie-beta.json`
+  for the beta channel), never `latest.json` (that name belongs to old
+  Levis installs, which poll the same repository and trust the same signing
+  key). `npm run check` guards this; don't work around it.
 - Don't change signing, notarization, release or store workflows unless the
   task is about them.

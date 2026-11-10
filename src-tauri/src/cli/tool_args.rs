@@ -92,7 +92,7 @@ pub fn usage(plugin: &str, tool: &str, description: &str, schema: &Value) -> Str
         .flatten()
         .filter_map(Value::as_str)
         .collect();
-    let mut line = format!("Usage: moxie {} {tool}", short_name(plugin));
+    let mut line = format!("Usage: textus {} {tool}", short_name(plugin));
     if let Some(props) = schema.get("properties").and_then(Value::as_object) {
         for (name, prop) in props {
             let kind = prop.get("type").and_then(Value::as_str).unwrap_or("string");
@@ -171,7 +171,7 @@ mod tests {
         assert_eq!(short_name("catvinci.word-count"), "word-count");
         let text = usage("catvinci.word-count", "count", "Counts words.", &schema());
         assert!(text.starts_with(
-            "Usage: moxie word-count count [--exact <boolean>] [--limit <integer>] --text <string>"
+            "Usage: textus word-count count [--exact <boolean>] [--limit <integer>] --text <string>"
         ));
     }
 }

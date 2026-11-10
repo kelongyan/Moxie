@@ -1,14 +1,14 @@
 # Plugin documentation
 
-Everything for writing a Textus plugin, in the order you need it:
+Everything for writing a Moxie plugin, in the order you need it:
 
 | Page                             | For                                                                   |
 | -------------------------------- | --------------------------------------------------------------------- |
 | [guide.md](guide.md)             | Start here: a plugin in five minutes, the manifest, and the API by area |
 | [ui.md](ui.md)                   | The interface: four layers, five surfaces, every control, sizes and colours |
-| [pages.md](pages.md)             | Webviews: Textus's controls and styles, menus, dragging, floating views |
+| [pages.md](pages.md)             | Webviews: Moxie's controls and styles, menus, dragging, floating views |
 | [permissions.md](permissions.md) | What each permission allows, and which calls and events need which     |
-| [versions.md](versions.md)       | Which Textus each part of the API needs                                |
+| [versions.md](versions.md)       | Which Moxie each part of the API needs                                |
 | [testing.md](testing.md)         | Checking a plugin while you write it, unit tests, end-to-end tests     |
 | [publishing.md](publishing.md)   | Versions, the README and pictures, your repository, the store          |
 | [reference.md](reference.md)     | Every call and type, made from [textus.d.ts](../textus.d.ts)           |

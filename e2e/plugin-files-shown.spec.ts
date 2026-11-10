@@ -51,7 +51,7 @@ async function open(page: Page) {
           version: "1.0.0",
           publisher: "test",
           description: "Brings files down from elsewhere.",
-          engines: { moxie: "^1.3.0" },
+          engines: { textus: "^1.3.0" },
           main: "host.js",
           activationEvents: ["*"],
           permissions: ["files.read", "files.write"],

@@ -4,11 +4,12 @@ import type { Plugin } from "vite";
 
 /**
  * Serves the official plugins from a textus-plugins checkout under
- * /dev-plugins/, as the catalog would. The checkout is TEXTUS_PLUGINS_DIR or
- * a sibling folder; without one the catalog is empty.
+ * /dev-plugins/, as the catalog would. The checkout is MOXIE_PLUGINS_DIR
+ * (TEXTUS_PLUGINS_DIR still works, the name the checkout had before the
+ * rename) or a sibling folder; without one the catalog is empty.
  */
 export function pluginsCheckout(): string | null {
-  const named = process.env.TEXTUS_PLUGINS_DIR;
+  const named = process.env.MOXIE_PLUGINS_DIR ?? process.env.TEXTUS_PLUGINS_DIR;
   if (named)
     return existsSync(join(named, "libs.json")) ? resolve(named) : null;
   let dir = process.cwd();

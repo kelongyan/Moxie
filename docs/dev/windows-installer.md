@@ -30,9 +30,9 @@ install-location page was kept.
 | #   | Page             | What it is for                                               |
 | --- | ---------------- | ------------------------------------------------------------ |
 | 1   | Welcome          | The branded sidebar. No decisions.                           |
-| 2   | Install location | Defaults to `%LOCALAPPDATA%\Textus`; changeable.             |
+| 2   | Install location | Defaults to `%LOCALAPPDATA%\Moxie`; changeable.              |
 | 3   | Progress         | Advances to the finish page by itself when the copy is done. |
-| 4   | Finish           | "Create a desktop shortcut" and "Run Textus" checkboxes.     |
+| 4   | Finish           | "Create a desktop shortcut" and "Run Moxie" checkboxes.      |
 
 Pages that exist in the stock Tauri template and are deliberately **not**
 shown:
@@ -67,34 +67,34 @@ an upgrade, and kept for:
 
 ## File associations
 
-Textus registers itself for `.md` and `.markdown` per user, under
+Moxie registers itself for `.md` and `.markdown` per user, under
 `HKEY_CURRENT_USER`, like the rest of the install. Two files do it:
 
 - `bundle.fileAssociations` in `src-tauri/tauri.windows.conf.json` - the
-  template's own association. It creates the ProgID `Textus.Markdown` and
+  template's own association. It creates the ProgID `Moxie.Markdown` and
   sets it as the extension's default value, keeping the previous value to
   put back on uninstall.
 - `src-tauri/installer/hooks.nsh` (`installerHooks`) - everything that
-  names Textus in a value of its own, so that another installer taking the
-  default leaves Textus under **Open with** and in **Default apps**.
+  names Moxie in a value of its own, so that another installer taking the
+  default leaves Moxie under **Open with** and in **Default apps**.
 
-| Key under `HKCU\Software`                        | Value                                            |
-| ------------------------------------------------ | ------------------------------------------------ |
-| `Classes\.md` (and `.markdown`)                  | default value `Textus.Markdown` (the template)   |
-| `Classes\.md\OpenWithProgids` (and `.markdown`)  | `Textus.Markdown`, empty (`REG_NONE`)            |
-| `Classes\Textus.Markdown`                        | description, `DefaultIcon`, `shell\open\command` |
-| `Classes\Applications\Textus.exe`                | `FriendlyAppName`, `shell\open\command`          |
-| `Classes\Applications\Textus.exe\SupportedTypes` | `.md`, `.markdown`                               |
-| `Textus\Capabilities`                            | `ApplicationName`, `ApplicationDescription`      |
-| `Textus\Capabilities\FileAssociations`           | `.md`, `.markdown` = `Textus.Markdown`           |
-| `RegisteredApplications`                         | `Textus` = `Software\Textus\Capabilities`        |
+| Key under `HKCU\Software`                       | Value                                            |
+| ----------------------------------------------- | ------------------------------------------------ |
+| `Classes\.md` (and `.markdown`)                 | default value `Moxie.Markdown` (the template)    |
+| `Classes\.md\OpenWithProgids` (and `.markdown`) | `Moxie.Markdown`, empty (`REG_NONE`)             |
+| `Classes\Moxie.Markdown`                        | description, `DefaultIcon`, `shell\open\command` |
+| `Classes\Applications\Moxie.exe`                | `FriendlyAppName`, `shell\open\command`          |
+| `Classes\Applications\Moxie.exe\SupportedTypes` | `.md`, `.markdown`                               |
+| `Moxie\Capabilities`                            | `ApplicationName`, `ApplicationDescription`      |
+| `Moxie\Capabilities\FileAssociations`           | `.md`, `.markdown` = `Moxie.Markdown`            |
+| `RegisteredApplications`                        | `Moxie` = `Software\Moxie\Capabilities`          |
 
 The ProgID was `Markdown` up to 1.1.0-rc.6. That is the name other editors
 use too - MarkText's installer writes its own command into it - so
-installing one of them took `.md` from Textus entirely, "Open with"
+installing one of them took `.md` from Moxie entirely, "Open with"
 included (#183). Upgrading leaves an old `Markdown` key in place, since a
 default chosen in **Default apps** may still point at it; the uninstaller
-removes it while it still opens this copy of Textus.
+removes it while it still opens this copy of Moxie.
 
 The uninstaller removes all of the above except the extensions' keys
 themselves, which other apps share; an uninstall run for an upgrade
@@ -102,17 +102,17 @@ themselves, which other apps share; an uninstall run for an upgrade
 
 **Settings › General › Default Markdown editor** writes the same values
 again (`src-tauri/src/commands/default_editor.rs`; a change to one needs the
-other) and opens **Default apps** at Textus
-(`ms-settings:defaultapps?registeredAppUser=Textus`). Windows does not let
+other) and opens **Default apps** at Moxie
+(`ms-settings:defaultapps?registeredAppUser=Moxie`). Windows does not let
 an app make itself the default - the user's choice is a hashed `UserChoice`
-only the Settings app writes - so the user picks Textus there.
+only the Settings app writes - so the user picks Moxie there.
 
 ## The `textus` command
 
-Textus installs it itself on startup, and again from **Settings › General**
-(`src-tauri/src/commands/cli.rs`): `bin\textus.cmd` beside `Textus.exe`, and
+Moxie installs it itself on startup, and again from **Settings › General**
+(`src-tauri/src/commands/cli.rs`): `bin\textus.cmd` beside `Moxie.exe`, and
 that folder on the user's `PATH` (`HKCU\Environment`). The script sets
-`TEXTUS_CLI=1` and runs `"%~dp0..\Textus.exe" %*` without `start`, so a
+`MOXIE_CLI=1` and runs `"%~dp0..\Moxie.exe" %*` without `start`, so a
 command's output and exit code reach the terminal; given paths or nothing,
 the exe starts the window as a detached process and returns at once. A
 release exe has no console of its own, so in command mode it attaches to
@@ -140,7 +140,7 @@ stretched to fit and looks it.
 tauri-bundler's own template, vendored (from tauri-cli v2.12.4) because the
 two changes above are to `Page` declarations and no config option reaches
 them; `installerHooks` only reaches the four install/uninstall macros. It is
-upstream **verbatim** apart from the blocks marked `; Textus:`, so re-syncing
+upstream **verbatim** apart from the blocks marked `; Moxie:`, so re-syncing
 after a CLI upgrade is a diff against that tag's copy of
 `crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi` plus re-applying
 those blocks.
@@ -152,15 +152,17 @@ so `npm run check` runs `scripts/check-nsis-template.mjs`, which fails when
 the file's "Vendored from tauri-cli" line differs from `@tauri-apps/cli` in
 `package-lock.json`. `scripts/sync-nsis-template.sh` then does the re-sync: a
 three-way merge of upstream's changes between the two versions, keeping the
-`; Textus:` blocks and updating both version lines.
+`; Moxie:` blocks and updating both version lines.
 
 ## Known rough edge
 
 The publisher shown in Add/Remove Programs, and as the company in
-`textus.exe`'s file properties, is `catvinci`, derived from the bundle
-identifier (`com.catvinci.textus`) because `bundle.publisher` is unset.
-Setting it would read better, but it also moves the registry key the
-installer remembers a custom install location under (`Software\catvinci\Textus`,
-which the in-app updater relies on, since it does not pass the folder), and
-breaks the fingerprint used to detect an old MSI install - so it is left
-alone until there are no MSI installs left to migrate.
+`Moxie.exe`'s file properties, is `Moxie`, from `bundle.publisher` in
+`tauri.conf.json`. Upstream left it unset, so it fell back to the bundle
+identifier's company (`catvinci`); setting it moves the registry key the
+installer remembers a custom install location under
+(`Software\Moxie\Capabilities`, and the uninstall key
+`Software\Microsoft\Windows\CurrentVersion\Uninstall\Moxie`), which the
+in-app updater relies on, since it does not pass the folder. An install
+made by an older build keeps its own key, so an upgrade may leave the
+old one behind.

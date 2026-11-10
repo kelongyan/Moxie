@@ -378,6 +378,14 @@
       }
     });
 
+  // The plugin's API, under the name the plugin ecosystem uses: `textus`
+  // (and `acquireTextusApi()`) is the contract plugins and the official
+  // plugins are written against, so it keeps its name. `moxie` is an alias
+  // for the same object, for a plugin written for this fork.
+  window.textus = api;
+  window.acquireTextusApi = function () {
+    return api;
+  };
   window.moxie = api;
   window.acquireMoxieApi = function () {
     return api;

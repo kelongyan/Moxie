@@ -61,7 +61,7 @@ The pieces:
 | `\|` in a table cell                                     | `editor/tables/cell-pipes.ts`                                                                                  |
 | How the folder is written, whichever app made it         | `conventions` (Rust `src-tauri/src/conventions/`, `fs.folderConventions`; plugins `files.conventions`)         |
 
-## Textus AI
+## Moxie AI
 
 How a request runs is [ai-agent.md](../design/ai-agent.md); how a proposed
 edit becomes decided sentences is [ai-proposals.md](../design/ai-proposals.md).
@@ -69,7 +69,7 @@ To build on it:
 
 | Need                                       | Use                                                                                                |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Asking Textus AI from anywhere in the app  | `askAi(text, mode)` (`ai/chat/ask-ai.ts`)                                                          |
+| Asking Moxie AI from anywhere in the app   | `askAi(text, mode)` (`ai/chat/ask-ai.ts`)                                                          |
 | A conversation on a surface                | `ai/chat/ChatBody.tsx` (messages and composer, shared by the panel, Quick Ask and the chat window) |
 | A proposed edit shown, decided and applied | `ai/revision/` (its editor plugin and the review bar); never write the document directly           |
 | Notes beside the text                      | `ai/margin/`                                                                                       |

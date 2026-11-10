@@ -32,7 +32,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Marks what is still to do.",
-    engines: { moxie: "^1.3.0" },
+    engines: { textus: "^1.3.0" },
     main: "host.js",
     permissions: ["editor.read"],
     activationEvents: ["onEditor"],
