@@ -88,15 +88,6 @@ npm run check          # 类型、lint、单测、格式与各项结构检查
 npm run check:native   # Rust：rustfmt、clippy、测试
 ```
 
-## 与上游
-
-Moxie 是 [Textus](https://github.com/CatVinci-Studio/Textus) 的分叉：品牌、图标、
-应用标识与项目数据目录（`.moxie/`）改成了自己的，其余能力与上游保持一致，以便持续合并上游改进。
-
-插件清单 `textus-plugin.json`、插件协议 `textus-plugin:`、`.textusplugin` 包扩展名、
-清单里的 `engines.textus` 字段，以及插件与主题市场目录沿用上游命名——它们属于对外契约，
-改名会让官方插件失效。
-
 ## 致谢
 
 代码基线是 [Textus](https://github.com/CatVinci-Studio/Textus)，由 CatVinci Studio 出品。
