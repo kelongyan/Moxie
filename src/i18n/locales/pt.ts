@@ -1509,7 +1509,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   themeNamePaper: "Papel",
   themeNameSlate: "Ardósia",
   themeNameForest: "Floresta",
-  themeNameClaude: "Claude",
+  themeNameFolio: "Folio",
   appearanceLabel: "Aparência",
   appearanceSystem: "Seguir o sistema",
   appearanceLight: "Claro",

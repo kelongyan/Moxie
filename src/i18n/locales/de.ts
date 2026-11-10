@@ -1525,7 +1525,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   themeNamePaper: "Papier",
   themeNameSlate: "Schiefer",
   themeNameForest: "Wald",
-  themeNameClaude: "Claude",
+  themeNameFolio: "Folio",
   appearanceLabel: "Erscheinungsbild",
   appearanceSystem: "Systemeinstellung",
   appearanceLight: "Hell",

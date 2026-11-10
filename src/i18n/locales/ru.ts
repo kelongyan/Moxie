@@ -1525,7 +1525,7 @@ export default {
   themeNamePaper: "Бумага",
   themeNameSlate: "Грифель",
   themeNameForest: "Лес",
-  themeNameClaude: "Claude",
+  themeNameFolio: "Folio",
   appearanceLabel: "Оформление",
   appearanceSystem: "Как в системе",
   appearanceLight: "Светлое",

@@ -1551,7 +1551,7 @@ utiliser une.
   themeNamePaper: "Papier",
   themeNameSlate: "Ardoise",
   themeNameForest: "Forêt",
-  themeNameClaude: "Claude",
+  themeNameFolio: "Folio",
   appearanceLabel: "Apparence",
   appearanceSystem: "Selon le système",
   appearanceLight: "Clair",

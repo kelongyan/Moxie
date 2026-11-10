@@ -4,7 +4,7 @@ import type { TextKey } from "../i18n/strings";
 /// means none are active. A setting naming a withdrawn one (Parchment)
 /// falls back to the default.
 export type BuiltinContentThemeId =
-  "default" | "paper" | "slate" | "forest" | "claude";
+  "default" | "paper" | "slate" | "forest" | "folio";
 
 /// `nameKey` gives the picker label in the app language; `name` is the
 /// English fallback. Each defines a light and a dark palette, so switching
@@ -18,5 +18,5 @@ export const BUILTIN_CONTENT_THEMES: {
   { id: "paper", name: "Paper", nameKey: "themeNamePaper" },
   { id: "slate", name: "Slate", nameKey: "themeNameSlate" },
   { id: "forest", name: "Forest", nameKey: "themeNameForest" },
-  { id: "claude", name: "Claude", nameKey: "themeNameClaude" },
+  { id: "folio", name: "Folio", nameKey: "themeNameFolio" },
 ];
