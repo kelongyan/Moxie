@@ -1551,6 +1551,7 @@ utiliser une.
   themeNamePaper: "Papier",
   themeNameSlate: "Ardoise",
   themeNameForest: "Forêt",
+  themeNameClaude: "Claude",
   appearanceLabel: "Apparence",
   appearanceSystem: "Selon le système",
   appearanceLight: "Clair",
@@ -1760,8 +1761,7 @@ utiliser une.
   pluginStatusBroken: "Illisible : {reason}",
   pluginStatusDesktopOnly:
     "Fonctionne uniquement sur ordinateur, pas sur iPhone ni iPad.",
-  pluginStatusIncompatible:
-    "Conçue pour une autre version de Moxie ({range}).",
+  pluginStatusIncompatible: "Conçue pour une autre version de Moxie ({range}).",
   pluginStatusFailed: "Désactivée : {reason}",
   pluginStatusAllOff: "Les extensions sont désactivées.",
   pluginDevTag: "développement",

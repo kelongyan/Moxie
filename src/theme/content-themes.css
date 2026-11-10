@@ -113,3 +113,79 @@
   --doc-accent: #79b579;
   --doc-code-bg: #1c2419;
 }
+
+/* Claude - a printed page: warm cream stock, ink-brown text, Times for the
+   Latin and 方正悠宋 for the Chinese, generous leading, near-square corners.
+   After the Typora theme of the same name, pushed further towards paper.
+   The accent is darkened from the original #bc6a3a, which measured 3.79:1 on
+   this stock, under the 4.5:1 the contrast test holds built-in themes to. */
+
+[data-content-theme="claude"] {
+  --doc-bg: #f8f3e9;
+  --doc-text: #1f1b16;
+  --doc-muted: #6b6155;
+  --doc-border: #d9cbb2;
+  --doc-quote-border: #c2ae92;
+  --doc-accent: #8f3f1d;
+  --doc-code-bg: #efe6d2;
+  --doc-highlight-bg: #f3e3b8;
+  --doc-font:
+    "Times New Roman", "方正悠宋 简", "FZYouSongS-R-GB", "Songti SC", "SimSun",
+    serif;
+  /* Type set for a page rather than a screen: a touch larger, much more
+     leading, paragraphs closer than the blocks they sit in. */
+  --doc-font-size: 1.0625rem;
+  --doc-line-height: 1.8;
+  --doc-gap: 0.95em;
+  --doc-gap-box: 1.7em;
+  --doc-list-gap: 0.4em;
+  --doc-radius: 3px;
+  --doc-radius-sm: 2px;
+  --doc-token-keyword: #7a2e2e;
+  --doc-token-string: #3f6b3a;
+  --doc-token-number: #8a5a1e;
+  --doc-token-function: #2f4f6f;
+  --doc-token-tag: #7a2e2e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-content-theme="claude"] {
+    --doc-bg: #1b1712;
+    --doc-text: #e7ddcc;
+    --doc-muted: #a4957e;
+    --doc-border: #3a3228;
+    --doc-quote-border: #55493a;
+    --doc-accent: #d08a5a;
+    --doc-code-bg: #241e17;
+    --doc-highlight-bg: #4a3a18;
+    --doc-token-keyword: #e08f7a;
+    --doc-token-string: #9dc08b;
+    --doc-token-number: #d9a76a;
+    --doc-token-function: #8fb3d9;
+    --doc-token-tag: #e08f7a;
+  }
+}
+
+:root[data-theme="dark"][data-content-theme="claude"] {
+  --doc-bg: #1b1712;
+  --doc-text: #e7ddcc;
+  --doc-muted: #a4957e;
+  --doc-border: #3a3228;
+  --doc-quote-border: #55493a;
+  --doc-accent: #d08a5a;
+  --doc-code-bg: #241e17;
+  --doc-highlight-bg: #4a3a18;
+  --doc-token-keyword: #e08f7a;
+  --doc-token-string: #9dc08b;
+  --doc-token-number: #d9a76a;
+  --doc-token-function: #8fb3d9;
+  --doc-token-tag: #e08f7a;
+}
+
+/* The mono face is a document-level choice here, not app chrome: code inside
+   this theme is set in Iosevka, and only inside the document. */
+[data-content-theme="claude"] .milkdown {
+  --font-mono:
+    "Iosevka Mono", "Iosevka Term", "Iosevka", "JetBrains Mono",
+    "Cascadia Code", Consolas, monospace;
+}

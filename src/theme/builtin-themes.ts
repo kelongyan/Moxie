@@ -3,7 +3,8 @@ import type { TextKey } from "../i18n/strings";
 /// Built-in content themes only override `--doc-*` variables; "default"
 /// means none are active. A setting naming a withdrawn one (Parchment)
 /// falls back to the default.
-export type BuiltinContentThemeId = "default" | "paper" | "slate" | "forest";
+export type BuiltinContentThemeId =
+  "default" | "paper" | "slate" | "forest" | "claude";
 
 /// `nameKey` gives the picker label in the app language; `name` is the
 /// English fallback. Each defines a light and a dark palette, so switching
@@ -17,4 +18,5 @@ export const BUILTIN_CONTENT_THEMES: {
   { id: "paper", name: "Paper", nameKey: "themeNamePaper" },
   { id: "slate", name: "Slate", nameKey: "themeNameSlate" },
   { id: "forest", name: "Forest", nameKey: "themeNameForest" },
+  { id: "claude", name: "Claude", nameKey: "themeNameClaude" },
 ];

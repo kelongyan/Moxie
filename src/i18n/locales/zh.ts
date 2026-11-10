@@ -1381,6 +1381,7 @@ export default {
   themeNamePaper: "纸张",
   themeNameSlate: "石板",
   themeNameForest: "森林",
+  themeNameClaude: "Claude",
   appearanceLabel: "外观",
   appearanceSystem: "跟随系统",
   appearanceLight: "浅色",

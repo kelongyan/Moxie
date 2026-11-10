@@ -1530,6 +1530,7 @@ para usar una.
   themeNamePaper: "Papel",
   themeNameSlate: "Pizarra",
   themeNameForest: "Bosque",
+  themeNameClaude: "Claude",
   appearanceLabel: "Aspecto",
   appearanceSystem: "Según el sistema",
   appearanceLight: "Claro",

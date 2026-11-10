@@ -23,7 +23,7 @@ const rgb = (hex: string) =>
     number,
   ];
 describe("built-in theme display contract", () => {
-  for (const theme of ["paper", "slate", "forest"]) {
+  for (const theme of ["paper", "slate", "forest", "claude"]) {
     const variants = blocks.filter((b) => b.selector.includes(`"${theme}"`));
     it(`${theme}: system dark matches explicit dark and never changes chrome`, () => {
       expect(variants).toHaveLength(3);
