@@ -1,97 +1,110 @@
-# Moxie
+<p align="center">
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="112" height="112" />
+</p>
 
-Windows 上的 Markdown 编辑器。基于 [Textus](https://github.com/CatVinci-Studio/Textus) 的 MIT
-源码分叉而来，换了自己的名字、图标和标识，按个人使用习惯继续维护。
+<h1 align="center">Moxie</h1>
 
-所见即所得与源码模式并存，写作、整理笔记、导出文档都在一个窗口里完成。
+<p align="center">
+  <strong>Windows 上的 Markdown 编辑器</strong><br>
+  所见即所得，也留得住你手写的那点格式。
+</p>
 
-## 这是什么
+<p align="center">
+  <a href="https://github.com/kelongyan/Moxie/releases"><strong>下载</strong></a> ·
+  <a href="#从源码构建"><strong>构建</strong></a> ·
+  <a href="#致谢"><strong>致谢</strong></a>
+</p>
 
-这是一个**自用分支**，不是上游的官方发行版。
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-3c6e71.svg"></a>
+  <img alt="Platform: Windows" src="https://img.shields.io/badge/platform-Windows-0078d4.svg">
+  <img alt="Based on Textus" src="https://img.shields.io/badge/based%20on-Textus%201.3.12-6b7280.svg">
+</p>
 
-- 代码基线：Textus 1.3.12（上游仍在活跃开发，本仓库不定期合并）。
-- 当前只维护 Windows 构建（NSIS 安装包）。上游的 macOS / Linux / iOS 代码保留在树里，
-  没有在这里验证过。
-- 保留上游几乎全部能力：富文本与源码双模式编辑、数学公式、图表、代码高亮、表格、
-  全文搜索、导出 PDF/HTML、AI 写作助手、插件系统、主题。
+![Moxie](docs/images/readme/en/hero.png)
 
-## 与上游的区别
+## 特性
 
-| 方面 | 说明 |
+- **两种写法，一个文档**：富文本与源码模式随时切换，光标位置跟着走。
+- **Markdown 原样保存**：只重写你真正改过的段落，没碰过的内容逐字节留在原处。
+- **公式、图表、代码、表格**：LaTeX 排版、Mermaid / Pele 图表、代码高亮、GFM 表格，都在正文里直接出效果。
+- **AI 写作助手**：改写、审阅、续写、语法检查；改动以建议形式出现，逐句接受。
+- **插件系统**：命令、快捷键、侧栏、独立视图、主题都能由插件扩展，运行在沙箱里。
+- **导出**：PDF 与 HTML 直接出，其他格式交给 pandoc。
+- **十种界面语言**：中文、繁体、英、日、韩、西、法、德、俄、葡。
+
+## 截图
+
+| Markdown | 代码块 |
 | --- | --- |
-| 品牌 | 产品名、图标、界面文案统一为 Moxie；窗口标题、安装器、安装目录随之改变 |
-| 标识 | 应用 identifier 为 `com.moxie.desktop`；项目内的数据目录从 `.textus/` 改为 `.moxie/` |
-| 深链 | `moxie://`（上游为 `textus://`） |
-| 自动更新 | **已关闭**：本机没有签名私钥，`createUpdaterArtifacts` 关闭，更新端点指向本仓库的 releases，目前没有发布任何版本 |
-| 对外契约 | 插件清单 `textus-plugin.json`、插件协议 `textus-plugin:`、`.textusplugin` 包扩展名、`engines.textus` 字段、插件市场目录**保持原名**——它们由上游目录和插件作者决定，改了会让官方插件全部失效 |
-| 文档 | 开发文档沿用上游 `docs/`，仍是英文，与上游保持一致以便合并 |
+| ![Markdown](docs/images/readme/en/markdown.webp) | ![代码](docs/images/readme/en/code.webp) |
 
-## 上手
+| 公式 | 表格 |
+| --- | --- |
+| ![公式](docs/images/readme/en/formula.webp) | ![表格](docs/images/readme/en/table.webp) |
 
-### 环境
+| 图表 | AI 改写 |
+| --- | --- |
+| ![图表](docs/images/readme/en/diagram.webp) | ![AI 改写](docs/images/readme/en/ai-revise.webp) |
 
-- Node.js 22 或更高（`.nvmrc` 写了版本）
-- Rust：`src-tauri/rust-toolchain.toml` 固定了 `stable`。**Windows 上必须用 MSVC 工具链**，
-  见下面的注意事项
-- Visual Studio Build Tools（"使用 C++ 的桌面开发"）与 WebView2（Windows 10/11 自带）
+| 插件：Vim 键位 | 插件：版本历史 |
+| --- | --- |
+| ![Vim](docs/images/readme/en/plugin-vim.webp) | ![版本历史](docs/images/readme/en/plugin-history.webp) |
 
-### 命令
+## 安装
+
+Windows 10 / 11，从 [Releases](https://github.com/kelongyan/Moxie/releases) 下载
+`Moxie_x.y.z_x64-setup.exe` 运行安装即可，按用户安装，不需要管理员权限。
+
+## 从源码构建
+
+需要 Node.js 22 或更高、Rust stable、Visual Studio Build Tools（使用 C++ 的桌面开发）
+与 WebView2（Windows 10 / 11 自带）。
 
 ```sh
 npm install
-npm run tauri dev      # 开发模式，前后端一起，热更新
-npm run dev            # 只跑前端，后端用 dev 桩，适合调界面
-npm run tauri build    # 出 NSIS 安装包：src-tauri/target/release/bundle/nsis/
+npm run tauri build
 ```
 
-日常校验：
-
-```sh
-npm run check:quick    # 改动文件的类型检查 + lint + 测试
-npm run check          # 全量：类型、lint、单测、格式、体积、循环依赖等
-npm run check:native   # Rust：rustfmt、clippy、测试
-```
-
-### Windows 上的两个坑
-
-这台机器上的 `rustup` 默认 host 是 `x86_64-pc-windows-gnu`，会让
-`rust-toolchain.toml` 里的 `stable` 解析成 GNU 工具链，链接 Tauri 的 cdylib 时报
-`export ordinal too large`。打包时必须显式指定 MSVC：
+Windows 上指定 MSVC 工具链构建：
 
 ```sh
 RUSTUP_TOOLCHAIN=stable-x86_64-pc-windows-msvc npm run tauri build
 ```
 
-首次打包还要下载 NSIS，直连 GitHub 会超时，挂上本机代理即可：
+产物在 `src-tauri/target/release/bundle/nsis/`。
+
+开发时：
 
 ```sh
-HTTPS_PROXY=http://127.0.0.1:7897 RUSTUP_TOOLCHAIN=stable-x86_64-pc-windows-msvc npm run tauri build
+npm run tauri dev      # 前后端一起跑，热更新
+npm run dev            # 只跑前端，后端用开发桩
 ```
 
-### 测试数据不要混
+提交前的检查：
 
-`npm run tauri dev` 之前把应用数据目录指到临时位置，别让开发构建读到真实数据。
-各平台的目录见 `docs/dev/storage.md`。
+```sh
+npm run check          # 类型、lint、单测、格式与各项结构检查
+npm run check:native   # Rust：rustfmt、clippy、测试
+```
 
-## 已知限制
+## 与上游
 
-- 自动更新关闭，升级靠手动装新包。
-- 只有 Windows 打包得到验证；macOS / Linux / iOS 未在本仓库构建。
-- 插件与技能市场用的是上游目录（`textus.md`），因此装进来的官方插件与技能保持原名；
-  技能文件里的 `textus-` 元数据前缀在读取侧仍兼容。
-- 界面语言：上游的十种语言保留在 `src/i18n/locales/`，本仓库只保证中文与英文的观感。
+Moxie 是 [Textus](https://github.com/CatVinci-Studio/Textus) 的分叉：品牌、图标、
+应用标识与项目数据目录（`.moxie/`）改成了自己的，其余能力与上游保持一致，以便持续合并上游改进。
+
+插件清单 `textus-plugin.json`、插件协议 `textus-plugin:`、`.textusplugin` 包扩展名、
+清单里的 `engines.textus` 字段，以及插件与主题市场目录沿用上游命名——它们属于对外契约，
+改名会让官方插件失效。
 
 ## 致谢
 
-这个项目能存在，几乎全部功劳属于上游作者：
+代码基线是 [Textus](https://github.com/CatVinci-Studio/Textus)，由 CatVinci Studio 出品。
+编辑器内核、Markdown 往返保存、插件沙箱、AI 写作助手、界面设计，都是上游团队的成果。
+感谢上游的贡献者、插件与主题作者，以及 `docs/` 里那些把设计取舍写清楚的文档作者。
 
-- **[Textus](https://github.com/CatVinci-Studio/Textus)** —— CatVinci Studio 出品的
-  Markdown 编辑器，本仓库的代码基线。它的编辑器内核、Markdown 往返保存、插件沙箱、
-  AI 写作助手，都是上游团队的成果。
-- 上游的贡献者与插件作者，以及 `docs/dev/` 里那些把设计取舍写清楚的文档作者。
-
-上游以 MIT 许可发布，本仓库同样如此：`LICENSE` 保留了 CatVinci Studio 的原始版权声明，
-`THIRD-PARTY-NOTICES.md` 列出了第三方组件。改品牌不等于改归属，这两份文件请勿删除。
+本仓库以 MIT 许可发布，`LICENSE` 保留 CatVinci Studio 的原始版权声明，
+`THIRD-PARTY-NOTICES.md` 列出第三方组件。
 
 ## 许可
 
