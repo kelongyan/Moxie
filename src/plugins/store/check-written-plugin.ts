@@ -26,7 +26,7 @@ export function checkWrittenPlugin(files: unknown, version: string): string {
   const range = manifest.engine;
   if (!engineSatisfied(range, version))
     problems.push(
-      `engines.moxie "${range}" leaves out this Moxie (${version}): use ">=${version}" or a range that holds it.`,
+      `engines.textus "${range}" leaves out this Moxie (${version}): use ">=${version}" or a range that holds it.`,
     );
   if (!manifest.id.startsWith("local."))
     problems.push(

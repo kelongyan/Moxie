@@ -132,7 +132,7 @@ pub fn check(manifest: &str) -> Result<(), String> {
     }
     let empty = Value::Object(Map::new());
     let engines = object(m.get("engines").unwrap_or(&empty), "engines")?;
-    text(engines.get("textus"), "engines.moxie")?;
+    text(engines.get("textus"), "engines.textus")?;
 
     for p in list(m.get("permissions"), "permissions")? {
         if !p.as_str().is_some_and(is_permission) {

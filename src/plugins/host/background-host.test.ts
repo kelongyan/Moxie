@@ -32,7 +32,7 @@ function run(
         name: "Remind",
         version: "0.1.0",
         publisher: "catvinci",
-        engines: { moxie: ">=1.3.0-beta.8" },
+        engines: { textus: ">=1.3.0-beta.8" },
         permissions: granted,
         ...manifest,
       }),

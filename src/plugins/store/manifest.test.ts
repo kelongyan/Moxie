@@ -14,7 +14,7 @@ const base = {
   name: "Example",
   version: "1.0.0",
   publisher: "catvinci",
-  engines: { moxie: "^1.3.0" },
+  engines: { textus: "^1.3.0" },
 };
 
 describe("a plugin's manifest", () => {
@@ -106,7 +106,7 @@ describe("a plugin's manifest", () => {
     expect(bad({ contributes: { menus: { "window/title": [] } } })).toThrow(
       /no menu/,
     );
-    expect(bad({ engines: {} })).toThrow(/engines.moxie/);
+    expect(bad({ engines: {} })).toThrow(/engines.textus/);
     expect(() => parseManifest("{nope")).toThrow(/not JSON/);
   });
 

@@ -374,7 +374,7 @@ export function parseManifest(raw: string | unknown): PluginManifest {
     icon: text(m.icon, "icon", true) || undefined,
     license: text(m.license, "license", true) || undefined,
     repository: text(m.repository, "repository", true) || undefined,
-    engine: text(engines.moxie, "engines.moxie"),
+    engine: text(engines.textus, "engines.textus"),
     platforms,
     main: parseMain(m.main),
     background,

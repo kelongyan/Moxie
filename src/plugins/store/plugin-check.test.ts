@@ -9,7 +9,7 @@ function plugin(manifest: Record<string, unknown>, host: string) {
     version: "0.1.0",
     publisher: "local",
     description: "A demo.",
-    engines: { moxie: ">=1.3.0" },
+    engines: { textus: ">=1.3.0" },
     main: "host.js",
     permissions: [],
     ...manifest,

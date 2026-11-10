@@ -46,7 +46,7 @@ const entry = (id: string, version: string, engine: string) => ({
     name: id,
     version,
     publisher: "catvinci",
-    engines: { moxie: engine },
+    engines: { textus: engine },
   },
 });
 

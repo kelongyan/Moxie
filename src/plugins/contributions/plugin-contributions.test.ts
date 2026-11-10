@@ -30,7 +30,7 @@ it("says a plugin command's failure in the user's language, under the plugin's n
       name: "Todo",
       version: "0.1.0",
       publisher: "local",
-      engines: { moxie: ">=1.3.0" },
+      engines: { textus: ">=1.3.0" },
       main: "host.js",
       contributes: {
         commands: [{ command: "local.todo.add", title: "Add" }],
