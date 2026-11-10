@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>下一代 Markdown 编辑器</strong><br>
@@ -48,11 +48,11 @@ https://github.com/user-attachments/assets/56473ad9-5cb0-4608-b3c8-30882420edcd
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/zh/hero.png" alt="Textus 打开着《红楼梦》和一段读书笔记，Textus AI 逐句精简笔记，每处修改都在页边，并在原文旁钉上审阅批注" width="860" /><br>
+  <img src="docs/images/readme/zh/hero.png" alt="Moxie 打开着《红楼梦》和一段读书笔记，Moxie AI 逐句精简笔记，每处修改都在页边，并在原文旁钉上审阅批注" width="860" /><br>
   <sub>《红楼梦》曹雪芹</sub>
 </p>
 
-## 开始使用 Textus
+## 开始使用 Moxie
 
 免费开源，采用 MIT 协议。
 
@@ -65,7 +65,7 @@ https://github.com/user-attachments/assets/56473ad9-5cb0-4608-b3c8-30882420edcd
 
 > iPhone 与 iPad 版即将在 App Store 上架（暂不支持中国大陆）。
 
-测试版：在 **设置 › 通用 › 关于 Textus** 中把 **更新通道** 改为 **测试版**。
+测试版：在 **设置 › 通用 › 关于 Moxie** 中把 **更新通道** 改为 **测试版**。
 
 ## 写作
 
@@ -81,7 +81,7 @@ https://github.com/user-attachments/assets/56473ad9-5cb0-4608-b3c8-30882420edcd
 | **数学公式** | **图像渲染** |
 | <img src="docs/images/readme/zh/formula.webp" alt="边打边出的数学公式" width="420" /> | <img src="docs/images/readme/zh/diagram.webp" alt="Mermaid 流程图和插图" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 支持在线、本地等多种 LLM 模型服务，让 AI 加速你的写作进程。
 
@@ -103,14 +103,14 @@ https://github.com/user-attachments/assets/56473ad9-5cb0-4608-b3c8-30882420edcd
 
 还有思维导图、Marp 幻灯片、看板、PDF 与 Word 阅读、Zotero 引用、各类图表等，都在 **设置 › 扩展**，电脑和 iPhone、iPad 上都能用。
 
-不少插件还会把自己的功能交给 Textus AI，在对话里直接让它去做就行。插件在 [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins)，主题在 [textus-themes](https://github.com/CatVinci-Studio/textus-themes)，也欢迎分享你自己的主题。
+不少插件还会把自己的功能交给 Moxie AI，在对话里直接让它去做就行。插件在 [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins)，主题在 [textus-themes](https://github.com/CatVinci-Studio/textus-themes)，也欢迎分享你自己的主题。
 
 ## 常见问题
 
 <details>
-<summary><strong>Textus 免费吗？</strong></summary>
+<summary><strong>Moxie 免费吗？</strong></summary>
 
-免费。Textus 以 MIT 协议开源，不需要账号，也没有订阅。如果使用 Textus AI，费用由你选择的服务商直接结算；使用本地模型则完全免费。
+免费。Moxie 以 MIT 协议开源，不需要账号，也没有订阅。如果使用 Moxie AI，费用由你选择的服务商直接结算；使用本地模型则完全免费。
 
 </details>
 
@@ -131,14 +131,14 @@ https://github.com/user-attachments/assets/56473ad9-5cb0-4608-b3c8-30882420edcd
 <details>
 <summary><strong>需要 AI 账号吗？</strong></summary>
 
-不需要。不用 AI，编辑器的全部功能照样可用。想用 Textus AI，就接入你自己的服务商：用 ChatGPT 或 Claude 账号登录、填入 API Key，或用 Ollama 运行本地模型。
+不需要。不用 AI，编辑器的全部功能照样可用。想用 Moxie AI，就接入你自己的服务商：用 ChatGPT 或 Claude 账号登录、填入 API Key，或用 Ollama 运行本地模型。
 
 </details>
 
 <details>
 <summary><strong>可以离线使用吗？</strong></summary>
 
-编辑器完全可以离线使用。Textus AI 需要连接你的服务商，运行本地模型时则无需联网。
+编辑器完全可以离线使用。Moxie AI 需要连接你的服务商，运行本地模型时则无需联网。
 
 </details>
 
@@ -159,7 +159,7 @@ bug 反馈和功能建议也欢迎提到 [GitHub Issues](https://github.com/CatV
 
 ## 路线图与参与开发
 
-Textus 接下来的方向见 [路线图](ROADMAP.zh.md)。想自己构建 Textus、运行检查或提交 PR，请从 [CONTRIBUTING.md](CONTRIBUTING.md)（英文）开始；AI 编程助手请遵循 [AGENTS.md](AGENTS.md)。讨论可以用中文或英文。
+Moxie 接下来的方向见 [路线图](ROADMAP.zh.md)。想自己构建 Moxie、运行检查或提交 PR，请从 [CONTRIBUTING.md](CONTRIBUTING.md)（英文）开始；AI 编程助手请遵循 [AGENTS.md](AGENTS.md)。讨论可以用中文或英文。
 
 ## Star 增长趋势
 

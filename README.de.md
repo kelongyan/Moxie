@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>Der Markdown-Editor der nächsten Generation.</strong><br>
@@ -47,11 +47,11 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/de/hero.png" alt="Textus mit Kafkas »Die Verwandlung« und den Notizen dazu. Textus AI strafft die Notizen Satz für Satz, jede Änderung am Rand, und heftet einen Kommentar neben den Text." width="860" /><br>
+  <img src="docs/images/readme/de/hero.png" alt="Moxie mit Kafkas »Die Verwandlung« und den Notizen dazu. Moxie AI strafft die Notizen Satz für Satz, jede Änderung am Rand, und heftet einen Kommentar neben den Text." width="860" /><br>
   <sub><i>Die Verwandlung</i>, Franz Kafka</sub>
 </p>
 
-## Hol dir Textus
+## Hol dir Moxie
 
 Kostenlos und quelloffen, unter MIT-Lizenz.
 
@@ -64,7 +64,7 @@ Kostenlos und quelloffen, unter MIT-Lizenz.
 
 > iPhone und iPad: bald im App Store (vorerst nicht in Festlandchina).
 
-Beta: Stell unter **Einstellungen › Allgemein › Über Textus** den **Update-Kanal** auf **Beta**.
+Beta: Stell unter **Einstellungen › Allgemein › Über Moxie** den **Update-Kanal** auf **Beta**.
 
 ## Schreiben
 
@@ -80,7 +80,7 @@ Was du siehst, ist, was du bekommst – Markdown, gesetzt schon beim Tippen. Exp
 | **Mathematik** | **Diagramme** |
 | <img src="docs/images/readme/de/formula.webp" alt="Formeln, gezeichnet während du tippst" width="420" /> | <img src="docs/images/readme/de/diagram.webp" alt="Ein Mermaid-Flussdiagramm" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 Arbeitet mit Online- und lokalen LLMs gleichermaßen – KI, die dein Schreiben voranbringt.
 
@@ -102,26 +102,26 @@ Nicht nur Schreiben: Plugins ergänzen alles, was du sonst noch brauchst.
 
 Mindmaps, Marp-Folien, Kanban-Boards, PDF und Word im Tab, Zotero-Zitate, Diagramme aller Art und mehr findest du unter **Einstellungen › Erweiterungen** – am Computer und auf iPhone und iPad.
 
-Viele Plugins geben Textus AI auch ihre eigenen Werkzeuge, sodass du es einfach im Gespräch darum bitten kannst. Die Plugins liegen in [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), die Themes in [textus-themes](https://github.com/CatVinci-Studio/textus-themes), wo du auch deine eigenen teilen kannst.
+Viele Plugins geben Moxie AI auch ihre eigenen Werkzeuge, sodass du es einfach im Gespräch darum bitten kannst. Die Plugins liegen in [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), die Themes in [textus-themes](https://github.com/CatVinci-Studio/textus-themes), wo du auch deine eigenen teilen kannst.
 
 ## Gut zu wissen
 
 <details>
-<summary><strong>Ist Textus kostenlos?</strong></summary>
+<summary><strong>Ist Moxie kostenlos?</strong></summary>
 
-Ja. Textus ist kostenlos und quelloffen unter der MIT-Lizenz, ohne Konto und ohne Abo. Nutzt du Textus AI, rechnet dein Anbieter direkt mit dir ab – oder gar nicht, wenn du ein lokales Modell verwendest.
+Ja. Moxie ist kostenlos und quelloffen unter der MIT-Lizenz, ohne Konto und ohne Abo. Nutzt du Moxie AI, rechnet dein Anbieter direkt mit dir ab – oder gar nicht, wenn du ein lokales Modell verwendest.
 
 </details>
 
 <details>
-<summary><strong>Auf welchen Systemen läuft Textus?</strong></summary>
+<summary><strong>Auf welchen Systemen läuft Moxie?</strong></summary>
 
 Auf macOS (Apple Silicon und Intel), Windows und Linux, dazu auf iPhone und iPad aus dem App Store (vorerst nicht in Festlandchina).
 
 </details>
 
 <details>
-<summary><strong>Wie viel Arbeitsspeicher braucht Textus?</strong></summary>
+<summary><strong>Wie viel Arbeitsspeicher braucht Moxie?</strong></summary>
 
 Arbeitsspeicher ist uns sehr wichtig, und wir messen ihn in jeder Version. Ein Fenster belegt etwa 110 MB, jedes weitere etwa 55 MB mehr. Plugins werden erst geladen, wenn du sie nutzt, und eine Webseite im Hintergrund wird freigegeben und neu geladen, sobald du zu ihr zurückkehrst.
 
@@ -130,14 +130,14 @@ Arbeitsspeicher ist uns sehr wichtig, und wir messen ihn in jeder Version. Ein F
 <details>
 <summary><strong>Brauche ich ein KI-Konto?</strong></summary>
 
-Nein. Der Editor funktioniert vollständig ohne KI. Für Textus AI verbindest du deinen eigenen Anbieter: Anmeldung mit ChatGPT oder Claude, ein API-Schlüssel oder ein lokales Modell mit Ollama.
+Nein. Der Editor funktioniert vollständig ohne KI. Für Moxie AI verbindest du deinen eigenen Anbieter: Anmeldung mit ChatGPT oder Claude, ein API-Schlüssel oder ein lokales Modell mit Ollama.
 
 </details>
 
 <details>
-<summary><strong>Funktioniert Textus offline?</strong></summary>
+<summary><strong>Funktioniert Moxie offline?</strong></summary>
 
-Der Editor ja, vollständig. Textus AI braucht eine Verbindung zu deinem Anbieter – außer du nutzt ein lokales Modell. Dann verlässt nichts deinen Rechner.
+Der Editor ja, vollständig. Moxie AI braucht eine Verbindung zu deinem Anbieter – außer du nutzt ein lokales Modell. Dann verlässt nichts deinen Rechner.
 
 </details>
 
@@ -157,7 +157,7 @@ Fehlerberichte und Wünsche gern in den [GitHub Issues](https://github.com/CatVi
 
 ## Roadmap und Mitwirken
 
-[ROADMAP.md](ROADMAP.md) (Englisch) zeigt, wohin sich Textus entwickelt. Zum Bauen, für die Prüfungen und für Pull Requests beginnst du mit [CONTRIBUTING.md](CONTRIBUTING.md) (Englisch); KI-Programmierassistenten folgen [AGENTS.md](AGENTS.md). Diskutiert wird auf Englisch oder Chinesisch.
+[ROADMAP.md](ROADMAP.md) (Englisch) zeigt, wohin sich Moxie entwickelt. Zum Bauen, für die Prüfungen und für Pull Requests beginnst du mit [CONTRIBUTING.md](CONTRIBUTING.md) (Englisch); KI-Programmierassistenten folgen [AGENTS.md](AGENTS.md). Diskutiert wird auf Englisch oder Chinesisch.
 
 ## Sterne im Verlauf
 

@@ -1,12 +1,12 @@
 <!-- The English README is the reference: every README.<lang>.md follows its
      structure section by section (scripts/check-readmes.mjs): hero, download,
-     writing, Textus AI, plugins, questions. -->
+     writing, Moxie AI, plugins, questions. -->
 
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>The next-generation Markdown editor.</strong><br>
@@ -51,11 +51,11 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/en/hero.png" alt="Textus with Hamlet and the reader’s notes on it open. Textus AI tightens the notes sentence by sentence, each change in the margin, and pins a review note beside the play." width="860" /><br>
+  <img src="docs/images/readme/en/hero.png" alt="Moxie with Hamlet and the reader’s notes on it open. Moxie AI tightens the notes sentence by sentence, each change in the margin, and pins a review note beside the play." width="860" /><br>
   <sub><i>Hamlet</i>, William Shakespeare</sub>
 </p>
 
-## Get Textus
+## Get Moxie
 
 Free and open source, under the MIT license.
 
@@ -68,7 +68,7 @@ Free and open source, under the MIT license.
 
 > iPhone and iPad: on the App Store soon (not yet in mainland China).
 
-Beta: in **Settings › General › About Textus**, set **Update channel** to **Beta**.
+Beta: in **Settings › General › About Moxie**, set **Update channel** to **Beta**.
 
 ## Writing
 
@@ -84,7 +84,7 @@ What you see is what you get, laid out with Markdown as you type. Export to PDF,
 | **Math** | **Diagrams** |
 | <img src="docs/images/readme/en/formula.webp" alt="Formulas drawn as you type them" width="420" /> | <img src="docs/images/readme/en/diagram.webp" alt="A Mermaid flowchart" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 Works with online and local LLMs alike - AI that speeds your writing along.
 
@@ -106,14 +106,14 @@ Not just writing: plugins add whatever else you need.
 
 Mind maps, Marp slides, Kanban boards, PDF and Word in a tab, Zotero citations, charts of every kind and more are in **Settings › Extensions**, on the computer and on iPhone and iPad.
 
-Many plugins also hand Textus AI their own tools, so you can ask for what they do in a conversation. The plugins are in [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) and the themes in [textus-themes](https://github.com/CatVinci-Studio/textus-themes), where you can share your own.
+Many plugins also hand Moxie AI their own tools, so you can ask for what they do in a conversation. The plugins are in [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) and the themes in [textus-themes](https://github.com/CatVinci-Studio/textus-themes), where you can share your own.
 
 ## Questions
 
 <details>
-<summary><strong>Is Textus free?</strong></summary>
+<summary><strong>Is Moxie free?</strong></summary>
 
-Yes. It is free and open source under the MIT license, with no account and no subscription. If you use Textus AI, your provider bills you directly, or not at all with a local model.
+Yes. It is free and open source under the MIT license, with no account and no subscription. If you use Moxie AI, your provider bills you directly, or not at all with a local model.
 
 </details>
 
@@ -134,14 +134,14 @@ We care a great deal about memory and measure it in every release. A window take
 <details>
 <summary><strong>Do I need an AI account?</strong></summary>
 
-No. The editor works fully without AI. For Textus AI, connect a provider of your own: sign in with ChatGPT or Claude, add an API key, or run a local model with Ollama.
+No. The editor works fully without AI. For Moxie AI, connect a provider of your own: sign in with ChatGPT or Claude, add an API key, or run a local model with Ollama.
 
 </details>
 
 <details>
 <summary><strong>Does it work offline?</strong></summary>
 
-The editor does, completely. Textus AI needs your provider, unless you run a local model.
+The editor does, completely. Moxie AI needs your provider, unless you run a local model.
 
 </details>
 
@@ -161,7 +161,7 @@ Bug reports and feature requests are welcome in [GitHub Issues](https://github.c
 
 ## Roadmap and contributing
 
-[ROADMAP.md](ROADMAP.md) shows where Textus is heading. To build Textus, run the checks or open a pull request, start with [CONTRIBUTING.md](CONTRIBUTING.md); AI coding assistants follow [AGENTS.md](AGENTS.md). Discussions are welcome in English or Chinese.
+[ROADMAP.md](ROADMAP.md) shows where Moxie is heading. To build Moxie, run the checks or open a pull request, start with [CONTRIBUTING.md](CONTRIBUTING.md); AI coding assistants follow [AGENTS.md](AGENTS.md). Discussions are welcome in English or Chinese.
 
 ## Star history
 

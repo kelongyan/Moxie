@@ -8,20 +8,20 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `Activer ${AI_NAME}`,
-  textusAiOffHint: "Désactivée : rien n'est envoyé à aucun service d'IA.",
-  textusAiMenuHint: "Clic droit pour mettre en pause ou désactiver",
-  textusAiClosePanel: "Fermer le panneau",
-  textusAiPause: "Mettre en pause une heure",
-  textusAiTurnOff: `Désactiver ${AI_NAME}`,
-  textusAiPausedTooltip: `${AI_NAME} est en pause jusqu’à {time} · Cliquer pour activer`,
-  textusAiOffTooltip: `${AI_NAME} est désactivée · Cliquer pour activer`,
-  textusAiOff: `${AI_NAME} est désactivée`,
-  textusAiTurnOn: `Activer ${AI_NAME}`,
-  announceTextusAiOn: `${AI_NAME} est activée.`,
-  announceTextusAiOff: `${AI_NAME} est désactivée.`,
-  shortcutToggleTextusAi: `Activer ou désactiver ${AI_NAME}`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `Activer ${AI_NAME}`,
+  moxieAiOffHint: "Désactivée : rien n'est envoyé à aucun service d'IA.",
+  moxieAiMenuHint: "Clic droit pour mettre en pause ou désactiver",
+  moxieAiClosePanel: "Fermer le panneau",
+  moxieAiPause: "Mettre en pause une heure",
+  moxieAiTurnOff: `Désactiver ${AI_NAME}`,
+  moxieAiPausedTooltip: `${AI_NAME} est en pause jusqu’à {time} · Cliquer pour activer`,
+  moxieAiOffTooltip: `${AI_NAME} est désactivée · Cliquer pour activer`,
+  moxieAiOff: `${AI_NAME} est désactivée`,
+  moxieAiTurnOn: `Activer ${AI_NAME}`,
+  announceMoxieAiOn: `${AI_NAME} est activée.`,
+  announceMoxieAiOff: `${AI_NAME} est désactivée.`,
+  shortcutToggleMoxieAi: `Activer ou désactiver ${AI_NAME}`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "Ouvrir dans une fenêtre séparée",
   agentPanelResize: "Redimensionner le panneau IA",
   sidebarResize: "Redimensionner la barre latérale",
@@ -96,7 +96,7 @@ Ce qu'il est utile d'écrire ici, par exemple\u00a0:
                 pour le grand public.
 
 Les instructions propres à un seul projet vont dans le fichier
-.textus/agent.md de ce projet (dans le panneau IA, menu du projet >
+.moxie/agent.md de ce projet (dans le panneau IA, menu du projet >
 Modifier les instructions d'écriture du projet). Les deux sont
 envoyées\u202f; en cas de contradiction, celles du projet l'emportent.
 
@@ -344,8 +344,8 @@ utiliser une.
     "Les images sont prises sur le quota d’images de ton abonnement ChatGPT, pas sur le crédit de l’API. Elles passent par le service qu’utilisent les applications de ChatGPT, qui n’est pas une API publiée et peut cesser de fonctionner sans prévenir ; une clé d’API OpenAI continue de fonctionner dans tous les cas.",
   imagesPerRequestLabel: "Images par demande",
   imagesPerRequestHelp:
-    "Le nombre maximal d’images que Textus AI crée pour une demande. Avec une clé d’API, chacune coûte de l’argent ; avec un abonnement, elle utilise son quota. Indique combien tu en veux, il en crée autant, jusqu’à ce nombre.",
-  changePictureWithAi: "Modifier cette image avec Textus AI…",
+    "Le nombre maximal d’images que Moxie AI crée pour une demande. Avec une clé d’API, chacune coûte de l’argent ; avec un abonnement, elle utilise son quota. Indique combien tu en veux, il en crée autant, jusqu’à ce nombre.",
+  changePictureWithAi: "Modifier cette image avec Moxie AI…",
   oldPictureTrashQuestion:
     "La nouvelle image est en place. Mettre l’ancienne, « {name} », à la corbeille ?",
   oldPictureTrashOk: "Mettre à la corbeille",
@@ -375,7 +375,7 @@ utiliser une.
   skillWarnCreateMode:
     "En mode Créer, elle pourrait écrire ou modifier elle-même des compétences. Ne l’y laissez que si vous faites confiance à chaque ligne.",
   skillWarnPromptInjection:
-    "Ses instructions semblent vouloir passer outre celles de Textus AI (« ignore les instructions précédentes »). Lisez-la avant de l’enregistrer.",
+    "Ses instructions semblent vouloir passer outre celles de Moxie AI (« ignore les instructions précédentes »). Lisez-la avant de l’enregistrer.",
   skillWarnHiddenText:
     "Elle contient des caractères invisibles, qui peuvent cacher des instructions. Lisez-la avant de l’enregistrer.",
   chatShowCode: "Voir le code",
@@ -386,7 +386,7 @@ utiliser une.
     "Elle dessine dans la page elle-même, ce qu'une extension ne peut pas faire : rien ne s'affichera.",
   chatPluginCheckPermission: "Elle utilise {permission} sans le demander.",
   chatPluginCheckWhen:
-    "La condition d'un élément de menu lit {key}, que Textus ne définit pas : l'élément n'apparaît jamais.",
+    "La condition d'un élément de menu lit {key}, que Moxie ne définit pas : l'élément n'apparaît jamais.",
   chatPluginCheckUnregistered: "Elle déclare {id} mais ne l'enregistre jamais.",
   chatPluginRunError: "Elle s'est arrêtée avec : {error}",
   chatPluginFix: "Corriger avec l'IA",
@@ -609,7 +609,7 @@ utiliser une.
   treeTrashFolderConfirm:
     "Mettre le dossier « {name} » et tout son contenu à la corbeille ? Vous pourrez l’en sortir.",
   errorPermission:
-    "Textus n'a pas l'autorisation d'ouvrir ce fichier ou ce dossier. Vérifiez ses autorisations ou choisissez un autre emplacement.",
+    "Moxie n'a pas l'autorisation d'ouvrir ce fichier ou ce dossier. Vérifiez ses autorisations ou choisissez un autre emplacement.",
   errorNotFound:
     "Le fichier ou le dossier n'est plus là. Il a peut-être été déplacé, renommé ou supprimé.",
   errorDiskFull: "Le disque est plein. Libérez de l'espace, puis réessayez.",
@@ -622,14 +622,14 @@ utiliser une.
   errorNetwork:
     "Connexion impossible. Vérifiez votre connexion Internet ou vos réglages de proxy.",
   errorFileTooBig:
-    "Ce fichier est trop volumineux pour être ouvert dans Textus.",
-  errorNotDocument: "Textus ne peut pas lire ce fichier comme un document.",
+    "Ce fichier est trop volumineux pour être ouvert dans Moxie.",
+  errorNotDocument: "Moxie ne peut pas lire ce fichier comme un document.",
   errorBadName:
     "Ce nom ne peut pas être utilisé. Un nom ne peut pas être vide ni contenir / ou \\.",
   errorMoveIntoItself: "Un dossier ne peut pas être déplacé dans lui-même.",
   errorPluginTooBig: "Ce plugin est trop volumineux pour être installé.",
   errorCatalogNewer:
-    "La boutique de plugins nécessite une version plus récente de Textus. Mettez Textus à jour pour la voir.",
+    "La boutique de plugins nécessite une version plus récente de Moxie. Mettez Moxie à jour pour la voir.",
   errorImageTooBig: "L'image est vide ou dépasse 25 Mo.",
   errorNoFolder: "Ouvrez d'abord un dossier.",
   treeNameTaken: "Il y a déjà un élément nommé « {name} » ici.",
@@ -694,7 +694,7 @@ utiliser une.
   navPrivacy: "Confidentialité",
   navAbout: "À propos",
   navGuides: "Guides",
-  aboutTextus: "À propos de Textus",
+  aboutMoxie: "À propos de Moxie",
   aboutVersion: "Version {version}",
   aboutMadeBy: "Créé par CatVinci Studio",
   aboutQq: "Groupe QQ",
@@ -716,7 +716,7 @@ utiliser une.
     "Vous utilisez une bêta ({version}). La version stable est plus ancienne ; y revenir l’installe.",
   backToStableButton: "Revenir à la stable",
   backToStableConfirm:
-    "Installer Textus {version}, la version stable ? Elle est plus ancienne que votre bêta ({beta}). Vos documents ne changent pas ; ce que seule la bêta possède (les extensions, par exemple) peut ne pas suivre.",
+    "Installer Moxie {version}, la version stable ? Elle est plus ancienne que votre bêta ({beta}). Vos documents ne changent pas ; ce que seule la bêta possède (les extensions, par exemple) peut ne pas suivre.",
   backToStableInstall: "Installer {version}",
   backToStableNone:
     "Il n’y a pas de version stable vers laquelle revenir pour l’instant.",
@@ -778,7 +778,7 @@ utiliser une.
   agentSkillsBuiltinTag: "Intégrée",
   agentSkillsOpen: "Ouvrir",
   agentSkillsReset: "Réinitialiser",
-  madeByTextusAi: `Créé avec ${AI_NAME}`,
+  madeByMoxieAi: `Créé avec ${AI_NAME}`,
   skillDelete: "Supprimer",
   skillDeleteAsk: "Supprimer « {name} » ? Ses fichiers iront à la Corbeille.",
   skillDeleteAskMobile: "Supprimer « {name} » ?",
@@ -910,7 +910,7 @@ utiliser une.
   pictureRedraw: "Redessiner…",
   pictureRedrawTitle: "Redessiner l’image",
   pictureRedrawPrompt:
-    "Ce que montre l’image - modifiez-le et Textus la redessine :",
+    "Ce que montre l’image - modifiez-le et Moxie la redessine :",
   pictureRedrawOk: "Redessiner",
   agentThinking: "Réflexion…",
   agentWritingEdit: "Rédaction de la modification…",
@@ -943,7 +943,7 @@ utiliser une.
   chatHistorySearch: "Rechercher dans les conversations",
   chatHistorySearchNone: "Aucune conversation ne contient ces mots.",
   chatHistoryByYou: "Vous",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "Rouvrir cette conversation avec son document",
   chatHistoryDelete: "Supprimer la conversation",
   chatHistoryRestoreHereHint:
@@ -1076,9 +1076,9 @@ utiliser une.
     "Un fichier .csl pour la bibliographie. Sans lui, Pandoc utilise Chicago auteur-date.",
   pandocArgsLabel: "Arguments Pandoc",
   pandocArgsHelp:
-    "Ajoutés à la commande Pandoc pour ce format, mot par mot, jamais via un shell. Mettez entre guillemets une valeur avec des espaces. Textus fixe --from, --to et --output.",
+    "Ajoutés à la commande Pandoc pour ce format, mot par mot, jamais via un shell. Mettez entre guillemets une valeur avec des espaces. Moxie fixe --from, --to et --output.",
   pandocArgsAll: "Tous les formats",
-  pandocArgsOwned: "{arg} est fixé par Textus ; retirez-le.",
+  pandocArgsOwned: "{arg} est fixé par Moxie ; retirez-le.",
   pandocErrorSettings:
     "Vos options Pandoc sont dans Réglages › {page} › {group}, et ses arguments avancés.",
   pdfLightColorsLabel: "Exporter les PDF en couleurs claires",
@@ -1179,7 +1179,7 @@ utiliser une.
   reportKindQuestion: "Une question",
   reportAreaLabel: "Concerne",
   reportAreaEditor: "Écriture et édition",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "Extensions et thèmes",
   reportAreaPanes: "Onglets, volets et fenêtres",
   reportAreaExport: "Export et impression",
@@ -1264,7 +1264,7 @@ utiliser une.
   updateDownloading: "Téléchargement de la mise à jour…",
   updateFailed: "Échec de la mise à jour\u00a0:",
   updateViaPackageManager: `${APP_NAME} a été installé par votre gestionnaire de paquets. Mettez-le à jour depuis celui-ci.`,
-  cliCommandLabel: "Installer Textus CLI",
+  cliCommandLabel: "Installer Moxie CLI",
   cliCommandInstalled: "Installée",
   cliCommandNotInstalled: "Non installée",
   cliCommandInstallButton: "Installer",
@@ -1341,9 +1341,9 @@ utiliser une.
   settingsFileImportConfirm:
     "Remplacer vos réglages par ceux de ce fichier ? Les clés d’API et les jetons MCP de cet ordinateur sont conservés.",
   settingsFileImportReplace: "Remplacer",
-  settingsFileNotSettings: "Ce fichier ne contient pas de réglages Textus.",
+  settingsFileNotSettings: "Ce fichier ne contient pas de réglages Moxie.",
   settingsFileWithAi:
-    "Exporter aussi vos données d’IA – toutes les conversations et mémoires ? Le fichier contiendra alors ce que vous avez écrit à Textus AI.",
+    "Exporter aussi vos données d’IA – toutes les conversations et mémoires ? Le fichier contiendra alors ce que vous avez écrit à Moxie AI.",
   settingsFileWithAiYes: "Inclure les données d’IA",
   settingsFileSettingsOnly: "Réglages seulement",
   settingsFileImportAi:
@@ -1532,7 +1532,7 @@ utiliser une.
   privacyKeepUnsavedToggle:
     "Garder les modifications non enregistrées à la fermeture, sans demander",
   privacyKeepUnsavedHelp:
-    "Fermer une fenêtre aux modifications non enregistrées ne demande plus d’enregistrer : les documents se rouvrent avec leurs modifications au prochain lancement de Textus. Les fichiers eux-mêmes restent tels quels jusqu’à ce que vous enregistriez.",
+    "Fermer une fenêtre aux modifications non enregistrées ne demande plus d’enregistrer : les documents se rouvrent avec leurs modifications au prochain lancement de Moxie. Les fichiers eux-mêmes restent tels quels jusqu’à ce que vous enregistriez.",
   privacyDraftRecoveryClearHint:
     "Supprime les instantanés présents sur le disque. Cette action est irréversible.",
   privacyClearButton: "Effacer",
@@ -1587,7 +1587,7 @@ utiliser une.
     "Seuls les fichiers .md, .markdown et .txt peuvent être importés.",
   backgroundToggle: "Rester ouvert en arrière-plan",
   backgroundTrayUnavailable: `Ce bureau n’a pas de zone de notification : libayatana-appindicator n’est pas installé. ${APP_NAME} reste ouvert en arrière-plan ; rouvrez-le depuis votre lanceur.`,
-  trayOpenTextus: `Ouvrir ${APP_NAME}`,
+  trayOpenMoxie: `Ouvrir ${APP_NAME}`,
   navExtensions: "Extensions",
   extensionsTabPlugins: "Modules",
   extensionsTabThemes: "Thèmes",
@@ -1601,7 +1601,7 @@ utiliser une.
   createMakePlugin: "Créer votre plugin",
   createMakeSkill: "Créer votre compétence",
   createNew: "Nouveau",
-  createAiOff: "Activez Textus AI pour créer.",
+  createAiOff: "Activez Moxie AI pour créer.",
   createExamples: "Essayez",
   createExamplePluginTodo:
     "Une liste de tâches dans la barre latérale qui garde mes tâches même sans dossier ouvert",
@@ -1610,7 +1610,7 @@ utiliser une.
   createExampleSkillWeekly:
     "Transformer mes notes en compte rendu hebdomadaire : fait, à faire, bloqué",
   extensionsIntroPlugins:
-    "De nouveaux panneaux, types de fichiers et outils pour Textus.",
+    "De nouveaux panneaux, types de fichiers et outils pour Moxie.",
   extensionsIntroThemes:
     "L’apparence des documents, par-dessus le thème choisi.",
   extensionsIntroSkills: `Des façons de bien faire un type de tâche, pour ${AI_NAME} et le menu /.`,
@@ -1674,7 +1674,7 @@ utiliser une.
   pluginsCatalogKept:
     "Voici la liste de la dernière fois - impossible d’en obtenir une plus récente : {reason}",
   pluginInstall: "Installer",
-  pluginNeedsTextus: "Nécessite Textus {version}",
+  pluginNeedsMoxie: "Nécessite Moxie {version}",
   pluginInstalling: "Installation…",
   pluginsSortLabel: "Trier par",
   pluginsSortPopular: "Les plus installés",
@@ -1696,8 +1696,8 @@ utiliser une.
   floatingClose: "Fermer {name}",
   floatingToDesktop: "Placer {name} sur le bureau",
   floatingToWindow: "Remettre {name} dans la fenêtre",
-  floatingOpenApp: "Ouvrir Textus",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Ouvrir Moxie",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "Toutes les extensions",
   pluginSettingsScope: "S'applique à",
   pluginSettingsScopeGlobal: "Tous les documents",
@@ -1728,13 +1728,13 @@ utiliser une.
   pluginsAllHelp:
     "Désactivées, aucune extension ne s’exécute et rien de ce qu’elles ajoutent ne s’affiche. Vos extensions et leurs réglages sont conservés.",
   pluginsInstallHelp:
-    "Un paquet d’extension (.textusplugin) est copié dans Textus. Un dossier d’extension est chargé là où il se trouve, pour essayer celle que vous écrivez ; il est rechargé depuis cet endroit.",
+    "Un paquet d’extension (.textusplugin) est copié dans Moxie. Un dossier d’extension est chargé là où il se trouve, pour essayer celle que vous écrivez ; il est rechargé depuis cet endroit.",
   pluginsInstallFile: "Installer depuis un fichier…",
   pluginFormPrevMonth: "Mois précédent",
   pluginFormNextMonth: "Mois suivant",
   pluginsLoadFolder: "Charger un dossier d’extension…",
   pluginsOpenScripts: "Ouvrir le dossier des scripts",
-  pluginPackageFilter: "Extension Textus",
+  pluginPackageFilter: "Extension Moxie",
   pluginsInstalledGroup: "Installées",
   pluginOpenInstall: "Installer et ouvrir",
   pluginOpenTurnOnButton: "Activer et ouvrir",
@@ -1743,7 +1743,7 @@ utiliser une.
   conventionsCardLine:
     "Les réglages {app} de ce dossier placent les images dans {folder}",
   conventionsCardDetails:
-    "Réglage actuel : {current}. L’adopter l’enregistre dans le .textus/settings.json de ce dossier, avec le projet.",
+    "Réglage actuel : {current}. L’adopter l’enregistre dans le .moxie/settings.json de ce dossier, avec le projet.",
   conventionsFolderRoot: "le dossier lui-même",
   conventionsFollow: "Adopter",
   conventionsDecline: "Garder l’actuel",
@@ -1761,14 +1761,14 @@ utiliser une.
   pluginStatusDesktopOnly:
     "Fonctionne uniquement sur ordinateur, pas sur iPhone ni iPad.",
   pluginStatusIncompatible:
-    "Conçue pour une autre version de Textus ({range}).",
+    "Conçue pour une autre version de Moxie ({range}).",
   pluginStatusFailed: "Désactivée : {reason}",
   pluginStatusAllOff: "Les extensions sont désactivées.",
   pluginDevTag: "développement",
   pluginEnableLabel: "Activer {name}",
   pluginAddsLabel: "Ajoute",
   pluginAddsSidebarTab: "un onglet latéral, {name}",
-  pluginAddsAiTool: "un outil pour Textus AI, {name}",
+  pluginAddsAiTool: "un outil pour Moxie AI, {name}",
   pluginAddsFileType: "ouvre {types}",
   pluginPermissionsLabel: "Autorisations",
   pluginNoPermissions: "N’en demande aucune.",
@@ -1789,7 +1789,7 @@ utiliser une.
     "Votre nom d’éditeur : minuscules, chiffres et tirets. Votre nom GitHub convient bien. Il remplace « local » dans l’id de l’extension.",
   pluginExportChooseFolder: "Choisir un dossier…",
   pluginExportDone:
-    "Exporté dans {path}.\n\nFaites de ce dossier un dépôt GitHub et poussez une étiquette comme v0.1.0 : son workflow de publication publie l’extension. Le README qu’il contient explique comment la faire figurer dans Textus.",
+    "Exporté dans {path}.\n\nFaites de ce dossier un dépôt GitHub et poussez une étiquette comme v0.1.0 : son workflow de publication publie l’extension. Le README qu’il contient explique comment la faire figurer dans Moxie.",
   pluginUriNotTaken: "Aucune extension activée n’ouvre ce lien : {link}",
   uriCommandConfirm: "Un lien demande d’exécuter « {command} ». L’exécuter ?",
   uriCommandRun: "Exécuter",
@@ -1815,13 +1815,13 @@ utiliser une.
   pluginPermEditorInput:
     "Prendre en charge les touches tapées dans l’éditeur, et modifier au fil de la frappe",
   pluginPermProjectData:
-    "Garder ses propres données dans le dossier ouvert, dans .textus/plugins",
-  pluginPermAiTools: "Donner à Textus AI ses propres outils",
+    "Garder ses propres données dans le dossier ouvert, dans .moxie/plugins",
+  pluginPermAiTools: "Donner à Moxie AI ses propres outils",
   pluginPermNotifications: "Afficher des notifications système",
   pluginPermBackground:
     "Exécuter du code selon un horaire, même toutes fenêtres fermées",
   pluginScheduleNotice:
-    "{name} a programmé une tâche. Elle ne s’exécute que lorsque Textus est ouvert : activez « {setting} » pour qu’elle s’exécute aussi toutes fenêtres fermées.",
+    "{name} a programmé une tâche. Elle ne s’exécute que lorsque Moxie est ouvert : activez « {setting} » pour qu’elle s’exécute aussi toutes fenêtres fermées.",
   pluginPermNetwork: "Se connecter à {host}",
   pluginPermNetworkAny: "Se connecter à n’importe quel site web",
   menuPlugins: "Extensions",

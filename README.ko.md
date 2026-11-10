@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>차세대 Markdown 편집기</strong><br>
@@ -47,11 +47,11 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/ko/hero.png" alt="『메밀꽃 필 무렵』과 독서 메모를 연 Textus. Textus AI가 메모를 문장마다 다듬어 여백에 보여 주고, 원문 옆에 검토 메모를 남겼습니다." width="860" /><br>
+  <img src="docs/images/readme/ko/hero.png" alt="『메밀꽃 필 무렵』과 독서 메모를 연 Moxie. Moxie AI가 메모를 문장마다 다듬어 여백에 보여 주고, 원문 옆에 검토 메모를 남겼습니다." width="860" /><br>
   <sub>이효석, <i>「메밀꽃 필 무렵」</i></sub>
 </p>
 
-## Textus 시작하기
+## Moxie 시작하기
 
 MIT 라이선스로 공개된 무료 오픈 소스입니다.
 
@@ -64,7 +64,7 @@ MIT 라이선스로 공개된 무료 오픈 소스입니다.
 
 > iPhone·iPad 버전이 곧 App Store에 나옵니다(중국 본토 제외).
 
-베타: **설정 › 일반 › Textus 정보**에서 **업데이트 채널**을 **베타**로 바꾸세요.
+베타: **설정 › 일반 › Moxie 정보**에서 **업데이트 채널**을 **베타**로 바꾸세요.
 
 ## 글쓰기
 
@@ -80,7 +80,7 @@ MIT 라이선스로 공개된 무료 오픈 소스입니다.
 | **수식** | **다이어그램** |
 | <img src="docs/images/readme/ko/formula.webp" alt="입력하는 대로 그려지는 수식" width="420" /> | <img src="docs/images/readme/ko/diagram.webp" alt="Mermaid 순서도" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 온라인 LLM도 로컬 LLM도 지원합니다. AI가 글쓰기에 속도를 더합니다.
 
@@ -102,14 +102,14 @@ MIT 라이선스로 공개된 무료 오픈 소스입니다.
 
 마인드맵, Marp 슬라이드, 칸반 보드, 탭에서 여는 PDF와 Word, Zotero 인용, 다양한 차트 등은 **설정 › 확장**에 있습니다. 컴퓨터에서도, iPhone·iPad에서도 쓸 수 있습니다.
 
-많은 플러그인이 자기 기능을 Textus AI에도 넘겨 주어, 대화에서 부탁하기만 하면 됩니다. 플러그인은 [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), 테마는 [textus-themes](https://github.com/CatVinci-Studio/textus-themes)에 있으며, 직접 만든 테마도 공유할 수 있습니다.
+많은 플러그인이 자기 기능을 Moxie AI에도 넘겨 주어, 대화에서 부탁하기만 하면 됩니다. 플러그인은 [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), 테마는 [textus-themes](https://github.com/CatVinci-Studio/textus-themes)에 있으며, 직접 만든 테마도 공유할 수 있습니다.
 
 ## 자주 묻는 질문
 
 <details>
 <summary><strong>Textus는 무료인가요?</strong></summary>
 
-네. MIT 라이선스의 무료 오픈 소스이며, 계정도 구독도 필요 없습니다. Textus AI 사용료는 선택한 제공업체가 직접 청구하고, 로컬 모델은 비용이 들지 않습니다.
+네. MIT 라이선스의 무료 오픈 소스이며, 계정도 구독도 필요 없습니다. Moxie AI 사용료는 선택한 제공업체가 직접 청구하고, 로컬 모델은 비용이 들지 않습니다.
 
 </details>
 
@@ -130,14 +130,14 @@ macOS(Apple 실리콘·Intel), Windows, Linux, 그리고 App Store를 통해 iPh
 <details>
 <summary><strong>AI 계정이 필요한가요?</strong></summary>
 
-아니요. 편집기의 모든 기능은 AI 없이도 쓸 수 있습니다. Textus AI를 쓰려면 제공업체를 직접 연결하세요. ChatGPT나 Claude 계정으로 로그인하거나, API 키를 입력하거나, Ollama로 로컬 모델을 실행하면 됩니다.
+아니요. 편집기의 모든 기능은 AI 없이도 쓸 수 있습니다. Moxie AI를 쓰려면 제공업체를 직접 연결하세요. ChatGPT나 Claude 계정으로 로그인하거나, API 키를 입력하거나, Ollama로 로컬 모델을 실행하면 됩니다.
 
 </details>
 
 <details>
 <summary><strong>인터넷 없이도 쓸 수 있나요?</strong></summary>
 
-편집기는 완전히 오프라인으로 작동합니다. Textus AI는 제공업체와 연결되어야 하지만, 로컬 모델을 쓰면 인터넷이 필요 없습니다.
+편집기는 완전히 오프라인으로 작동합니다. Moxie AI는 제공업체와 연결되어야 하지만, 로컬 모델을 쓰면 인터넷이 필요 없습니다.
 
 </details>
 

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>Markdown-редактор нового поколения.</strong><br>
@@ -47,11 +47,11 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/ru/hero.png" alt="Textus с открытым романом «Анна Каренина» и заметками читателя. Textus AI сокращает заметки по предложениям, каждая правка на полях, и оставляет комментарий рядом с текстом." width="860" /><br>
+  <img src="docs/images/readme/ru/hero.png" alt="Moxie с открытым романом «Анна Каренина» и заметками читателя. Moxie AI сокращает заметки по предложениям, каждая правка на полях, и оставляет комментарий рядом с текстом." width="860" /><br>
   <sub><i>«Анна Каренина»</i>, Лев Толстой</sub>
 </p>
 
-## Установите Textus
+## Установите Moxie
 
 Бесплатно и с открытым кодом, по лицензии MIT.
 
@@ -64,7 +64,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 
 > iPhone и iPad — скоро в App Store (пока не в материковом Китае).
 
-Бета-версии: в **Настройки › Основные › О Textus** переключите **Канал обновлений** на **Бета**.
+Бета-версии: в **Настройки › Основные › О Moxie** переключите **Канал обновлений** на **Бета**.
 
 ## Редактор
 
@@ -80,7 +80,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 | **Формулы** | **Диаграммы** |
 | <img src="docs/images/readme/ru/formula.webp" alt="Формулы отрисовываются по мере набора" width="420" /> | <img src="docs/images/readme/ru/diagram.webp" alt="Блок-схема Mermaid" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 Работает и с онлайн-, и с локальными LLM — ИИ, который ускоряет ваше письмо.
 
@@ -102,26 +102,26 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 
 Карты мыслей, слайды Marp, канбан-доски, PDF и Word во вкладке, цитаты из Zotero, всевозможные диаграммы и многое другое — в **Настройки › Расширения**, на компьютере и на iPhone и iPad.
 
-Многие плагины передают свои инструменты и Textus AI, так что достаточно попросить об этом в разговоре. Плагины лежат в [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), темы — в [textus-themes](https://github.com/CatVinci-Studio/textus-themes), где можно поделиться и своими.
+Многие плагины передают свои инструменты и Moxie AI, так что достаточно попросить об этом в разговоре. Плагины лежат в [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins), темы — в [textus-themes](https://github.com/CatVinci-Studio/textus-themes), где можно поделиться и своими.
 
 ## Вопросы и ответы
 
 <details>
-<summary><strong>Textus бесплатный?</strong></summary>
+<summary><strong>Moxie бесплатный?</strong></summary>
 
-Да. Textus бесплатен, его код открыт (лицензия MIT), аккаунт и подписка не нужны. За Textus AI вы платите своему провайдеру — или никому, если модель локальная.
+Да. Moxie бесплатен, его код открыт (лицензия MIT), аккаунт и подписка не нужны. За Moxie AI вы платите своему провайдеру — или никому, если модель локальная.
 
 </details>
 
 <details>
-<summary><strong>На каких платформах работает Textus?</strong></summary>
+<summary><strong>На каких платформах работает Moxie?</strong></summary>
 
 На macOS (Apple Silicon и Intel), Windows и Linux, а также на iPhone и iPad из App Store (пока не в материковом Китае).
 
 </details>
 
 <details>
-<summary><strong>Сколько памяти занимает Textus?</strong></summary>
+<summary><strong>Сколько памяти занимает Moxie?</strong></summary>
 
 Мы очень внимательно следим за памятью и измеряем её в каждом выпуске. Одно окно занимает около 110 МБ, каждое следующее — примерно ещё 55 МБ. Плагины загружаются, только когда они нужны, а веб-страница, оставленная в фоне, выгружается и загружается снова, когда вы к ней возвращаетесь.
 
@@ -130,14 +130,14 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 <details>
 <summary><strong>Нужен ли аккаунт для ИИ?</strong></summary>
 
-Нет. Редактор полностью работает и без ИИ. Чтобы включить Textus AI, подключите провайдера: войдите через ChatGPT или Claude, вставьте API-ключ или запустите локальную модель через Ollama.
+Нет. Редактор полностью работает и без ИИ. Чтобы включить Moxie AI, подключите провайдера: войдите через ChatGPT или Claude, вставьте API-ключ или запустите локальную модель через Ollama.
 
 </details>
 
 <details>
-<summary><strong>Работает ли Textus без интернета?</strong></summary>
+<summary><strong>Работает ли Moxie без интернета?</strong></summary>
 
-Редактор — полностью. Textus AI нужен доступ к провайдеру, если только модель не локальная: тогда ничего не покидает ваш компьютер.
+Редактор — полностью. Moxie AI нужен доступ к провайдеру, если только модель не локальная: тогда ничего не покидает ваш компьютер.
 
 </details>
 
@@ -157,7 +157,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 
 ## Планы и участие в разработке
 
-Куда движется Textus, описано в [ROADMAP.md](ROADMAP.md) (на английском). Чтобы собрать Textus, запустить проверки или открыть pull request, начните с [CONTRIBUTING.md](CONTRIBUTING.md) (на английском); ИИ-ассистенты для программирования следуют [AGENTS.md](AGENTS.md). Обсуждение — на английском или китайском.
+Куда движется Moxie, описано в [ROADMAP.md](ROADMAP.md) (на английском). Чтобы собрать Moxie, запустить проверки или открыть pull request, начните с [CONTRIBUTING.md](CONTRIBUTING.md) (на английском); ИИ-ассистенты для программирования следуют [AGENTS.md](AGENTS.md). Обсуждение — на английском или китайском.
 
 ## История звёзд
 

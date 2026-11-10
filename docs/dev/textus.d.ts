@@ -1,15 +1,15 @@
 /**
- * The Textus plugin API, 1.4: the `textus` object a plugin's code is given
+ * The Moxie plugin API, 1.4: the `textus` object a plugin's code is given
  * (src/plugins/host/runtime/host.js), the context its `activate` receives, and
  * `acquireTextusApi()` in its webviews (runtime/webview.js). The one source
  * of truth: docs/dev/plugins/guide.md explains it, the reference pages are
- * made from it, Textus AI writes plugins from it, and
+ * made from it, Moxie AI writes plugins from it, and
  * src/plugins/host/textus-types.test.ts keeps it in step with the runtime.
  *
  * In a plugin: `/// <reference path="textus.d.ts" />` at the top of
  * host.js, or `"types": ["./textus.d.ts"]` in a jsconfig.json.
  *
- * Every call that reaches Textus returns a promise. Every `register…` and
+ * Every call that reaches Moxie returns a promise. Every `register…` and
  * `on…` returns a Disposable; what is pushed to `ctx.subscriptions` - and
  * everything the plugin registered - is taken back when it stops.
  */
@@ -18,12 +18,12 @@ export {};
 
 declare global {
   /** The API, as the plugin's code sees it. */
-  const textus: Textus.Api;
+  const textus: Moxie.Api;
 
   /** In a webview's page: the same webview's side of the channel. */
-  function acquireTextusApi(): Textus.WebviewApi;
+  function acquireTextusApi(): Moxie.WebviewApi;
 
-  namespace Textus {
+  namespace Moxie {
     // ---------------------------------------------------------------
     // Basics
     // ---------------------------------------------------------------
@@ -40,11 +40,11 @@ declare global {
      * by links, search results, tasks and list items.
      *
      * - `block`: a block id of the document as it is now (editor.getBlocks,
-     *   metadata) - for "read it, then change it", as Textus AI's edits are.
+     *   metadata) - for "read it, then change it", as Moxie AI's edits are.
      *   An id is the hash of the block's Markdown: an edited block has a new
      *   one, and an old id finds nothing rather than the wrong block.
      * - For a place kept for later (a link back from a PDF excerpt), give
-     *   `heading` and `text` (a few words of it): Textus finds the words,
+     *   `heading` and `text` (a few words of it): Moxie finds the words,
      *   then falls back to the heading, then to `line`.
      * - `page`: a page of a PDF; `fragment`: anything after `#` a file
      *   editor understands, passed to it as is.
@@ -69,9 +69,9 @@ declare global {
       readonly subscriptions: Disposable[];
       readonly plugin: PluginInfo;
       /** Places of the plugin's own: `global` for every folder, in
-       *  Textus's config folder; `project` in the open folder's
+       *  Moxie's config folder; `project` in the open folder's
        *  .textus/plugins/<id>/ (needs project.data; with no folder open, a
-       *  hidden one in Textus's config folder); `document(path)` for
+       *  hidden one in Moxie's config folder); `document(path)` for
        *  one document - a diagram's zoom, a bookmark - which follows the
        *  document when it is renamed or moved. */
       readonly storage: {
@@ -79,7 +79,7 @@ declare global {
         project: StoragePlace;
         document(path: string): DocumentPlace;
       };
-      /** Secrets (API tokens): kept as Textus keeps its API keys, in a
+      /** Secrets (API tokens): kept as Moxie keeps its API keys, in a
        *  file only the user can read, apart from settings and storage -
        *  never synced, exported or shown. The plugin's own only. */
       readonly secrets: Secrets;
@@ -151,19 +151,19 @@ declare global {
       plugins: Plugins;
       uri: Uri;
       export: Export;
-      /** 1.1: jobs Textus fires on time (notifications, background). */
+      /** 1.1: jobs Moxie fires on time (notifications, background). */
       schedule: Schedule;
       /** 1.1: system notifications (notifications). */
       notify: Notify;
-      /** 1.1: whether Textus is in front, behind, or has no window. */
+      /** 1.1: whether Moxie is in front, behind, or has no window. */
       app: App;
     }
 
     interface Env {
-      /** Textus's UI language ("en", "zh", "zh-Hant", ...). */
+      /** Moxie's UI language ("en", "zh", "zh-Hant", ...). */
       readonly language: string;
       readonly appVersion: string;
-      /** This API's version: "1.4" from Textus 1.3.10 ("1.3": 1.3.10-rc.1,
+      /** This API's version: "1.4" from Moxie 1.3.10 ("1.3": 1.3.10-rc.1,
        *  "1.2": 1.3.9, "1.1": 1.3.0-beta.8). Prefer engines.textus; compare
        *  it as numbers, not as text ("1.10" > "1.9"). */
       readonly apiVersion: string;
@@ -176,7 +176,7 @@ declare global {
       writeClipboard(text: string): Promise<void>;
       /** 1.3: the user copied or cut text from a document (needs
        *  clipboard): the Markdown that went on the clipboard, math source
-       *  kept. Not what is copied elsewhere in Textus or in other apps. */
+       *  kept. Not what is copied elsewhere in Moxie or in other apps. */
       onDidCopy: Event<{ text: string; cut: boolean }>;
     }
 
@@ -196,7 +196,7 @@ declare global {
         id: string,
         run: (editor: Editor, ...args: unknown[]) => unknown,
       ): Disposable;
-      /** A command of Textus's or of a plugin's. Textus's: "textus.save",
+      /** A command of Moxie's or of a plugin's. Moxie's: "textus.save",
        *  "textus.closeTab" ({ save: true } closes once saved) and
        *  "textus.insertBlock" with a Format menu block at the caret - "h1"
        *  to "h6", "paragraph", "bullet-list", "ordered-list", "task-list",
@@ -218,13 +218,13 @@ declare global {
     }
 
     // ---------------------------------------------------------------
-    // ui: Textus's own dialogs and bits, drawn as the app draws its own
+    // ui: Moxie's own dialogs and bits, drawn as the app draws its own
     // ---------------------------------------------------------------
 
     interface Ui {
       /** A short note at the bottom of the window that goes by itself.
        *  With `action` ("Undo"), a button on it: resolves true when it was
-       *  clicked before the note went, false otherwise (Textus 1.3.12). */
+       *  clicked before the note went, false otherwise (Moxie 1.3.12). */
       notice(
         text: string,
         options?: { tone?: Tone; action?: string },
@@ -244,7 +244,7 @@ declare global {
        *  `multiple`, the picked values, or null. `value` is the text in the
        *  box to start with. With `commands`, the items come first among the
        *  command palette's: one of the palette's runs and gives null, and
-       *  Enter on text nothing matches gives `{ typed: text }` (Textus
+       *  Enter on text nothing matches gives `{ typed: text }` (Moxie
        *  1.3.0-beta.3). */
       pick(
         items: (string | PickItem)[],
@@ -255,15 +255,15 @@ declare global {
           commands?: boolean;
         },
       ): Promise<unknown>;
-      /** A date picked on Textus's month calendar, as `YYYY-MM-DD`, or
+      /** A date picked on Moxie's month calendar, as `YYYY-MM-DD`, or
        *  null when cancelled; `value` is the one picked to start with
-       *  (Textus 1.3.12). */
+       *  (Moxie 1.3.12). */
       pickDate(options?: {
         title?: string;
         value?: string;
       }): Promise<string | null>;
       /** A colour picked from the tones or typed, as `#rrggbb`, or null
-       *  when cancelled (Textus 1.3.12). */
+       *  when cancelled (Moxie 1.3.12). */
       pickColor(options?: {
         title?: string;
         value?: string;
@@ -308,9 +308,9 @@ declare global {
         }
       | { key: string; type: "number"; label: string; value?: number }
       | { key: string; type: "boolean"; label: string; value?: boolean }
-      /** `YYYY-MM-DD`, picked on a month calendar (Textus 1.3.12). */
+      /** `YYYY-MM-DD`, picked on a month calendar (Moxie 1.3.12). */
       | { key: string; type: "date"; label: string; value?: string }
-      /** `#rrggbb`, from the tones or typed (Textus 1.3.12). */
+      /** `#rrggbb`, from the tones or typed (Moxie 1.3.12). */
       | { key: string; type: "color"; label: string; value?: string }
       | {
           key: string;
@@ -376,14 +376,14 @@ declare global {
       onDidChangeActiveTab: Event<TabInfo | null>;
       onDidChangeLayout: Event<void>;
       /** From 1.3.10: which of the window's panels are open - the sidebar
-       *  (and the tab it shows) and Textus AI's. Read only; Zen mode closes
+       *  (and the tab it shows) and Moxie AI's. Read only; Zen mode closes
        *  them all. A panel added later is a new key. */
       panels(): Promise<PanelsState>;
       onDidChangePanels: Event<PanelsState>;
       /** Shows one of the plugin's floating views (`contributes.floatingViews`):
        *  a small transparent page of its own size, floating where the user
        *  left it. The user moves, folds and closes it; nothing floats until
-       *  the plugin opens it, usually from a command. From Textus 1.3.6. */
+       *  the plugin opens it, usually from a command. From Moxie 1.3.6. */
       openFloating(viewId: string): Promise<void>;
       closeFloating(viewId: string): Promise<void>;
       /** The plugin's floating views that are open. */
@@ -427,7 +427,7 @@ declare global {
     // ---------------------------------------------------------------
 
     interface Views {
-      /** A list or tree drawn by Textus - in a sidebar tab or a view of
+      /** A list or tree drawn by Moxie - in a sidebar tab or a view of
        *  `"type": "list"` - from the items the provider gives. */
       registerList(id: string, provider: ListProvider): ListView;
       /** A page of the plugin's own: a sidebar tab, or a view of
@@ -463,7 +463,7 @@ declare global {
         },
       ): Disposable;
       /** The content of `![[...]]` embeds of the kinds `contributes.embeds`
-       *  names, asked only for embeds in sight; Textus draws it read-only
+       *  names, asked only for embeds in sight; Moxie draws it read-only
        *  and expands embeds inside it itself. One plugin draws each kind:
        *  the first turned on. From 1.3.9 (files.read). */
       registerEmbed(id: string, provider: EmbedProvider): EmbedHandle;
@@ -474,7 +474,7 @@ declare global {
     }
 
     interface EmbedProvider {
-      /** null: nothing to show (Textus shows the link's name, dimmed). */
+      /** null: nothing to show (Moxie shows the link's name, dimmed). */
       provideEmbed(
         target: EmbedTarget,
         context: { signal: AbortSignal },
@@ -491,7 +491,7 @@ declare global {
 
     interface EmbedContent {
       /** Markdown, drawn read-only. Links and pictures in it are read from
-       *  `target.path`'s folder. Leave `![[...]]` in it as is: Textus draws
+       *  `target.path`'s folder. Leave `![[...]]` in it as is: Moxie draws
        *  those itself, at most 5 deep and never in a loop. */
       markdown: string;
       /** Shown over it, opening the source when clicked; the link's name
@@ -609,7 +609,7 @@ declare global {
       /** Its Markdown (editor.read). */
       getText(): Promise<string | null>;
       getSelection(): Promise<{ text: string; markdown: string | null } | null>;
-      /** Its blocks as Textus AI is shown them (editor.read). */
+      /** Its blocks as Moxie AI is shown them (editor.read). */
       getBlocks(): Promise<Block[] | null>;
       getOutline(): Promise<
         { level: number; text: string; line: number }[] | null
@@ -620,7 +620,7 @@ declare global {
       /** At the caret, or in place of the selection (editor.write). */
       insertText(text: string): Promise<boolean>;
       replaceSelection(text: string): Promise<boolean>;
-      /** Shown as a proposal the user accepts or rejects, as Textus AI's
+      /** Shown as a proposal the user accepts or rejects, as Moxie AI's
        *  are (editor.propose). */
       propose(change: Change, options?: { reason?: string }): Promise<boolean>;
       /** Scrolls to a place in it and puts the caret there. */
@@ -648,7 +648,7 @@ declare global {
       onDidChangeActive: Event<{ path: string | null }>;
       /** Its text changed: once typing pauses, not on every key. 1.1:
        *  `source` says who changed it - "user" (typing, pasting, the
-       *  keyboard), "ai" (Textus AI: an accepted proposal, a completion, a
+       *  keyboard), "ai" (Moxie AI: an accepted proposal, a completion, a
        *  grammar fix), "disk" (the file changed and was read again),
        *  "plugin" (a plugin through this API) or "history" (undo, redo).
        *  When several did since the last event, "user" wins, then history,
@@ -679,7 +679,7 @@ declare global {
       markdown: string;
     }
 
-    /** One change, placed by block ids as Textus AI's are. Without
+    /** One change, placed by block ids as Moxie AI's are. Without
      *  `block`, `insert_at_cursor`, `replace_selection` and `append` need
      *  none. `anchor`: a few words inside the block, for part of it. */
     interface Change {
@@ -718,16 +718,16 @@ declare global {
        *  match without one. */
       query: string;
       /** From 1.3.9: after the caret, to the end of its block (at most 200
-       *  characters): the "]]" Textus pairs with "[[". */
+       *  characters): the "]]" Moxie pairs with "[[". */
       after: string;
       /** From 1.3.9: the document's path; null for an unsaved one. */
       path: string | null;
-      /** From 1.3.9: aborts when Textus no longer needs the answer (the
+      /** From 1.3.9: aborts when Moxie no longer needs the answer (the
        *  text moved on, the panel closed). An answer after that is dropped. */
       signal: AbortSignal;
     }
 
-    /** From 1.3.9: a whole list (up to 20,000 items) Textus filters itself
+    /** From 1.3.9: a whole list (up to 20,000 items) Moxie filters itself
      *  as typing goes on, without asking again while the same pattern keeps
      *  matching from the same place. An array is the provider's own
      *  filtering: asked again on each key, at most 50 kept. */
@@ -751,7 +751,7 @@ declare global {
        *  "]]" in `after`. */
       replaceAfter?: number;
       /** From 1.3.9: run once it is inserted - the plugin's own command or
-       *  one of Textus's. */
+       *  one of Moxie's. */
       command?: { id: string; args?: unknown[] };
     }
 
@@ -805,7 +805,7 @@ declare global {
       /** Takes the editor's keys: "all" but the app's shortcuts, or "some" -
        *  only `keys`. null gives back your own capture. One plugin at a time:
        *  false while another holds them (its id is in your log). The boolean
-       *  is from 1.3.9; older Textus answers undefined. */
+       *  is from 1.3.9; older Moxie answers undefined. */
       capture(
         capture: { mode: "all" | "some"; keys: string[] } | null,
       ): Promise<boolean>;
@@ -852,8 +852,8 @@ declare global {
 
     // ---------------------------------------------------------------
     // files: the folder open in the sidebar (files.read / files.write).
-    // Paths are absolute, as Textus gives them; `rel` is the path in the
-    // folder, `/`-separated. The events come for changes made in Textus
+    // Paths are absolute, as Moxie gives them; `rel` is the path in the
+    // folder, `/`-separated. The events come for changes made in Moxie
     // at once, and for changes made outside it when the window comes back
     // to the front.
     // ---------------------------------------------------------------
@@ -993,7 +993,7 @@ declare global {
        *  Obsidian, Logseq, Foam, Dendron, a site generator, git, or the
        *  folder's own `.textus/settings.json` "conventions". Read it
        *  instead of other apps' settings files; a field no app sets is
-       *  null, for Textus's own settings. From 1.3.9 (files.read). */
+       *  null, for Moxie's own settings. From 1.3.9 (files.read). */
       conventions(path?: string): Promise<FolderConventions>;
       /** From 1.3.10: a settings file of the nearest Obsidian vault -
        *  `appSettings("obsidian", "bookmarks.json")` reads
@@ -1089,7 +1089,7 @@ declare global {
     }
 
     // ---------------------------------------------------------------
-    // metadata: what Textus knows of the folder's documents, kept up to
+    // metadata: what Moxie knows of the folder's documents, kept up to
     // date as they change (files.read). Built the first time a plugin
     // asks, in the background.
     // ---------------------------------------------------------------
@@ -1113,7 +1113,7 @@ declare global {
        *  `from` (needed for relative links and same-note anchors). null when
        *  `link` is no link to a file (a web URL). From 1.3.9 (files.read). */
       resolveNote(link: string, from: string): Promise<ResolvedLink | null>;
-      /** The link Textus writes to `to` from `from`: the folder's style (in
+      /** The link Moxie writes to `to` from `from`: the folder's style (in
        *  an Obsidian vault, its "new link format" and wiki or Markdown
        *  links; `[[wiki]]` by the shortest name elsewhere), with `#heading`,
        *  `#^block` and `|alias` as given - `[[#Heading]]` within one note.
@@ -1235,7 +1235,7 @@ declare global {
       onDidChange: Event<{ key: string; value: unknown }>;
     }
 
-    /** Tools for Textus AI (ai.tools): each one named in the manifest's
+    /** Tools for Moxie AI (ai.tools): each one named in the manifest's
      *  contributes.aiTools, run here when the model calls it. */
     interface Ai {
       registerTool(
@@ -1244,7 +1244,7 @@ declare global {
           args: Record<string, unknown>,
         ) => string | Promise<string> | unknown,
       ): Disposable;
-      /** What Textus AI is doing and with which service and model - never
+      /** What Moxie AI is doing and with which service and model - never
        *  what is said. From 1.3.6. */
       state(): Promise<AiState>;
       onDidChangeState: Event<AiState>;
@@ -1259,7 +1259,7 @@ declare global {
 
     interface AiState {
       state: "idle" | "thinking" | "writing" | "proposing";
-      /** null before Textus AI is first used. */
+      /** null before Moxie AI is first used. */
       model: { provider: string; id: string | null } | null;
       /** On going idle after a request: finished, failed or stopped. */
       ended?: "done" | "failed" | "stopped";
@@ -1294,7 +1294,7 @@ declare global {
 
     interface Uri {
       /** Links `textus://<plugin id>/<path>?<query>` opened from outside
-       *  Textus (a browser, another app). */
+       *  Moxie (a browser, another app). */
       registerHandler(
         handler: (uri: {
           path: string;
@@ -1307,7 +1307,7 @@ declare global {
     type ChangeSource = "user" | "ai" | "disk" | "plugin" | "history";
 
     /**
-     * A job Textus keeps for the plugin and fires on time while it runs -
+     * A job Moxie keeps for the plugin and fires on time while it runs -
      * with a window open or, in background mode, with none - even after a
      * restart. One of `at`, `every`, `daily`; then `notify`, `run` or both.
      *
@@ -1316,7 +1316,7 @@ declare global {
      *   from when it was set.
      * - `daily`: "HH:MM", local time; across daylight saving it keeps the
      *   time on the clock.
-     * - `catchUp`: a time missed while Textus wasn't running fires once on
+     * - `catchUp`: a time missed while Moxie wasn't running fires once on
      *   its next start ("once", the default) or is let go ("skip").
      * - `notify`: shown as a system notification (needs notifications).
      * - `run`: the name of a function the manifest's `background` code
@@ -1331,7 +1331,7 @@ declare global {
       run?: string;
     }
 
-    /** A job as Textus keeps it: what was set, when it is due next (Unix
+    /** A job as Moxie keeps it: what was set, when it is due next (Unix
      *  ms; null once an `at` fired) and when it last fired. */
     interface ScheduledJob extends Job {
       id: string;
@@ -1341,7 +1341,7 @@ declare global {
     }
 
     /**
-     * A system notification. A click brings Textus up with `open.path` (a
+     * A system notification. A click brings Moxie up with `open.path` (a
      * file of the open folder - or, from a job, of the folder open when it
      * was set - absolute or relative to it; needs files.read) open at
      * `open.line`. macOS asks the user to allow notifications the first time.
@@ -1366,7 +1366,7 @@ declare global {
     }
 
     interface App {
-      /** "active": a Textus window has the focus; "inactive": windows are
+      /** "active": a Moxie window has the focus; "inactive": windows are
        *  open, none focused; "background": no window (background code, or
        *  every window closed in background mode). */
       readonly state: "active" | "inactive" | "background";
@@ -1415,7 +1415,7 @@ declare global {
       onMessage(fn: (message: unknown) => void): Disposable;
       getState(): unknown;
       setState<T>(state: T): T;
-      /** Textus's own menu over the page, for a right-click or a dropdown,
+      /** Moxie's own menu over the page, for a right-click or a dropdown,
        *  under `at` (an element) or at a point of the page. Resolves to the
        *  chosen item's value (its label without one), or null when the menu
        *  is closed without a choice. A page draws no menu of its own. */
@@ -1424,10 +1424,10 @@ declare global {
         at?: Element | { x: number; y: number },
       ): Promise<unknown>;
       /** A text field's menu items (undo, redo, cut, copy, paste, select
-       *  all) in Textus's language, for a page's own right-click menu; each
+       *  all) in Moxie's language, for a page's own right-click menu; each
        *  value is the action `editText` takes (1.3.12). */
       textItems(field: Element): Promise<(MenuItem | "separator")[]>;
-      /** One of those actions in `field`, the clipboard through Textus. */
+      /** One of those actions in `field`, the clipboard through Moxie. */
       editText(field: Element, action: string): Promise<void>;
       /** How the page looks as a picture, asked when the document is
        *  exported (a code block's page): an SVG's markup or an image's

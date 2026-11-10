@@ -1,6 +1,6 @@
-# Guia de Markdown do Textus
+# Guia de Markdown do Moxie
 
-Este documento integrado mostra a renderização de Markdown que o Textus oferece. É só um rascunho não salvo: edite e experimente à vontade e depois feche sem salvar.
+Este documento integrado mostra a renderização de Markdown que o Moxie oferece. É só um rascunho não salvo: edite e experimente à vontade e depois feche sem salvar.
 
 > [!TIP]
 > Pressione `Cmd+/` para alternar entre o modo WYSIWYG e o modo código-fonte e ver a sintaxe por trás de qualquer exemplo deste guia.
@@ -31,7 +31,7 @@ Subscrito e sobrescrito como no Typora e no Pandoc: H~2~O (`H~2~O`), x^2^ (`x^2^
 
 Ao digitar `(`, `[`, `{`, aspas ou um parêntese de um método de entrada chinês ou japonês, como `（`, `【` ou `「`, o par de fechamento entra depois do cursor: digitar o fechamento passa por cima dele, Backspace logo depois da abertura apaga os dois e, com texto selecionado, o par o envolve. **Ajustes → Editor e aparência → Fechar (), [] e “”** desativa isso.
 
-Links ficam assim: [o repositório do Textus](https://github.com/CatVinci-Studio/Textus). Ctrl/⌘+clique segue um link: um link da web abre no navegador, um link para outro arquivo Markdown o abre em uma aba e um link para `#um-titulo` rola até ele. Um clique simples põe o cursor no link e mostra seu Markdown, `[texto](url)`, para editar ali mesmo; quando o cursor sai, ele volta a ser um link. HTML no meio do texto também é renderizado, por exemplo as teclas <kbd>Cmd</kbd> + <kbd>S</kbd>. Também funcionam blocos recolhíveis `<details>`, tabelas HTML, alguns estilos inline (cor, fundo, tamanho, peso, alinhamento, sublinhado e tachado) e `<svg>` no meio do texto, que aparece como imagem. Scripts e o resto do HTML ficam como código-fonte. Um link para um título em outro arquivo, como `[veja](notas.md#um-titulo)`, abre esse arquivo nesse título. Os wikilinks do Obsidian (`[[Nota]]`, `[[Nota|texto]]` e `[[Nota#Título]]`) abrem do mesmo jeito, a partir da pasta do documento ou de qualquer lugar do cofre; eles e as `#tags` no início de uma linha são salvos exatamente como foram escritos.
+Links ficam assim: [o repositório do Moxie](https://github.com/kelongyan/Moxie). Ctrl/⌘+clique segue um link: um link da web abre no navegador, um link para outro arquivo Markdown o abre em uma aba e um link para `#um-titulo` rola até ele. Um clique simples põe o cursor no link e mostra seu Markdown, `[texto](url)`, para editar ali mesmo; quando o cursor sai, ele volta a ser um link. HTML no meio do texto também é renderizado, por exemplo as teclas <kbd>Cmd</kbd> + <kbd>S</kbd>. Também funcionam blocos recolhíveis `<details>`, tabelas HTML, alguns estilos inline (cor, fundo, tamanho, peso, alinhamento, sublinhado e tachado) e `<svg>` no meio do texto, que aparece como imagem. Scripts e o resto do HTML ficam como código-fonte. Um link para um título em outro arquivo, como `[veja](notas.md#um-titulo)`, abre esse arquivo nesse título. Os wikilinks do Obsidian (`[[Nota]]`, `[[Nota|texto]]` e `[[Nota#Título]]`) abrem do mesmo jeito, a partir da pasta do documento ou de qualquer lugar do cofre; eles e as `#tags` no início de uma linha são salvos exatamente como foram escritos.
 
 **Ajustes → Editor e aparência → Amostras antes dos códigos de cor** põe um quadradinho da cor antes de um código de cor. **Só no código** mostra-o no código em linha que é uma cor, como `#0af` ou `rgb(0 128 255)`, e antes dos valores de cor dos blocos de código; **Em todo o texto**, também antes dos escritos no texto com seis ou oito dígitos, como #ff8800, ou como função de cor, como hsl(210 100% 50%). Códigos curtos no texto, etiquetas como #cafe, números como #234 e links ficam como estão.
 
@@ -77,7 +77,7 @@ def fib(n: int) -> int:
 
 ```rust
 fn main() {
-    let greeting = "Olá, Textus!";
+    let greeting = "Olá, Moxie!";
     println!("{greeting}");
 }
 ```
@@ -121,9 +121,9 @@ Um diagrama de sequência:
 ```mermaid
 sequenceDiagram
     participant Você
-    participant Textus
-    Você->>Textus: Digita Markdown
-    Textus-->>Você: Renderiza ao vivo
+    participant Moxie
+    Você->>Moxie: Digita Markdown
+    Moxie-->>Você: Renderiza ao vivo
 ```
 
 **Ajustes → Editor e aparência → Motor de diagramas** escolhe quem desenha esses blocos: o Mermaid, padrão, ou o Pele, mais rápido, mas que organiza os diagramas do seu próprio jeito e deixa de fora alguns recursos; um diagrama que o Pele não consegue desenhar é desenhado pelo Mermaid.
@@ -132,7 +132,7 @@ As cores seguem o aspecto — uma paleta cinza e sóbria no claro e a escura no 
 
 ## Imagens
 
-Cole uma imagem direto da área de transferência: o Textus a salva e insere a referência. O destino se escolhe em **Ajustes → Editor e aparência → Imagens**. **Neste computador**, é uma **Subpasta** da pasta do documento, `assets/` por padrão, cujo nome você pode mudar, ou **A mesma pasta do documento**; os ajustes mostram o link que a imagem colada recebe. Com **Enviar para uma hospedagem de imagens**, ela vai para PicGo / PicList, SM.MS, Imgur ou um endpoint seu (**Personalizado**).
+Cole uma imagem direto da área de transferência: o Moxie a salva e insere a referência. O destino se escolhe em **Ajustes → Editor e aparência → Imagens**. **Neste computador**, é uma **Subpasta** da pasta do documento, `assets/` por padrão, cujo nome você pode mudar, ou **A mesma pasta do documento**; os ajustes mostram o link que a imagem colada recebe. Com **Enviar para uma hospedagem de imagens**, ela vai para PicGo / PicList, SM.MS, Imgur ou um endpoint seu (**Personalizado**).
 
 Um endpoint personalizado recebe `multipart/form-data` com um campo `file` e pode devolver a URL pública como texto simples ou em um campo JSON configurável. Os arquivos enviados podem ser renomeados automaticamente, manter o nome original ou pedir um nome antes de cada envio. As referências a imagens que já existem nunca mudam quando você troca o modo de armazenamento.
 
@@ -142,7 +142,7 @@ Ou escreva a referência à mão:
 ![texto alternativo](assets/screenshot.png)
 ```
 
-Incorporações do Obsidian, como `![[image.png]]` ou `![[attachments/image.png|300]]`, também mostram a imagem: o Textus procura o arquivo no cofre do Obsidian ao qual o documento pertence e salva a incorporação exatamente como foi escrita.
+Incorporações do Obsidian, como `![[image.png]]` ou `![[attachments/image.png|300]]`, também mostram a imagem: o Moxie procura o arquivo no cofre do Obsidian ao qual o documento pertence e salva a incorporação exatamente como foi escrita.
 
 Para ver uma imagem de perto, clique duas vezes nela ou clique em **Ampliar imagem** no canto superior direito (os diagramas têm o mesmo botão): role ou faça o gesto de pinça para dar zoom, arraste para mover, clique duas vezes para ajustá-la de novo e pressione `Esc` para fechar. Arraste a alça na borda direita de uma imagem para redimensioná-la. **Ajustes → Editor e aparência → Imagens em linha própria** coloca as imagens que ficam sozinhas numa linha no centro ou à esquerda, no editor e nas exportações em HTML e PDF.
 
@@ -152,17 +152,17 @@ Para ver uma imagem de perto, clique duas vezes nela ou clique em **Ampliar imag
 
 ## Visualizações e modos
 
-Além do editor WYSIWYG e do modo código-fonte (`Cmd+/`), o Textus tem três maneiras de escrever (no Windows e no Linux, use `Ctrl` no lugar de `Cmd`; Ajustes → Atalhos mostra as combinações atuais):
+Além do editor WYSIWYG e do modo código-fonte (`Cmd+/`), o Moxie tem três maneiras de escrever (no Windows e no Linux, use `Ctrl` no lugar de `Cmd`; Ajustes → Atalhos mostra as combinações atuais):
 
 - **Código e pré-visualização** (`Cmd+Shift+E`): o código-fonte Markdown à esquerda e a prévia renderizada à direita, rolando juntos.
 - **Modo máquina de escrever**: a linha que você está digitando fica no meio da janela, no editor, no modo código-fonte e em Código e pré-visualização.
 - **Modo zen** (`Cmd+Shift+J`): esconde tudo menos o texto e esmaece todos os parágrafos, menos o que você está escrevendo. Pressione `Esc` para sair.
 
-Todos estão no menu **Visualizar** e em **Ajustes → Editor e aparência → Visualização**. Cada um é um único ajuste para todo o Textus: mude em qualquer janela e todas as abas de todas as janelas mudam junto, os documentos que você abrir em seguida aparecem nele, e o Textus volta a abrir nele da próxima vez.
+Todos estão no menu **Visualizar** e em **Ajustes → Editor e aparência → Visualização**. Cada um é um único ajuste para todo o Moxie: mude em qualquer janela e todas as abas de todas as janelas mudam junto, os documentos que você abrir em seguida aparecem nele, e o Moxie volta a abrir nele da próxima vez.
 
-**Visualizar → Só leitura** (também no menu de contexto de uma aba) impede que um documento seja alterado, seja digitando, colando, soltando, desfazendo, pela Textus AI ou por plugins. Um cadeado ao lado do título indica isso; clique nele para tornar o documento editável de novo.
+**Visualizar → Só leitura** (também no menu de contexto de uma aba) impede que um documento seja alterado, seja digitando, colando, soltando, desfazendo, pela Moxie AI ou por plugins. Um cadeado ao lado do título indica isso; clique nele para tornar o documento editável de novo.
 
-**Visualizar → Paleta de comandos…** (`Cmd+Shift+P`) encontra tudo o que os menus fazem, e cada comando que um plugin adiciona, digitando algumas letras do nome. Ela também muda a aparência (clara, escura ou a do sistema) e o tema do editor, e liga ou desliga a Textus AI. **Editar → Buscar e Substituir…** (`Cmd+F`) procura no documento, **Editar → Substituir…** (`Cmd+Option+F`) abre a barra com a linha de substituição e `Cmd+G` vai para a próxima ocorrência.
+**Visualizar → Paleta de comandos…** (`Cmd+Shift+P`) encontra tudo o que os menus fazem, e cada comando que um plugin adiciona, digitando algumas letras do nome. Ela também muda a aparência (clara, escura ou a do sistema) e o tema do editor, e liga ou desliga a Moxie AI. **Editar → Buscar e Substituir…** (`Cmd+F`) procura no documento, **Editar → Substituir…** (`Cmd+Option+F`) abre a barra com a linha de substituição e `Cmd+G` vai para a próxima ocorrência.
 
 A aba **Estrutura** da barra lateral lista os títulos do documento; clique em um para ir até ele. Clique com o botão direito na estrutura para **Expandir tudo** e **Recolher tudo**, ou clique com `Option` (`Alt`) na seta de um título para recolher ou expandir todos de uma vez.
 
@@ -175,11 +175,11 @@ A aba **Estrutura** da barra lateral lista os títulos do documento; clique em u
 - Arraste uma aba (ou um arquivo da barra lateral) até a borda de um painel, e ela abre em um novo painel desse lado. Arraste até a borda externa do editor e ela abre ao lado de todos os painéis: na borda direita de dois painéis um acima do outro, ela ocupa o lado direito de cima a baixo. Solte-a sobre as abas de outro painel para movê-la para lá.
 - Arraste a linha entre dois painéis para redimensioná-los; clique duas vezes nela para deixá-los iguais. Clique com o botão direito nela para passá-los de lado a lado para um acima do outro, trocá-los de lugar ou fechar a divisão.
 - **Abrir ao lado**, no menu de contexto de uma aba, mostra-a ao lado da que está em primeiro plano.
-- Feche a última aba de um painel e o painel some. O layout inteiro volta quando você reabre o Textus.
+- Feche a última aba de um painel e o painel some. O layout inteiro volta quando você reabre o Moxie.
 
 ## Abas e janelas
 
-`Cmd+N` (ou `Cmd+T`) abre uma nova aba, `Cmd+Shift+N` uma nova janela, e **Arquivo → Reabrir Aba Fechada** (`Cmd+Shift+T`) traz de volta os documentos que você fechou, do mais recente para o mais antigo. Um clique com o botão do meio fecha uma aba; o menu de contexto de uma aba tem **Fechar as outras**, **Fechar abas à esquerda** e **Fechar abas à direita** (abas com alterações não salvas continuam abertas), **Copiar caminho** e **Mover para nova janela**. Você também pode arrastar uma aba para fora da janela para dar a ela uma janela própria. Quando o Textus reabre, cada janela volta com as suas próprias abas.
+`Cmd+N` (ou `Cmd+T`) abre uma nova aba, `Cmd+Shift+N` uma nova janela, e **Arquivo → Reabrir Aba Fechada** (`Cmd+Shift+T`) traz de volta os documentos que você fechou, do mais recente para o mais antigo. Um clique com o botão do meio fecha uma aba; o menu de contexto de uma aba tem **Fechar as outras**, **Fechar abas à esquerda** e **Fechar abas à direita** (abas com alterações não salvas continuam abertas), **Copiar caminho** e **Mover para nova janela**. Você também pode arrastar uma aba para fora da janela para dar a ela uma janela própria. Quando o Moxie reabre, cada janela volta com as suas próprias abas.
 
 ## Pastas e busca de arquivos
 
@@ -189,13 +189,13 @@ A árvore também é um pequeno gerenciador de arquivos. O nome da pasta superio
 
 Arraste arquivos do Finder ou do Explorador de Arquivos para a janela para abri-los: documentos abrem em abas, imagens entram no documento onde você as solta e uma pasta abre na barra lateral. **Arquivo → Copiar caminho** copia o caminho completo do documento em primeiro plano.
 
-Num terminal, `textus notas.md` abre um arquivo no Textus; **Ajustes → Geral** instala o comando `textus` se ele ainda não estiver lá. Ele faz mais sem abrir janela: `textus search <palavras>` as encontra nos arquivos de uma pasta, `textus read` mostra um PDF ou arquivo do Word como Markdown e `textus help` lista todos os comandos, inclusive os dos plugins.
+Num terminal, `textus notas.md` abre um arquivo no Moxie; **Ajustes → Geral** instala o comando `textus` se ele ainda não estiver lá. Ele faz mais sem abrir janela: `textus search <palavras>` as encontra nos arquivos de uma pasta, `textus read` mostra um PDF ou arquivo do Word como Markdown e `textus help` lista todos os comandos, inclusive os dos plugins.
 
 **Arquivo → Abrir…** também abre um documento do Word (`.docx`), assim como soltá-lo na janela: ele vira um novo documento Markdown com o mesmo nome, ainda não salvo, com seus títulos, listas, tabelas, links, notas de rodapé e imagens. As imagens vão, ao salvar, para onde **Ajustes → Editor e aparência → Imagens** coloca as coladas, e **Salvar** sugere um arquivo `.md` ao lado do arquivo do Word. Parte da formatação pode ficar diferente; o arquivo do Word nunca é alterado. Só no computador.
 
 ## Continuar em segundo plano
 
-Ative **Ajustes → Geral → Aplicativo → Continuar em segundo plano** e, ao fechar a última janela, o Textus continua aberto, com o ícone na área de notificação (Windows), na bandeja do sistema (Linux) ou na barra de menus (Mac). **Abrir o Textus** no menu do ícone traz seus documentos de volta; **Encerrar Textus** ali encerra o Textus de vez. O GNOME só mostra o ícone de bandeja com a extensão AppIndicator.
+Ative **Ajustes → Geral → Aplicativo → Continuar em segundo plano** e, ao fechar a última janela, o Moxie continua aberto, com o ícone na área de notificação (Windows), na bandeja do sistema (Linux) ou na barra de menus (Mac). **Abrir o Moxie** no menu do ícone traz seus documentos de volta; **Encerrar Moxie** ali encerra o Moxie de vez. O GNOME só mostra o ícone de bandeja com a extensão AppIndicator.
 
 ## Exportar
 
@@ -207,9 +207,9 @@ Ative **Ajustes → Geral → Aplicativo → Continuar em segundo plano** e, ao 
 
 ## Obter ajuda
 
-**Ajuda → Relatar um problema…** (também em **Ajustes → Geral**, em Ajuda) abre um formulário curto. Diga que tipo de relato é, de que parte do Textus se trata e, para um bug, qual a gravidade, e depois o que deu errado; o Textus acrescenta a versão dele, o seu sistema, os seus plugins, os seus ajustes sem nada privado e os erros recentes, tudo mostrado antes de qualquer envio. **Enviar** registra o relato como issue no GitHub para você, sem precisar de conta no GitHub, e informa o número; **Enviar no GitHub** abre o formulário do GitHub em vez disso; **Copiar** coloca tudo na área de transferência para um chat ou um e-mail. O que você escreve vira uma issue pública; um e-mail ou WeChat que você deixar, caso possamos perguntar mais, vai só para a equipe.
+**Ajuda → Relatar um problema…** (também em **Ajustes → Geral**, em Ajuda) abre um formulário curto. Diga que tipo de relato é, de que parte do Moxie se trata e, para um bug, qual a gravidade, e depois o que deu errado; o Moxie acrescenta a versão dele, o seu sistema, os seus plugins, os seus ajustes sem nada privado e os erros recentes, tudo mostrado antes de qualquer envio. **Enviar** registra o relato como issue no GitHub para você, sem precisar de conta no GitHub, e informa o número; **Enviar no GitHub** abre o formulário do GitHub em vez disso; **Copiar** coloca tudo na área de transferência para um chat ou um e-mail. O que você escreve vira uma issue pública; um e-mail ou WeChat que você deixar, caso possamos perguntar mais, vai só para a equipe.
 
-**Ajustes → Geral → Ajuda** também reabre o tutorial de boas-vindas, abre os guias e leva a **Sobre o Textus**, com a versão e **Verificar Atualizações** (no Mac, também **Textus → Verificar Atualizações…**). **Ajuda → Participe da comunidade** abre a página da comunidade.
+**Ajustes → Geral → Ajuda** também reabre o tutorial de boas-vindas, abre os guias e leva a **Sobre o Moxie**, com a versão e **Verificar Atualizações** (no Mac, também **Moxie → Verificar Atualizações…**). **Ajuda → Participe da comunidade** abre a página da comunidade.
 
 ## Notas de rodapé e linhas horizontais
 

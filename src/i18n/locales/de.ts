@@ -6,20 +6,20 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `${AI_NAME} aktivieren`,
-  textusAiOffHint: "Aus: Es wird nichts an einen KI-Dienst gesendet.",
-  textusAiMenuHint: "Rechtsklick zum Pausieren oder Ausschalten",
-  textusAiClosePanel: "Bereich schließen",
-  textusAiPause: "Eine Stunde pausieren",
-  textusAiTurnOff: `${AI_NAME} ausschalten`,
-  textusAiPausedTooltip: `${AI_NAME} pausiert bis {time} · Klicken zum Einschalten`,
-  textusAiOffTooltip: `${AI_NAME} ist aus · Klicken zum Einschalten`,
-  textusAiOff: `${AI_NAME} ist aus`,
-  textusAiTurnOn: `${AI_NAME} einschalten`,
-  announceTextusAiOn: `${AI_NAME} ist an.`,
-  announceTextusAiOff: `${AI_NAME} ist aus.`,
-  shortcutToggleTextusAi: `${AI_NAME} ein- oder ausschalten`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `${AI_NAME} aktivieren`,
+  moxieAiOffHint: "Aus: Es wird nichts an einen KI-Dienst gesendet.",
+  moxieAiMenuHint: "Rechtsklick zum Pausieren oder Ausschalten",
+  moxieAiClosePanel: "Bereich schließen",
+  moxieAiPause: "Eine Stunde pausieren",
+  moxieAiTurnOff: `${AI_NAME} ausschalten`,
+  moxieAiPausedTooltip: `${AI_NAME} pausiert bis {time} · Klicken zum Einschalten`,
+  moxieAiOffTooltip: `${AI_NAME} ist aus · Klicken zum Einschalten`,
+  moxieAiOff: `${AI_NAME} ist aus`,
+  moxieAiTurnOn: `${AI_NAME} einschalten`,
+  announceMoxieAiOn: `${AI_NAME} ist an.`,
+  announceMoxieAiOff: `${AI_NAME} ist aus.`,
+  shortcutToggleMoxieAi: `${AI_NAME} ein- oder ausschalten`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "In eigenem Fenster öffnen",
   agentPanelResize: "Breite des KI-Bereichs ändern",
   sidebarResize: "Breite der Seitenleiste ändern",
@@ -92,7 +92,7 @@ Was hier zum Beispiel hingehört:
   Hintergrund  Ich schreibe lange Wissenschaftsreportagen für ein breites Publikum.
 
 Anweisungen, die nur für ein Projekt gelten, gehören in dessen
-.textus/agent.md (Projektmenü im KI-Bereich > Projekt-Schreibanweisungen bearbeiten).
+.moxie/agent.md (Projektmenü im KI-Bereich > Projekt-Schreibanweisungen bearbeiten).
 Beide werden gesendet; wo sie sich widersprechen, gelten die des Projekts.
 
 Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
@@ -332,8 +332,8 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Bilder gehen vom Bildkontingent deines ChatGPT-Abos ab, nicht vom API-Guthaben. Sie laufen über den Dienst, den die ChatGPT-Apps selbst nutzen; das ist keine veröffentlichte API und kann ohne Ankündigung aufhören zu funktionieren. Ein OpenAI-API-Schlüssel funktioniert in jedem Fall weiter.",
   imagesPerRequestLabel: "Bilder pro Anfrage",
   imagesPerRequestHelp:
-    "Höchstens so viele Bilder erstellt Textus AI für eine Anfrage. Mit einem API-Schlüssel kostet jedes Geld, mit einem Abo geht es vom Kontingent ab; sag, wie viele du willst, dann erstellt es so viele, bis zu dieser Zahl.",
-  changePictureWithAi: "Dieses Bild mit Textus AI ändern…",
+    "Höchstens so viele Bilder erstellt Moxie AI für eine Anfrage. Mit einem API-Schlüssel kostet jedes Geld, mit einem Abo geht es vom Kontingent ab; sag, wie viele du willst, dann erstellt es so viele, bis zu dieser Zahl.",
+  changePictureWithAi: "Dieses Bild mit Moxie AI ändern…",
   oldPictureTrashQuestion:
     "Das neue Bild ist eingefügt. Das alte, „{name}“, in den Papierkorb legen?",
   oldPictureTrashOk: "In den Papierkorb",
@@ -363,7 +363,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   skillWarnCreateMode:
     "Im Erstellen-Modus könnte sie selbst Fähigkeiten schreiben oder ändern. Lassen Sie sie dort nur, wenn Sie jeder Zeile vertrauen.",
   skillWarnPromptInjection:
-    "Ihre Anweisungen wirken, als wollten sie die von Textus AI aushebeln („vorherige Anweisungen ignorieren“). Lesen Sie sie vor dem Speichern.",
+    "Ihre Anweisungen wirken, als wollten sie die von Moxie AI aushebeln („vorherige Anweisungen ignorieren“). Lesen Sie sie vor dem Speichern.",
   skillWarnHiddenText:
     "Sie enthält unsichtbare Zeichen, die Anweisungen verbergen können. Lesen Sie sie vor dem Speichern.",
   chatShowCode: "Code ansehen",
@@ -375,7 +375,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   chatPluginCheckPermission:
     "Es nutzt {permission}, ohne die Berechtigung anzufordern.",
   chatPluginCheckWhen:
-    "Die Bedingung eines Menüeintrags liest {key}, das Textus nicht setzt: Der Eintrag erscheint nie.",
+    "Die Bedingung eines Menüeintrags liest {key}, das Moxie nicht setzt: Der Eintrag erscheint nie.",
   chatPluginCheckUnregistered: "Es deklariert {id}, registriert es aber nie.",
   chatPluginRunError: "Es brach ab mit: {error}",
   chatPluginFix: "Mit KI beheben",
@@ -598,7 +598,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   treeTrashFolderConfirm:
     "Den Ordner „{name}“ mit allem darin in den Papierkorb legen? Von dort lässt er sich zurücklegen.",
   errorPermission:
-    "Textus darf diese Datei oder diesen Ordner nicht öffnen. Prüfe die Zugriffsrechte oder wähle einen anderen Ort.",
+    "Moxie darf diese Datei oder diesen Ordner nicht öffnen. Prüfe die Zugriffsrechte oder wähle einen anderen Ort.",
   errorNotFound:
     "Die Datei oder der Ordner ist nicht mehr da. Vielleicht wurde sie verschoben, umbenannt oder gelöscht.",
   errorDiskFull:
@@ -610,15 +610,15 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Das hat zu lange gedauert. Prüfe deine Verbindung und versuche es erneut.",
   errorNetwork:
     "Keine Verbindung möglich. Prüfe deine Internetverbindung oder Proxy-Einstellungen.",
-  errorFileTooBig: "Diese Datei ist zu groß, um sie in Textus zu öffnen.",
-  errorNotDocument: "Textus kann diese Datei nicht als Dokument lesen.",
+  errorFileTooBig: "Diese Datei ist zu groß, um sie in Moxie zu öffnen.",
+  errorNotDocument: "Moxie kann diese Datei nicht als Dokument lesen.",
   errorBadName:
     "Dieser Name geht nicht. Ein Name darf nicht leer sein und kein / oder \\ enthalten.",
   errorMoveIntoItself:
     "Ein Ordner kann nicht in sich selbst verschoben werden.",
   errorPluginTooBig: "Dieses Plugin ist zu groß für die Installation.",
   errorCatalogNewer:
-    "Der Plugin-Store braucht eine neuere Textus-Version. Aktualisiere Textus, um ihn zu sehen.",
+    "Der Plugin-Store braucht eine neuere Moxie-Version. Aktualisiere Moxie, um ihn zu sehen.",
   errorImageTooBig: "Das Bild ist leer oder größer als 25 MB.",
   errorNoFolder: "Öffne zuerst einen Ordner.",
   treeNameTaken: "Hier gibt es schon etwas namens „{name}“.",
@@ -678,7 +678,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   navPrivacy: "Datenschutz",
   navAbout: "Über",
   navGuides: "Anleitungen",
-  aboutTextus: "Über Textus",
+  aboutMoxie: "Über Moxie",
   aboutVersion: "Version {version}",
   aboutMadeBy: "Von CatVinci Studio",
   aboutQq: "QQ-Gruppe",
@@ -700,7 +700,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Du nutzt eine Beta ({version}). Die stabile Version ist älter; zurückzugehen installiert sie.",
   backToStableButton: "Zur stabilen Version",
   backToStableConfirm:
-    "Textus {version}, die stabile Version, installieren? Sie ist älter als deine Beta ({beta}). Deine Dokumente bleiben unberührt; was nur die Beta hat - etwa Plugins - kommt womöglich nicht mit.",
+    "Moxie {version}, die stabile Version, installieren? Sie ist älter als deine Beta ({beta}). Deine Dokumente bleiben unberührt; was nur die Beta hat - etwa Plugins - kommt womöglich nicht mit.",
   backToStableInstall: "{version} installieren",
   backToStableNone:
     "Gerade gibt es keine stabile Version, zu der du zurückkannst.",
@@ -760,7 +760,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   agentSkillsBuiltinTag: "Integriert",
   agentSkillsOpen: "Öffnen",
   agentSkillsReset: "Zurücksetzen",
-  madeByTextusAi: `Mit ${AI_NAME} erstellt`,
+  madeByMoxieAi: `Mit ${AI_NAME} erstellt`,
   skillDelete: "Löschen",
   skillDeleteAsk: "„{name}“ löschen? Seine Dateien kommen in den Papierkorb.",
   skillDeleteAskMobile: "„{name}“ löschen?",
@@ -893,7 +893,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   pictureRedraw: "Neu zeichnen…",
   pictureRedrawTitle: "Bild neu zeichnen",
   pictureRedrawPrompt:
-    "Was das Bild zeigt - ändern Sie es, und Textus zeichnet es neu:",
+    "Was das Bild zeigt - ändern Sie es, und Moxie zeichnet es neu:",
   pictureRedrawOk: "Neu zeichnen",
   agentThinking: "Denkt nach…",
   agentWritingEdit: "Änderung wird geschrieben…",
@@ -920,7 +920,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   chatHistorySearch: "Unterhaltungen durchsuchen",
   chatHistorySearchNone: "Keine Unterhaltung enthält diese Wörter.",
   chatHistoryByYou: "Sie",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "Diese Unterhaltung mit ihrem Dokument wieder öffnen",
   chatHistoryDelete: "Unterhaltung löschen",
   chatHistoryRestoreHereHint:
@@ -1051,9 +1051,9 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Eine .csl-Datei für das Literaturverzeichnis. Ohne sie nutzt Pandoc Chicago Autor-Jahr.",
   pandocArgsLabel: "Pandoc-Argumente",
   pandocArgsHelp:
-    "Werden dem Pandoc-Befehl für dieses Format Wort für Wort angefügt, nie über eine Shell. Werte mit Leerzeichen in Anführungszeichen setzen. --from, --to und --output setzt Textus selbst.",
+    "Werden dem Pandoc-Befehl für dieses Format Wort für Wort angefügt, nie über eine Shell. Werte mit Leerzeichen in Anführungszeichen setzen. --from, --to und --output setzt Moxie selbst.",
   pandocArgsAll: "Alle Formate",
-  pandocArgsOwned: "{arg} setzt Textus selbst; bitte entfernen.",
+  pandocArgsOwned: "{arg} setzt Moxie selbst; bitte entfernen.",
   pandocErrorSettings:
     "Deine Pandoc-Optionen findest du unter Einstellungen › {page} › {group} und in den erweiterten Argumenten.",
   pdfLightColorsLabel: "PDFs in hellen Farben exportieren",
@@ -1154,7 +1154,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   reportKindQuestion: "Eine Frage",
   reportAreaLabel: "Betrifft",
   reportAreaEditor: "Schreiben und Bearbeiten",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "Plugins und Themes",
   reportAreaPanes: "Tabs, Bereiche und Fenster",
   reportAreaExport: "Export und Druck",
@@ -1238,7 +1238,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   updateDownloading: "Update wird geladen…",
   updateFailed: "Update fehlgeschlagen:",
   updateViaPackageManager: `${APP_NAME} wurde über deinen Paketmanager installiert. Aktualisiere es dort.`,
-  cliCommandLabel: "Textus CLI installieren",
+  cliCommandLabel: "Moxie CLI installieren",
   cliCommandInstalled: "Installiert",
   cliCommandNotInstalled: "Nicht installiert",
   cliCommandInstallButton: "Installieren",
@@ -1315,9 +1315,9 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   settingsFileImportConfirm:
     "Ihre Einstellungen durch die aus dieser Datei ersetzen? API-Schlüssel und MCP-Token auf diesem Computer bleiben erhalten.",
   settingsFileImportReplace: "Ersetzen",
-  settingsFileNotSettings: "Diese Datei enthält keine Textus-Einstellungen.",
+  settingsFileNotSettings: "Diese Datei enthält keine Moxie-Einstellungen.",
   settingsFileWithAi:
-    "Auch die KI-Aufzeichnungen exportieren – alle Gespräche und Erinnerungen? Die Datei enthält dann, was du Textus AI geschrieben hast.",
+    "Auch die KI-Aufzeichnungen exportieren – alle Gespräche und Erinnerungen? Die Datei enthält dann, was du Moxie AI geschrieben hast.",
   settingsFileWithAiYes: "KI-Aufzeichnungen einschließen",
   settingsFileSettingsOnly: "Nur Einstellungen",
   settingsFileImportAi:
@@ -1506,7 +1506,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   privacyKeepUnsavedToggle:
     "Ungespeicherte Änderungen beim Schließen behalten, ohne zu fragen",
   privacyKeepUnsavedHelp:
-    "Ein Fenster mit ungespeicherten Änderungen schließt ohne Nachfrage: Die Dokumente öffnen sich beim nächsten Start von Textus mit ihren Änderungen. Die Dateien selbst bleiben, wie sie waren, bis Sie speichern.",
+    "Ein Fenster mit ungespeicherten Änderungen schließt ohne Nachfrage: Die Dokumente öffnen sich beim nächsten Start von Moxie mit ihren Änderungen. Die Dateien selbst bleiben, wie sie waren, bis Sie speichern.",
   privacyDraftRecoveryClearHint:
     "Entfernt alle derzeit gespeicherten Zwischenstände. Das lässt sich nicht rückgängig machen.",
   privacyClearButton: "Löschen",
@@ -1560,7 +1560,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Nur .md-, .markdown- und .txt-Dateien lassen sich importieren.",
   backgroundToggle: "Im Hintergrund weiterlaufen",
   backgroundTrayUnavailable: `Diese Arbeitsumgebung hat keinen Tray: libayatana-appindicator ist nicht installiert. ${APP_NAME} läuft trotzdem im Hintergrund weiter; öffne es erneut über den Starter.`,
-  trayOpenTextus: `${APP_NAME} öffnen`,
+  trayOpenMoxie: `${APP_NAME} öffnen`,
   navExtensions: "Erweiterungen",
   extensionsTabPlugins: "Plugins",
   extensionsTabThemes: "Themes",
@@ -1574,7 +1574,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   createMakePlugin: "Eigenes Plugin erstellen",
   createMakeSkill: "Eigenen Skill erstellen",
   createNew: "Neu",
-  createAiOff: "Schalte Textus AI ein, um etwas zu erstellen.",
+  createAiOff: "Schalte Moxie AI ein, um etwas zu erstellen.",
   createExamples: "Beispiele",
   createExamplePluginTodo:
     "Eine Aufgabenliste in der Seitenleiste, die meine Aufgaben auch ohne geöffneten Ordner speichert",
@@ -1582,7 +1582,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Ein warmes Bernstein-Theme, tagsüber hell und nachts dunkel",
   createExampleSkillWeekly:
     "Mach aus meinen Notizen einen Wochenbericht: erledigt, als Nächstes, blockiert",
-  extensionsIntroPlugins: "Neue Bereiche, Dateitypen und Werkzeuge für Textus.",
+  extensionsIntroPlugins: "Neue Bereiche, Dateitypen und Werkzeuge für Moxie.",
   extensionsIntroThemes: "Wie Dokumente aussehen, über dem gewählten Theme.",
   extensionsIntroSkills: `Wege, eine Art Aufgabe gut zu erledigen – für ${AI_NAME} und das /-Menü.`,
   extensionsIntroMcp: `Server, die ${AI_NAME} mehr Werkzeuge geben.`,
@@ -1644,7 +1644,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   pluginsCatalogKept:
     "Die Liste vom letzten Mal - eine neuere ließ sich nicht laden: {reason}",
   pluginInstall: "Installieren",
-  pluginNeedsTextus: "Benötigt Textus {version}",
+  pluginNeedsMoxie: "Benötigt Moxie {version}",
   pluginInstalling: "Wird installiert …",
   pluginsSortLabel: "Sortieren nach",
   pluginsSortPopular: "Meist installiert",
@@ -1666,8 +1666,8 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   floatingClose: "{name} schließen",
   floatingToDesktop: "{name} auf den Schreibtisch legen",
   floatingToWindow: "{name} zurück ins Fenster holen",
-  floatingOpenApp: "Textus öffnen",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Moxie öffnen",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "Alle Plugins",
   pluginSettingsScope: "Gilt für",
   pluginSettingsScopeGlobal: "Alle Dokumente",
@@ -1699,13 +1699,13 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   pluginsAllHelp:
     "Aus: Kein Plugin läuft, und nichts, was sie hinzufügen, wird angezeigt. Deine Plugins und ihre Einstellungen bleiben erhalten.",
   pluginsInstallHelp:
-    "Ein Plugin-Paket (.textusplugin) wird in Textus kopiert. Ein Plugin-Ordner wird an Ort und Stelle geladen, um ein Plugin auszuprobieren, an dem du schreibst; es wird von dort neu geladen.",
+    "Ein Plugin-Paket (.textusplugin) wird in Moxie kopiert. Ein Plugin-Ordner wird an Ort und Stelle geladen, um ein Plugin auszuprobieren, an dem du schreibst; es wird von dort neu geladen.",
   pluginsInstallFile: "Aus Datei installieren…",
   pluginFormPrevMonth: "Vorheriger Monat",
   pluginFormNextMonth: "Nächster Monat",
   pluginsLoadFolder: "Plugin-Ordner laden…",
   pluginsOpenScripts: "Skriptordner öffnen",
-  pluginPackageFilter: "Textus-Plugin",
+  pluginPackageFilter: "Moxie-Plugin",
   pluginsInstalledGroup: "Installiert",
   pluginOpenInstall: "Installieren und öffnen",
   pluginOpenTurnOnButton: "Einschalten und öffnen",
@@ -1714,7 +1714,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   conventionsCardLine:
     "Die {app}-Einstellungen dieses Ordners legen Bilder in {folder} ab",
   conventionsCardDetails:
-    "Aktuelle Einstellung: {current}. Beim Übernehmen wird sie in der .textus/settings.json dieses Ordners gespeichert und bleibt beim Projekt.",
+    "Aktuelle Einstellung: {current}. Beim Übernehmen wird sie in der .moxie/settings.json dieses Ordners gespeichert und bleibt beim Projekt.",
   conventionsFolderRoot: "dem Ordner selbst",
   conventionsFollow: "Übernehmen",
   conventionsDecline: "Aktuelle behalten",
@@ -1731,14 +1731,14 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   pluginStatusBroken: "Nicht lesbar: {reason}",
   pluginStatusDesktopOnly:
     "Nur am Computer nutzbar, nicht auf iPhone oder iPad.",
-  pluginStatusIncompatible: "Für eine andere Textus-Version gemacht ({range}).",
+  pluginStatusIncompatible: "Für eine andere Moxie-Version gemacht ({range}).",
   pluginStatusFailed: "Ausgeschaltet: {reason}",
   pluginStatusAllOff: "Plugins sind aus.",
   pluginDevTag: "Entwicklung",
   pluginEnableLabel: "{name} einschalten",
   pluginAddsLabel: "Fügt hinzu",
   pluginAddsSidebarTab: "einen Seitenleisten-Tab, {name}",
-  pluginAddsAiTool: "ein Werkzeug für Textus AI, {name}",
+  pluginAddsAiTool: "ein Werkzeug für Moxie AI, {name}",
   pluginAddsFileType: "öffnet {types}",
   pluginPermissionsLabel: "Berechtigungen",
   pluginNoPermissions: "Braucht keine.",
@@ -1759,7 +1759,7 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
     "Ihr Name als Herausgeber – Kleinbuchstaben, Ziffern und Bindestriche. Ihr GitHub-Name passt gut. Er ersetzt „local“ in der Plugin-ID.",
   pluginExportChooseFolder: "Ordner wählen…",
   pluginExportDone:
-    "Exportiert nach {path}.\n\nMachen Sie den Ordner zu einem GitHub-Repository und pushen Sie ein Tag wie v0.1.0: Sein Release-Workflow veröffentlicht das Plugin. Wie es in Textus gelistet wird, steht in der README darin.",
+    "Exportiert nach {path}.\n\nMachen Sie den Ordner zu einem GitHub-Repository und pushen Sie ein Tag wie v0.1.0: Sein Release-Workflow veröffentlicht das Plugin. Wie es in Moxie gelistet wird, steht in der README darin.",
   pluginUriNotTaken: "Kein eingeschaltetes Plugin öffnet diesen Link: {link}",
   uriCommandConfirm: "Ein Link möchte „{command}“ ausführen. Ausführen?",
   uriCommandRun: "Ausführen",
@@ -1785,13 +1785,13 @@ Skills liegen im Ordner skills/ neben dieser Datei, je Skill eine
   pluginPermEditorInput:
     "Die Tasten im Editor übernehmen und beim Tippen bearbeiten",
   pluginPermProjectData:
-    "Eigene Daten im geöffneten Ordner ablegen, unter .textus/plugins",
-  pluginPermAiTools: "Textus AI eigene Werkzeuge geben",
+    "Eigene Daten im geöffneten Ordner ablegen, unter .moxie/plugins",
+  pluginPermAiTools: "Moxie AI eigene Werkzeuge geben",
   pluginPermNotifications: "Systemmitteilungen anzeigen",
   pluginPermBackground:
     "Code nach Zeitplan ausführen, auch wenn alle Fenster geschlossen sind",
   pluginScheduleNotice:
-    "{name} hat etwas geplant. Es läuft nur, solange Textus läuft: schalte „{setting}“ ein, damit es auch bei geschlossenen Fenstern läuft.",
+    "{name} hat etwas geplant. Es läuft nur, solange Moxie läuft: schalte „{setting}“ ein, damit es auch bei geschlossenen Fenstern läuft.",
   pluginPermNetwork: "Mit {host} verbinden",
   pluginPermNetworkAny: "Mit beliebigen Websites verbinden",
   menuPlugins: "Plugins",

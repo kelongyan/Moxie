@@ -1,6 +1,6 @@
-# Markdown-Anleitung für Textus
+# Markdown-Anleitung für Moxie
 
-Willkommen. Dieses eingebaute Dokument zeigt, welche Markdown-Elemente Textus darstellt. Es ist nur ein ungespeicherter Entwurf – bearbeite es nach Belieben, probiere alles aus und schließe es danach, ohne zu speichern.
+Willkommen. Dieses eingebaute Dokument zeigt, welche Markdown-Elemente Moxie darstellt. Es ist nur ein ungespeicherter Entwurf – bearbeite es nach Belieben, probiere alles aus und schließe es danach, ohne zu speichern.
 
 > [!TIP]
 > Mit `Cmd+/` wechselst du zwischen WYSIWYG und Quellcodemodus und siehst die Syntax hinter jedem Beispiel hier.
@@ -31,7 +31,7 @@ Tief- und Hochstellung wie in Typora und Pandoc: H~2~O (`H~2~O`), x^2^ (`x^2^`);
 
 Tippst du `(`, `[`, `{`, ein Anführungszeichen oder eine Klammer aus einer chinesischen oder japanischen Eingabemethode wie `（`, `【` oder `「`, kommt das schließende Gegenstück hinter den Cursor: Das getippte Schlusszeichen springt darüber, Rücktaste direkt nach dem öffnenden löscht beide, und markierter Text wird eingeschlossen. **Einstellungen → Editor & Design → (), [] und „“ schließen** schaltet das ab.
 
-Links sehen so aus: [das Textus-Repository](https://github.com/CatVinci-Studio/Textus). Mit Strg/⌘+Klick folgst du einem Link: Ein Weblink öffnet sich im Browser, ein Link auf eine andere Markdown-Datei öffnet sie in einem Tab, und ein Link auf `#eine-überschrift` scrollt dorthin. Ein einfacher Klick setzt den Cursor in den Link und zeigt sein Markdown, `[Text](URL)`, zum Bearbeiten an Ort und Stelle; verlässt der Cursor ihn, ist er wieder ein Link. Auch HTML im Text wird dargestellt, etwa Tasten wie <kbd>Cmd</kbd> + <kbd>S</kbd>. Ebenso aufklappbare `<details>`-Blöcke, HTML-Tabellen, einige Inline-Stile (Farbe, Hintergrund, Größe, Stärke, Ausrichtung, Unter- und Durchstreichung) und eingebettetes `<svg>`, das als Bild erscheint. Skripte und anderes HTML bleiben als Quelltext stehen. Ein Link auf eine Überschrift in einer anderen Datei, etwa `[siehe](notizen.md#eine-überschrift)`, öffnet diese Datei an der Überschrift. Obsidian-Wikilinks (`[[Notiz]]`, `[[Notiz|Text]]` und `[[Notiz#Überschrift]]`) öffnen sich genauso, aus dem Ordner des Dokuments oder von überall in seinem Vault; sie und `#Tags` am Zeilenanfang werden genau so gespeichert, wie sie geschrieben sind.
+Links sehen so aus: [das Moxie-Repository](https://github.com/kelongyan/Moxie). Mit Strg/⌘+Klick folgst du einem Link: Ein Weblink öffnet sich im Browser, ein Link auf eine andere Markdown-Datei öffnet sie in einem Tab, und ein Link auf `#eine-überschrift` scrollt dorthin. Ein einfacher Klick setzt den Cursor in den Link und zeigt sein Markdown, `[Text](URL)`, zum Bearbeiten an Ort und Stelle; verlässt der Cursor ihn, ist er wieder ein Link. Auch HTML im Text wird dargestellt, etwa Tasten wie <kbd>Cmd</kbd> + <kbd>S</kbd>. Ebenso aufklappbare `<details>`-Blöcke, HTML-Tabellen, einige Inline-Stile (Farbe, Hintergrund, Größe, Stärke, Ausrichtung, Unter- und Durchstreichung) und eingebettetes `<svg>`, das als Bild erscheint. Skripte und anderes HTML bleiben als Quelltext stehen. Ein Link auf eine Überschrift in einer anderen Datei, etwa `[siehe](notizen.md#eine-überschrift)`, öffnet diese Datei an der Überschrift. Obsidian-Wikilinks (`[[Notiz]]`, `[[Notiz|Text]]` und `[[Notiz#Überschrift]]`) öffnen sich genauso, aus dem Ordner des Dokuments oder von überall in seinem Vault; sie und `#Tags` am Zeilenanfang werden genau so gespeichert, wie sie geschrieben sind.
 
 **Einstellungen → Editor & Design → Farbfelder vor Farbcodes** setzt ein kleines Quadrat in der Farbe vor einen Farbcode. **Nur in Code** zeigt es in Inline-Code, der eine Farbe ist, etwa `#0af` oder `rgb(0 128 255)`, und vor den Farbwerten in Codeblöcken; **Überall** auch vor im Text mit sechs oder acht Stellen geschriebenen Farbcodes, etwa #ff8800, und Farbfunktionen, etwa hsl(210 100% 50%). Kurzformen im Text, Tags wie #cafe, Nummern wie #234 und Links bleiben, wie sie sind.
 
@@ -77,7 +77,7 @@ def fib(n: int) -> int:
 
 ```rust
 fn main() {
-    let greeting = "Hallo, Textus!";
+    let greeting = "Hallo, Moxie!";
     println!("{greeting}");
 }
 ```
@@ -121,9 +121,9 @@ Ein Sequenzdiagramm:
 ```mermaid
 sequenceDiagram
     participant Du
-    participant Textus
-    Du->>Textus: Markdown tippen
-    Textus-->>Du: Sofort dargestellt
+    participant Moxie
+    Du->>Moxie: Markdown tippen
+    Moxie-->>Du: Sofort dargestellt
 ```
 
 **Einstellungen → Editor & Design → Diagramm-Engine** legt fest, was diese Blöcke zeichnet: Mermaid, die Voreinstellung, oder Pele, das schneller ist, Diagramme aber auf seine eigene Art anordnet und einige Funktionen weglässt; ein Diagramm, das Pele nicht zeichnen kann, zeichnet Mermaid.
@@ -132,9 +132,9 @@ Die Farben folgen dem Erscheinungsbild — im hellen eine ruhige graue Palette, 
 
 ## Bilder
 
-Füge ein Bild direkt aus der Zwischenablage ein – Textus speichert es und fügt den Verweis ein. Wohin, legst du unter **Einstellungen → Editor & Design → Bilder** fest. **Auf diesem Computer** ist es ein **Unterordner** im Ordner des Dokuments, standardmäßig `assets/`, dessen Namen du ändern kannst, oder **Derselbe Ordner wie das Dokument**; die Einstellungen zeigen den Link, den ein eingefügtes Bild bekommt. Mit **Zu einem Bildhoster hochladen** geht es an PicGo / PicList, SM.MS, Imgur oder deinen eigenen Endpunkt (**Eigener Server**).
+Füge ein Bild direkt aus der Zwischenablage ein – Moxie speichert es und fügt den Verweis ein. Wohin, legst du unter **Einstellungen → Editor & Design → Bilder** fest. **Auf diesem Computer** ist es ein **Unterordner** im Ordner des Dokuments, standardmäßig `assets/`, dessen Namen du ändern kannst, oder **Derselbe Ordner wie das Dokument**; die Einstellungen zeigen den Link, den ein eingefügtes Bild bekommt. Mit **Zu einem Bildhoster hochladen** geht es an PicGo / PicList, SM.MS, Imgur oder deinen eigenen Endpunkt (**Eigener Server**).
 
-Ein eigener Endpunkt empfängt `multipart/form-data` mit einem Feld `file` und kann die öffentliche URL entweder als reinen Text oder in einem einstellbaren JSON-Feld zurückgeben. Hochgeladene Dateien können automatisch umbenannt werden oder ihren Originalnamen behalten, oder Textus fragt dich vor jedem Upload nach einem Namen. Wenn du den Speicherort wechselst, bleiben vorhandene Bildverweise unverändert.
+Ein eigener Endpunkt empfängt `multipart/form-data` mit einem Feld `file` und kann die öffentliche URL entweder als reinen Text oder in einem einstellbaren JSON-Feld zurückgeben. Hochgeladene Dateien können automatisch umbenannt werden oder ihren Originalnamen behalten, oder Moxie fragt dich vor jedem Upload nach einem Namen. Wenn du den Speicherort wechselst, bleiben vorhandene Bildverweise unverändert.
 
 Oder schreib den Verweis von Hand:
 
@@ -142,7 +142,7 @@ Oder schreib den Verweis von Hand:
 ![Alternativtext](assets/screenshot.png)
 ```
 
-Obsidian-Einbettungen wie `![[image.png]]` oder `![[attachments/image.png|300]]` zeigen ebenfalls das Bild: Textus sucht die Datei im Obsidian-Tresor des Dokuments und speichert die Einbettung genau so, wie sie geschrieben ist.
+Obsidian-Einbettungen wie `![[image.png]]` oder `![[attachments/image.png|300]]` zeigen ebenfalls das Bild: Moxie sucht die Datei im Obsidian-Tresor des Dokuments und speichert die Einbettung genau so, wie sie geschrieben ist.
 
 Um ein Bild genau anzusehen, doppelklicke darauf oder drücke **Bild vergrößern** oben rechts darin (Diagramme haben dieselbe Schaltfläche): Scrollen oder Aufziehen zoomt, Ziehen verschiebt, ein Doppelklick passt es wieder ein, und `Esc` schließt es. Zieh den Griff am rechten Rand eines Bildes, um seine Größe zu ändern. **Einstellungen → Editor & Design → Bilder in eigener Zeile** setzt Bilder, die allein in einer Zeile stehen, in die Mitte oder an den linken Rand – im Editor und in HTML- und PDF-Exporten.
 
@@ -152,17 +152,17 @@ Um ein Bild genau anzusehen, doppelklicke darauf oder drücke **Bild vergrößer
 
 ## Ansichten und Modi
 
-Neben dem WYSIWYG-Editor und dem Quellcodemodus (`Cmd+/`) bietet Textus drei Arten zu schreiben (unter Windows und Linux `Ctrl` statt `Cmd`; die aktuellen Belegungen stehen unter Einstellungen → Tastenkürzel):
+Neben dem WYSIWYG-Editor und dem Quellcodemodus (`Cmd+/`) bietet Moxie drei Arten zu schreiben (unter Windows und Linux `Ctrl` statt `Cmd`; die aktuellen Belegungen stehen unter Einstellungen → Tastenkürzel):
 
 - **Quelltext und Vorschau** (`Cmd+Shift+E`): links der Markdown-Quelltext, rechts die gerenderte Vorschau, beide scrollen gemeinsam.
 - **Schreibmaschinenmodus**: Die Zeile, in der du tippst, bleibt in der Mitte des Fensters – im Editor, im Quellcodemodus und in Quelltext und Vorschau.
 - **Zen-Modus** (`Cmd+Shift+J`): blendet alles außer dem Text aus und dimmt jeden Absatz außer dem, an dem du gerade schreibst. Mit `Esc` verlässt du ihn.
 
-Alle findest du im Menü **Ansicht** und unter **Einstellungen → Editor & Design → Ansicht**. Jeder ist eine Einstellung für ganz Textus: Schaltest du ihn in einem Fenster um, wechselt jeder Tab in jedem Fenster mit, die Dokumente, die du als Nächstes öffnest, erscheinen darin, und Textus öffnet sich beim nächsten Mal wieder darin.
+Alle findest du im Menü **Ansicht** und unter **Einstellungen → Editor & Design → Ansicht**. Jeder ist eine Einstellung für ganz Moxie: Schaltest du ihn in einem Fenster um, wechselt jeder Tab in jedem Fenster mit, die Dokumente, die du als Nächstes öffnest, erscheinen darin, und Moxie öffnet sich beim nächsten Mal wieder darin.
 
-**Ansicht → Schreibgeschützt** (auch im Rechtsklickmenü eines Tabs) schützt ein Dokument vor Änderungen – durch Tippen, Einfügen, Ablegen, Rückgängig, Textus AI oder Plugins. Ein Vorhängeschloss neben dem Titel zeigt es an; ein Klick darauf macht das Dokument wieder bearbeitbar.
+**Ansicht → Schreibgeschützt** (auch im Rechtsklickmenü eines Tabs) schützt ein Dokument vor Änderungen – durch Tippen, Einfügen, Ablegen, Rückgängig, Moxie AI oder Plugins. Ein Vorhängeschloss neben dem Titel zeigt es an; ein Klick darauf macht das Dokument wieder bearbeitbar.
 
-**Ansicht → Befehlspalette…** (`Cmd+Shift+P`) findet alles, was die Menüs können, und jeden Befehl, den ein Plugin hinzufügt, wenn du ein paar Buchstaben seines Namens tippst. Sie wechselt außerdem das Erscheinungsbild (hell, dunkel oder wie das System) und das Editor-Design und schaltet Textus AI ein oder aus. **Bearbeiten → Suchen & Ersetzen…** (`Cmd+F`) sucht im Dokument, **Bearbeiten → Ersetzen…** (`Cmd+Option+F`) öffnet es mit der Ersetzen-Zeile, und `Cmd+G` springt zum nächsten Treffer.
+**Ansicht → Befehlspalette…** (`Cmd+Shift+P`) findet alles, was die Menüs können, und jeden Befehl, den ein Plugin hinzufügt, wenn du ein paar Buchstaben seines Namens tippst. Sie wechselt außerdem das Erscheinungsbild (hell, dunkel oder wie das System) und das Editor-Design und schaltet Moxie AI ein oder aus. **Bearbeiten → Suchen & Ersetzen…** (`Cmd+F`) sucht im Dokument, **Bearbeiten → Ersetzen…** (`Cmd+Option+F`) öffnet es mit der Ersetzen-Zeile, und `Cmd+G` springt zum nächsten Treffer.
 
 Der Tab **Gliederung** der Seitenleiste listet die Überschriften des Dokuments auf; ein Klick auf eine führt dorthin. Ein Rechtsklick auf die Gliederung bietet **Alle aufklappen** und **Alle zuklappen**, oder klappe mit `Option`-Klick (`Alt`-Klick) auf den Pfeil einer Überschrift alle auf einmal auf oder zu.
 
@@ -175,11 +175,11 @@ Der Tab **Gliederung** der Seitenleiste listet die Überschriften des Dokuments 
 - Zieh einen Tab – oder eine Datei aus der Seitenleiste – an den Rand eines Bereichs, und er öffnet sich in einem neuen Bereich auf dieser Seite. Ziehst du ihn an den äußeren Rand des Editors, öffnet er sich neben allen Bereichen: Am rechten Rand zweier übereinanderliegender Bereiche füllt er die rechte Seite von oben bis unten. Lege ihn auf den Tabs eines anderen Bereichs ab, um ihn dorthin zu verschieben.
 - Zieh die Linie zwischen zwei Bereichen, um ihre Größe zu ändern; ein Doppelklick darauf macht sie gleich groß. Ein Rechtsklick darauf ordnet sie übereinander statt nebeneinander an, vertauscht sie oder hebt die Teilung auf.
 - **Daneben öffnen** im Rechtsklickmenü eines Tabs zeigt ihn neben dem vorderen.
-- Schließt du den letzten Tab eines Bereichs, verschwindet der Bereich. Die ganze Anordnung kommt zurück, wenn du Textus wieder öffnest.
+- Schließt du den letzten Tab eines Bereichs, verschwindet der Bereich. Die ganze Anordnung kommt zurück, wenn du Moxie wieder öffnest.
 
 ## Tabs und Fenster
 
-`Cmd+N` (oder `Cmd+T`) öffnet einen neuen Tab, `Cmd+Shift+N` ein neues Fenster, und **Datei → Geschlossenen Tab wieder öffnen** (`Cmd+Shift+T`) holt die Dokumente zurück, die du geschlossen hast, das zuletzt geschlossene zuerst. Ein Mittelklick schließt einen Tab; das Rechtsklickmenü eines Tabs hat **Andere schließen**, **Tabs links schließen** und **Tabs rechts schließen** (Tabs mit ungespeicherten Änderungen bleiben offen), **Pfad kopieren** und **In neues Fenster verschieben**. Du kannst einen Tab auch aus dem Fenster ziehen, um ihm ein eigenes Fenster zu geben. Wenn Textus wieder öffnet, kommt jedes Fenster mit seinen eigenen Tabs zurück.
+`Cmd+N` (oder `Cmd+T`) öffnet einen neuen Tab, `Cmd+Shift+N` ein neues Fenster, und **Datei → Geschlossenen Tab wieder öffnen** (`Cmd+Shift+T`) holt die Dokumente zurück, die du geschlossen hast, das zuletzt geschlossene zuerst. Ein Mittelklick schließt einen Tab; das Rechtsklickmenü eines Tabs hat **Andere schließen**, **Tabs links schließen** und **Tabs rechts schließen** (Tabs mit ungespeicherten Änderungen bleiben offen), **Pfad kopieren** und **In neues Fenster verschieben**. Du kannst einen Tab auch aus dem Fenster ziehen, um ihm ein eigenes Fenster zu geben. Wenn Moxie wieder öffnet, kommt jedes Fenster mit seinen eigenen Tabs zurück.
 
 ## Ordner und Dateisuche
 
@@ -189,13 +189,13 @@ Der Baum ist auch eine kleine Dateiverwaltung. Der Name des übergeordneten Ordn
 
 Zieh Dateien aus dem Finder oder dem Datei-Explorer auf das Fenster, um sie zu öffnen: Dokumente öffnen sich in Tabs, Bilder kommen dort ins Dokument, wo du sie loslässt, und ein Ordner öffnet sich in der Seitenleiste. **Datei → Pfad kopieren** kopiert den vollständigen Pfad des vorderen Dokuments.
 
-Im Terminal öffnet `textus notizen.md` eine Datei in Textus; **Einstellungen → Allgemein** installiert den Befehl `textus`, falls er noch fehlt. Es kann mehr, ohne ein Fenster zu öffnen: `textus search <Wörter>` findet sie in den Dateien eines Ordners, `textus read` gibt eine PDF- oder Word-Datei als Markdown aus, und `textus help` listet alle Befehle auf, auch die der Plugins.
+Im Terminal öffnet `textus notizen.md` eine Datei in Moxie; **Einstellungen → Allgemein** installiert den Befehl `textus`, falls er noch fehlt. Es kann mehr, ohne ein Fenster zu öffnen: `textus search <Wörter>` findet sie in den Dateien eines Ordners, `textus read` gibt eine PDF- oder Word-Datei als Markdown aus, und `textus help` listet alle Befehle auf, auch die der Plugins.
 
 **Datei → Öffnen…** öffnet auch ein Word-Dokument (`.docx`), ebenso das Ablegen auf dem Fenster: Es wird ein neues, noch nicht gespeichertes Markdown-Dokument gleichen Namens mit seinen Überschriften, Listen, Tabellen, Links, Fußnoten und Bildern. Die Bilder kommen beim Speichern dorthin, wo **Einstellungen → Editor & Design → Bilder** eingefügte Bilder ablegt, und **Speichern** schlägt eine `.md`-Datei neben der Word-Datei vor. Manche Formatierung kann anders aussehen; die Word-Datei selbst wird nie verändert. Nur auf dem Desktop.
 
 ## Im Hintergrund weiterlaufen
 
-Schalte **Einstellungen → Allgemein → Anwendung → Im Hintergrund weiterlaufen** ein, dann läuft Textus nach dem Schließen des letzten Fensters weiter, mit seinem Symbol im Infobereich (Windows), im System-Tray (Linux) oder in der Menüleiste (Mac). **Textus öffnen** im Menü des Symbols bringt deine Dokumente zurück; **Textus beenden** dort beendet Textus wirklich. GNOME zeigt das Tray-Symbol nur mit der AppIndicator-Erweiterung.
+Schalte **Einstellungen → Allgemein → Anwendung → Im Hintergrund weiterlaufen** ein, dann läuft Moxie nach dem Schließen des letzten Fensters weiter, mit seinem Symbol im Infobereich (Windows), im System-Tray (Linux) oder in der Menüleiste (Mac). **Moxie öffnen** im Menü des Symbols bringt deine Dokumente zurück; **Moxie beenden** dort beendet Moxie wirklich. GNOME zeigt das Tray-Symbol nur mit der AppIndicator-Erweiterung.
 
 ## Exportieren
 
@@ -207,9 +207,9 @@ Schalte **Einstellungen → Allgemein → Anwendung → Im Hintergrund weiterlau
 
 ## Hilfe bekommen
 
-**Hilfe → Problem melden…** (auch unter **Einstellungen → Allgemein**, bei Hilfe) öffnet ein kurzes Formular. Gib an, welche Art von Meldung es ist, welchen Teil von Textus sie betrifft und bei einem Fehler, wie schlimm er ist, und beschreibe dann, was schiefgegangen ist; Textus fügt seine Version, dein System, deine Plugins, deine Einstellungen ohne alles Private und die letzten Fehler hinzu – alles wird dir gezeigt, bevor etwas gesendet wird. **Senden** legt sie für dich als Issue auf GitHub an, ganz ohne GitHub-Konto, und nennt dir die Nummer; **Auf GitHub senden** öffnet stattdessen das Formular von GitHub; **Kopieren** legt sie in die Zwischenablage, für einen Chat oder eine E-Mail. Was du schreibst, wird ein öffentliches Issue; eine E-Mail-Adresse oder WeChat-ID, die du hinterlässt, falls wir nachfragen dürfen, geht nur an das Team.
+**Hilfe → Problem melden…** (auch unter **Einstellungen → Allgemein**, bei Hilfe) öffnet ein kurzes Formular. Gib an, welche Art von Meldung es ist, welchen Teil von Moxie sie betrifft und bei einem Fehler, wie schlimm er ist, und beschreibe dann, was schiefgegangen ist; Moxie fügt seine Version, dein System, deine Plugins, deine Einstellungen ohne alles Private und die letzten Fehler hinzu – alles wird dir gezeigt, bevor etwas gesendet wird. **Senden** legt sie für dich als Issue auf GitHub an, ganz ohne GitHub-Konto, und nennt dir die Nummer; **Auf GitHub senden** öffnet stattdessen das Formular von GitHub; **Kopieren** legt sie in die Zwischenablage, für einen Chat oder eine E-Mail. Was du schreibst, wird ein öffentliches Issue; eine E-Mail-Adresse oder WeChat-ID, die du hinterlässt, falls wir nachfragen dürfen, geht nur an das Team.
 
-Unter **Einstellungen → Allgemein → Hilfe** kannst du außerdem die Einführung noch einmal ansehen, die Anleitungen öffnen und **Über Textus** aufrufen, mit der Version und **Nach Updates suchen** (auf dem Mac auch **Textus → Nach Updates suchen…**). **Hilfe → Zur Community** öffnet die Community-Seite.
+Unter **Einstellungen → Allgemein → Hilfe** kannst du außerdem die Einführung noch einmal ansehen, die Anleitungen öffnen und **Über Moxie** aufrufen, mit der Version und **Nach Updates suchen** (auf dem Mac auch **Moxie → Nach Updates suchen…**). **Hilfe → Zur Community** öffnet die Community-Seite.
 
 ## Fußnoten und Trennlinien
 

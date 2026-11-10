@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>次世代のMarkdownエディタ</strong><br>
@@ -47,7 +47,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/ja/hero.png" alt="『吾輩は猫である』と読書メモを開いたTextus。Textus AIがメモを一文ずつ簡潔にし、修正は余白に並び、本文の横にはレビューのコメントが付いている。" width="860" /><br>
+  <img src="docs/images/readme/ja/hero.png" alt="『吾輩は猫である』と読書メモを開いたTextus。Moxie AIがメモを一文ずつ簡潔にし、修正は余白に並び、本文の横にはレビューのコメントが付いている。" width="860" /><br>
   <sub>夏目漱石『吾輩は猫である』</sub>
 </p>
 
@@ -64,7 +64,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 
 > iPhone版とiPad版は、まもなくApp Storeで公開します（中国本土を除く）。
 
-ベータ版：**設定 › 一般 › Textus について** で **アップデートチャンネル** を **ベータ版** にします。
+ベータ版：**設定 › 一般 › Moxie について** で **アップデートチャンネル** を **ベータ版** にします。
 
 ## 執筆
 
@@ -80,7 +80,7 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 | **数式** | **ダイアグラム** |
 | <img src="docs/images/readme/ja/formula.webp" alt="入力するそばから描かれる数式" width="420" /> | <img src="docs/images/readme/ja/diagram.webp" alt="Mermaidのフローチャート" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 オンラインのLLMにもローカルのLLMにも対応。AIが執筆を加速します。
 
@@ -102,14 +102,14 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 
 マインドマップ、Marpのスライド、カンバン、タブで開くPDFとWord、Zoteroからの引用、さまざまなグラフなどは **設定 › 拡張機能** にあります。パソコンでもiPhoneとiPadでも使えます。
 
-多くのプラグインは自分の機能を Textus AI にも渡すので、会話の中で頼むだけで使えます。プラグインは [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins)、テーマは [textus-themes](https://github.com/CatVinci-Studio/textus-themes) にあり、自作のテーマも共有できます。
+多くのプラグインは自分の機能を Moxie AI にも渡すので、会話の中で頼むだけで使えます。プラグインは [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins)、テーマは [textus-themes](https://github.com/CatVinci-Studio/textus-themes) にあり、自作のテーマも共有できます。
 
 ## よくある質問
 
 <details>
 <summary><strong>Textusは無料ですか？</strong></summary>
 
-はい。MITライセンスのオープンソースで、アカウントもサブスクリプションも要りません。Textus AIの利用料は、選んだプロバイダーから直接請求されます。ローカルモデルなら費用はかかりません。
+はい。MITライセンスのオープンソースで、アカウントもサブスクリプションも要りません。Moxie AIの利用料は、選んだプロバイダーから直接請求されます。ローカルモデルなら費用はかかりません。
 
 </details>
 
@@ -130,14 +130,14 @@ macOS（AppleシリコンとIntel）、Windows、Linux、そしてApp Storeか�
 <details>
 <summary><strong>AIのアカウントは必要ですか？</strong></summary>
 
-いいえ。エディタの機能は、AIなしですべて使えます。Textus AIを使うときは、ご自身のプロバイダーを接続します。ChatGPTやClaudeでのサインイン、APIキーの入力、Ollamaによるローカルモデルのどれでも使えます。
+いいえ。エディタの機能は、AIなしですべて使えます。Moxie AIを使うときは、ご自身のプロバイダーを接続します。ChatGPTやClaudeでのサインイン、APIキーの入力、Ollamaによるローカルモデルのどれでも使えます。
 
 </details>
 
 <details>
 <summary><strong>オフラインでも使えますか？</strong></summary>
 
-エディタはすべての機能が使えます。Textus AIにはプロバイダーへの接続が必要ですが、ローカルモデルならオフラインでも動きます。
+エディタはすべての機能が使えます。Moxie AIにはプロバイダーへの接続が必要ですが、ローカルモデルならオフラインでも動きます。
 
 </details>
 
@@ -157,7 +157,7 @@ macOS（AppleシリコンとIntel）、Windows、Linux、そしてApp Storeか�
 
 ## ロードマップと開発への参加
 
-Textus の今後の方向は [ROADMAP.md](ROADMAP.md)（英語）にあります。ビルド、チェックの実行、プルリクエストの作成は [CONTRIBUTING.md](CONTRIBUTING.md)（英語）から始めてください。AI コーディングアシスタントは [AGENTS.md](AGENTS.md) に従います。やり取りは英語か中国語でお願いします。
+Moxie の今後の方向は [ROADMAP.md](ROADMAP.md)（英語）にあります。ビルド、チェックの実行、プルリクエストの作成は [CONTRIBUTING.md](CONTRIBUTING.md)（英語）から始めてください。AI コーディングアシスタントは [AGENTS.md](AGENTS.md) に従います。やり取りは英語か中国語でお願いします。
 
 ## スターの推移
 

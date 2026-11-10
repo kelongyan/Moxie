@@ -6,20 +6,20 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `${AI_NAME} を有効にする`,
-  textusAiOffHint: "オフの間は、どの AI サービスにも何も送信しません。",
-  textusAiMenuHint: "右クリックで一時停止またはオフ",
-  textusAiClosePanel: "パネルを閉じる",
-  textusAiPause: "1 時間停止",
-  textusAiTurnOff: `${AI_NAME} をオフにする`,
-  textusAiPausedTooltip: `${AI_NAME} は {time} まで停止中 · クリックでオン`,
-  textusAiOffTooltip: `${AI_NAME} はオフ · クリックでオン`,
-  textusAiOff: `${AI_NAME} はオフです`,
-  textusAiTurnOn: `${AI_NAME} をオンにする`,
-  announceTextusAiOn: `${AI_NAME} をオンにしました。`,
-  announceTextusAiOff: `${AI_NAME} をオフにしました。`,
-  shortcutToggleTextusAi: `${AI_NAME} のオン/オフ`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `${AI_NAME} を有効にする`,
+  moxieAiOffHint: "オフの間は、どの AI サービスにも何も送信しません。",
+  moxieAiMenuHint: "右クリックで一時停止またはオフ",
+  moxieAiClosePanel: "パネルを閉じる",
+  moxieAiPause: "1 時間停止",
+  moxieAiTurnOff: `${AI_NAME} をオフにする`,
+  moxieAiPausedTooltip: `${AI_NAME} は {time} まで停止中 · クリックでオン`,
+  moxieAiOffTooltip: `${AI_NAME} はオフ · クリックでオン`,
+  moxieAiOff: `${AI_NAME} はオフです`,
+  moxieAiTurnOn: `${AI_NAME} をオンにする`,
+  announceMoxieAiOn: `${AI_NAME} をオンにしました。`,
+  announceMoxieAiOff: `${AI_NAME} をオフにしました。`,
+  shortcutToggleMoxieAi: `${AI_NAME} のオン/オフ`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "別ウィンドウで開く",
   agentPanelResize: "AIパネルの幅を調整",
   sidebarResize: "サイドバーの幅を調整",
@@ -87,7 +87,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   用語    「ユーザー」と書き、「ユーザ」とは書かない。
   背景    一般読者向けの科学記事を書いている。
 
-特定のプロジェクトだけの指示は、そのプロジェクトの .textus/agent.md
+特定のプロジェクトだけの指示は、そのプロジェクトの .moxie/agent.md
 に書きます。AIパネルのプロジェクトメニューにある
 「このプロジェクトの執筆の指示を編集」で開けます。両方が送られ、
 食い違う点はプロジェクトの指示が優先されます。
@@ -314,8 +314,8 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "画像は API のクレジットではなく、ChatGPT プランの画像生成枠を使います。ChatGPT 自身のアプリが使うサービスを経由するため、公開 API ではなく、予告なく使えなくなることがあります。OpenAI の API キーはその場合も使えます。",
   imagesPerRequestLabel: "1 回のリクエストの画像数",
   imagesPerRequestHelp:
-    "Textus AI が 1 回のリクエストで作る画像の上限です。API キーでは 1 枚ごとに費用がかかり、プランでは画像生成枠を使います。枚数を指定すればその数だけ、この上限まで作ります。",
-  changePictureWithAi: "Textus AI でこの画像を変更…",
+    "Moxie AI が 1 回のリクエストで作る画像の上限です。API キーでは 1 枚ごとに費用がかかり、プランでは画像生成枠を使います。枚数を指定すればその数だけ、この上限まで作ります。",
+  changePictureWithAi: "Moxie AI でこの画像を変更…",
   oldPictureTrashQuestion:
     "新しい画像を入れました。古い画像「{name}」をゴミ箱に入れますか？",
   oldPictureTrashOk: "ゴミ箱に入れる",
@@ -342,7 +342,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   chatPluginCheckPermission:
     "「{permission}」を使っていますが、その権限を求めていません。",
   chatPluginCheckWhen:
-    "メニュー項目の条件が {key} を使っていますが、Textus にはありません。この項目は表示されません。",
+    "メニュー項目の条件が {key} を使っていますが、Moxie にはありません。この項目は表示されません。",
   chatPluginCheckUnregistered:
     "{id} を宣言していますが、コードで登録していません。",
   chatPluginRunError: "実行中にエラー：{error}",
@@ -357,7 +357,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   skillWarnCreateMode:
     "作成モードでは、スキルを自分で書いたり変えたりできます。すべての行を信頼できる場合だけ残してください。",
   skillWarnPromptInjection:
-    "指示が Textus AI 自身の指示を上書きしようとしているように見えます（「以前の指示を無視」など）。保存する前に読んでください。",
+    "指示が Moxie AI 自身の指示を上書きしようとしているように見えます（「以前の指示を無視」など）。保存する前に読んでください。",
   skillWarnHiddenText:
     "見えない文字が含まれており、指示が隠れている可能性があります。保存する前に読んでください。",
   chatShowCode: "コードを見る",
@@ -570,7 +570,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   treeTrashFolderConfirm:
     "フォルダ「{name}」とその中身をすべてゴミ箱に入れますか？ゴミ箱から元に戻せます。",
   errorPermission:
-    "Textus にはこのファイルまたはフォルダへのアクセス権がありません。権限を確認するか、別の場所を選んでください。",
+    "Moxie にはこのファイルまたはフォルダへのアクセス権がありません。権限を確認するか、別の場所を選んでください。",
   errorNotFound:
     "ファイルまたはフォルダが見つかりません。移動、名前の変更、または削除された可能性があります。",
   errorDiskFull:
@@ -582,14 +582,14 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "時間がかかりすぎました。接続を確認して、もう一度お試しください。",
   errorNetwork:
     "接続できませんでした。インターネット接続またはプロキシ設定を確認してください。",
-  errorFileTooBig: "このファイルは大きすぎて Textus で開けません。",
-  errorNotDocument: "Textus はこのファイルを文書として読み込めません。",
+  errorFileTooBig: "このファイルは大きすぎて Moxie で開けません。",
+  errorNotDocument: "Moxie はこのファイルを文書として読み込めません。",
   errorBadName:
     "この名前は使えません。名前は空にできず、/ や \\ も含められません。",
   errorMoveIntoItself: "フォルダをそれ自身の中には移動できません。",
   errorPluginTooBig: "このプラグインは大きすぎてインストールできません。",
   errorCatalogNewer:
-    "プラグインストアには新しい Textus が必要です。Textus をアップデートしてください。",
+    "プラグインストアには新しい Moxie が必要です。Moxie をアップデートしてください。",
   errorImageTooBig: "画像が空か、25 MB を超えています。",
   errorNoFolder: "先にフォルダを開いてください。",
   treeNameTaken: "ここにはすでに「{name}」という名前のものがあります。",
@@ -649,7 +649,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   navPrivacy: "プライバシー",
   navAbout: "について",
   navGuides: "使い方ガイド",
-  aboutTextus: "Textus について",
+  aboutMoxie: "Moxie について",
   aboutVersion: "バージョン {version}",
   aboutMadeBy: "CatVinci Studio 制作",
   aboutQq: "QQ グループ",
@@ -671,7 +671,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "ベータ版（{version}）を使っています。安定版はこれより古く、戻すとそちらをインストールします。",
   backToStableButton: "安定版に戻す",
   backToStableConfirm:
-    "安定版の Textus {version} をインストールしますか？今のベータ版（{beta}）より古いバージョンです。文書はそのままです。ベータ版にしかないもの（プラグインなど）は引き継がれないことがあります。",
+    "安定版の Moxie {version} をインストールしますか？今のベータ版（{beta}）より古いバージョンです。文書はそのままです。ベータ版にしかないもの（プラグインなど）は引き継がれないことがあります。",
   backToStableInstall: "{version} をインストール",
   backToStableNone: "今は戻れる安定版がありません。",
   aiCompletionLabel: "AI補完を有効にする",
@@ -731,7 +731,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   agentSkillsBuiltinTag: "組み込み",
   agentSkillsOpen: "開く",
   agentSkillsReset: "リセット",
-  madeByTextusAi: `${AI_NAME} で作成`,
+  madeByMoxieAi: `${AI_NAME} で作成`,
   skillDelete: "削除",
   skillDeleteAsk: "「{name}」を削除しますか？ファイルはゴミ箱に移動します。",
   skillDeleteAskMobile: "「{name}」を削除しますか？",
@@ -858,7 +858,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   agentRetry: "再試行",
   pictureRedraw: "描き直す…",
   pictureRedrawTitle: "画像を描き直す",
-  pictureRedrawPrompt: "画像の説明 - 書き換えると Textus が描き直します：",
+  pictureRedrawPrompt: "画像の説明 - 書き換えると Moxie が描き直します：",
   pictureRedrawOk: "描き直す",
   agentThinking: "考え中…",
   agentWritingEdit: "修正を書いています…",
@@ -879,7 +879,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   chatHistorySearch: "会話を検索",
   chatHistorySearchNone: "この言葉を含む会話はありません。",
   chatHistoryByYou: "あなた",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "この会話を元の文書と一緒に開き直す",
   chatHistoryDelete: "会話を削除",
   chatHistoryRestoreHereHint:
@@ -1004,9 +1004,9 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "参考文献の .csl ファイル。選ばない場合、Pandoc はシカゴ（著者・年）形式を使います。",
   pandocArgsLabel: "Pandoc の引数",
   pandocArgsHelp:
-    "この形式の Pandoc コマンドに語ごとに加えます。シェルは通しません。空白を含む値は引用符で囲んでください。--from、--to、--output は Textus が設定します。",
+    "この形式の Pandoc コマンドに語ごとに加えます。シェルは通しません。空白を含む値は引用符で囲んでください。--from、--to、--output は Moxie が設定します。",
   pandocArgsAll: "すべての形式",
-  pandocArgsOwned: "{arg} は Textus が設定します。外してください。",
+  pandocArgsOwned: "{arg} は Moxie が設定します。外してください。",
   pandocErrorSettings:
     "Pandoc の設定は 設定 › {page} › {group} と、その詳細設定の引数にあります。",
   pdfLightColorsLabel: "PDF を明るい配色で書き出す",
@@ -1107,7 +1107,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   reportKindQuestion: "質問",
   reportAreaLabel: "関係する部分",
   reportAreaEditor: "執筆と編集",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "プラグインとテーマ",
   reportAreaPanes: "タブ・分割・ウインドウ",
   reportAreaExport: "書き出しと印刷",
@@ -1187,7 +1187,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   updateDownloading: "アップデートをダウンロード中…",
   updateFailed: "アップデートに失敗しました：",
   updateViaPackageManager: `${APP_NAME} はパッケージマネージャーでインストールされています。そちらで更新してください。`,
-  cliCommandLabel: "Textus CLI をインストール",
+  cliCommandLabel: "Moxie CLI をインストール",
   cliCommandInstalled: "インストール済み",
   cliCommandNotInstalled: "未インストール",
   cliCommandInstallButton: "インストール",
@@ -1261,9 +1261,9 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   settingsFileImportConfirm:
     "このファイルの設定で今の設定を置き換えますか？このコンピュータの API キーと MCP トークンはそのままです。",
   settingsFileImportReplace: "置き換える",
-  settingsFileNotSettings: "このファイルは Textus の設定ではありません。",
+  settingsFileNotSettings: "このファイルは Moxie の設定ではありません。",
   settingsFileWithAi:
-    "AI の記録（すべての会話とメモリー）も書き出しますか？ファイルに Textus AI との会話の内容が含まれます。",
+    "AI の記録（すべての会話とメモリー）も書き出しますか？ファイルに Moxie AI との会話の内容が含まれます。",
   settingsFileWithAiYes: "AI の記録を含める",
   settingsFileSettingsOnly: "設定のみ",
   settingsFileImportAi:
@@ -1441,7 +1441,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   privacyDraftRecoveryToggle: "クラッシュ後に未保存の内容を復元する",
   privacyKeepUnsavedToggle: "閉じるときに未保存の変更を残す（確認しない）",
   privacyKeepUnsavedHelp:
-    "未保存の変更があるウィンドウを閉じても保存を確認しません。次に Textus を起動すると、その書類が変更ごと開きます。ファイル自体は保存するまでそのままです。",
+    "未保存の変更があるウィンドウを閉じても保存を確認しません。次に Moxie を起動すると、その書類が変更ごと開きます。ファイル自体は保存するまでそのままです。",
   privacyDraftRecoveryClearHint:
     "ディスク上のスナップショットをすべて削除します。元に戻せません。",
   privacyClearButton: "消去",
@@ -1495,7 +1495,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "読み込めるのは .md、.markdown、.txt ファイルだけです。",
   backgroundToggle: "バックグラウンドで実行し続ける",
   backgroundTrayUnavailable: `このデスクトップではトレイを使えません（libayatana-appindicator がインストールされていません）。${APP_NAME} はバックグラウンドで実行を続けます。ランチャーからもう一度開いてください。`,
-  trayOpenTextus: `${APP_NAME} を開く`,
+  trayOpenMoxie: `${APP_NAME} を開く`,
   navExtensions: "拡張機能",
   extensionsTabPlugins: "プラグイン",
   extensionsTabThemes: "テーマ",
@@ -1509,7 +1509,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   createMakePlugin: "プラグインを作る",
   createMakeSkill: "スキルを作る",
   createNew: "新規",
-  createAiOff: "作成するには Textus AI をオンにしてください。",
+  createAiOff: "作成するには Moxie AI をオンにしてください。",
   createExamples: "例",
   createExamplePluginTodo:
     "フォルダーを開いていなくてもタスクを保存できる、サイドバーの ToDo リスト",
@@ -1517,7 +1517,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   createExampleSkillWeekly:
     "メモを週報にまとめる：完了・次にやること・止まっていること",
   extensionsIntroPlugins:
-    "Textus に新しいパネル、ファイル形式、ツールを加えます。",
+    "Moxie に新しいパネル、ファイル形式、ツールを加えます。",
   extensionsIntroThemes: "選んだテーマの上に重ねる、文書の見た目です。",
   extensionsIntroSkills: `ある種の作業をうまくこなす方法。${AI_NAME} と / メニューで使えます。`,
   extensionsIntroMcp: `${AI_NAME} にツールを増やすサーバーです。`,
@@ -1579,7 +1579,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   pluginsCatalogKept:
     "前回の一覧を表示しています。新しい一覧を取得できませんでした：{reason}",
   pluginInstall: "インストール",
-  pluginNeedsTextus: "Textus {version} が必要",
+  pluginNeedsMoxie: "Moxie {version} が必要",
   pluginInstalling: "インストール中…",
   pluginsSortLabel: "並べ替え",
   pluginsSortPopular: "インストール数",
@@ -1601,8 +1601,8 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   floatingClose: "「{name}」を閉じる",
   floatingToDesktop: "「{name}」をデスクトップに出す",
   floatingToWindow: "「{name}」をウインドウに戻す",
-  floatingOpenApp: "Textus を開く",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Moxie を開く",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "すべてのプラグイン",
   pluginSettingsScope: "適用先",
   pluginSettingsScopeGlobal: "すべての文書",
@@ -1632,13 +1632,13 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   pluginsAllHelp:
     "オフにすると、プラグインは動作せず、追加した項目も表示されません。プラグインとその設定はそのまま残ります。",
   pluginsInstallHelp:
-    "プラグインパッケージ（.textusplugin）は Textus にコピーされます。プラグインフォルダはその場所から読み込まれ、作成中のプラグインを試せます。再読み込みもその場所から行います。",
+    "プラグインパッケージ（.textusplugin）は Moxie にコピーされます。プラグインフォルダはその場所から読み込まれ、作成中のプラグインを試せます。再読み込みもその場所から行います。",
   pluginsInstallFile: "ファイルからインストール…",
   pluginFormPrevMonth: "前の月",
   pluginFormNextMonth: "次の月",
   pluginsLoadFolder: "プラグインフォルダを読み込む…",
   pluginsOpenScripts: "スクリプトフォルダを開く",
-  pluginPackageFilter: "Textus プラグイン",
+  pluginPackageFilter: "Moxie プラグイン",
   pluginsInstalledGroup: "インストール済み",
   pluginOpenInstall: "インストールして開く",
   pluginOpenTurnOnButton: "オンにして開く",
@@ -1647,7 +1647,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   conventionsCardLine:
     "このフォルダの {app} 設定では、画像を {folder} に保存します",
   conventionsCardDetails:
-    "現在の設定：{current}。採用すると、このフォルダの .textus/settings.json に保存され、プロジェクトと共に保持されます。",
+    "現在の設定：{current}。採用すると、このフォルダの .moxie/settings.json に保存され、プロジェクトと共に保持されます。",
   conventionsFolderRoot: "フォルダの最上位",
   conventionsFollow: "採用",
   conventionsDecline: "現在の設定を維持",
@@ -1663,14 +1663,14 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "追加したスキルはまだありません。下の「{section}」から選ぶか、自分で作れます。",
   pluginStatusBroken: "読み込めません：{reason}",
   pluginStatusDesktopOnly: "パソコン専用です。iPhone と iPad では使えません。",
-  pluginStatusIncompatible: "別のバージョンの Textus 用です（{range}）。",
+  pluginStatusIncompatible: "別のバージョンの Moxie 用です（{range}）。",
   pluginStatusFailed: "オフになりました：{reason}",
   pluginStatusAllOff: "プラグインはオフです。",
   pluginDevTag: "開発中",
   pluginEnableLabel: "{name} をオンにする",
   pluginAddsLabel: "追加するもの",
   pluginAddsSidebarTab: "サイドバーのタブ「{name}」",
-  pluginAddsAiTool: "Textus AI のツール：{name}",
+  pluginAddsAiTool: "Moxie AI のツール：{name}",
   pluginAddsFileType: "{types} を開く",
   pluginPermissionsLabel: "権限",
   pluginNoPermissions: "権限は必要ありません。",
@@ -1691,7 +1691,7 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
     "公開者名を入力してください（小文字・数字・ハイフン）。GitHub のユーザー名がおすすめです。プラグイン ID の「local」がこの名前に置き換わります。",
   pluginExportChooseFolder: "フォルダを選ぶ…",
   pluginExportDone:
-    "{path} に書き出しました。\n\nこのフォルダを GitHub リポジトリにして v0.1.0 のようなタグをプッシュすると、同梱のリリース用ワークフローがプラグインを公開します。Textus に掲載する方法はフォルダ内の README をご覧ください。",
+    "{path} に書き出しました。\n\nこのフォルダを GitHub リポジトリにして v0.1.0 のようなタグをプッシュすると、同梱のリリース用ワークフローがプラグインを公開します。Moxie に掲載する方法はフォルダ内の README をご覧ください。",
   pluginUriNotTaken: "このリンクを開ける有効なプラグインがありません：{link}",
   uriCommandConfirm:
     "リンクが「{command}」の実行を求めています。実行しますか？",
@@ -1717,13 +1717,13 @@ ${AI_NAME}への執筆の指示です。すべての文書に適用されます�
   pluginPermEditorInput:
     "エディタで押すキーを引き受け、そのキーのとおりに編集する",
   pluginPermProjectData:
-    "開いているフォルダー（.textus/plugins）に自分のデータを保存する",
-  pluginPermAiTools: "Textus AI に独自のツールを提供する",
+    "開いているフォルダー（.moxie/plugins）に自分のデータを保存する",
+  pluginPermAiTools: "Moxie AI に独自のツールを提供する",
   pluginPermNotifications: "システム通知を表示する",
   pluginPermBackground:
     "スケジュールに従ってコードを実行する（すべてのウインドウを閉じていても）",
   pluginScheduleNotice:
-    "{name} が予定を設定しました。Textus の実行中にだけ動きます。「{setting}」をオンにすると、すべてのウインドウを閉じていても動きます。",
+    "{name} が予定を設定しました。Moxie の実行中にだけ動きます。「{setting}」をオンにすると、すべてのウインドウを閉じていても動きます。",
   pluginPermNetwork: "{host} に接続する",
   pluginPermNetworkAny: "任意のウェブサイトに接続する",
   menuPlugins: "プラグイン",

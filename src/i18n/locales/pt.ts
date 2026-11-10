@@ -6,20 +6,20 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `Ativar ${AI_NAME}`,
-  textusAiOffHint: "Desativada: nada é enviado a nenhum serviço de IA.",
-  textusAiMenuHint: "Clique com o botão direito para pausar ou desativar",
-  textusAiClosePanel: "Fechar o painel",
-  textusAiPause: "Pausar por uma hora",
-  textusAiTurnOff: `Desativar ${AI_NAME}`,
-  textusAiPausedTooltip: `${AI_NAME} está em pausa até {time} · Clique para ativar`,
-  textusAiOffTooltip: `${AI_NAME} está desativada · Clique para ativar`,
-  textusAiOff: `${AI_NAME} está desativada`,
-  textusAiTurnOn: `Ativar ${AI_NAME}`,
-  announceTextusAiOn: `${AI_NAME} ativada.`,
-  announceTextusAiOff: `${AI_NAME} desativada.`,
-  shortcutToggleTextusAi: `Ativar ou desativar ${AI_NAME}`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `Ativar ${AI_NAME}`,
+  moxieAiOffHint: "Desativada: nada é enviado a nenhum serviço de IA.",
+  moxieAiMenuHint: "Clique com o botão direito para pausar ou desativar",
+  moxieAiClosePanel: "Fechar o painel",
+  moxieAiPause: "Pausar por uma hora",
+  moxieAiTurnOff: `Desativar ${AI_NAME}`,
+  moxieAiPausedTooltip: `${AI_NAME} está em pausa até {time} · Clique para ativar`,
+  moxieAiOffTooltip: `${AI_NAME} está desativada · Clique para ativar`,
+  moxieAiOff: `${AI_NAME} está desativada`,
+  moxieAiTurnOn: `Ativar ${AI_NAME}`,
+  announceMoxieAiOn: `${AI_NAME} ativada.`,
+  announceMoxieAiOff: `${AI_NAME} desativada.`,
+  shortcutToggleMoxieAi: `Ativar ou desativar ${AI_NAME}`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "Abrir em uma janela separada",
   agentPanelResize: "Redimensionar o painel de IA",
   sidebarResize: "Redimensionar a barra lateral",
@@ -89,7 +89,7 @@ Vale a pena escrever aqui, por exemplo:
   Termos       Escreva “e-mail”, nunca “email”.
   Contexto     Escrevo reportagens longas de divulgação científica para o público geral.
 
-Instruções para um só projeto ficam no .textus/agent.md desse projeto
+Instruções para um só projeto ficam no .moxie/agent.md desse projeto
 (menu do projeto no painel de IA > Editar instruções de escrita do projeto).
 Os dois são enviados; quando divergem, vale o do projeto.
 
@@ -330,8 +330,8 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "As imagens saem da cota de imagens do seu plano do ChatGPT, não do crédito da API. Elas passam pelo serviço que os próprios apps do ChatGPT usam, que não é uma API publicada e pode parar de funcionar sem aviso; uma chave de API da OpenAI continua funcionando de qualquer forma.",
   imagesPerRequestLabel: "Imagens por pedido",
   imagesPerRequestHelp:
-    "O máximo de imagens que o Textus AI cria num pedido. Com uma chave de API cada uma custa dinheiro; com um plano, usa a cota dele. Diga quantas quer e ele cria essas, até este número.",
-  changePictureWithAi: "Mudar esta imagem com o Textus AI…",
+    "O máximo de imagens que o Moxie AI cria num pedido. Com uma chave de API cada uma custa dinheiro; com um plano, usa a cota dele. Diga quantas quer e ele cria essas, até este número.",
+  changePictureWithAi: "Mudar esta imagem com o Moxie AI…",
   oldPictureTrashQuestion:
     "A imagem nova já está no lugar. Mover a antiga, “{name}”, para a lixeira?",
   oldPictureTrashOk: "Mover para a lixeira",
@@ -361,7 +361,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   skillWarnCreateMode:
     "No modo Criar, poderia escrever ou mudar habilidades por si mesma. Deixe-a lá só se confiar em cada linha.",
   skillWarnPromptInjection:
-    "As instruções parecem tentar anular as do Textus AI («ignore as instruções anteriores»). Leia-a antes de a guardar.",
+    "As instruções parecem tentar anular as do Moxie AI («ignore as instruções anteriores»). Leia-a antes de a guardar.",
   skillWarnHiddenText:
     "Contém caracteres invisíveis, que podem esconder instruções. Leia-a antes de a guardar.",
   chatShowCode: "Ver o código",
@@ -371,7 +371,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "Desenha na própria página, algo que um plugin não pode fazer: nada vai aparecer.",
   chatPluginCheckPermission: "Usa {permission} sem pedir essa permissão.",
   chatPluginCheckWhen:
-    "A condição de um item de menu lê {key}, que o Textus não define: o item nunca aparece.",
+    "A condição de um item de menu lê {key}, que o Moxie não define: o item nunca aparece.",
   chatPluginCheckUnregistered: "Declara {id} mas nunca o registra.",
   chatPluginRunError: "Parou com: {error}",
   chatPluginFix: "Corrigir com IA",
@@ -593,7 +593,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   treeTrashFolderConfirm:
     "Mover a pasta “{name}” e tudo o que ela contém para a lixeira? Dá para recuperar de lá.",
   errorPermission:
-    "O Textus não tem permissão para abrir este arquivo ou pasta. Verifique as permissões ou escolha outro local.",
+    "O Moxie não tem permissão para abrir este arquivo ou pasta. Verifique as permissões ou escolha outro local.",
   errorNotFound:
     "O arquivo ou a pasta não está mais lá. Pode ter sido movido, renomeado ou excluído.",
   errorDiskFull: "O disco está cheio. Libere espaço e tente de novo.",
@@ -603,14 +603,14 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   errorTimeout: "Demorou demais. Verifique sua conexão e tente de novo.",
   errorNetwork:
     "Não foi possível conectar. Verifique sua conexão com a internet ou as configurações de proxy.",
-  errorFileTooBig: "Este arquivo é grande demais para abrir no Textus.",
-  errorNotDocument: "O Textus não consegue ler este arquivo como documento.",
+  errorFileTooBig: "Este arquivo é grande demais para abrir no Moxie.",
+  errorNotDocument: "O Moxie não consegue ler este arquivo como documento.",
   errorBadName:
     "Esse nome não pode ser usado. Um nome não pode ficar vazio nem conter / ou \\.",
   errorMoveIntoItself: "Uma pasta não pode ser movida para dentro dela mesma.",
   errorPluginTooBig: "Este plugin é grande demais para instalar.",
   errorCatalogNewer:
-    "A loja de plugins precisa de uma versão mais nova do Textus. Atualize o Textus para vê-la.",
+    "A loja de plugins precisa de uma versão mais nova do Moxie. Atualize o Moxie para vê-la.",
   errorImageTooBig: "A imagem está vazia ou tem mais de 25 MB.",
   errorNoFolder: "Abra uma pasta primeiro.",
   treeNameTaken: "Já existe algo chamado “{name}” aqui.",
@@ -674,7 +674,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   navPrivacy: "Privacidade",
   navAbout: "Sobre",
   navGuides: "Guias",
-  aboutTextus: "Sobre o Textus",
+  aboutMoxie: "Sobre o Moxie",
   aboutVersion: "Versão {version}",
   aboutMadeBy: "Feito pela CatVinci Studio",
   aboutQq: "Grupo do QQ",
@@ -696,7 +696,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "Você está usando uma beta ({version}). A versão estável é mais antiga; voltar a instala.",
   backToStableButton: "Voltar à estável",
   backToStableConfirm:
-    "Instalar o Textus {version}, a versão estável? Ela é mais antiga que a sua beta ({beta}). Seus documentos não mudam; o que só a beta tem (os plugins, por exemplo) pode não continuar.",
+    "Instalar o Moxie {version}, a versão estável? Ela é mais antiga que a sua beta ({beta}). Seus documentos não mudam; o que só a beta tem (os plugins, por exemplo) pode não continuar.",
   backToStableInstall: "Instalar {version}",
   backToStableNone: "No momento não há uma versão estável para a qual voltar.",
   aiCompletionLabel: "Ativar autocompletar com IA",
@@ -754,7 +754,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   agentSkillsBuiltinTag: "Integrada",
   agentSkillsOpen: "Abrir",
   agentSkillsReset: "Restaurar",
-  madeByTextusAi: `Feito com ${AI_NAME}`,
+  madeByMoxieAi: `Feito com ${AI_NAME}`,
   skillDelete: "Excluir",
   skillDeleteAsk: "Excluir “{name}”? Os arquivos vão para a Lixeira.",
   skillDeleteAskMobile: "Excluir “{name}”?",
@@ -883,7 +883,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   pictureRedraw: "Redesenhar…",
   pictureRedrawTitle: "Redesenhar a imagem",
   pictureRedrawPrompt:
-    "O que a imagem mostra - altere e o Textus a desenha de novo:",
+    "O que a imagem mostra - altere e o Moxie a desenha de novo:",
   pictureRedrawOk: "Redesenhar",
   agentThinking: "Pensando…",
   agentWritingEdit: "Escrevendo a alteração…",
@@ -916,7 +916,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   chatHistorySearch: "Pesquisar conversas",
   chatHistorySearchNone: "Nenhuma conversa tem estas palavras.",
   chatHistoryByYou: "Você",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "Reabrir esta conversa com o seu documento",
   chatHistoryDelete: "Apagar conversa",
   chatHistoryRestoreHereHint:
@@ -1045,9 +1045,9 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "Um arquivo .csl para a bibliografia. Sem ele, o Pandoc usa Chicago autor-data.",
   pandocArgsLabel: "Argumentos do Pandoc",
   pandocArgsHelp:
-    "Adicionados ao comando do Pandoc para este formato, palavra por palavra e nunca por um shell. Coloque entre aspas um valor com espaços. O Textus define --from, --to e --output.",
+    "Adicionados ao comando do Pandoc para este formato, palavra por palavra e nunca por um shell. Coloque entre aspas um valor com espaços. O Moxie define --from, --to e --output.",
   pandocArgsAll: "Todos os formatos",
-  pandocArgsOwned: "{arg} é definido pelo Textus; remova-o.",
+  pandocArgsOwned: "{arg} é definido pelo Moxie; remova-o.",
   pandocErrorSettings:
     "Suas opções do Pandoc estão em Ajustes › {page} › {group} e nos argumentos avançados.",
   pdfLightColorsLabel: "Exportar PDFs em cores claras",
@@ -1148,7 +1148,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   reportKindQuestion: "Uma pergunta",
   reportAreaLabel: "Sobre",
   reportAreaEditor: "Escrita e edição",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "Plugins e temas",
   reportAreaPanes: "Abas, painéis e janelas",
   reportAreaExport: "Exportação e impressão",
@@ -1233,7 +1233,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   updateDownloading: "Baixando a atualização…",
   updateFailed: "Falha na atualização:",
   updateViaPackageManager: `O ${APP_NAME} foi instalado pelo seu gerenciador de pacotes. Atualize-o por lá.`,
-  cliCommandLabel: "Instalar o Textus CLI",
+  cliCommandLabel: "Instalar o Moxie CLI",
   cliCommandInstalled: "Instalado",
   cliCommandNotInstalled: "Não instalado",
   cliCommandInstallButton: "Instalar",
@@ -1309,9 +1309,9 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   settingsFileImportConfirm:
     "Substituir seus ajustes pelos deste arquivo? As chaves de API e os tokens de MCP deste computador são mantidos.",
   settingsFileImportReplace: "Substituir",
-  settingsFileNotSettings: "Este arquivo não contém ajustes do Textus.",
+  settingsFileNotSettings: "Este arquivo não contém ajustes do Moxie.",
   settingsFileWithAi:
-    "Exportar também seus registros de IA, todas as conversas e memórias? O arquivo incluirá o que você escreveu para o Textus AI.",
+    "Exportar também seus registros de IA, todas as conversas e memórias? O arquivo incluirá o que você escreveu para o Moxie AI.",
   settingsFileWithAiYes: "Incluir registros de IA",
   settingsFileSettingsOnly: "Só as configurações",
   settingsFileImportAi:
@@ -1490,7 +1490,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   privacyKeepUnsavedToggle:
     "Manter as alterações não salvas ao fechar, sem perguntar",
   privacyKeepUnsavedHelp:
-    "Fechar uma janela com alterações não salvas não pergunta mais se deve salvar: os documentos abrem de novo com as alterações na próxima vez que o Textus iniciar. Os arquivos ficam como estavam até você salvar.",
+    "Fechar uma janela com alterações não salvas não pergunta mais se deve salvar: os documentos abrem de novo com as alterações na próxima vez que o Moxie iniciar. Os arquivos ficam como estavam até você salvar.",
   privacyDraftRecoveryClearHint:
     "Remove os instantâneos que estiverem no disco. Esta ação não pode ser desfeita.",
   privacyClearButton: "Limpar",
@@ -1544,7 +1544,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "Só é possível importar arquivos .md, .markdown e .txt.",
   backgroundToggle: "Continuar em segundo plano",
   backgroundTrayUnavailable: `Este ambiente não tem bandeja: o libayatana-appindicator não está instalado. O ${APP_NAME} continua em segundo plano; abra-o de novo pelo lançador.`,
-  trayOpenTextus: `Abrir o ${APP_NAME}`,
+  trayOpenMoxie: `Abrir o ${APP_NAME}`,
   navExtensions: "Extensões",
   extensionsTabPlugins: "Plugins",
   extensionsTabThemes: "Temas",
@@ -1558,7 +1558,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   createMakePlugin: "Crie seu plugin",
   createMakeSkill: "Crie sua habilidade",
   createNew: "Novo",
-  createAiOff: "Ative a Textus AI para criar.",
+  createAiOff: "Ative a Moxie AI para criar.",
   createExamples: "Experimente",
   createExamplePluginTodo:
     "Uma lista de tarefas na barra lateral que guarda minhas tarefas mesmo sem pasta aberta",
@@ -1567,7 +1567,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   createExampleSkillWeekly:
     "Transforme minhas notas em um relatório semanal: feito, próximo e bloqueado",
   extensionsIntroPlugins:
-    "Novos painéis, tipos de arquivo e ferramentas para o Textus.",
+    "Novos painéis, tipos de arquivo e ferramentas para o Moxie.",
   extensionsIntroThemes: "A aparência dos documentos, sobre o tema escolhido.",
   extensionsIntroSkills: `Jeitos de fazer bem um tipo de tarefa, para o ${AI_NAME} e o menu /.`,
   extensionsIntroMcp: `Servidores que dão mais ferramentas ao ${AI_NAME}.`,
@@ -1629,7 +1629,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   pluginsCatalogKept:
     "Mostrando a lista da última vez - não foi possível obter uma mais recente: {reason}",
   pluginInstall: "Instalar",
-  pluginNeedsTextus: "Requer o Textus {version}",
+  pluginNeedsMoxie: "Requer o Moxie {version}",
   pluginInstalling: "Instalando…",
   pluginsSortLabel: "Ordenar por",
   pluginsSortPopular: "Mais instalados",
@@ -1651,8 +1651,8 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   floatingClose: "Fechar {name}",
   floatingToDesktop: "Levar {name} para a área de trabalho",
   floatingToWindow: "Devolver {name} à janela",
-  floatingOpenApp: "Abrir Textus",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Abrir Moxie",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "Todos os plugins",
   pluginSettingsScope: "Aplica-se a",
   pluginSettingsScopeGlobal: "Todos os documentos",
@@ -1682,13 +1682,13 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   pluginsAllHelp:
     "Desativados, nenhum plugin é executado e nada do que adicionam é mostrado. Seus plugins e as configurações deles são mantidos.",
   pluginsInstallHelp:
-    "Um pacote de plugin (.textusplugin) é copiado para o Textus. Uma pasta de plugin é carregada onde está, para testar um que você esteja escrevendo; ele é recarregado de lá.",
+    "Um pacote de plugin (.textusplugin) é copiado para o Moxie. Uma pasta de plugin é carregada onde está, para testar um que você esteja escrevendo; ele é recarregado de lá.",
   pluginsInstallFile: "Instalar de um arquivo…",
   pluginFormPrevMonth: "Mês anterior",
   pluginFormNextMonth: "Próximo mês",
   pluginsLoadFolder: "Carregar pasta de plugin…",
   pluginsOpenScripts: "Abrir pasta de scripts",
-  pluginPackageFilter: "Plugin do Textus",
+  pluginPackageFilter: "Plugin do Moxie",
   pluginsInstalledGroup: "Instalados",
   pluginOpenInstall: "Instalar e abrir",
   pluginOpenTurnOnButton: "Ligar e abrir",
@@ -1697,7 +1697,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   conventionsCardLine:
     "As configurações do {app} desta pasta guardam as imagens em {folder}",
   conventionsCardDetails:
-    "Configuração atual: {current}. Ao adotar, ela é salva em .textus/settings.json desta pasta e fica com o projeto.",
+    "Configuração atual: {current}. Ao adotar, ela é salva em .moxie/settings.json desta pasta e fica com o projeto.",
   conventionsFolderRoot: "a própria pasta",
   conventionsFollow: "Adotar",
   conventionsDecline: "Manter a atual",
@@ -1714,14 +1714,14 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   pluginStatusBroken: "Não foi possível ler: {reason}",
   pluginStatusDesktopOnly:
     "Funciona só no computador, não no iPhone nem no iPad.",
-  pluginStatusIncompatible: "Feito para outra versão do Textus ({range}).",
+  pluginStatusIncompatible: "Feito para outra versão do Moxie ({range}).",
   pluginStatusFailed: "Desativado: {reason}",
   pluginStatusAllOff: "Os plugins estão desativados.",
   pluginDevTag: "desenvolvimento",
   pluginEnableLabel: "Ativar {name}",
   pluginAddsLabel: "Adiciona",
   pluginAddsSidebarTab: "uma aba lateral, {name}",
-  pluginAddsAiTool: "uma ferramenta para o Textus AI, {name}",
+  pluginAddsAiTool: "uma ferramenta para o Moxie AI, {name}",
   pluginAddsFileType: "abre {types}",
   pluginPermissionsLabel: "Permissões",
   pluginNoPermissions: "Não pede nenhuma.",
@@ -1742,7 +1742,7 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
     "O seu nome como editor: minúsculas, números e hífenes. O seu nome no GitHub serve bem. Substitui “local” no id do plugin.",
   pluginExportChooseFolder: "Escolher uma pasta…",
   pluginExportDone:
-    "Exportado para {path}.\n\nFaça dessa pasta um repositório GitHub e envie uma etiqueta como v0.1.0: o fluxo de publicação dela publica o plugin. O README lá dentro explica como aparecer no Textus.",
+    "Exportado para {path}.\n\nFaça dessa pasta um repositório GitHub e envie uma etiqueta como v0.1.0: o fluxo de publicação dela publica o plugin. O README lá dentro explica como aparecer no Moxie.",
   pluginUriNotTaken: "Nenhum plugin ativado abre este link: {link}",
   uriCommandConfirm: "Um link pede para executar “{command}”. Executar?",
   uriCommandRun: "Executar",
@@ -1768,13 +1768,13 @@ Habilidades ficam na pasta skills/ ao lado deste arquivo, um arquivo
   pluginPermEditorInput:
     "Assumir as teclas que você digita no editor e editar conforme digita",
   pluginPermProjectData:
-    "Guardar os próprios dados na pasta aberta, em .textus/plugins",
-  pluginPermAiTools: "Dar ao Textus AI ferramentas próprias para usar",
+    "Guardar os próprios dados na pasta aberta, em .moxie/plugins",
+  pluginPermAiTools: "Dar ao Moxie AI ferramentas próprias para usar",
   pluginPermNotifications: "Mostrar notificações do sistema",
   pluginPermBackground:
     "Executar código num horário, mesmo com todas as janelas fechadas",
   pluginScheduleNotice:
-    "{name} agendou uma tarefa. Ela só é executada enquanto o Textus está aberto: ative “{setting}” para que também seja executada com todas as janelas fechadas.",
+    "{name} agendou uma tarefa. Ela só é executada enquanto o Moxie está aberto: ative “{setting}” para que também seja executada com todas as janelas fechadas.",
   pluginPermNetwork: "Conectar-se a {host}",
   pluginPermNetworkAny: "Conectar-se a qualquer site",
   menuPlugins: "Plugins",

@@ -6,20 +6,20 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `Включить ${AI_NAME}`,
-  textusAiOffHint: "Выключен: ничего не отправляется ни в один сервис ИИ.",
-  textusAiMenuHint: "Правый щелчок — приостановить или выключить",
-  textusAiClosePanel: "Закрыть панель",
-  textusAiPause: "Приостановить на час",
-  textusAiTurnOff: `Выключить ${AI_NAME}`,
-  textusAiPausedTooltip: `${AI_NAME} приостановлен до {time} · Нажмите, чтобы включить`,
-  textusAiOffTooltip: `${AI_NAME} выключен · Нажмите, чтобы включить`,
-  textusAiOff: `${AI_NAME} выключен`,
-  textusAiTurnOn: `Включить ${AI_NAME}`,
-  announceTextusAiOn: `${AI_NAME} включён.`,
-  announceTextusAiOff: `${AI_NAME} выключен.`,
-  shortcutToggleTextusAi: `Включить или выключить ${AI_NAME}`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `Включить ${AI_NAME}`,
+  moxieAiOffHint: "Выключен: ничего не отправляется ни в один сервис ИИ.",
+  moxieAiMenuHint: "Правый щелчок — приостановить или выключить",
+  moxieAiClosePanel: "Закрыть панель",
+  moxieAiPause: "Приостановить на час",
+  moxieAiTurnOff: `Выключить ${AI_NAME}`,
+  moxieAiPausedTooltip: `${AI_NAME} приостановлен до {time} · Нажмите, чтобы включить`,
+  moxieAiOffTooltip: `${AI_NAME} выключен · Нажмите, чтобы включить`,
+  moxieAiOff: `${AI_NAME} выключен`,
+  moxieAiTurnOn: `Включить ${AI_NAME}`,
+  announceMoxieAiOn: `${AI_NAME} включён.`,
+  announceMoxieAiOff: `${AI_NAME} выключен.`,
+  shortcutToggleMoxieAi: `Включить или выключить ${AI_NAME}`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "Открыть в отдельном окне",
   agentPanelResize: "Изменить ширину панели ИИ",
   sidebarResize: "Изменить ширину боковой панели",
@@ -90,7 +90,7 @@ export default {
   Термины       Пиши «интернет» со строчной буквы.
   Контекст      Я пишу научно-популярные лонгриды для широкой публики.
 
-Инструкции только для одного проекта пишутся в его файле .textus/agent.md
+Инструкции только для одного проекта пишутся в его файле .moxie/agent.md
 (меню проекта на панели ИИ > Изменить инструкции проекта).
 Отправляются и те и другие; при расхождении приоритет у проектных.
 
@@ -334,8 +334,8 @@ export default {
     "Изображения расходуют лимит изображений вашей подписки ChatGPT, а не баланс API. Они идут через сервис, которым пользуются приложения ChatGPT; это не публичный API, и он может перестать работать без предупреждения. Ключ OpenAI API работает в любом случае.",
   imagesPerRequestLabel: "Изображений за запрос",
   imagesPerRequestHelp:
-    "Сколько изображений Textus AI создаёт за один запрос самое большее. С ключом API каждое стоит денег, с подпиской расходует её лимит; скажите, сколько нужно, и он создаст столько, но не больше этого числа.",
-  changePictureWithAi: "Изменить это изображение с Textus AI…",
+    "Сколько изображений Moxie AI создаёт за один запрос самое большее. С ключом API каждое стоит денег, с подпиской расходует её лимит; скажите, сколько нужно, и он создаст столько, но не больше этого числа.",
+  changePictureWithAi: "Изменить это изображение с Moxie AI…",
   oldPictureTrashQuestion:
     "Новое изображение на месте. Переместить старое, «{name}», в корзину?",
   oldPictureTrashOk: "Переместить в корзину",
@@ -364,7 +364,7 @@ export default {
   skillWarnCreateMode:
     "В режиме «Создание» он может сам писать или менять навыки. Оставляйте его там, только если доверяете каждой строке.",
   skillWarnPromptInjection:
-    "Его инструкции похожи на попытку отменить инструкции Textus AI («игнорируй предыдущие инструкции»). Прочитайте его перед сохранением.",
+    "Его инструкции похожи на попытку отменить инструкции Moxie AI («игнорируй предыдущие инструкции»). Прочитайте его перед сохранением.",
   skillWarnHiddenText:
     "В нём есть невидимые символы, которые могут скрывать инструкции. Прочитайте его перед сохранением.",
   chatShowCode: "Показать код",
@@ -375,7 +375,7 @@ export default {
   chatPluginCheckPermission:
     "Он использует {permission}, не запросив это разрешение.",
   chatPluginCheckWhen:
-    "Условие пункта меню читает {key}, которого в Textus нет: пункт никогда не появится.",
+    "Условие пункта меню читает {key}, которого в Moxie нет: пункт никогда не появится.",
   chatPluginCheckUnregistered: "Он объявляет {id}, но нигде не регистрирует.",
   chatPluginRunError: "Остановился с ошибкой: {error}",
   chatPluginFix: "Исправить с ИИ",
@@ -600,7 +600,7 @@ export default {
   treeTrashFolderConfirm:
     "Переместить папку «{name}» со всем содержимым в корзину? Оттуда её можно вернуть.",
   errorPermission:
-    "У Textus нет доступа к этому файлу или папке. Проверьте права доступа или выберите другое место.",
+    "У Moxie нет доступа к этому файлу или папке. Проверьте права доступа или выберите другое место.",
   errorNotFound:
     "Файла или папки больше нет. Возможно, их переместили, переименовали или удалили.",
   errorDiskFull: "Диск заполнен. Освободите место и попробуйте снова.",
@@ -611,14 +611,14 @@ export default {
     "Слишком долгое ожидание. Проверьте подключение и попробуйте снова.",
   errorNetwork:
     "Не удалось подключиться. Проверьте подключение к интернету или настройки прокси.",
-  errorFileTooBig: "Этот файл слишком большой, чтобы открыть его в Textus.",
-  errorNotDocument: "Textus не может прочитать этот файл как документ.",
+  errorFileTooBig: "Этот файл слишком большой, чтобы открыть его в Moxie.",
+  errorNotDocument: "Moxie не может прочитать этот файл как документ.",
   errorBadName:
     "Такое имя нельзя использовать. Имя не может быть пустым или содержать / или \\.",
   errorMoveIntoItself: "Папку нельзя переместить внутрь неё самой.",
   errorPluginTooBig: "Этот плагин слишком большой для установки.",
   errorCatalogNewer:
-    "Для магазина плагинов нужна более новая версия Textus. Обновите Textus.",
+    "Для магазина плагинов нужна более новая версия Moxie. Обновите Moxie.",
   errorImageTooBig: "Изображение пустое или больше 25 МБ.",
   errorNoFolder: "Сначала откройте папку.",
   treeNameTaken: "Здесь уже есть что-то с именем «{name}».",
@@ -683,7 +683,7 @@ export default {
   navPrivacy: "Конфиденциальность",
   navAbout: "О программе",
   navGuides: "Руководства",
-  aboutTextus: "О Textus",
+  aboutMoxie: "О Moxie",
   aboutVersion: "Версия {version}",
   aboutMadeBy: "Сделано в CatVinci Studio",
   aboutQq: "Группа QQ",
@@ -705,7 +705,7 @@ export default {
     "Вы используете бету ({version}). Стабильная версия старше; возврат установит её.",
   backToStableButton: "Вернуться к стабильной",
   backToStableConfirm:
-    "Установить Textus {version}, стабильную версию? Она старше вашей беты ({beta}). Документы не затрагиваются; то, что есть только в бете (например, плагины), может не сохраниться.",
+    "Установить Moxie {version}, стабильную версию? Она старше вашей беты ({beta}). Документы не затрагиваются; то, что есть только в бете (например, плагины), может не сохраниться.",
   backToStableInstall: "Установить {version}",
   backToStableNone: "Сейчас нет стабильной версии, к которой можно вернуться.",
   aiCompletionLabel: "Включить автодополнение",
@@ -763,7 +763,7 @@ export default {
   agentSkillsBuiltinTag: "Встроенный",
   agentSkillsOpen: "Открыть",
   agentSkillsReset: "Сбросить",
-  madeByTextusAi: `Сделано с ${AI_NAME}`,
+  madeByMoxieAi: `Сделано с ${AI_NAME}`,
   skillDelete: "Удалить",
   skillDeleteAsk: "Удалить «{name}»? Его файлы попадут в Корзину.",
   skillDeleteAskMobile: "Удалить «{name}»?",
@@ -894,7 +894,7 @@ export default {
   pictureRedraw: "Перерисовать…",
   pictureRedrawTitle: "Перерисовать картинку",
   pictureRedrawPrompt:
-    "Что на картинке - измените описание, и Textus нарисует её заново:",
+    "Что на картинке - измените описание, и Moxie нарисует её заново:",
   pictureRedrawOk: "Перерисовать",
   agentThinking: "Думает…",
   agentWritingEdit: "Пишу правку…",
@@ -930,7 +930,7 @@ export default {
   chatHistorySearch: "Поиск по разговорам",
   chatHistorySearchNone: "Ни в одном разговоре нет этих слов.",
   chatHistoryByYou: "Вы",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "Снова открыть этот диалог вместе с его документом",
   chatHistoryDelete: "Удалить диалог",
   chatHistoryRestoreHereHint:
@@ -1061,9 +1061,9 @@ export default {
     "Файл .csl для списка литературы. Без него Pandoc использует Chicago «автор—дата».",
   pandocArgsLabel: "Аргументы Pandoc",
   pandocArgsHelp:
-    "Добавляются к команде Pandoc для этого формата по словам, без оболочки. Значение с пробелами возьмите в кавычки. --from, --to и --output задаёт Textus.",
+    "Добавляются к команде Pandoc для этого формата по словам, без оболочки. Значение с пробелами возьмите в кавычки. --from, --to и --output задаёт Moxie.",
   pandocArgsAll: "Все форматы",
-  pandocArgsOwned: "{arg} задаёт Textus; уберите его.",
+  pandocArgsOwned: "{arg} задаёт Moxie; уберите его.",
   pandocErrorSettings:
     "Ваши параметры Pandoc — в Настройки › {page} › {group} и в её дополнительных аргументах.",
   pdfLightColorsLabel: "Экспортировать PDF в светлых цветах",
@@ -1164,7 +1164,7 @@ export default {
   reportKindQuestion: "Вопрос",
   reportAreaLabel: "Касается",
   reportAreaEditor: "Письмо и редактирование",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "Плагины и темы",
   reportAreaPanes: "Вкладки, панели и окна",
   reportAreaExport: "Экспорт и печать",
@@ -1248,7 +1248,7 @@ export default {
   updateDownloading: "Загрузка обновления…",
   updateFailed: "Не удалось обновить:",
   updateViaPackageManager: `${APP_NAME} установлен через менеджер пакетов. Обновите его там.`,
-  cliCommandLabel: "Установить Textus CLI",
+  cliCommandLabel: "Установить Moxie CLI",
   cliCommandInstalled: "Установлена",
   cliCommandNotInstalled: "Не установлена",
   cliCommandInstallButton: "Установить",
@@ -1323,9 +1323,9 @@ export default {
   settingsFileImportConfirm:
     "Заменить ваши настройки настройками из этого файла? Ключи API и токены MCP на этом компьютере сохранятся.",
   settingsFileImportReplace: "Заменить",
-  settingsFileNotSettings: "В этом файле нет настроек Textus.",
+  settingsFileNotSettings: "В этом файле нет настроек Moxie.",
   settingsFileWithAi:
-    "Экспортировать и записи ИИ — все разговоры и память? Тогда в файле будет то, что вы писали Textus AI.",
+    "Экспортировать и записи ИИ — все разговоры и память? Тогда в файле будет то, что вы писали Moxie AI.",
   settingsFileWithAiYes: "С записями ИИ",
   settingsFileSettingsOnly: "Только настройки",
   settingsFileImportAi:
@@ -1506,7 +1506,7 @@ export default {
   privacyKeepUnsavedToggle:
     "Сохранять несохранённые изменения при закрытии, не спрашивая",
   privacyKeepUnsavedHelp:
-    "Окно с несохранёнными изменениями закрывается без вопроса: при следующем запуске Textus документы откроются вместе с изменениями. Сами файлы остаются прежними, пока вы их не сохраните.",
+    "Окно с несохранёнными изменениями закрывается без вопроса: при следующем запуске Moxie документы откроются вместе с изменениями. Сами файлы остаются прежними, пока вы их не сохраните.",
   privacyDraftRecoveryClearHint:
     "Удаляет все снимки, которые сейчас хранятся на диске. Это действие нельзя отменить.",
   privacyClearButton: "Очистить",
@@ -1560,7 +1560,7 @@ export default {
     "Импортировать можно только файлы .md, .markdown и .txt.",
   backgroundToggle: "Продолжать работать в фоне",
   backgroundTrayUnavailable: `На этом рабочем столе нет системного лотка: не установлена libayatana-appindicator. ${APP_NAME} всё равно работает в фоне; снова откройте его из меню приложений.`,
-  trayOpenTextus: `Открыть ${APP_NAME}`,
+  trayOpenMoxie: `Открыть ${APP_NAME}`,
   navExtensions: "Расширения",
   extensionsTabPlugins: "Плагины",
   extensionsTabThemes: "Темы",
@@ -1574,14 +1574,14 @@ export default {
   createMakePlugin: "Создать свой плагин",
   createMakeSkill: "Создать свой навык",
   createNew: "Новое",
-  createAiOff: "Включите Textus AI, чтобы создавать.",
+  createAiOff: "Включите Moxie AI, чтобы создавать.",
   createExamples: "Примеры",
   createExamplePluginTodo:
     "Список дел на боковой панели, который хранит задачи даже без открытой папки",
   createExampleThemeAmber: "Тёплая янтарная тема: светлая днём и тёмная ночью",
   createExampleSkillWeekly:
     "Собери мои заметки в недельный отчёт: сделано, дальше, заблокировано",
-  extensionsIntroPlugins: "Новые панели, типы файлов и инструменты для Textus.",
+  extensionsIntroPlugins: "Новые панели, типы файлов и инструменты для Moxie.",
   extensionsIntroThemes: "Как выглядят документы — поверх выбранной темы.",
   extensionsIntroSkills: `Способы хорошо делать определённую работу — для ${AI_NAME} и меню /.`,
   extensionsIntroMcp: `Серверы, которые дают ${AI_NAME} больше инструментов.`,
@@ -1644,7 +1644,7 @@ export default {
   pluginsCatalogKept:
     "Показан список с прошлого раза - новый получить не удалось: {reason}",
   pluginInstall: "Установить",
-  pluginNeedsTextus: "Нужен Textus {version}",
+  pluginNeedsMoxie: "Нужен Moxie {version}",
   pluginInstalling: "Установка…",
   pluginsSortLabel: "Сортировка",
   pluginsSortPopular: "Самые популярные",
@@ -1666,8 +1666,8 @@ export default {
   floatingClose: "Закрыть «{name}»",
   floatingToDesktop: "Вынести «{name}» на рабочий стол",
   floatingToWindow: "Вернуть «{name}» в окно",
-  floatingOpenApp: "Открыть Textus",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Открыть Moxie",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "Все плагины",
   pluginSettingsScope: "Применяется к",
   pluginSettingsScopeGlobal: "Все документы",
@@ -1697,13 +1697,13 @@ export default {
   pluginsAllHelp:
     "Если выключено, ни один плагин не работает и ничего из добавленного ими не показывается. Плагины и их настройки сохраняются.",
   pluginsInstallHelp:
-    "Пакет плагина (.textusplugin) копируется в Textus. Папка плагина загружается на месте — чтобы попробовать плагин, который вы пишете; перезагружается оттуда же.",
+    "Пакет плагина (.textusplugin) копируется в Moxie. Папка плагина загружается на месте — чтобы попробовать плагин, который вы пишете; перезагружается оттуда же.",
   pluginsInstallFile: "Установить из файла…",
   pluginFormPrevMonth: "Предыдущий месяц",
   pluginFormNextMonth: "Следующий месяц",
   pluginsLoadFolder: "Загрузить папку плагина…",
   pluginsOpenScripts: "Открыть папку скриптов",
-  pluginPackageFilter: "Плагин Textus",
+  pluginPackageFilter: "Плагин Moxie",
   pluginsInstalledGroup: "Установленные",
   pluginOpenInstall: "Установить и открыть",
   pluginOpenTurnOnButton: "Включить и открыть",
@@ -1712,7 +1712,7 @@ export default {
   conventionsCardLine:
     "Настройки {app} этой папки сохраняют изображения в {folder}",
   conventionsCardDetails:
-    "Текущая настройка: {current}. При применении она сохраняется в .textus/settings.json этой папки и остаётся с проектом.",
+    "Текущая настройка: {current}. При применении она сохраняется в .moxie/settings.json этой папки и остаётся с проектом.",
   conventionsFolderRoot: "саму папку",
   conventionsFollow: "Применить",
   conventionsDecline: "Оставить текущую",
@@ -1729,14 +1729,14 @@ export default {
   pluginStatusBroken: "Не удаётся прочитать: {reason}",
   pluginStatusDesktopOnly:
     "Работает только на компьютере, не на iPhone и iPad.",
-  pluginStatusIncompatible: "Сделан для другой версии Textus ({range}).",
+  pluginStatusIncompatible: "Сделан для другой версии Moxie ({range}).",
   pluginStatusFailed: "Выключен: {reason}",
   pluginStatusAllOff: "Плагины выключены.",
   pluginDevTag: "разработка",
   pluginEnableLabel: "Включить {name}",
   pluginAddsLabel: "Добавляет",
   pluginAddsSidebarTab: "вкладку боковой панели «{name}»",
-  pluginAddsAiTool: "инструмент для Textus AI: {name}",
+  pluginAddsAiTool: "инструмент для Moxie AI: {name}",
   pluginAddsFileType: "открывает {types}",
   pluginPermissionsLabel: "Разрешения",
   pluginNoPermissions: "Не требует разрешений.",
@@ -1757,7 +1757,7 @@ export default {
     "Ваше имя как издателя — строчные буквы, цифры и дефисы. Хорошо подойдёт имя на GitHub. Оно заменит «local» в id плагина.",
   pluginExportChooseFolder: "Выбрать папку…",
   pluginExportDone:
-    "Экспортировано в {path}.\n\nСделайте эту папку репозиторием GitHub и отправьте тег вроде v0.1.0 — её рабочий процесс выпуска опубликует плагин. Как попасть в список Textus, написано в README внутри.",
+    "Экспортировано в {path}.\n\nСделайте эту папку репозиторием GitHub и отправьте тег вроде v0.1.0 — её рабочий процесс выпуска опубликует плагин. Как попасть в список Moxie, написано в README внутри.",
   pluginUriNotTaken:
     "Ни один включённый плагин не открывает эту ссылку: {link}",
   uriCommandConfirm: "Ссылка просит выполнить «{command}». Выполнить?",
@@ -1784,13 +1784,13 @@ export default {
   pluginPermEditorInput:
     "Перехватывать клавиши в редакторе и править текст по ним",
   pluginPermProjectData:
-    "Хранить свои данные в открытой папке, в .textus/plugins",
-  pluginPermAiTools: "Давать Textus AI свои инструменты",
+    "Хранить свои данные в открытой папке, в .moxie/plugins",
+  pluginPermAiTools: "Давать Moxie AI свои инструменты",
   pluginPermNotifications: "Показывать системные уведомления",
   pluginPermBackground:
     "Запускать код по расписанию, даже когда все окна закрыты",
   pluginScheduleNotice:
-    "{name} запланировал задачу. Она выполняется, только пока Textus запущен: включите «{setting}», чтобы она выполнялась и при закрытых окнах.",
+    "{name} запланировал задачу. Она выполняется, только пока Moxie запущен: включите «{setting}», чтобы она выполнялась и при закрытых окнах.",
   pluginPermNetwork: "Подключаться к {host}",
   pluginPermNetworkAny: "Подключаться к любым сайтам",
   menuPlugins: "Плагины",

@@ -6,21 +6,21 @@ export const complete = true;
 
 export default {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `${AI_NAME} 사용`,
-  textusAiOffHint:
+  moxieAiToggleLabel: `${AI_NAME} 사용`,
+  moxieAiOffHint:
     "꺼져 있는 동안에는 어떤 AI 서비스에도 아무것도 보내지 않습니다.",
-  textusAiMenuHint: "오른쪽 클릭으로 일시 중지하거나 끄기",
-  textusAiClosePanel: "패널 닫기",
-  textusAiPause: "1시간 일시 중지",
-  textusAiTurnOff: `${AI_NAME} 끄기`,
-  textusAiPausedTooltip: `${AI_NAME} {time}까지 일시 중지됨 · 클릭하여 켜기`,
-  textusAiOffTooltip: `${AI_NAME} 꺼짐 · 클릭하여 켜기`,
-  textusAiOff: `${AI_NAME}가 꺼져 있습니다`,
-  textusAiTurnOn: `${AI_NAME} 켜기`,
-  announceTextusAiOn: `${AI_NAME}를 켰습니다.`,
-  announceTextusAiOff: `${AI_NAME}를 껐습니다.`,
-  shortcutToggleTextusAi: `${AI_NAME} 켜기/끄기`,
-  menuTextusAi: AI_NAME,
+  moxieAiMenuHint: "오른쪽 클릭으로 일시 중지하거나 끄기",
+  moxieAiClosePanel: "패널 닫기",
+  moxieAiPause: "1시간 일시 중지",
+  moxieAiTurnOff: `${AI_NAME} 끄기`,
+  moxieAiPausedTooltip: `${AI_NAME} {time}까지 일시 중지됨 · 클릭하여 켜기`,
+  moxieAiOffTooltip: `${AI_NAME} 꺼짐 · 클릭하여 켜기`,
+  moxieAiOff: `${AI_NAME}가 꺼져 있습니다`,
+  moxieAiTurnOn: `${AI_NAME} 켜기`,
+  announceMoxieAiOn: `${AI_NAME}를 켰습니다.`,
+  announceMoxieAiOff: `${AI_NAME}를 껐습니다.`,
+  shortcutToggleMoxieAi: `${AI_NAME} 켜기/끄기`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "별도 창에서 열기",
   agentPanelResize: "AI 패널 크기 조절",
   sidebarResize: "사이드바 크기 조절",
@@ -87,7 +87,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   용어    ‘컨텐츠’가 아니라 ‘콘텐츠’로 쓴다.
   배경    일반 독자를 위한 긴 과학 기사를 쓴다.
 
-한 프로젝트에만 해당하는 지침은 그 프로젝트의 .textus/agent.md에
+한 프로젝트에만 해당하는 지침은 그 프로젝트의 .moxie/agent.md에
 적습니다(AI 패널의 프로젝트 메뉴 > 프로젝트 글쓰기 지침 편집).
 두 지침이 모두 전송되며, 서로 다르면 프로젝트 지침이 우선합니다.
 
@@ -308,8 +308,8 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
     "이미지는 API 크레딧이 아니라 ChatGPT 요금제의 이미지 생성 한도에서 나갑니다. ChatGPT 앱이 쓰는 서비스를 거치며 공개 API가 아니므로 예고 없이 작동을 멈출 수 있습니다. OpenAI API 키는 그와 상관없이 작동합니다.",
   imagesPerRequestLabel: "요청당 이미지 수",
   imagesPerRequestHelp:
-    "Textus AI가 한 번의 요청으로 만드는 이미지의 최대 개수입니다. API 키로는 한 장마다 비용이 들고, 요금제로는 이미지 생성 한도를 씁니다. 개수를 말하면 이 한도까지 그만큼 만듭니다.",
-  changePictureWithAi: "Textus AI로 이 이미지 바꾸기…",
+    "Moxie AI가 한 번의 요청으로 만드는 이미지의 최대 개수입니다. API 키로는 한 장마다 비용이 들고, 요금제로는 이미지 생성 한도를 씁니다. 개수를 말하면 이 한도까지 그만큼 만듭니다.",
+  changePictureWithAi: "Moxie AI로 이 이미지 바꾸기…",
   oldPictureTrashQuestion:
     "새 이미지를 넣었습니다. 이전 이미지 “{name}”을(를) 휴지통으로 옮길까요?",
   oldPictureTrashOk: "휴지통으로 옮기기",
@@ -336,7 +336,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   chatPluginCheckPermission:
     "{permission}을(를) 사용하지만 권한을 요청하지 않았습니다.",
   chatPluginCheckWhen:
-    "메뉴 항목의 조건이 {key}를 읽지만 Textus에는 없는 값이라 항목이 표시되지 않습니다.",
+    "메뉴 항목의 조건이 {key}를 읽지만 Moxie에는 없는 값이라 항목이 표시되지 않습니다.",
   chatPluginCheckUnregistered:
     "{id}을(를) 선언했지만 코드에서 등록하지 않습니다.",
   chatPluginRunError: "실행 중 오류: {error}",
@@ -351,7 +351,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   skillWarnCreateMode:
     "만들기 모드에서는 스스로 스킬을 쓰거나 바꿀 수 있습니다. 모든 줄을 신뢰할 때만 유지하세요.",
   skillWarnPromptInjection:
-    '지시가 Textus AI 자체의 지시를 덮어쓰려는 것처럼 보입니다("이전 지시를 무시" 등). 저장하기 전에 읽어 보세요.',
+    '지시가 Moxie AI 자체의 지시를 덮어쓰려는 것처럼 보입니다("이전 지시를 무시" 등). 저장하기 전에 읽어 보세요.',
   skillWarnHiddenText:
     "보이지 않는 문자가 있어 지시를 숨기고 있을 수 있습니다. 저장하기 전에 읽어 보세요.",
   chatShowCode: "코드 보기",
@@ -564,7 +564,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   treeTrashFolderConfirm:
     "폴더 “{name}”와(과) 그 안의 모든 항목을 휴지통으로 옮길까요? 휴지통에서 되돌릴 수 있습니다.",
   errorPermission:
-    "Textus에 이 파일 또는 폴더에 접근할 권한이 없습니다. 권한을 확인하거나 다른 위치를 선택하세요.",
+    "Moxie에 이 파일 또는 폴더에 접근할 권한이 없습니다. 권한을 확인하거나 다른 위치를 선택하세요.",
   errorNotFound:
     "파일 또는 폴더가 더 이상 없습니다. 이동되었거나 이름이 바뀌었거나 삭제되었을 수 있습니다.",
   errorDiskFull: "디스크가 가득 찼습니다. 공간을 확보한 뒤 다시 시도하세요.",
@@ -574,14 +574,14 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   errorTimeout:
     "시간이 너무 오래 걸렸습니다. 연결을 확인한 뒤 다시 시도하세요.",
   errorNetwork: "연결할 수 없습니다. 인터넷 연결이나 프록시 설정을 확인하세요.",
-  errorFileTooBig: "이 파일은 너무 커서 Textus에서 열 수 없습니다.",
-  errorNotDocument: "Textus가 이 파일을 문서로 읽을 수 없습니다.",
+  errorFileTooBig: "이 파일은 너무 커서 Moxie에서 열 수 없습니다.",
+  errorNotDocument: "Moxie가 이 파일을 문서로 읽을 수 없습니다.",
   errorBadName:
     "이 이름은 사용할 수 없습니다. 이름은 비워 둘 수 없고 / 또는 \\를 포함할 수 없습니다.",
   errorMoveIntoItself: "폴더를 자기 자신 안으로 옮길 수 없습니다.",
   errorPluginTooBig: "이 플러그인은 너무 커서 설치할 수 없습니다.",
   errorCatalogNewer:
-    "플러그인 스토어를 보려면 최신 Textus가 필요합니다. Textus를 업데이트하세요.",
+    "플러그인 스토어를 보려면 최신 Moxie가 필요합니다. Moxie를 업데이트하세요.",
   errorImageTooBig: "그림이 비어 있거나 25MB보다 큽니다.",
   errorNoFolder: "먼저 폴더를 여세요.",
   treeNameTaken: "여기에 이미 “{name}”(이)라는 항목이 있습니다.",
@@ -641,7 +641,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   navPrivacy: "개인정보 보호",
   navAbout: "정보",
   navGuides: "사용 안내",
-  aboutTextus: "Textus 정보",
+  aboutMoxie: "Moxie 정보",
   aboutVersion: "버전 {version}",
   aboutMadeBy: "CatVinci Studio 제작",
   aboutQq: "QQ 그룹",
@@ -663,7 +663,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
     "베타({version})를 쓰고 있습니다. 안정 버전은 더 오래된 버전이며, 되돌리면 그 버전을 설치합니다.",
   backToStableButton: "안정 버전으로",
   backToStableConfirm:
-    "안정 버전 Textus {version}을(를) 설치할까요? 지금 쓰는 베타({beta})보다 오래된 버전입니다. 문서는 그대로이며, 베타에만 있는 것(플러그인 등)은 이어지지 않을 수 있습니다.",
+    "안정 버전 Moxie {version}을(를) 설치할까요? 지금 쓰는 베타({beta})보다 오래된 버전입니다. 문서는 그대로이며, 베타에만 있는 것(플러그인 등)은 이어지지 않을 수 있습니다.",
   backToStableInstall: "{version} 설치",
   backToStableNone: "지금은 되돌아갈 안정 버전이 없습니다.",
   aiCompletionLabel: "AI 이어 쓰기 사용",
@@ -721,7 +721,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   agentSkillsBuiltinTag: "기본 제공",
   agentSkillsOpen: "열기",
   agentSkillsReset: "초기화",
-  madeByTextusAi: `${AI_NAME}로 만듦`,
+  madeByMoxieAi: `${AI_NAME}로 만듦`,
   skillDelete: "삭제",
   skillDeleteAsk: "‘{name}’을(를) 삭제할까요? 파일은 휴지통으로 이동합니다.",
   skillDeleteAskMobile: "‘{name}’을(를) 삭제할까요?",
@@ -846,7 +846,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   agentRetry: "다시 시도",
   pictureRedraw: "다시 그리기…",
   pictureRedrawTitle: "그림 다시 그리기",
-  pictureRedrawPrompt: "그림 설명 - 고치면 Textus가 다시 그립니다:",
+  pictureRedrawPrompt: "그림 설명 - 고치면 Moxie가 다시 그립니다:",
   pictureRedrawOk: "다시 그리기",
   agentThinking: "생각하는 중…",
   agentWritingEdit: "수정을 작성하는 중…",
@@ -867,7 +867,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   chatHistorySearch: "대화 검색",
   chatHistorySearchNone: "이 단어가 들어간 대화가 없습니다.",
   chatHistoryByYou: "나",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "이 대화를 해당 문서와 함께 다시 열기",
   chatHistoryDelete: "대화 삭제",
   chatHistoryRestoreHereHint:
@@ -992,9 +992,9 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
     "참고 문헌에 쓸 .csl 파일. 고르지 않으면 Pandoc은 시카고 저자-연도 형식을 씁니다.",
   pandocArgsLabel: "Pandoc 인수",
   pandocArgsHelp:
-    "이 형식의 Pandoc 명령에 단어 단위로 더합니다. 셸을 거치지 않습니다. 공백이 있는 값은 따옴표로 감싸세요. --from, --to, --output은 Textus가 정합니다.",
+    "이 형식의 Pandoc 명령에 단어 단위로 더합니다. 셸을 거치지 않습니다. 공백이 있는 값은 따옴표로 감싸세요. --from, --to, --output은 Moxie가 정합니다.",
   pandocArgsAll: "모든 형식",
-  pandocArgsOwned: "{arg}는 Textus가 정합니다. 빼 주세요.",
+  pandocArgsOwned: "{arg}는 Moxie가 정합니다. 빼 주세요.",
   pandocErrorSettings:
     "Pandoc 옵션은 설정 › {page} › {group}과 그 고급 인수에 있습니다.",
   pdfLightColorsLabel: "PDF를 밝은 색으로 내보내기",
@@ -1095,7 +1095,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   reportKindQuestion: "질문",
   reportAreaLabel: "관련 부분",
   reportAreaEditor: "글쓰기와 편집",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "플러그인과 테마",
   reportAreaPanes: "탭, 분할 영역과 창",
   reportAreaExport: "내보내기와 인쇄",
@@ -1176,7 +1176,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   updateDownloading: "업데이트 다운로드 중…",
   updateFailed: "업데이트 실패:",
   updateViaPackageManager: `${APP_NAME} 앱은 패키지 관리자로 설치되었습니다. 업데이트도 패키지 관리자에서 하세요.`,
-  cliCommandLabel: "Textus CLI 설치",
+  cliCommandLabel: "Moxie CLI 설치",
   cliCommandInstalled: "설치됨",
   cliCommandNotInstalled: "설치 안 됨",
   cliCommandInstallButton: "설치",
@@ -1250,9 +1250,9 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   settingsFileImportConfirm:
     "이 파일의 설정으로 지금 설정을 바꿀까요? 이 컴퓨터의 API 키와 MCP 토큰은 그대로 둡니다.",
   settingsFileImportReplace: "바꾸기",
-  settingsFileNotSettings: "이 파일은 Textus 설정이 아닙니다.",
+  settingsFileNotSettings: "이 파일은 Moxie 설정이 아닙니다.",
   settingsFileWithAi:
-    "AI 기록(모든 대화와 메모리)도 함께 내보낼까요? 파일에 Textus AI와 나눈 대화 내용이 담깁니다.",
+    "AI 기록(모든 대화와 메모리)도 함께 내보낼까요? 파일에 Moxie AI와 나눈 대화 내용이 담깁니다.",
   settingsFileWithAiYes: "AI 기록 포함",
   settingsFileSettingsOnly: "설정만",
   settingsFileImportAi:
@@ -1426,7 +1426,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   privacyDraftRecoveryToggle: "비정상 종료 후 저장하지 않은 내용 복구",
   privacyKeepUnsavedToggle: "닫을 때 저장하지 않은 변경 사항을 묻지 않고 유지",
   privacyKeepUnsavedHelp:
-    "저장하지 않은 변경 사항이 있는 창을 닫아도 저장할지 묻지 않습니다. 다음에 Textus를 시작하면 그 문서가 변경 사항과 함께 다시 열립니다. 파일 자체는 저장하기 전까지 그대로입니다.",
+    "저장하지 않은 변경 사항이 있는 창을 닫아도 저장할지 묻지 않습니다. 다음에 Moxie를 시작하면 그 문서가 변경 사항과 함께 다시 열립니다. 파일 자체는 저장하기 전까지 그대로입니다.",
   privacyDraftRecoveryClearHint:
     "현재 디스크에 있는 스냅샷을 모두 삭제합니다. 되돌릴 수 없습니다.",
   privacyClearButton: "지우기",
@@ -1480,7 +1480,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
     ".md, .markdown, .txt 파일만 가져올 수 있습니다.",
   backgroundToggle: "백그라운드에서 계속 실행",
   backgroundTrayUnavailable: `이 데스크톱에서는 트레이를 쓸 수 없습니다(libayatana-appindicator가 설치되지 않음). ${APP_NAME}는 백그라운드에서 계속 실행되니 런처에서 다시 여세요.`,
-  trayOpenTextus: `${APP_NAME} 열기`,
+  trayOpenMoxie: `${APP_NAME} 열기`,
   navExtensions: "확장",
   extensionsTabPlugins: "플러그인",
   extensionsTabThemes: "테마",
@@ -1494,14 +1494,14 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   createMakePlugin: "플러그인 만들기",
   createMakeSkill: "스킬 만들기",
   createNew: "새로 만들기",
-  createAiOff: "만들려면 Textus AI를 켜세요.",
+  createAiOff: "만들려면 Moxie AI를 켜세요.",
   createExamples: "예시",
   createExamplePluginTodo:
     "폴더를 열지 않아도 할 일을 저장하는 사이드바 할 일 목록",
   createExampleThemeAmber: "낮에는 밝고 밤에는 어두운 따뜻한 호박색 테마",
   createExampleSkillWeekly:
     "내 메모를 주간 보고서로 정리: 완료, 다음 할 일, 막힌 일",
-  extensionsIntroPlugins: "Textus에 새 패널, 파일 형식, 도구를 더합니다.",
+  extensionsIntroPlugins: "Moxie에 새 패널, 파일 형식, 도구를 더합니다.",
   extensionsIntroThemes: "고른 테마 위에 얹는 문서의 모양입니다.",
   extensionsIntroSkills: `한 가지 일을 잘 해내는 방법으로, ${AI_NAME}와 / 메뉴에서 씁니다.`,
   extensionsIntroMcp: `${AI_NAME}에게 도구를 더해 주는 서버입니다.`,
@@ -1562,7 +1562,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   pluginsCatalogKept:
     "지난번 목록을 보여 주고 있습니다. 새 목록을 가져오지 못했습니다: {reason}",
   pluginInstall: "설치",
-  pluginNeedsTextus: "Textus {version} 필요",
+  pluginNeedsMoxie: "Moxie {version} 필요",
   pluginInstalling: "설치 중…",
   pluginsSortLabel: "정렬",
   pluginsSortPopular: "설치 많은 순",
@@ -1584,8 +1584,8 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   floatingClose: "{name} 닫기",
   floatingToDesktop: "{name}을(를) 바탕화면에 띄우기",
   floatingToWindow: "{name}을(를) 창 안으로 되돌리기",
-  floatingOpenApp: "Textus 열기",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Moxie 열기",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "모든 플러그인",
   pluginSettingsScope: "적용 대상",
   pluginSettingsScopeGlobal: "모든 문서",
@@ -1616,13 +1616,13 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   pluginsAllHelp:
     "끄면 어떤 플러그인도 실행되지 않고, 플러그인이 추가한 항목도 표시되지 않습니다. 설치한 플러그인과 설정은 그대로 남습니다.",
   pluginsInstallHelp:
-    "플러그인 패키지(.textusplugin)는 Textus에 복사됩니다. 플러그인 폴더는 그 자리에서 불러오므로 작성 중인 플러그인을 시험해 볼 수 있으며, 다시 불러올 때도 그 자리에서 불러옵니다.",
+    "플러그인 패키지(.textusplugin)는 Moxie에 복사됩니다. 플러그인 폴더는 그 자리에서 불러오므로 작성 중인 플러그인을 시험해 볼 수 있으며, 다시 불러올 때도 그 자리에서 불러옵니다.",
   pluginsInstallFile: "파일에서 설치…",
   pluginFormPrevMonth: "이전 달",
   pluginFormNextMonth: "다음 달",
   pluginsLoadFolder: "플러그인 폴더 불러오기…",
   pluginsOpenScripts: "스크립트 폴더 열기",
-  pluginPackageFilter: "Textus 플러그인",
+  pluginPackageFilter: "Moxie 플러그인",
   pluginsInstalledGroup: "설치됨",
   pluginOpenInstall: "설치하고 열기",
   pluginOpenTurnOnButton: "켜고 열기",
@@ -1630,7 +1630,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   pluginCardMovedLine: "{name}은(는) 이제 플러그인입니다",
   conventionsCardLine: "이 폴더의 {app} 설정은 그림을 {folder}에 저장합니다",
   conventionsCardDetails:
-    "현재 설정: {current}. 적용하면 이 폴더의 .textus/settings.json에 저장되어 프로젝트와 함께 유지됩니다.",
+    "현재 설정: {current}. 적용하면 이 폴더의 .moxie/settings.json에 저장되어 프로젝트와 함께 유지됩니다.",
   conventionsFolderRoot: "폴더 최상위",
   conventionsFollow: "적용",
   conventionsDecline: "현재 설정 유지",
@@ -1647,14 +1647,14 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   pluginStatusBroken: "읽을 수 없음: {reason}",
   pluginStatusDesktopOnly:
     "컴퓨터에서만 사용할 수 있으며 iPhone과 iPad에서는 사용할 수 없습니다.",
-  pluginStatusIncompatible: "다른 버전의 Textus용입니다({range}).",
+  pluginStatusIncompatible: "다른 버전의 Moxie용입니다({range}).",
   pluginStatusFailed: "꺼짐: {reason}",
   pluginStatusAllOff: "플러그인이 꺼져 있습니다.",
   pluginDevTag: "개발 중",
   pluginEnableLabel: "{name} 켜기",
   pluginAddsLabel: "추가 항목",
   pluginAddsSidebarTab: "사이드바 탭 ‘{name}’",
-  pluginAddsAiTool: "Textus AI용 도구: {name}",
+  pluginAddsAiTool: "Moxie AI용 도구: {name}",
   pluginAddsFileType: "{types} 열기",
   pluginPermissionsLabel: "권한",
   pluginNoPermissions: "권한이 필요 없습니다.",
@@ -1675,7 +1675,7 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
     "게시자 이름을 입력하세요(소문자, 숫자, 하이픈). GitHub 사용자 이름을 쓰면 좋습니다. 플러그인 ID의 “local”을 이 이름으로 바꿉니다.",
   pluginExportChooseFolder: "폴더 선택…",
   pluginExportDone:
-    "{path}에 내보냈습니다.\n\n이 폴더를 GitHub 저장소로 만들고 v0.1.0 같은 태그를 푸시하면 안에 든 릴리스 워크플로가 플러그인을 게시합니다. Textus에 등록하는 방법은 폴더 안의 README를 보세요.",
+    "{path}에 내보냈습니다.\n\n이 폴더를 GitHub 저장소로 만들고 v0.1.0 같은 태그를 푸시하면 안에 든 릴리스 워크플로가 플러그인을 게시합니다. Moxie에 등록하는 방법은 폴더 안의 README를 보세요.",
   pluginUriNotTaken: "이 링크를 열 수 있는 켜진 플러그인이 없습니다: {link}",
   uriCommandConfirm: "링크가 “{command}” 실행을 요청합니다. 실행할까요?",
   uriCommandRun: "실행",
@@ -1699,12 +1699,12 @@ ${AI_NAME}에게 주는 글쓰기 지침으로, 모든 문서에 적용됩니다
   pluginPermClipboard: "클립보드 읽기 및 쓰기",
   pluginPermEditorInput: "편집기에서 누르는 키를 넘겨받아, 누른 대로 편집",
   pluginPermProjectData:
-    "열려 있는 폴더(.textus/plugins)에 자체 데이터를 저장하기",
-  pluginPermAiTools: "Textus AI에 자체 도구를 제공하기",
+    "열려 있는 폴더(.moxie/plugins)에 자체 데이터를 저장하기",
+  pluginPermAiTools: "Moxie AI에 자체 도구를 제공하기",
   pluginPermNotifications: "시스템 알림 표시하기",
   pluginPermBackground: "일정에 따라 코드 실행하기(모든 창을 닫아도)",
   pluginScheduleNotice:
-    "{name}에서 예약 작업을 설정했습니다. Textus가 실행 중일 때만 동작합니다. “{setting}”을(를) 켜면 모든 창을 닫아도 동작합니다.",
+    "{name}에서 예약 작업을 설정했습니다. Moxie가 실행 중일 때만 동작합니다. “{setting}”을(를) 켜면 모든 창을 닫아도 동작합니다.",
   pluginPermNetwork: "{host}에 연결",
   pluginPermNetworkAny: "모든 웹사이트에 연결",
   menuPlugins: "플러그인",

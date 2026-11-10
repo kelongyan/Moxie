@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src-tauri/icons/icon.png" alt="Textus" width="120" height="120" />
+  <img src="src-tauri/icons/icon.png" alt="Moxie" width="120" height="120" />
 </p>
 
-<h1 align="center">Textus</h1>
+<h1 align="center">Moxie</h1>
 
 <p align="center">
   <strong>El editor de Markdown de nueva generación.</strong><br>
@@ -47,11 +47,11 @@ https://github.com/user-attachments/assets/f366f282-e3f9-43d9-9a29-edb6d1ace3f5
 </p>
 
 <p align="center">
-  <img src="docs/images/readme/es/hero.png" alt="Textus con Don Quijote de la Mancha y las notas del lector abiertas. Textus AI condensa las notas frase a frase, cada cambio en el margen, y deja un comentario junto al texto." width="860" /><br>
+  <img src="docs/images/readme/es/hero.png" alt="Moxie con Don Quijote de la Mancha y las notas del lector abiertas. Moxie AI condensa las notas frase a frase, cada cambio en el margen, y deja un comentario junto al texto." width="860" /><br>
   <sub><i>Don Quijote de la Mancha</i>, Miguel de Cervantes</sub>
 </p>
 
-## Consigue Textus
+## Consigue Moxie
 
 Gratuito y de código abierto, con licencia MIT.
 
@@ -64,7 +64,7 @@ Gratuito y de código abierto, con licencia MIT.
 
 > iPhone y iPad: muy pronto en la App Store (aún no en China continental).
 
-Beta: en **Ajustes › General › Acerca de Textus**, pon el **Canal de actualizaciones** en **Beta**.
+Beta: en **Ajustes › General › Acerca de Moxie**, pon el **Canal de actualizaciones** en **Beta**.
 
 ## Escritura
 
@@ -80,7 +80,7 @@ Lo que ves es lo que obtienes: Markdown que se maqueta mientras escribes. Export
 | **Matemáticas** | **Diagramas** |
 | <img src="docs/images/readme/es/formula.webp" alt="Fórmulas que se dibujan mientras las escribes" width="420" /> | <img src="docs/images/readme/es/diagram.webp" alt="Un diagrama de flujo de Mermaid" width="420" /> |
 
-## Textus AI
+## Moxie AI
 
 Funciona con LLM en línea y locales por igual: una IA que acelera tu escritura.
 
@@ -102,14 +102,14 @@ No solo escribir: los complementos añaden todo lo demás que necesites.
 
 Mapas mentales, diapositivas Marp, tableros kanban, PDF y Word en una pestaña, citas de Zotero, gráficos de todo tipo y más están en **Ajustes › Extensiones**, en el ordenador y en iPhone y iPad.
 
-Muchos plugins también le dan a Textus AI sus propias herramientas, así que basta con pedírselo en una conversación. Los plugins están en [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) y los temas en [textus-themes](https://github.com/CatVinci-Studio/textus-themes), donde puedes compartir los tuyos.
+Muchos plugins también le dan a Moxie AI sus propias herramientas, así que basta con pedírselo en una conversación. Los plugins están en [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) y los temas en [textus-themes](https://github.com/CatVinci-Studio/textus-themes), donde puedes compartir los tuyos.
 
 ## Preguntas frecuentes
 
 <details>
-<summary><strong>¿Es gratis Textus?</strong></summary>
+<summary><strong>¿Es gratis Moxie?</strong></summary>
 
-Sí. Es gratuito y de código abierto, con licencia MIT, sin cuenta ni suscripción. Si usas Textus AI, te cobra directamente tu proveedor; con un modelo local, nadie.
+Sí. Es gratuito y de código abierto, con licencia MIT, sin cuenta ni suscripción. Si usas Moxie AI, te cobra directamente tu proveedor; con un modelo local, nadie.
 
 </details>
 
@@ -130,14 +130,14 @@ Nos importa mucho la memoria y la medimos en cada versión. Una ventana ocupa un
 <details>
 <summary><strong>¿Necesito una cuenta de IA?</strong></summary>
 
-No. El editor funciona perfectamente sin IA. Para usar Textus AI, conecta tu propio proveedor: inicia sesión con ChatGPT o Claude, añade una clave de API o ejecuta un modelo local con Ollama.
+No. El editor funciona perfectamente sin IA. Para usar Moxie AI, conecta tu propio proveedor: inicia sesión con ChatGPT o Claude, añade una clave de API o ejecuta un modelo local con Ollama.
 
 </details>
 
 <details>
 <summary><strong>¿Funciona sin conexión?</strong></summary>
 
-El editor, sí, por completo. Textus AI necesita conectarse a tu proveedor, salvo que uses un modelo local.
+El editor, sí, por completo. Moxie AI necesita conectarse a tu proveedor, salvo que uses un modelo local.
 
 </details>
 
@@ -157,7 +157,7 @@ Los errores y las sugerencias son bienvenidos en [GitHub Issues](https://github.
 
 ## Hoja de ruta y cómo contribuir
 
-[ROADMAP.md](ROADMAP.md) (en inglés) muestra hacia dónde va Textus. Para compilar Textus, ejecutar las comprobaciones o abrir un pull request, empieza por [CONTRIBUTING.md](CONTRIBUTING.md) (en inglés); los asistentes de programación con IA siguen [AGENTS.md](AGENTS.md). Se puede conversar en inglés o en chino.
+[ROADMAP.md](ROADMAP.md) (en inglés) muestra hacia dónde va Moxie. Para compilar Moxie, ejecutar las comprobaciones o abrir un pull request, empieza por [CONTRIBUTING.md](CONTRIBUTING.md) (en inglés); los asistentes de programación con IA siguen [AGENTS.md](AGENTS.md). Se puede conversar en inglés o en chino.
 
 ## Historial de estrellas
 

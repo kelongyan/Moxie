@@ -7,20 +7,20 @@ import type { Plural } from "../plural";
  */
 const en = {
   agentPanelTitle: AI_NAME,
-  textusAiToggleLabel: `Enable ${AI_NAME}`,
-  textusAiOffHint: "Off: nothing is sent to any AI service.",
-  textusAiMenuHint: "Right-click to pause or turn off",
-  textusAiClosePanel: "Close the panel",
-  textusAiPause: "Pause for an hour",
-  textusAiTurnOff: `Turn off ${AI_NAME}`,
-  textusAiPausedTooltip: `${AI_NAME} is paused until {time} · Click to turn on`,
-  textusAiOffTooltip: `${AI_NAME} is off · Click to turn on`,
-  textusAiOff: `${AI_NAME} is off`,
-  textusAiTurnOn: `Turn on ${AI_NAME}`,
-  announceTextusAiOn: `${AI_NAME} is on.`,
-  announceTextusAiOff: `${AI_NAME} is off.`,
-  shortcutToggleTextusAi: `Turn ${AI_NAME} on or off`,
-  menuTextusAi: AI_NAME,
+  moxieAiToggleLabel: `Enable ${AI_NAME}`,
+  moxieAiOffHint: "Off: nothing is sent to any AI service.",
+  moxieAiMenuHint: "Right-click to pause or turn off",
+  moxieAiClosePanel: "Close the panel",
+  moxieAiPause: "Pause for an hour",
+  moxieAiTurnOff: `Turn off ${AI_NAME}`,
+  moxieAiPausedTooltip: `${AI_NAME} is paused until {time} · Click to turn on`,
+  moxieAiOffTooltip: `${AI_NAME} is off · Click to turn on`,
+  moxieAiOff: `${AI_NAME} is off`,
+  moxieAiTurnOn: `Turn on ${AI_NAME}`,
+  announceMoxieAiOn: `${AI_NAME} is on.`,
+  announceMoxieAiOff: `${AI_NAME} is off.`,
+  shortcutToggleMoxieAi: `Turn ${AI_NAME} on or off`,
+  menuMoxieAi: AI_NAME,
   agentPanelPopOut: "Open in a separate window",
   agentPanelResize: "Resize the AI panel",
   sidebarResize: "Resize the sidebar",
@@ -89,7 +89,7 @@ Worth writing here, for example:
   Terms        Write "e-mail", never "email".
   Background   I write long-form science journalism for a general audience.
 
-Instructions for one project only go in that project's .textus/agent.md
+Instructions for one project only go in that project's .moxie/agent.md
 (the AI panel's project menu > Edit project writing instructions).
 Both are sent; where they disagree, the project's win.
 
@@ -328,8 +328,8 @@ type /name in a conversation to use one.
     "Pictures come out of your ChatGPT plan's own image allowance, not API credit. This goes through the service ChatGPT's own apps use, which is not a published API and may stop working without notice; an OpenAI API key keeps working either way.",
   imagesPerRequestLabel: "Pictures per request",
   imagesPerRequestHelp:
-    "The most pictures Textus AI makes for one request. Each costs money with an API key, or uses your plan's allowance; tell it how many and it makes that many, up to this.",
-  changePictureWithAi: "Change this picture with Textus AI…",
+    "The most pictures Moxie AI makes for one request. Each costs money with an API key, or uses your plan's allowance; tell it how many and it makes that many, up to this.",
+  changePictureWithAi: "Change this picture with Moxie AI…",
   oldPictureTrashQuestion:
     "The new picture is in. Move the old one, “{name}”, to the Trash?",
   oldPictureTrashOk: "Move to Trash",
@@ -355,7 +355,7 @@ type /name in a conversation to use one.
     "It draws on the page itself, which a plugin can't: nothing it draws will show.",
   chatPluginCheckPermission: "It uses {permission} without asking for it.",
   chatPluginCheckWhen:
-    "A menu item's condition reads {key}, which Textus doesn't set: the item never shows.",
+    "A menu item's condition reads {key}, which Moxie doesn't set: the item never shows.",
   chatPluginCheckUnregistered: "It declares {id} but never sets it up.",
   chatPluginRunError: "It stopped with: {error}",
   chatPluginFix: "Fix with AI",
@@ -369,7 +369,7 @@ type /name in a conversation to use one.
   skillWarnCreateMode:
     "In Create mode it could write or change skills itself. Keep it there only if you trust every line.",
   skillWarnPromptInjection:
-    'Its instructions read like they try to override Textus AI\'s own ("ignore previous instructions"). Read it before you save it.',
+    'Its instructions read like they try to override Moxie AI\'s own ("ignore previous instructions"). Read it before you save it.',
   skillWarnHiddenText:
     "It holds invisible characters, which can hide instructions. Read it before you save it.",
   chatShowCode: "Show the code",
@@ -587,7 +587,7 @@ type /name in a conversation to use one.
   treeTrashFolderConfirm:
     "Move the folder “{name}” and everything in it to the Trash? You can put it back from there.",
   errorPermission:
-    "Textus isn't allowed to open this file or folder. Check its permissions, or choose another location.",
+    "Moxie isn't allowed to open this file or folder. Check its permissions, or choose another location.",
   errorNotFound:
     "The file or folder isn't there any more. It may have been moved, renamed or deleted.",
   errorDiskFull: "The disk is full. Free up some space, then try again.",
@@ -597,14 +597,14 @@ type /name in a conversation to use one.
   errorTimeout: "It took too long. Check your connection, then try again.",
   errorNetwork:
     "Couldn't connect. Check your internet connection or proxy settings.",
-  errorFileTooBig: "This file is too large to open in Textus.",
-  errorNotDocument: "Textus can't read this file as a document.",
+  errorFileTooBig: "This file is too large to open in Moxie.",
+  errorNotDocument: "Moxie can't read this file as a document.",
   errorBadName:
     "That name can't be used. A name can't be empty or contain / or \\.",
   errorMoveIntoItself: "A folder can't be moved into itself.",
   errorPluginTooBig: "This plugin is too large to install.",
   errorCatalogNewer:
-    "The plugin store needs a newer Textus. Update Textus to see it.",
+    "The plugin store needs a newer Moxie. Update Moxie to see it.",
   errorImageTooBig: "The picture is empty or larger than 25 MB.",
   errorNoFolder: "Open a folder first.",
   treeNameTaken: "There is already something named “{name}” here.",
@@ -664,7 +664,7 @@ type /name in a conversation to use one.
   navPrivacy: "Privacy",
   navAbout: "About",
   navGuides: "Guides",
-  aboutTextus: "About Textus",
+  aboutMoxie: "About Moxie",
   aboutVersion: "Version {version}",
   aboutMadeBy: "Made by CatVinci Studio",
   aboutQq: "QQ group",
@@ -686,7 +686,7 @@ type /name in a conversation to use one.
     "You're using a beta ({version}). The stable version is older; going back installs it.",
   backToStableButton: "Go Back to Stable",
   backToStableConfirm:
-    "Install Textus {version}, the stable version? It's older than the beta you have ({beta}). Your documents aren't touched; what only the beta has - its plugins, for one - may not come along.",
+    "Install Moxie {version}, the stable version? It's older than the beta you have ({beta}). Your documents aren't touched; what only the beta has - its plugins, for one - may not come along.",
   backToStableInstall: "Install {version}",
   backToStableNone: "There's no stable version to go back to right now.",
   aiCompletionLabel: "Enable AI completion",
@@ -743,7 +743,7 @@ type /name in a conversation to use one.
   agentSkillsBuiltinTag: "Built-in",
   agentSkillsOpen: "Open",
   agentSkillsReset: "Reset",
-  madeByTextusAi: `Made with ${AI_NAME}`,
+  madeByMoxieAi: `Made with ${AI_NAME}`,
   skillDelete: "Delete",
   skillDeleteAsk: "Delete “{name}”? Its files go to the Trash.",
   skillDeleteAskMobile: "Delete “{name}”?",
@@ -872,7 +872,7 @@ type /name in a conversation to use one.
   pictureRedraw: "Redraw…",
   pictureRedrawTitle: "Redraw the picture",
   pictureRedrawPrompt:
-    "What the picture shows - change it and Textus draws it again:",
+    "What the picture shows - change it and Moxie draws it again:",
   pictureRedrawOk: "Redraw",
   agentThinking: "Thinking…",
   agentWritingEdit: "Writing the edit…",
@@ -898,7 +898,7 @@ type /name in a conversation to use one.
   chatHistorySearch: "Search conversations",
   chatHistorySearchNone: "No conversation has these words.",
   chatHistoryByYou: "You",
-  chatHistoryByAi: "Textus AI",
+  chatHistoryByAi: "Moxie AI",
   chatHistoryRestoreHint: "Reopen this conversation with its document",
   chatHistoryDelete: "Delete conversation",
   chatHistoryRestoreHereHint:
@@ -1023,9 +1023,9 @@ type /name in a conversation to use one.
     "A .csl file for the bibliography. Without one, Pandoc uses Chicago author-date.",
   pandocArgsLabel: "Pandoc arguments",
   pandocArgsHelp:
-    "Added to Pandoc's command for this format, word by word and never through a shell. Quote a value that has spaces. Textus sets --from, --to and --output itself.",
+    "Added to Pandoc's command for this format, word by word and never through a shell. Quote a value that has spaces. Moxie sets --from, --to and --output itself.",
   pandocArgsAll: "All formats",
-  pandocArgsOwned: "{arg} is set by Textus; take it out.",
+  pandocArgsOwned: "{arg} is set by Moxie; take it out.",
   pandocErrorSettings:
     "Your Pandoc options are in Settings › {page} › {group}, and its Advanced arguments.",
   pdfLightColorsLabel: "Export PDFs in light colors",
@@ -1127,7 +1127,7 @@ type /name in a conversation to use one.
   reportKindQuestion: "A question",
   reportAreaLabel: "About",
   reportAreaEditor: "Writing and editing",
-  reportAreaAi: "Textus AI",
+  reportAreaAi: "Moxie AI",
   reportAreaPlugins: "Plugins and themes",
   reportAreaPanes: "Tabs, panes and windows",
   reportAreaExport: "Export and printing",
@@ -1211,7 +1211,7 @@ type /name in a conversation to use one.
   updateDownloading: "Downloading update…",
   updateFailed: "Update failed:",
   updateViaPackageManager: `${APP_NAME} was installed by your package manager. Update it there.`,
-  cliCommandLabel: "Install Textus CLI",
+  cliCommandLabel: "Install Moxie CLI",
   cliCommandInstalled: "Installed",
   cliCommandNotInstalled: "Not installed",
   cliCommandInstallButton: "Install",
@@ -1286,9 +1286,9 @@ type /name in a conversation to use one.
   settingsFileImportConfirm:
     "Replace your settings with the ones in this file? API keys and MCP tokens on this computer are kept.",
   settingsFileImportReplace: "Replace",
-  settingsFileNotSettings: "This file isn’t Textus settings.",
+  settingsFileNotSettings: "This file isn’t Moxie settings.",
   settingsFileWithAi:
-    "Export your AI records too - every conversation and memory? The file then holds what you wrote to Textus AI.",
+    "Export your AI records too - every conversation and memory? The file then holds what you wrote to Moxie AI.",
   settingsFileWithAiYes: "Include AI records",
   settingsFileSettingsOnly: "Settings only",
   settingsFileImportAi:
@@ -1468,7 +1468,7 @@ type /name in a conversation to use one.
   privacyDraftRecoveryToggle: "Recover unsaved content after a crash",
   privacyKeepUnsavedToggle: "Keep unsaved changes when closing, without asking",
   privacyKeepUnsavedHelp:
-    "Closing a window with unsaved changes doesn't ask to save: the documents open again with their changes next time Textus starts. The files themselves stay as they were until you save.",
+    "Closing a window with unsaved changes doesn't ask to save: the documents open again with their changes next time Moxie starts. The files themselves stay as they were until you save.",
   privacyDraftRecoveryClearHint:
     "Removes any snapshots currently on disk. This can't be undone.",
   privacyClearButton: "Clear",
@@ -1522,7 +1522,7 @@ type /name in a conversation to use one.
     "Only .md, .markdown and .txt files can be imported.",
   backgroundToggle: "Keep running in the background",
   backgroundTrayUnavailable: `This desktop has no tray: libayatana-appindicator isn’t installed. ${APP_NAME} still keeps running; open it again from your launcher.`,
-  trayOpenTextus: `Open ${APP_NAME}`,
+  trayOpenMoxie: `Open ${APP_NAME}`,
   // Plugins.
   navExtensions: "Extensions",
   extensionsTabPlugins: "Plugins",
@@ -1537,14 +1537,14 @@ type /name in a conversation to use one.
   createMakePlugin: "Make your plugin",
   createMakeSkill: "Make your skill",
   createNew: "New",
-  createAiOff: "Turn on Textus AI to create.",
+  createAiOff: "Turn on Moxie AI to create.",
   createExamples: "Try one",
   createExamplePluginTodo:
     "A to-do list in the sidebar that keeps my tasks even with no folder open",
   createExampleThemeAmber: "A warm amber theme, light by day and dark at night",
   createExampleSkillWeekly:
     "Turn my notes into a weekly report with done, next and blocked",
-  extensionsIntroPlugins: "New panels, file types and tools, added to Textus.",
+  extensionsIntroPlugins: "New panels, file types and tools, added to Moxie.",
   extensionsIntroThemes: "How documents look, on top of the theme you pick.",
   extensionsIntroSkills: `Ways of doing one kind of task well, for ${AI_NAME} and the / menu.`,
   extensionsIntroMcp: `Servers that give ${AI_NAME} more tools.`,
@@ -1606,7 +1606,7 @@ type /name in a conversation to use one.
   pluginsCatalogKept:
     "Showing the list from last time - couldn’t get a newer one: {reason}",
   pluginInstall: "Install",
-  pluginNeedsTextus: "Needs Textus {version}",
+  pluginNeedsMoxie: "Needs Moxie {version}",
   pluginInstalling: "Installing…",
   pluginsSortLabel: "Sort by",
   pluginsSortPopular: "Most installed",
@@ -1628,8 +1628,8 @@ type /name in a conversation to use one.
   floatingClose: "Close {name}",
   floatingToDesktop: "Float {name} on the desktop",
   floatingToWindow: "Put {name} back in the window",
-  floatingOpenApp: "Open Textus",
-  floatingOpenAi: "Textus AI",
+  floatingOpenApp: "Open Moxie",
+  floatingOpenAi: "Moxie AI",
   pluginBackToList: "All plugins",
   pluginSettingsScope: "Applies to",
   pluginSettingsScopeGlobal: "Every document",
@@ -1659,13 +1659,13 @@ type /name in a conversation to use one.
   pluginsAllHelp:
     "Off, no plugin runs and nothing they add is shown. Your plugins and their settings stay as they are.",
   pluginsInstallHelp:
-    "A plugin package (.textusplugin) is copied into Textus. A plugin folder is loaded where it is, for trying out one you are writing; it reloads from there.",
+    "A plugin package (.textusplugin) is copied into Moxie. A plugin folder is loaded where it is, for trying out one you are writing; it reloads from there.",
   pluginsInstallFile: "Install from file…",
   pluginFormPrevMonth: "Previous month",
   pluginFormNextMonth: "Next month",
   pluginsLoadFolder: "Load a plugin folder…",
   pluginsOpenScripts: "Open Scripts Folder",
-  pluginPackageFilter: "Textus plugin",
+  pluginPackageFilter: "Moxie plugin",
   pluginsInstalledGroup: "Installed",
   pluginOpenInstall: "Install and open",
   pluginOpenTurnOnButton: "Turn on and open",
@@ -1674,7 +1674,7 @@ type /name in a conversation to use one.
   conventionsCardLine:
     "This folder's {app} settings store pictures in {folder}",
   conventionsCardDetails:
-    "Current setting: {current}. Adopting saves it in this folder's .textus/settings.json, so it stays with the project.",
+    "Current setting: {current}. Adopting saves it in this folder's .moxie/settings.json, so it stays with the project.",
   conventionsFolderRoot: "the folder itself",
   conventionsFollow: "Adopt",
   conventionsDecline: "Keep Current",
@@ -1690,14 +1690,14 @@ type /name in a conversation to use one.
     "No skills added yet. Pick one under {section} below, or make your own.",
   pluginStatusBroken: "Can’t be read: {reason}",
   pluginStatusDesktopOnly: "Works on the computer only, not on iPhone or iPad.",
-  pluginStatusIncompatible: "Made for another version of Textus ({range}).",
+  pluginStatusIncompatible: "Made for another version of Moxie ({range}).",
   pluginStatusFailed: "Turned off: {reason}",
   pluginStatusAllOff: "Plugins are off.",
   pluginDevTag: "development",
   pluginEnableLabel: "Turn on {name}",
   pluginAddsLabel: "Adds",
   pluginAddsSidebarTab: "a sidebar tab, {name}",
-  pluginAddsAiTool: "a tool for Textus AI, {name}",
+  pluginAddsAiTool: "a tool for Moxie AI, {name}",
   pluginAddsFileType: "opens {types}",
   pluginPermissionsLabel: "Permissions",
   pluginNoPermissions: "Asks for none.",
@@ -1718,7 +1718,7 @@ type /name in a conversation to use one.
     "Your name as its publisher - lowercase letters, digits and dashes. Your GitHub name works well. It replaces “local” in the plugin's id.",
   pluginExportChooseFolder: "Choose a Folder…",
   pluginExportDone:
-    "Exported to {path}.\n\nMake that folder a GitHub repository and push a tag such as v0.1.0: its release workflow publishes the plugin. The README in it says how to have it listed in Textus.",
+    "Exported to {path}.\n\nMake that folder a GitHub repository and push a tag such as v0.1.0: its release workflow publishes the plugin. The README in it says how to have it listed in Moxie.",
   pluginUriNotTaken: "No plugin that is turned on opens this link: {link}",
   uriCommandConfirm: "A link asks to run “{command}”. Run it?",
   uriCommandRun: "Run",
@@ -1744,12 +1744,12 @@ type /name in a conversation to use one.
   pluginPermEditorInput:
     "Take over the keys you type in the editor, and edit as you type",
   pluginPermProjectData:
-    "Keep its own data in the open folder, in .textus/plugins",
-  pluginPermAiTools: "Give Textus AI tools of its own to use",
+    "Keep its own data in the open folder, in .moxie/plugins",
+  pluginPermAiTools: "Give Moxie AI tools of its own to use",
   pluginPermNotifications: "Show system notifications",
   pluginPermBackground: "Run code on a schedule, even with every window closed",
   pluginScheduleNotice:
-    "{name} scheduled something. It only runs while Textus is running: turn on “{setting}” so it also runs with every window closed.",
+    "{name} scheduled something. It only runs while Moxie is running: turn on “{setting}” so it also runs with every window closed.",
   pluginPermNetwork: "Connect to {host}",
   pluginPermNetworkAny: "Connect to any website",
   menuPlugins: "Plugins",
