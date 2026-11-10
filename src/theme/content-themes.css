@@ -186,6 +186,6 @@
    this theme is set in Iosevka, and only inside the document. */
 [data-content-theme="claude"] .milkdown {
   --font-mono:
-    "Iosevka Mono", "Iosevka Term", "Iosevka", "JetBrains Mono",
+    "Ioskeley Mono", "Ioskeley Mono Term", "Ioskeley Mono NL", "JetBrains Mono",
     "Cascadia Code", Consolas, monospace;
 }
