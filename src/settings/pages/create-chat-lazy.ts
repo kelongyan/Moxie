@@ -1,10 +1,9 @@
 import { lazyComponent } from "../../lazy/lazy-component";
 import { lazyModule } from "../../lazy/lazy-module";
 
-// Create's chat is the editor's; it loads once the window is idle, so
-// opening Create doesn't wait for it. Its own module: what holds this
-// import is placed with the startup code, so it holds nothing else.
+// Create's chat loads when that settings page is opened. Warming Settings
+// must not also load a second chat interface before the user needs it.
 export const CreateChat = lazyComponent(
-  lazyModule("create-chat", () => import("./CreateChat"), { warm: true }),
+  lazyModule("create-chat", () => import("./CreateChat")),
   (m) => m.CreateChat,
 );

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { parseHeadings } from "./outline-parse";
 import { ChevronIcon } from "../ui/icons";
 import { useSettings } from "../prefs/SettingsContext";
-import { HEADING_PLACEHOLDER } from "../editor/lazy-blocks/lazy-block-views";
+import { HEADING_PLACEHOLDER } from "../editor/lazy-blocks/lazy-block-dom";
 import { useTreeKeys } from "../ui/useTreeKeys";
 import { Tooltip } from "../ui/Tooltip";
 import { ContextMenu } from "../ui/ContextMenu";

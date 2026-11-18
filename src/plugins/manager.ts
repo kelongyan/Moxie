@@ -1,5 +1,3 @@
-// What plugins add to the editor registers before any editor is made.
-import "./contributions/editor-extensions";
 import { logPluginError } from "./store/plugin-log";
 import { forgetPluginSettings } from "./store/plugin-settings";
 import { version as APP_VERSION } from "../../package.json";

@@ -1,4 +1,5 @@
 import { useKeptLoaded } from "../utils/kept-loaded";
+import { useStartupReady } from "../document/startup-state";
 import { editorHeld } from "../document/editor-held";
 import type { ReactNode } from "react";
 import { Suspense, type ComponentProps, type CSSProperties } from "react";
@@ -41,7 +42,6 @@ import { pullTab } from "./split/split-drop";
 import type { ContextMenuItem } from "../ui/ContextMenu";
 import { contributedContextItems } from "../ui/context-menu-items";
 import { copyPathItem } from "../clipboard/copy-path";
-import { withPluginBlocks } from "../document-view/plugins/plugin-code-blocks";
 
 type TabBarProps = ComponentProps<typeof TabBar>;
 
@@ -52,7 +52,17 @@ const StartPage = lazyComponent(
   (m) => m.StartPage,
 );
 const SplitView = lazyComponent(
-  lazyModule("split-view", () => import("../editor/modes/SplitView")),
+  lazyModule("split-view", async () => {
+    const [{ SplitView }, { withPluginBlocks }] = await Promise.all([
+      import("../editor/modes/SplitView"),
+      import("../document-view/plugins/plugin-code-blocks"),
+    ]);
+    return {
+      SplitView: (props: ComponentProps<typeof SplitView>) => (
+        <SplitView {...props} previewExtras={withPluginBlocks} />
+      ),
+    };
+  }),
   (m) => m.SplitView,
 );
 
@@ -147,6 +157,7 @@ export function MainPane({
     onAdd,
   );
   const phone = usePhoneLayout();
+  const startupReady = useStartupReady();
   const grid = split && splitGrid(split.root);
   const panes = split ? panesOf(split.root) : [];
   // Each pane shows its tab in front; its place in reading order names it.
@@ -289,101 +300,101 @@ export function MainPane({
       {/* A tab's editor stays mounted while hidden, so switching keeps its
         state; one out of sight a long while is let go (EditorKept). */}
       {/* In a split, a click or focus in a pane brings its tab to the front. */}
-      {tabs.map((tab) => {
-        const pane = shownIn.get(tab.id);
-        return (
-          <div
-            key={tab.id}
-            data-active-tab={tab.id === activeTabId}
-            data-tab-id={tab.id}
-            data-pane={pane?.name}
-            data-pane-id={pane?.id}
-            className={pane ? "split-pane" : undefined}
-            style={
-              pane && grid
-                ? grid.bodies.get(pane.id)
-                : { display: tab.id === activeTabId ? "contents" : "none" }
-            }
-            onPointerDownCapture={
-              pane && tab.id !== activeTabId
-                ? () => onActivate(tab.id)
-                : undefined
-            }
-            onFocusCapture={
-              pane && tab.id !== activeTabId
-                ? () => onActivate(tab.id)
-                : undefined
-            }
-          >
-            {tab.view?.kind === "web" && tab.view.resource ? (
-              <WebPagePane tabId={tab.id} url={tab.view.resource} t={t} />
-            ) : tab.view?.kind === "list" ? (
-              <KeptWhileHidden shown={tab.id === activeTabId || !!pane}>
-                <PluginListPane
-                  plugin={tab.view.plugin}
-                  view={tab.view.view}
-                  className="plugin-list-tab"
-                />
-              </KeptWhileHidden>
-            ) : tab.view && tab.view.kind !== "web" ? (
-              <KeptWhileHidden shown={tab.id === activeTabId || !!pane}>
-                <PluginTabPane
+      {startupReady &&
+        tabs.map((tab) => {
+          const pane = shownIn.get(tab.id);
+          return (
+            <div
+              key={tab.id}
+              data-active-tab={tab.id === activeTabId}
+              data-tab-id={tab.id}
+              data-pane={pane?.name}
+              data-pane-id={pane?.id}
+              className={pane ? "split-pane" : undefined}
+              style={
+                pane && grid
+                  ? grid.bodies.get(pane.id)
+                  : { display: tab.id === activeTabId ? "contents" : "none" }
+              }
+              onPointerDownCapture={
+                pane && tab.id !== activeTabId
+                  ? () => onActivate(tab.id)
+                  : undefined
+              }
+              onFocusCapture={
+                pane && tab.id !== activeTabId
+                  ? () => onActivate(tab.id)
+                  : undefined
+              }
+            >
+              {tab.view?.kind === "web" && tab.view.resource ? (
+                <WebPagePane tabId={tab.id} url={tab.view.resource} t={t} />
+              ) : tab.view?.kind === "list" ? (
+                <KeptWhileHidden shown={tab.id === activeTabId || !!pane}>
+                  <PluginListPane
+                    plugin={tab.view.plugin}
+                    view={tab.view.view}
+                    className="plugin-list-tab"
+                  />
+                </KeptWhileHidden>
+              ) : tab.view && tab.view.kind !== "web" ? (
+                <KeptWhileHidden shown={tab.id === activeTabId || !!pane}>
+                  <PluginTabPane
+                    tabId={tab.id}
+                    plugin={tab.view.plugin}
+                    view={tab.view.view}
+                    kind={tab.view.kind}
+                    resource={tab.view.resource}
+                    state={tab.view.state}
+                    target={tab.view.target}
+                  />
+                </KeptWhileHidden>
+              ) : showsStartPage(tab) ? (
+                <Suspense fallback={null}>
+                  <StartPage t={t} />
+                </Suspense>
+              ) : tab.sourceMode && tab.splitView ? (
+                <Suspense fallback={null}>
+                  <SplitView
+                    content={tab.content}
+                    filePath={tab.path}
+                    typewriter={typewriter}
+                    onChange={(markdown) => onChange(tab.id, markdown)}
+                    readOnly={tabReadOnly(tab)}
+                  />
+                </Suspense>
+              ) : tab.sourceMode ? (
+                <Suspense fallback={null}>
+                  <DocSourceEditor
+                    value={tab.content}
+                    docPath={tab.path}
+                    typewriter={typewriter}
+                    onChange={(markdown) => onChange(tab.id, markdown)}
+                    readOnly={tabReadOnly(tab)}
+                  />
+                </Suspense>
+              ) : (
+                <EditorKept
                   tabId={tab.id}
-                  plugin={tab.view.plugin}
-                  view={tab.view.view}
-                  kind={tab.view.kind}
-                  resource={tab.view.resource}
-                  state={tab.view.state}
-                  target={tab.view.target}
-                />
-              </KeptWhileHidden>
-            ) : showsStartPage(tab) ? (
-              <Suspense fallback={null}>
-                <StartPage t={t} />
-              </Suspense>
-            ) : tab.sourceMode && tab.splitView ? (
-              <Suspense fallback={null}>
-                <SplitView
-                  content={tab.content}
-                  filePath={tab.path}
-                  typewriter={typewriter}
-                  onChange={(markdown) => onChange(tab.id, markdown)}
-                  readOnly={tabReadOnly(tab)}
-                  previewExtras={withPluginBlocks}
-                />
-              </Suspense>
-            ) : tab.sourceMode ? (
-              <Suspense fallback={null}>
-                <DocSourceEditor
-                  value={tab.content}
-                  docPath={tab.path}
-                  typewriter={typewriter}
-                  onChange={(markdown) => onChange(tab.id, markdown)}
-                  readOnly={tabReadOnly(tab)}
-                />
-              </Suspense>
-            ) : (
-              <EditorKept
-                tabId={tab.id}
-                shown={tab.id === activeTabId || !!pane || !tab.path}
-              >
-                <EditorPane
-                  key={`${tab.id}-${tab.reloadKey}`}
-                  tabId={tab.id}
-                  filePath={tab.path}
-                  docTitle={tabTitle(tab, t)}
-                  initialValue={tab.content}
-                  onChange={onChange}
-                  isActive={tab.id === activeTabId}
-                  tour={tour && tab.id === tour.tabId ? tour.ai : null}
-                  tourMode={tour && tab.id === tour.tabId ? tour.mode : null}
-                  readOnly={tabReadOnly(tab)}
-                />
-              </EditorKept>
-            )}
-          </div>
-        );
-      })}
+                  shown={tab.id === activeTabId || !!pane || !tab.path}
+                >
+                  <EditorPane
+                    key={`${tab.id}-${tab.reloadKey}`}
+                    tabId={tab.id}
+                    filePath={tab.path}
+                    docTitle={tabTitle(tab, t)}
+                    initialValue={tab.content}
+                    onChange={onChange}
+                    isActive={tab.id === activeTabId}
+                    tour={tour && tab.id === tour.tabId ? tour.ai : null}
+                    tourMode={tour && tab.id === tour.tabId ? tour.mode : null}
+                    readOnly={tabReadOnly(tab)}
+                  />
+                </EditorKept>
+              )}
+            </div>
+          );
+        })}
       {split &&
         grid?.dividers.map(({ line, style }) => (
           <SplitDivider

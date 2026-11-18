@@ -199,6 +199,22 @@ pub(crate) fn build_window(
     label: &str,
     position: Option<(f64, f64)>,
 ) -> tauri::Result<()> {
+    build_editor_window(app, label, position, true)
+}
+
+#[cfg(desktop)]
+pub(crate) fn build_restored_window(app: &tauri::AppHandle, label: &str) -> tauri::Result<()> {
+    // Recovery must not take the keyboard away once the first document is usable.
+    build_editor_window(app, label, None, false)
+}
+
+#[cfg(desktop)]
+fn build_editor_window(
+    app: &tauri::AppHandle,
+    label: &str,
+    position: Option<(f64, f64)>,
+    focused: bool,
+) -> tauri::Result<()> {
     // Another window opens where the system puts it, no bigger than the main screen.
     let (_, (width, height)) = window_frame::place(
         None,
@@ -207,6 +223,7 @@ pub(crate) fn build_window(
         EDITOR_MIN_SIZE,
     );
     let builder = WebviewWindowBuilder::new(app, label, WebviewUrl::App("index.html".into()))
+        .focused(focused)
         .title(app_identity::APP_NAME)
         .inner_size(width, height)
         .min_inner_size(EDITOR_MIN_SIZE.0, EDITOR_MIN_SIZE.1);
@@ -261,6 +278,7 @@ pub(crate) fn reopen_without_windows(app: &tauri::AppHandle) {
         let _ = window.set_focus();
         return;
     }
+    crate::launch_restore::reset(app);
     let windows = if commands::prefs::read_restore_session_on_startup(app) {
         commands::session::read_session_windows(app)
     } else {

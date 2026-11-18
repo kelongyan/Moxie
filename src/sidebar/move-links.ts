@@ -2,10 +2,15 @@ import { notesRoot, renameRule } from "../links/link-style";
 import { fs } from "../platform/ipc";
 import type { Strings } from "../i18n/strings";
 import { getWindowAccess } from "../plugins/app-bridge";
-import { linkPlanner } from "../links/link-rewrite";
+import { lazyModule } from "../lazy/lazy-module";
 import { showConfirm, showMessage } from "../ui/app-dialog";
 import { FILE_WRITTEN_EVENT } from "../utils/events";
 import { basename } from "../utils/path";
+
+const linkRewrite = lazyModule(
+  "link-rewrite",
+  () => import("../links/link-rewrite"),
+);
 
 /**
  * After the sidebar renamed or moved `from` to `to`: the links to it, and its
@@ -37,6 +42,7 @@ export async function updateLinksAfterMove(
   } catch {
     return; // too broad a folder, or gone: nothing to search
   }
+  const { linkPlanner } = await linkRewrite.load();
   const planner = linkPlanner(files, { root, from, to, linkRoot });
   // What is typed in a tab counts, not the copy on disk.
   const tab = (path: string) => getWindowAccess()?.documentAt(path) ?? null;

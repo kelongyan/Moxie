@@ -39,6 +39,10 @@ pub(crate) fn queue_windows_to_open(app: &tauri::AppHandle, windows: Vec<Vec<Str
         return;
     }
     let ui_ready = UI_READY.load(Ordering::Relaxed);
+    if !ui_ready {
+        crate::launch_restore::enqueue(app, windows);
+        return;
+    }
     let count = windows.len();
     app.state::<PendingOpenPaths>()
         .0
@@ -57,6 +61,11 @@ pub(crate) fn queue_paths_to_open(app: &tauri::AppHandle, paths: Vec<String>) {
         return;
     }
     let ui_ready = UI_READY.load(Ordering::Relaxed);
+
+    if !ui_ready && commands::prefs::read_new_document_mode(app) != "tab" {
+        crate::launch_restore::enqueue(app, paths.into_iter().map(|path| vec![path]).collect());
+        return;
+    }
 
     if commands::prefs::read_new_document_mode(app) == "tab" {
         // Already running: hand the whole batch to the focused window as tabs.
@@ -185,8 +194,18 @@ pub(crate) async fn open_path_in_new_window(app: tauri::AppHandle, path: String)
 
 #[tauri::command]
 #[cfg_attr(test, specta::specta)]
-pub(crate) fn take_pending_window_paths(pending: State<PendingOpenPaths>) -> Vec<String> {
+pub(crate) fn take_pending_window_paths(
+    app: tauri::AppHandle,
+    window: tauri::Window,
+    pending: State<PendingOpenPaths>,
+) -> Vec<String> {
     UI_READY.store(true, Ordering::Relaxed);
+    #[cfg(desktop)]
+    if let Some(paths) = crate::launch_restore::take(&app, window.label()) {
+        return paths;
+    }
+    #[cfg(not(desktop))]
+    let _ = (app, window);
     let mut windows = pending.0.lock().unwrap();
     if windows.is_empty() {
         Vec::new()

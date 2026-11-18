@@ -1,5 +1,10 @@
-import { logPluginMessage } from "../store/plugin-log";
-import { mergeWholeText, textBlocks, type TextBlock } from "./save-blocks";
+import { lazyModule } from "../../lazy/lazy-module";
+import type { TextBlock } from "./save-blocks";
+
+const executor = lazyModule(
+  "plugin-will-save",
+  () => import("./will-save-executor"),
+);
 
 /**
  * Plugins that may change a document just before it is saved. Each is asked
@@ -16,14 +21,20 @@ export interface WillSaveRequest {
 }
 
 /** The plugin's text for the document, or null for no change. */
-type Ask = (request: WillSaveRequest) => Promise<string | null>;
+export type WillSaveListener = (
+  request: WillSaveRequest,
+) => Promise<string | null>;
 
-const listeners = new Map<string, Ask>();
+const listeners = new Map<string, WillSaveListener>();
 
 /** How long a save waits for one plugin. */
 export const WILL_SAVE_MS = 1000;
 
-export function setWillSave(plugin: string, on: boolean, ask: Ask): void {
+export function setWillSave(
+  plugin: string,
+  on: boolean,
+  ask: WillSaveListener,
+): void {
   if (on) listeners.set(plugin, ask);
   else listeners.delete(plugin);
 }
@@ -33,42 +44,18 @@ export function inIdOrder<T>(map: ReadonlyMap<string, T>): [string, T][] {
   return [...map].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 }
 
-async function answer(
-  ask: Ask,
-  request: Omit<WillSaveRequest, "blocks">,
-  until: number,
-): Promise<string> {
-  const reply = await Promise.race([
-    ask({ ...request, blocks: textBlocks(request.text) }).catch(() => null),
-    new Promise<null>((resolve) =>
-      setTimeout(() => resolve(null), Math.max(0, until - Date.now())),
-    ),
-  ]);
-  return typeof reply === "string" ? reply : request.text;
-}
-
 /** The text to save: as each listening plugin changed it, in turn. */
 export async function runWillSave(
   path: string,
   text: string,
   trigger: WillSaveRequest["trigger"] = "manual",
 ): Promise<string> {
-  let current = text;
-  for (const [plugin, ask] of inIdOrder(listeners)) {
-    const until = Date.now() + WILL_SAVE_MS;
-    const once = await answer(ask, { path, text: current, trigger }, until);
-    if (once === current) continue;
-    const log = (why: string) =>
-      logPluginMessage(plugin, "warn", `Not saved: ${why}.`);
-    // Lint rules that fight each other would change it on every save.
-    const twice = await answer(ask, { path, text: once, trigger }, until);
-    if (twice !== once) {
-      log("its change changes again when it runs a second time");
-      continue;
-    }
-    current = mergeWholeText(current, once, log);
-  }
-  return current;
+  // Snapshot before the first await: registrations during a save belong to
+  // the next save, including while the parser is loading for the first one.
+  const ordered = inIdOrder(listeners);
+  if (!ordered.length) return text;
+  const { runListeners } = executor.peek() ?? (await executor.load());
+  return runListeners(ordered, { path, text, trigger }, WILL_SAVE_MS);
 }
 
 /** Whether any plugin listens: saving skips the round trip when none does. */

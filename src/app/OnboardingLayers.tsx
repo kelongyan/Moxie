@@ -11,9 +11,7 @@ import type { Strings } from "../i18n/strings";
 
 // The tour runs once, on first launch, so it loads only when it starts.
 const TutorialExperience = lazyComponent(
-  lazyModule("tutorial", () => import("../onboarding/TutorialExperience"), {
-    warm: true,
-  }),
+  lazyModule("tutorial", () => import("../onboarding/TutorialExperience")),
   (m) => m.TutorialExperience,
 );
 

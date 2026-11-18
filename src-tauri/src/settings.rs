@@ -15,6 +15,7 @@ use chat_history::ChatHistory;
 
 mod store;
 pub(crate) use store::*;
+mod lazy_store;
 mod stores;
 pub(crate) use stores::*;
 mod app;
@@ -139,7 +140,7 @@ struct HistoryChanged {
 
 /// The clipboard entries, or the chat history's index: each conversation's
 /// summary without its turns (`chat_history_get` has those).
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn history_list(stores: tauri::State<Stores>, kind: HistoryKind) -> Value {
     match kind {
@@ -269,7 +270,7 @@ pub fn history_clear(
 }
 
 /// One saved conversation whole, turns included. `None` when its file is gone.
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn chat_history_get(stores: tauri::State<Stores>, id: String) -> Option<Value> {
     stores.chat.get(&id)
@@ -277,14 +278,14 @@ pub fn chat_history_get(stores: tauri::State<Stores>, id: String) -> Option<Valu
 
 /// The saved conversations with every word of `query` in a message or a
 /// reply, newest first (the history list's search).
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn chat_history_search(stores: tauri::State<Stores>, query: String) -> Vec<Value> {
     stores.chat.search(&query, 50)
 }
 
 /// How many older conversations sit in the chat history's trash.
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn chat_history_archived(stores: tauri::State<Stores>) -> usize {
     stores.chat.archived()

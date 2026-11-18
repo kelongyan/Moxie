@@ -76,12 +76,23 @@ if (import.meta.env?.DEV)
 
 let warming = false;
 let scheduled = false;
+let lastInput = 0;
 
 /** From now on, warm parts load one at a time whenever the window is idle.
  *  Called once the first document has painted. */
 export function startWarming(): void {
+  if (warming) return;
   warming = true;
-  scheduleWarm();
+  if (typeof document !== "undefined") {
+    const input = () => {
+      lastInput = Date.now();
+    };
+    document.addEventListener("keydown", input, { passive: true });
+    document.addEventListener("pointerdown", input, { passive: true });
+  }
+  // Leave the first interaction a clear window before evaluating optional
+  // modules; requestIdleCallback alone may fire immediately after the paint.
+  setTimeout(scheduleWarm, 750);
 }
 
 function scheduleWarm() {
@@ -89,6 +100,12 @@ function scheduleWarm() {
   scheduled = true;
   whenIdle(async () => {
     scheduled = false;
+    // A module's evaluation cannot be interrupted once started: don't start
+    // another while the reader is typing or interacting with the window.
+    if (Date.now() - lastInput < 500) {
+      setTimeout(scheduleWarm, 500);
+      return;
+    }
     const next = [...entries.values()].find(
       (entry) => entry.warm && !entry.loaded,
     );

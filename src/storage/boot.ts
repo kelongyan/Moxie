@@ -13,6 +13,8 @@ export interface Boot {
   /** Moxie AI isn't offered on this install (an iOS App Store download
    *  in mainland China). */
   aiUnavailable: boolean;
+  /** Opt-in native startup diagnostics; never includes document content. */
+  startupTrace?: boolean;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -36,6 +38,7 @@ export function readBoot(): Boot | null {
           newProfile: raw.newProfile === true,
           label: typeof raw.label === "string" ? raw.label : "",
           aiUnavailable: raw.aiUnavailable === true,
+          ...(raw.startupTrace === true ? { startupTrace: true } : {}),
         }
       : null;
   return cached;
