@@ -120,6 +120,7 @@ pub fn boot_script(app: &AppHandle, label: &str) -> String {
         "label": label,
         "titlebarHeight": titlebar_height,
         "aiUnavailable": ai_unavailable,
+        "startupTrace": crate::startup::enabled(),
     });
     format!(
         "{}\n;window.__moxieBoot({boot}, {theme_css});",
@@ -186,6 +187,7 @@ pub fn with_boot<'a, R: tauri::Runtime, M: Manager<R>>(
     label: &str,
 ) -> tauri::WebviewWindowBuilder<'a, R, M> {
     let builder = builder.initialization_script(boot_script(app, label));
+    crate::startup::mark("boot-script");
     #[cfg(target_os = "linux")]
     let builder = match app
         .try_state::<Stores>()

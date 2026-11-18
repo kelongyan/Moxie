@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { tabIsDirty, type DocTab, type HelpDoc } from "./doc-tabs";
+import { finishStartupRestore, useStartupRestored } from "./startup-state";
 
 /**
  * What a window has open, kept in its sessionStorage: a reload of the page
@@ -103,10 +104,8 @@ export function readKeptTabs(): KeptTabs | null {
 
 // Until the launch-time restore has put the kept tabs back, the window's
 // tabs are its blank start, not something to write over them.
-let restored = false;
-
 export function keptTabsRestored(): void {
-  restored = true;
+  finishStartupRestore();
 }
 
 /** Keeps this window's tabs written down while it runs: once they rest, and
@@ -118,6 +117,7 @@ export function useKeepTabs(
   withText: boolean,
   liveTabs: () => DocTab[],
 ): void {
+  const restored = useStartupRestored();
   const latest = useRef({ activeTabId, withText, liveTabs });
   latest.current = { activeTabId, withText, liveTabs };
 
@@ -128,7 +128,7 @@ export function useKeepTabs(
       writeKeptTabs(keptTabs(now.liveTabs(), now.activeTabId, now.withText));
     }, WRITE_MS);
     return () => clearTimeout(timer);
-  }, [tabs, activeTabId, withText]);
+  }, [tabs, activeTabId, withText, restored]);
 
   useEffect(() => {
     const write = () => {
@@ -138,5 +138,5 @@ export function useKeepTabs(
     };
     window.addEventListener("pagehide", write);
     return () => window.removeEventListener("pagehide", write);
-  }, []);
+  }, [restored]);
 }

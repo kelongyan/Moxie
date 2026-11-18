@@ -1,9 +1,9 @@
 # Plugin pages
 
-A plugin draws what Textus can't draw for it - a board, a chart, a
+A plugin draws what Moxie can't draw for it - a board, a chart, a
 calendar - in a page of its own: a webview. This is how pages work, what
-they get from Textus, and the few rules that keep them looking like
-Textus. The design standard behind them is
+they get from Moxie, and the few rules that keep them looking like
+Moxie. The design standard behind them is
 [design-language.md](../../design/design-language.md) §15.
 
 ## Webviews
@@ -36,9 +36,9 @@ textus.views.registerWebview("jane.board.view", {
   (`webview.asWebviewUri(path)` writes the same).
 - A webview has no network and no storage of the browser's: it asks its
   plugin, with `postMessage`. `api.getState()` / `api.setState(value)`
-  keep a little state while Textus runs.
+  keep a little state while Moxie runs.
 - The theme's colours and sizes are CSS variables that follow the theme
-  and dark mode, the same ones Textus draws with
+  and dark mode, the same ones Moxie draws with
   ([design-language.md](../../design/design-language.md)): the interface's
   colours `--ui-bg`, `--ui-surface`, `--ui-subtle`, `--ui-text`,
   `--ui-muted`, `--ui-accent`, `--ui-border`, `--ui-hover`,
@@ -48,8 +48,8 @@ textus.views.registerWebview("jane.board.view", {
   for a box or row inside one, `--shape-pill` for a button or chip;
   `--control-height(-sm)`, `--space-1` to `--space-6` and `--font-sans` /
   `--font-mono`. Buttons, inputs, `.toolbar`, `.list` and `.empty` look as
-  Textus's own without any CSS of yours.
-- Motion is Textus's too: `animation: motion-enter var(--dur-medium)
+  Moxie's own without any CSS of yours.
+- Motion is Moxie's too: `animation: motion-enter var(--dur-medium)
 var(--ease-out) backwards` for a part arriving, `motion-exit` for one
   leaving, a `motion-cascade` container for items one after another.
   With the system's Reduce motion they become fades. Animate only
@@ -74,30 +74,30 @@ that gives none exports as the block's source.
 </script>
 ```
 
-Textus asks once the page has loaded (its scripts included), and waits a
+Moxie asks once the page has loaded (its scripts included), and waits a
 few seconds for an answer.
 
-## Textus's controls
+## Moxie's controls
 
-A page shares Textus's stylesheets: buttons, inputs, `.toolbar`, `.list`
-and `.empty` look like Textus's own with no CSS of yours, and the `tx-`
+A page shares Moxie's stylesheets: buttons, inputs, `.toolbar`, `.list`
+and `.empty` look like Moxie's own with no CSS of yours, and the `tx-`
 classes give the rest - `tx-bar` (a row of controls), `tx-button`
 (`small`, `primary`), `tx-icon-button`, `tx-segmented` / `tx-segment`,
 `tx-chip`, `tx-tag` (with `data-tone`), `tx-card`, `tx-table` in a
-`tx-table-frame`, `tx-empty`, and `tx-icon` with `data-icon` for Textus's
+`tx-table-frame`, `tx-empty`, and `tx-icon` with `data-icon` for Moxie's
 icons. Lay them out with your own CSS, using only the variables above.
 
-Menus are Textus's: `api.menu(items, element)` opens one under an element
+Menus are Moxie's: `api.menu(items, element)` opens one under an element
 (items `{ label, value, checked?, danger?, items? }`, `"separator"`) and
 resolves with the value chosen, or null.
 
 ## Dragging
 
-HTML drag and drop doesn't work in a page: the Textus window takes it for
+HTML drag and drop doesn't work in a page: the Moxie window takes it for
 dropping files, so the cursor shows a copy sign and nothing lands. Drag
 with pointer events instead - `pointerdown`, then `pointermove` and
 `pointerup` on `window` - and swallow the click the release sends.
-Textus's own official plugins share one small helper for this
+Moxie's own official plugins share one small helper for this
 (`shared/drag.js` in textus-plugins): `drag.reorder` slides an item along
 its own row (tabs, columns) while the others make way, and `drag.sortable`
 moves it between lists with a lifted copy under the pointer

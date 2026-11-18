@@ -1,6 +1,6 @@
-# Textus design standard
+# Moxie design standard
 
-The rules every surface of Textus is built to: the app, its official plugins, third-party plugins and themes. It is written to be followed by people and by AI agents without further explanation; where a rule needs a judgement, it says what to weigh.
+The rules every surface of Moxie is built to: the app, its official plugins, third-party plugins and themes. It is written to be followed by people and by AI agents without further explanation; where a rule needs a judgement, it says what to weigh.
 
 ## How to read this document
 
@@ -17,7 +17,7 @@ These are decision rules, used to settle cases the sections below don't cover.
 
 1. **The document gets the most visual weight.** Interface chrome (bars, panels, menus) uses the UI font, small type roles, neutral colours and at most one accent colour on screen at a time. Colour, larger type and decoration belong to the document, where a theme sets them. When a control and the text compete for attention, reduce the control.
 2. **One source for every surface.** The app, plugin pages and plugin popups read the same variables, the same component stylesheet and the same icon set. A component's look is defined once; nothing copies it.
-3. **Prefer what Textus draws.** A plugin uses the app's lists, menus, dialogs, settings rows and status items before drawing its own page, and draws its own page only from the shared components (section 17).
+3. **Prefer what Moxie draws.** A plugin uses the app's lists, menus, dialogs, settings rows and status items before drawing its own page, and draws its own page only from the shared components (section 17).
 4. **Themes own colour and document typography; this standard owns geometry.** Sizes, spacing, radii, elevation and motion are the same under every theme.
 5. **Other products are references, not templates.** A pattern from another app is adopted only as a principle (its density, its order of interaction) and drawn with this standard's tokens and components. If the standard lacks something, the standard is extended first.
 6. **Every rule that can be checked is checked** (section 18.3).
@@ -88,7 +88,7 @@ Each interface colour has exactly one job. A new surface MUST pick its colours f
 - Body and secondary text MUST reach 4.5:1 against its background in every built-in theme, light and dark (3:1 for text 18 px and up). Lower emphasis is made with a lighter colour, never with `opacity` on text.
 - `prefers-contrast: more` turns secondary colours into the text colour and thickens rings and hairlines; `forced-colors: active` gives cards and bars a `CanvasText` border.
 
-### 3.4 Tones: categorical colours - In force (Textus 1.3.2)
+### 3.4 Tones: categorical colours - In force (Moxie 1.3.2)
 
 Tags, board columns, graph groups, chart series, timelines and mind-map branches need several distinguishable colours. They MUST come from the tone set, never from a plugin's own palette or a library's default:
 
@@ -172,12 +172,12 @@ Two heights: `--control-height` 28 (36) for forms, dialogs and a Settings row's 
 | Sidebar panel         | 32-high title row (title, up to two circle icon buttons) → optional search field (capsule) → content (list rows 28 high) → empty state                         |
 | Tab view              | 36-high toolbar (start: navigation and view switching; end: actions, the primary button last) → content on the document background                             |
 | Block in the document | _Figure_ (a chart, a diagram): framed, centred, exported as a picture. _Record_ (a database): no frame (`frame: "none"`), a 32-high bar flush with the content |
-| Settings page         | Declared settings, drawn by Textus; a custom page only with the settings group style                                                                           |
-| Popup                 | Menus, selects, tooltips and dialogs are drawn by Textus (5.5)                                                                                                 |
+| Settings page         | Declared settings, drawn by Moxie; a custom page only with the settings group style                                                                            |
+| Popup                 | Menus, selects, tooltips and dialogs are drawn by Moxie (5.5)                                                                                                  |
 
 **Empty states** say in one sentence what will appear and how to get it, with at most one button, centred, in `footnote`.
 
-### 5.5 Surfaces - In force (Textus 1.3.9)
+### 5.5 Surfaces - In force (Moxie 1.3.9)
 
 Every surface that appears in the window is one of these. Each row says where it sits, when it comes and goes, what it may hold, and the one thing to use for it. A new surface takes a row; if none fits, this table is extended first - never a new box.
 
@@ -199,7 +199,7 @@ Every surface that appears in the window is one of these. Each row says where it
 
 **Lists you type into** (the `/` panel, the command palette, the file search, the chat's `/` and `@`) filter with `utils/list-filter.ts`: a label starting with the query first, then a word starting with it, inside it, every word, then pinyin. The option the keys are on is selected (9).
 
-### 5.6 Sizes and scale - In force (Textus 1.3.12)
+### 5.6 Sizes and scale - In force (Moxie 1.3.12)
 
 Every size in the interface is written once, in **interface pixels** on the 4 px grid, and drawn at the interface's size. Nothing - the app, a plugin, a script - draws a fixed number of screen pixels.
 
@@ -348,8 +348,8 @@ The official gallery keeps one theme per distinct character (a calm default, war
 ### 15.1 Tiers, most preferred first
 
 1. **Declared**: commands, menu items, `/` items, key bindings, status items, settings.
-2. **Drawn by Textus**: lists and trees (`views.registerList`), dialogs (`ui.message`, `confirm`, `input`, `pick`, `form`), hover cards, editor decorations.
-3. **A page of the plugin's, built from the shared components**, with popups drawn by Textus.
+2. **Drawn by Moxie**: lists and trees (`views.registerList`), dialogs (`ui.message`, `confirm`, `input`, `pick`, `form`), hover cards, editor decorations.
+3. **A page of the plugin's, built from the shared components**, with popups drawn by Moxie.
 4. **Free drawing** (a chart library, a PDF, a canvas): colours from the tones and interface tokens; the bars and buttons around it from tier 3.
 
 A plugin MUST use the lowest tier that can do the job.
@@ -362,19 +362,19 @@ A plugin MUST use the lowest tier that can do the job.
 - Every control has a name; the page works from the keyboard.
 - A code block page reports its content height (the runtime does this) and never sizes itself to 100% of its frame.
 
-### 15.3 What a plugin page is given - In force (Textus 1.3.2)
+### 15.3 What a plugin page is given - In force (Moxie 1.3.2)
 
 Every plugin page (a sidebar tab, a tab view, a code block, a settings page) gets, before its own HTML and with no setup:
 
 1. **The tokens**: every role token on the list in `src/plugins/views/theme-vars.ts` - colours (tones included), type roles, spacing, shapes, control heights, durations and curves, the popover shadow - kept current when the theme or appearance changes.
 2. **The app's own stylesheets**: `src/ui/motion.css`, `src/ui/design-system.css` and `src/ui/components.css`, the same files the window loads. A `tx-` class in a page is the app's control from the same rule, not a copy.
-3. **Base element styles** (`src/plugins/host/runtime/plugin-ui.css`): bare `button`, `input`, `select`, `textarea`, headings, links, `.toolbar`, `.list`, `.empty` already look like Textus.
+3. **Base element styles** (`src/plugins/host/runtime/plugin-ui.css`): bare `button`, `input`, `select`, `textarea`, headings, links, `.toolbar`, `.list`, `.empty` already look like Moxie.
 4. **Attributes on `<html>`**: `data-theme` (`light` | `dark`), `data-platform`, and `data-window-chrome="mobile"` on a phone, so controls take the phone's sizes there.
 5. **The page API** from `acquireTextusApi()` (or `textus`): `t()`, `postMessage`, `onMessage`, `getState` / `setState`, `onExport`, and `menu()` (15.5).
 
 A plugin MUST NOT ship its own copy of any of these, and MUST NOT restyle a `tx-` class.
 
-### 15.4 The components, and how to write them - In force (Textus 1.3.12)
+### 15.4 The components, and how to write them - In force (Moxie 1.3.12)
 
 The list of controls a plugin page may use, with their markup, is
 [docs/dev/plugins/ui.md](../dev/plugins/ui.md) › Controls - one list, for
@@ -389,11 +389,11 @@ data-icon="…">`): `text`, `number`, `select`, `multi`, `date`, `checkbox`,
 
 Layout around the controls uses the spacing and layout tokens (5.6), never
 fixed pixels. Nothing in a page draws a shadow except a lifted, dragged
-item and Textus's popups.
+item and Moxie's popups.
 
-### 15.5 Menus - In force (Textus 1.3.2)
+### 15.5 Menus - In force (Moxie 1.3.2)
 
-A right-click menu or a dropdown in a page MUST be Textus's own:
+A right-click menu or a dropdown in a page MUST be Moxie's own:
 
 ```js
 const api = acquireTextusApi();

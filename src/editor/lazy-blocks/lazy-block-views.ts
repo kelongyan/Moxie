@@ -16,19 +16,14 @@ import {
   topLevelIndex,
   topLevelStarts,
 } from "./lazy-blocks-state";
+import { PLACEHOLDER_CLASS } from "./lazy-block-dom";
+export { PLACEHOLDER_CLASS, HEADING_PLACEHOLDER } from "./lazy-block-dom";
 
 // The views of a long document's top-level blocks: a placeholder of the
 // block's height, or the block drawn as it always is. Which one is the
 // lazy-blocks plugin's decision; a block that changes from one to the other
 // is made anew. Below the threshold every block gets the view it had
 // before, so short documents are drawn exactly as without this.
-
-/** Marks a placeholder, for the view that finds them on screen. */
-export const PLACEHOLDER_CLASS = "lazy-block";
-
-/** On a heading's placeholder, so the outline still finds every top-level
- *  heading in the DOM, in order. */
-export const HEADING_PLACEHOLDER = `.${PLACEHOLDER_CLASS}[data-heading]`;
 
 type NodeViews = Record<string, NodeViewConstructor>;
 

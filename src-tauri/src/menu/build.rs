@@ -5,6 +5,7 @@ use super::*;
 /// Build and set the whole menu bar, then register the id -> event dispatch.
 /// Called once from setup.
 pub(crate) fn install(app: &tauri::App) -> tauri::Result<()> {
+    app.manage(RecentRefresh::default());
     app.manage(MenuLabels::default());
     app.manage(RecentMenu(Mutex::new(None)));
     app.manage(ViewChecks::default());

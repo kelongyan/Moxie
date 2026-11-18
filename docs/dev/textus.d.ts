@@ -4,7 +4,10 @@
  * `acquireTextusApi()` in its webviews (runtime/webview.js). The one source
  * of truth: docs/dev/plugins/guide.md explains it, the reference pages are
  * made from it, Moxie AI writes plugins from it, and
- * src/plugins/host/textus-types.test.ts keeps it in step with the runtime.
+ * src/plugins/host/moxie-types.test.ts keeps it in step with the runtime.
+ *
+ * `textus` is the name the plugin ecosystem uses, and the one plugins are
+ * written against; the runtime also gives it as `moxie`.
  *
  * In a plugin: `/// <reference path="textus.d.ts" />` at the top of
  * host.js, or `"types": ["./textus.d.ts"]` in a jsconfig.json.
@@ -70,7 +73,7 @@ declare global {
       readonly plugin: PluginInfo;
       /** Places of the plugin's own: `global` for every folder, in
        *  Moxie's config folder; `project` in the open folder's
-       *  .textus/plugins/<id>/ (needs project.data; with no folder open, a
+       *  .moxie/plugins/<id>/ (needs project.data; with no folder open, a
        *  hidden one in Moxie's config folder); `document(path)` for
        *  one document - a diagram's zoom, a bookmark - which follows the
        *  document when it is renamed or moved. */
@@ -991,7 +994,7 @@ declare global {
       /** How the folder of `path` (a document or folder, from the root;
        *  the open folder when left out) is written, whichever app made it -
        *  Obsidian, Logseq, Foam, Dendron, a site generator, git, or the
-       *  folder's own `.textus/settings.json` "conventions". Read it
+       *  folder's own `.moxie/settings.json` "conventions". Read it
        *  instead of other apps' settings files; a field no app sets is
        *  null, for Moxie's own settings. From 1.3.9 (files.read). */
       conventions(path?: string): Promise<FolderConventions>;
@@ -1293,7 +1296,7 @@ declare global {
     }
 
     interface Uri {
-      /** Links `textus://<plugin id>/<path>?<query>` opened from outside
+      /** Links `moxie://<plugin id>/<path>?<query>` opened from outside
        *  Moxie (a browser, another app). */
       registerHandler(
         handler: (uri: {

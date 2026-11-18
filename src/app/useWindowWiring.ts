@@ -89,6 +89,7 @@ export function useWindowWiring({
     markOnboardingShown: () => setSettings({ onboardingShown: true }),
     openPathInTab,
     openFile,
+    restoreRemaining: docs.restoreRemaining,
     replaceTabWithFile: docs.replaceTabWithFile,
     restoreCarets: settings.restoreSessionOnStartup,
     launchStartPage:

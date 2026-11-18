@@ -23,9 +23,12 @@ import { exposePluginApiForDevelopment } from "./plugin-api";
 import "./mobile/styles/index.css";
 import { watchErrors } from "./app/report/recent-errors";
 import { AppErrorBoundary } from "./app/report/AppErrorBoundary";
+import { observeStartup } from "./platform/startup";
+import { preloadRichEditor } from "./document-view/EditorPane";
 
 installPolyfills();
 installDevTauriShim();
+observeStartup(startWarming);
 installWebviewGuards();
 installTextFieldMenu();
 installScrollReveal();
@@ -77,6 +80,16 @@ if (view === "background") {
   void loadLocale(loadSettings().language)
     .catch(() => {})
     .then(() => {
+      const settings = loadSettings();
+      // The normal rich-editor launch needs this immediately. Source mode
+      // and a chosen start page retain their own smaller loading paths.
+      if (
+        settings.viewMode === "rich" &&
+        !(settings.startPageOnLaunch && !settings.restoreSessionOnStartup) &&
+        view !== "floating" &&
+        view !== "chat"
+      )
+        void preloadRichEditor().catch(() => {});
       ReactDOM.createRoot(
         document.getElementById("root") as HTMLElement,
       ).render(
@@ -100,8 +113,6 @@ if (view === "background") {
           </AppErrorBoundary>
         </React.StrictMode>,
       );
-      // The parts likely to be opened next load once the window is idle.
-      startWarming();
       // Caches and idle views are given back once the window is left alone.
       watchMemoryIdle();
     });

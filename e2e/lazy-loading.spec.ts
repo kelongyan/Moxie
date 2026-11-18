@@ -111,7 +111,7 @@ test("an installed plugin starts, and its views load, only once it is needed", a
       version: "1.0.0",
       publisher: "test",
       description: "Draws shout blocks.",
-      engines: { moxie: "^1.3.0" },
+      engines: { textus: "^1.3.0" },
       main: "host.js",
       contributes: { codeBlocks: [{ language: "shout" }] },
     }),

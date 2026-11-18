@@ -18,6 +18,8 @@ import { isWordDocument } from "./word-import";
 import { loadPlugins } from "../plugins/manager";
 import { customEditorFor } from "../plugins/store/plugin-lookup";
 import { keptTabsRestored, readKeptTabs, type KeptTab } from "./reload-tabs";
+import { showStartupDocument } from "./startup-state";
+import { markStartup } from "../platform/startup";
 
 /** Whether a plugin opens `path` in a tab of its own (a PDF). */
 async function opensInPlugin(path: string): Promise<boolean> {
@@ -44,6 +46,8 @@ export interface StartupRestoreOptions {
     open?: { restoreCaret?: boolean },
   ) => Promise<void>;
   openFile: (path: string, open?: { restoreCaret?: boolean }) => Promise<void>;
+  /** Adds remaining session tabs together without mounting each in turn. */
+  restoreRemaining?: (paths: string[]) => Promise<void>;
   /** Opens `path` in tab `tabId`, in place of what it holds. */
   replaceTabWithFile: (tabId: string, path: string) => Promise<void>;
   /** Reopened documents come back at the caret they were left at. */
@@ -220,27 +224,32 @@ export function useStartupRestore(options: StartupRestoreOptions): void {
         if (paths.length > 0) {
           opts.stopTutorial();
           const [first, ...rest] = paths;
-          const recovered = recoveredFor(first);
-          if (recovered) {
-            loadRecoveredIntoInitialTab(recovered);
-          } else if (isWordDocument(first) || (await opensInPlugin(first))) {
-            // Converted into the initial tab, or shown there by a plugin.
-            await opts.replaceTabWithFile(opts.activeTabId, first);
-          } else {
-            const { content: text, diskMtime } = await readDocFromDisk(first);
-            restoreCaret(first, diskMtime);
-            loadIntoInitialTab({
-              path: first,
-              content: text,
-              savedContent: text,
-              diskMtime,
-            });
+          try {
+            const recovered = recoveredFor(first);
+            if (recovered) {
+              loadRecoveredIntoInitialTab(recovered);
+            } else if (isWordDocument(first) || (await opensInPlugin(first))) {
+              // Converted into the initial tab, or shown there by a plugin.
+              await opts.replaceTabWithFile(opts.activeTabId, first);
+            } else {
+              const { content: text, diskMtime } = await readDocFromDisk(first);
+              restoreCaret(first, diskMtime);
+              loadIntoInitialTab({
+                path: first,
+                content: text,
+                savedContent: text,
+                diskMtime,
+              });
+            }
+          } catch (error) {
+            console.error("[startup-restore]", error);
           }
-          for (const p of rest) {
-            // Its recovered tab is already open: that is this document.
-            if (recoveredFor(p)) continue;
-            await opts.openPathInTab(p, { restoreCaret: true });
-          }
+          showStartupDocument();
+          const remaining = rest.filter((path) => !recoveredFor(path));
+          if (opts.restoreRemaining) await opts.restoreRemaining(remaining);
+          else
+            for (const path of remaining)
+              await opts.openPathInTab(path, { restoreCaret: true });
           return;
         }
       } else {
@@ -249,13 +258,19 @@ export function useStartupRestore(options: StartupRestoreOptions): void {
         const [pending, ...rest] = await windowIpc.takePendingWindowPaths();
         if (pending) {
           opts.stopTutorial();
-          const recovered = recoveredFor(pending);
-          if (recovered) loadRecoveredIntoInitialTab(recovered);
-          else await opts.openFile(pending, { restoreCaret: true });
-          for (const p of rest) {
-            if (recoveredFor(p)) continue;
-            await opts.openPathInTab(p, { restoreCaret: true });
+          try {
+            const recovered = recoveredFor(pending);
+            if (recovered) loadRecoveredIntoInitialTab(recovered);
+            else await opts.openFile(pending, { restoreCaret: true });
+          } catch (error) {
+            console.error("[startup-restore]", error);
           }
+          showStartupDocument();
+          const remaining = rest.filter((path) => !recoveredFor(path));
+          if (opts.restoreRemaining) await opts.restoreRemaining(remaining);
+          else
+            for (const path of remaining)
+              await opts.openPathInTab(path, { restoreCaret: true });
           return;
         }
       }
@@ -304,6 +319,11 @@ export function useStartupRestore(options: StartupRestoreOptions): void {
           ),
         );
       }
-    })().finally(keptTabsRestored);
+    })()
+      .catch((error) => console.error("[startup-restore]", error))
+      .finally(() => {
+        keptTabsRestored();
+        markStartup("restored");
+      });
   }, [latest]);
 }

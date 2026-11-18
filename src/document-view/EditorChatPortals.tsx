@@ -1,12 +1,27 @@
+import { Suspense } from "react";
 import { createPortal } from "react-dom";
-import { EditorAgentPanel } from "./EditorAgentPanel";
 import type { EditorSetup } from "./useEditorSetup";
 import type { EditorChat } from "./useEditorChat";
 import type { EditorReview } from "./useEditorReview";
-import { InlineChat } from "../ai/chat/quick-ask/InlineChat";
 import { chatLabels } from "../ai/chat/chat-labels";
 import type { AgentMode, Settings } from "../prefs/SettingsContext";
 import type { Strings } from "../i18n/strings";
+import { lazyComponent } from "../lazy/lazy-component";
+import { lazyModule } from "../lazy/lazy-module";
+
+// Only the views wait: the editor keeps conversations and proposals alive
+// while either chat is closed or its first load is still in flight.
+const EditorAgentPanel = lazyComponent(
+  lazyModule("editor-agent-panel", () => import("./EditorAgentPanel")),
+  (m) => m.EditorAgentPanel,
+);
+const InlineChat = lazyComponent(
+  lazyModule(
+    "editor-inline-chat",
+    () => import("../ai/chat/quick-ask/InlineChat"),
+  ),
+  (m) => m.InlineChat,
+);
 
 /** Where one tab's chats are drawn: the docked AI panel while active, and
  *  Quick Ask in the document's flow or, on a phone, above the keyboard. */
@@ -40,34 +55,36 @@ export function EditorChatPortals({
       {panelContainer &&
         settings.moxieAi &&
         createPortal(
-          <EditorAgentPanel
-            run={run}
-            t={t}
-            settings={settings}
-            filePath={filePath}
-            tourMode={tourMode}
-            agentPanel={chat.agentPanel}
-            conversation={chat.conversation}
-            pendingEdits={pendingEdits}
-            selectedText={chat.panelSelection?.text ?? null}
-            selectionIsPicture={chat.panelSelection?.picture ?? false}
-            selectionChip={chat.panelChipHandlers}
-            panelSendContext={chat.bridge.panelSendContext}
-            showProposals={chat.proposals.showProposals}
-            onRevealProposal={review.revealProposal}
-            onLocateText={notes.locateText}
-            noteNumber={(id) =>
-              notes.noMargin
-                ? (notes.notes.find((n) => n.id === id)?.num ?? null)
-                : null
-            }
-            onRevealPending={handleFocusNext}
-            onNewConversation={chat.startPanelConversation}
-            onPopOut={chat.popOutPanel}
-            guard={chat.panelGuard}
-            setGuard={chat.setPanelGuard}
-            writePaper={review.writePaper}
-          />,
+          <Suspense fallback={null}>
+            <EditorAgentPanel
+              run={run}
+              t={t}
+              settings={settings}
+              filePath={filePath}
+              tourMode={tourMode}
+              agentPanel={chat.agentPanel}
+              conversation={chat.conversation}
+              pendingEdits={pendingEdits}
+              selectedText={chat.panelSelection?.text ?? null}
+              selectionIsPicture={chat.panelSelection?.picture ?? false}
+              selectionChip={chat.panelChipHandlers}
+              panelSendContext={chat.bridge.panelSendContext}
+              showProposals={chat.proposals.showProposals}
+              onRevealProposal={review.revealProposal}
+              onLocateText={notes.locateText}
+              noteNumber={(id) =>
+                notes.noMargin
+                  ? (notes.notes.find((n) => n.id === id)?.num ?? null)
+                  : null
+              }
+              onRevealPending={handleFocusNext}
+              onNewConversation={chat.startPanelConversation}
+              onPopOut={chat.popOutPanel}
+              guard={chat.panelGuard}
+              setGuard={chat.setPanelGuard}
+              writePaper={review.writePaper}
+            />
+          </Suspense>,
           panelContainer,
         )}
       {inlineChat.chatInfo &&
@@ -76,48 +93,50 @@ export function EditorChatPortals({
         // Portaled into the zone widget, a real block that pushes content
         // down instead of floating over it. On a phone, docked to the page.
         createPortal(
-          <InlineChat
-            document={inlineChat.chatInfo.document}
-            sendContext={chat.bridge.quickSendContext}
-            selectedText={inlineChat.chatInfo.selectedText}
-            selectionMarkdown={inlineChat.chatInfo.selectionMarkdown}
-            docPath={filePath}
-            workspaceRoot={settings.agentWorkspaceRoot || null}
-            conversation={chat.quickConversation}
-            // Write first: Quick Ask is opened on a passage to change it.
-            defaultMode="write"
-            selectionChip={chat.quickChipHandlers}
-            defaultWebSearch={settings.enableWebSearch}
-            labels={chatLabels(t, settings.language)}
-            onProposals={chat.proposals.showProposals}
-            proposalStatus={pendingEdits.status}
-            onAcceptProposal={pendingEdits.accept}
-            onRejectProposal={pendingEdits.reject}
-            onAcceptAll={pendingEdits.acceptAll}
-            onRejectAll={pendingEdits.rejectAll}
-            pendingCount={pendingEdits.decidable.length}
-            focusIndex={pendingEdits.focusIndex}
-            onFocusNext={handleFocusNext}
-            onFocusPrevious={chat.review.handleFocusPrevious}
-            onAcceptFocused={chat.review.handleAcceptFocused}
-            onRejectFocused={chat.review.handleRejectFocused}
-            onDetach={controls.expandQuickAsk}
-            onNewConversation={controls.startNewAgentConversation}
-            onRequestClose={() => controls.requestChatAction("close")}
-            confirm={
-              chatGuard
-                ? {
-                    onProceed: () => controls.performChatAction(chatGuard),
-                    onCancel: () => {
-                      controls.setChatGuard(null);
-                      controls.chatComposer()?.focus();
-                    },
-                  }
-                : null
-            }
-            docked={phone}
-            onDockResize={controls.keepQuickAskTargetInView}
-          />,
+          <Suspense fallback={null}>
+            <InlineChat
+              document={inlineChat.chatInfo.document}
+              sendContext={chat.bridge.quickSendContext}
+              selectedText={inlineChat.chatInfo.selectedText}
+              selectionMarkdown={inlineChat.chatInfo.selectionMarkdown}
+              docPath={filePath}
+              workspaceRoot={settings.agentWorkspaceRoot || null}
+              conversation={chat.quickConversation}
+              // Write first: Quick Ask is opened on a passage to change it.
+              defaultMode="write"
+              selectionChip={chat.quickChipHandlers}
+              defaultWebSearch={settings.enableWebSearch}
+              labels={chatLabels(t, settings.language)}
+              onProposals={chat.proposals.showProposals}
+              proposalStatus={pendingEdits.status}
+              onAcceptProposal={pendingEdits.accept}
+              onRejectProposal={pendingEdits.reject}
+              onAcceptAll={pendingEdits.acceptAll}
+              onRejectAll={pendingEdits.rejectAll}
+              pendingCount={pendingEdits.decidable.length}
+              focusIndex={pendingEdits.focusIndex}
+              onFocusNext={handleFocusNext}
+              onFocusPrevious={chat.review.handleFocusPrevious}
+              onAcceptFocused={chat.review.handleAcceptFocused}
+              onRejectFocused={chat.review.handleRejectFocused}
+              onDetach={controls.expandQuickAsk}
+              onNewConversation={controls.startNewAgentConversation}
+              onRequestClose={() => controls.requestChatAction("close")}
+              confirm={
+                chatGuard
+                  ? {
+                      onProceed: () => controls.performChatAction(chatGuard),
+                      onCancel: () => {
+                        controls.setChatGuard(null);
+                        controls.chatComposer()?.focus();
+                      },
+                    }
+                  : null
+              }
+              docked={phone}
+              onDockResize={controls.keepQuickAskTargetInView}
+            />
+          </Suspense>,
           controls.quickAskHost,
         )}
     </>

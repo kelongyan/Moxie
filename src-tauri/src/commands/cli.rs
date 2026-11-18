@@ -4,8 +4,11 @@
 //! - macOS: `/usr/local/bin/textus` runs the binary inside the .app, or
 //!   `open -a Moxie` once that is gone.
 //! - Windows: `bin\textus.cmd` beside the app, that folder on the user's PATH.
-//! - Linux: the .deb/.rpm ship the binary itself as `/usr/bin/textus`;
+//! - Linux: the .deb/.rpm ship the binary itself as `/usr/bin/Moxie`;
 //!   otherwise (the AppImage) `~/.local/bin/textus`.
+//!
+//! The command keeps the name `textus`: it is what the packages install and
+//! what the plugin ecosystem's own scripts call.
 //!
 //! Startup installs it quietly where no password is needed; Settings ›
 //! General retries. On Windows startup only writes the script: the user's
@@ -284,7 +287,9 @@ mod imp {
     use super::CliStatus;
     use std::path::PathBuf;
 
-    const PACKAGED: &str = "/usr/bin/textus";
+    /// The .deb and .rpm ship the app's binary, whose name follows
+    /// `mainBinaryName` in tauri.conf.json.
+    const PACKAGED: &str = "/usr/bin/Moxie";
 
     /// The AppImage, or the binary itself.
     fn app() -> Option<String> {
@@ -397,7 +402,7 @@ mod tests {
     #[test]
     fn windows_path_is_added_once() {
         let dir = r"C:\Users\a\AppData\Local\Moxie\bin";
-        assert!(path_has(r"C:\x;c:\users\a\appdata\local\textus\BIN\;", dir));
+        assert!(path_has(r"C:\x;c:\users\a\appdata\local\Moxie\BIN\;", dir));
         assert!(!path_has(r"C:\x;C:\Users\a\AppData\Local\Moxie", dir));
         assert_eq!(path_with("", dir), dir);
         assert_eq!(path_with(r"C:\x;", dir), format!(r"C:\x;{dir}"));

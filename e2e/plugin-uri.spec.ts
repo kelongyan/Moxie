@@ -26,7 +26,7 @@ const ENTRY = {
     version: "1.0.0",
     publisher: "test",
     description: "Takes clips from the browser.",
-    engines: { moxie: "^1.3.0" },
+    engines: { textus: "^1.3.0" },
     main: "host.js",
     contributes: {
       commands: [{ command: "test.clip.count", title: "Count Clips" }],

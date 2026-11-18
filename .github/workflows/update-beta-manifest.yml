@@ -1,7 +1,7 @@
 name: Update beta manifest
 
-# The app's beta update channel reads textus-beta.json from our own R2
-# bucket (textus.md/download/textus-beta.json), because GitHub's
+# The app's beta update channel reads moxie-beta.json from our own R2
+# bucket (textus.md/download/moxie-beta.json), because GitHub's
 # releases/latest skips pre-releases. This copies a published release's
 # textus-latest.json there - release candidates and stable releases alike,
 # but never an older version than the one already there
@@ -50,7 +50,7 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Point textus-beta.json at the release
+      - name: Point moxie-beta.json at the release
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             echo "::error::CLOUDFLARE_API_TOKEN is not set: beta users still get the previous version. Run scripts/update-beta-manifest.sh $RELEASE_TAG by hand."

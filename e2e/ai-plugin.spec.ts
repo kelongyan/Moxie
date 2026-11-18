@@ -10,7 +10,7 @@ const manifest = (version: string) => ({
   version,
   publisher: "local",
   description: "Counts the words of the document.",
-  engines: { moxie: "^1.3.0" },
+  engines: { textus: "^1.3.0" },
   main: "host.js",
   permissions: ["editor.read"],
   contributes: {
@@ -133,7 +133,7 @@ test("a plugin's page asks the AI to change it, in Extensions' Create tab", asyn
           version: "1.0.0",
           publisher: "local",
           description: "Counts words.",
-          engines: { moxie: "^1.3.0" },
+          engines: { textus: "^1.3.0" },
           main: "host.js",
         }),
         dev: false,

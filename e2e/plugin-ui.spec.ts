@@ -39,7 +39,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Draws with the app's controls.",
-  engines: { moxie: "^1.3.0" },
+  engines: { textus: "^1.3.0" },
   main: "host.js",
   activationEvents: ["*"],
   permissions: [],

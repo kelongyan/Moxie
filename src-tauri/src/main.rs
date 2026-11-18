@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    moxie_lib::startup::begin();
     // WebKitGTK's DMA-BUF renderer draws a blank window or crashes on NVIDIA's
     // proprietary driver, so fall back to the older renderer there unless the user
     // set it. Set before any thread exists, which makes set_var sound.

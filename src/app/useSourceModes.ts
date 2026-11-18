@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect } from "react";
 import {
-  applySourceCaret,
   captureEditorCaret,
-  readSourceCaret,
   setPendingCaret,
   takePendingCaret,
-} from "../editor/modes/mode-switch";
+} from "../editor/modes/mode-switch-state";
+import {
+  applySourceCaret,
+  readSourceCaret,
+} from "../editor/modes/source-caret";
 import { sourceViewAt } from "../editor/modes/source-view-registry";
 import {
   setCurrentViewMode,

@@ -161,7 +161,7 @@ async fn handle(app: AppHandle, request: Request) -> Answer {
         "skill" => skills(&app, &request).await,
         "export" => export(&app, request).await,
         "commands" | "plugin" | "theme" => in_window(&app, request).await,
-        other => Answer::fail(format!("'{other}' is not a moxie command."), 2),
+        other => Answer::fail(format!("'{other}' is not a textus command."), 2),
     }
 }
 
@@ -205,7 +205,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
         .collect();
     if tools.is_empty() {
         return Answer::fail(
-            format!("'{word}' is not a moxie command or a plugin's. See 'textus help'."),
+            format!("'{word}' is not a textus command or a plugin's. See 'textus help'."),
             2,
         );
     }
@@ -215,7 +215,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
         .and_then(|name| tools.iter().find(|(_, t)| &t.name == name))
     else {
         let list = format!(
-            "Usage: moxie {word} <tool>\n\nTools:\n{}",
+            "Usage: textus {word} <tool>\n\nTools:\n{}",
             tool_lines(&tools)
         );
         return if help {
@@ -250,7 +250,7 @@ async fn plugin_tool(app: &AppHandle, word: &str, args: &[String]) -> Answer {
 
 async fn skills(app: &AppHandle, request: &Request) -> Answer {
     if request.args.iter().map(String::as_str).ne(["list"]) {
-        return Answer::fail("Usage: moxie skill list", 2);
+        return Answer::fail("Usage: textus skill list", 2);
     }
     let skills = crate::ai::workspace::list_skills(app.clone(), None, None).await;
     if request.json {
@@ -392,7 +392,7 @@ pub(super) fn export_job(request: &Request) -> Result<ExportJob, String> {
     let to = super::take_option(&mut args, "--to")?;
     let out = super::take_option(&mut args, "--out")?;
     let [file] = args.as_slice() else {
-        return Err("Usage: moxie export <file> --to <format> [--out <file>]".into());
+        return Err("Usage: textus export <file> --to <format> [--out <file>]".into());
     };
     let cwd = Path::new(&request.cwd);
     let file = cwd.join(file);

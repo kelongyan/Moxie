@@ -29,7 +29,7 @@ Example: `autosave` (**Settings › General › Save automatically**).
 5. **Rust**, only if the backend needs it: `read_setting(app, "field")` in
    `src-tauri/src/settings/app.rs` returns the stored JSON value. Settings
    that belong to a folder rather than the user (a plugin's values, the
-   folder's conventions) go in its `.textus/settings.json` instead
+   folder's conventions) go in its `.moxie/settings.json` instead
    (`src/storage/project-settings.ts`).
 6. **A test** where the setting changes behaviour, in the layer that
    catches it ([testing.md](testing.md)); `openApp(page, { settings: { … } })`
@@ -209,7 +209,7 @@ Example: `layout.panels()` and `onDidChangePanels` (commit 36709ec9), or
 ## Where platform-specific code goes
 
 - **What a platform can do** is a flag in `src/platform/capabilities.ts`
-  (`canUseWindows`, `hasAppMenu`, `canExportPdf`, `hasTextusAi`, …);
+  (`canUseWindows`, `hasAppMenu`, `canExportPdf`, `hasMoxieAi`, …);
   callers read the flag, never the OS. A new flag gets a comment saying
   why the platform differs.
 - **Asking `isIOSApp` directly** is allowed only in the files listed in

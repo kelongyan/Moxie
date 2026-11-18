@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::PathBuf;
+use std::sync::Mutex;
 use tauri::Manager;
 
 /// Recently opened files and folders, backing File > Open Recent. Each list is
@@ -11,6 +12,8 @@ const MAX_RECENT_FOLDERS: usize = 5;
 
 const FILES_LIST: &str = "recent_files.json";
 const FOLDERS_LIST: &str = "recent_folders.json";
+// Async commands may race across windows; serialize each read-modify-write.
+static CHANGING: Mutex<()> = Mutex::new(());
 
 fn list_file(app: &tauri::AppHandle, name: &str) -> Option<PathBuf> {
     app.path().app_config_dir().ok().map(|dir| dir.join(name))
@@ -62,9 +65,10 @@ pub fn still_there(list: Vec<String>) -> Vec<String> {
         .collect()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn add_recent_file(app: tauri::AppHandle, path: String) {
+    let _changing = CHANGING.lock().unwrap();
     let list = push_front(read_recent_files(&app), path, MAX_RECENT_FILES);
     write_list(&app, FILES_LIST, &list);
     // The list itself is shared; the File > Open Recent menu mirroring it is
@@ -74,9 +78,10 @@ pub fn add_recent_file(app: tauri::AppHandle, path: String) {
 }
 
 #[cfg(desktop)]
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn add_recent_folder(app: tauri::AppHandle, path: String) {
+    let _changing = CHANGING.lock().unwrap();
     let list = push_front(read_recent_folders(&app), path, MAX_RECENT_FOLDERS);
     write_list(&app, FOLDERS_LIST, &list);
     crate::menu::rebuild_recent_menu(&app);
@@ -85,6 +90,7 @@ pub fn add_recent_folder(app: tauri::AppHandle, path: String) {
 /// Clear Menu empties both lists: it is one submenu to the user.
 #[cfg(desktop)]
 pub fn clear_recent_files(app: &tauri::AppHandle) {
+    let _changing = CHANGING.lock().unwrap();
     write_list(app, FILES_LIST, &[]);
     write_list(app, FOLDERS_LIST, &[]);
     crate::menu::rebuild_recent_menu(app);

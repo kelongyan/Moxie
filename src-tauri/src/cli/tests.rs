@@ -100,7 +100,7 @@ fn help_lists_the_running_apps_plugin_commands() {
 fn a_commands_help_is_its_usage() {
     let (code, out, _) = run_line(&["help", "search"]);
     assert_eq!(code, 0);
-    assert!(out.starts_with("Usage: moxie search <query> [<folder>]"));
+    assert!(out.starts_with("Usage: textus search <query> [<folder>]"));
     assert_eq!(run_line(&["search", "--help"]).1, out);
     assert_eq!(run_line(&["search", "-h"]).1, out);
 }
@@ -118,7 +118,7 @@ fn an_unknown_command_is_a_usage_error_on_stderr() {
     let (code, out, err) = run_line(&["serch", "x"]);
     assert_eq!(code, 2);
     assert!(out.is_empty());
-    assert!(err.contains("'serch' is not a moxie command"));
+    assert!(err.contains("'serch' is not a textus command"));
 }
 
 #[test]

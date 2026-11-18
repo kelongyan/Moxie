@@ -18,6 +18,8 @@ mod distribution;
 mod ext_stats;
 mod extract;
 #[cfg(desktop)]
+mod launch_restore;
+#[cfg(desktop)]
 mod mcp;
 #[cfg(desktop)]
 mod menu;
@@ -25,6 +27,7 @@ mod net;
 mod plugins;
 mod schedule;
 mod settings;
+pub mod startup;
 #[cfg(desktop)]
 mod tab_drag;
 mod walk;
@@ -64,6 +67,7 @@ fn desktop_builder(builder: tauri::Builder<tauri::Wry>) -> tauri::Builder<tauri:
         .manage(PendingDetachedTabs(Mutex::new(HashMap::new())))
         .manage(DragTrackers::default())
         .manage(SessionTabsState(Mutex::new(HashMap::new())))
+        .manage(launch_restore::DeferredWindows::default())
         .manage(PendingChatHandoffs(Mutex::new(HashMap::new())))
         .manage(OpenChatWindows(Mutex::new(Vec::new())))
         .manage(background::BackgroundStatus::default())
@@ -202,14 +206,21 @@ pub fn run() {
     let builder = desktop_builder(builder);
     builder
         .setup(|app| {
+            startup::mark("setup");
+            startup::listen(app.handle());
+            #[cfg(desktop)]
+            launch_restore::listen(app.handle());
             // Before any window: every window's boot script is made from it.
             settings::init(app.handle());
+            startup::mark("stores");
             tauri::async_runtime::spawn(plugins::moved_skills::install_moved_skills(
                 app.handle().clone(),
             ));
             crate::editor_windows::build_main_window(app)?;
+            startup::mark("main-window");
             #[cfg(desktop)]
             desktop_setup(app)?;
+            startup::mark("setup-complete");
             Ok(())
         })
         .invoke_handler(invoke_handler::handler())
@@ -219,6 +230,7 @@ pub fn run() {
             // Flush whatever is still waiting on its debounce.
             if let tauri::RunEvent::Exit = event {
                 settings::flush_all(app_handle);
+                startup::flush();
             }
             // Closing the last window leaves the app running on macOS, and elsewhere in
             // background mode. Tauri's codeless request after the last window is turned

@@ -23,8 +23,7 @@ import {
   OPEN_FILE_IN_TAB_EVENT,
   type OpenFileInTab,
 } from "../utils/events";
-import { setTabJump, type TabJump } from "../editor/tab-jump";
-import { lastCaret } from "../document/last-carets";
+import { setTabJump } from "../editor/tab-jump";
 import { lastViewMode } from "../editor/modes/view-mode";
 import { isIOSApp } from "../platform/capabilities";
 import { isWindowsPlatform } from "../platform/os";
@@ -45,6 +44,8 @@ import type { Strings } from "../i18n/strings";
 import type { TabState } from "./tabs/useTabState";
 import { splitForDrop, type DropTarget } from "./split/split-drop";
 import { explainError } from "../utils/error-explain";
+import { restoreSessionTabs } from "./restore-session-tabs";
+import { openingJump } from "../document/file-opening-jump";
 
 /** How a document opens, beyond which file. */
 export interface OpenOptions {
@@ -63,20 +64,6 @@ export interface OpenOptions {
   drop?: DropTarget;
   /** A single click to look: in the preview tab (DocTab.preview). */
   preview?: boolean;
-}
-
-/** Where a document just read from disk should open, if not at its top. */
-function openingJump(
-  open: OpenOptions,
-  path: string,
-  diskMtime: number | null,
-  restoreCarets: boolean,
-): TabJump | null {
-  if (open.place) return { kind: "place", place: open.place };
-  if (open.anchor) return { kind: "heading", anchor: open.anchor };
-  const at =
-    open.restoreCaret && restoreCarets ? lastCaret(path, diskMtime) : null;
-  return at && { kind: "caret", at };
 }
 
 /** The tab a plugin's custom editor opens `path` in (a PDF, a board). */
@@ -186,6 +173,26 @@ export function useFileOpening(opts: {
   );
 
   const activeIdRef = useLatest(activeTabId);
+  const restoreRemaining = useCallback(
+    (paths: string[]) =>
+      restoreSessionTabs({
+        paths,
+        liveTabs,
+        activeTabId: () => activeIdRef.current,
+        readDocument,
+        restoreCarets,
+        setTabs,
+        setActiveTabId,
+      }),
+    [
+      liveTabs,
+      readDocument,
+      restoreCarets,
+      setTabs,
+      setActiveTabId,
+      activeIdRef,
+    ],
+  );
   const openPathInTab = useCallback(
     async (path: string, open: OpenOptions = {}) => {
       // Beside the tab in front: once the tab is among the window's.
@@ -375,6 +382,7 @@ export function useFileOpening(opts: {
   );
 
   return {
+    restoreRemaining,
     openPathInTab,
     replaceTabWithFile,
     openFile,

@@ -15,7 +15,7 @@ const ENTRY = {
     version: "0.1.0",
     publisher: "local",
     description: "Counts words.",
-    engines: { moxie: "^1.3.0" },
+    engines: { textus: "^1.3.0" },
     main: "host.js",
   }),
   dev: false,

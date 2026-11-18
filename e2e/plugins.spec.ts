@@ -79,7 +79,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Says hello.",
-  engines: { moxie: "^1.2.0" },
+  engines: { textus: "^1.2.0" },
   main: "host.js",
   permissions: ["editor.read", "editor.propose"],
   contributes: {

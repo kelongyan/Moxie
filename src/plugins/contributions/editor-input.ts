@@ -1,19 +1,16 @@
 import { Plugin } from "@milkdown/kit/prose/state";
 import { Decoration, DecorationSet } from "@milkdown/kit/prose/view";
 import { $prose } from "@milkdown/kit/utils";
-import { isMacPlatform } from "../../platform/os";
-import { keyName } from "./editor-keys";
-import { isImeKeydown } from "../../utils/ime";
 import { inputSourceIpc } from "../../platform/ipc-app";
+import { capturedKey, held, type KeyCapture } from "./editor-key-capture";
+export { heldByPlugin, keyHolder } from "./editor-key-capture";
 
 import {
   NO_FLASH,
   clearFlash,
-  held,
   inputKey,
   setCursorStyle,
   type InputState,
-  type KeyCapture,
 } from "./editor-input-state";
 /**
  * A plugin that takes over the editor's keyboard (Vim, Emacs). A sandboxed
@@ -59,11 +56,6 @@ export function setKeyCapture(
   return true;
 }
 
-/** The plugin holding the keyboard, if one does. */
-export function keyHolder(): { id: string; name: string } | null {
-  return held.owner && { id: held.owner.plugin, name: held.owner.name };
-}
-
 /** Lets go of whatever `plugin` held: it stopped. */
 export function releaseKeys(plugin: string): void {
   if (held.owner?.plugin !== plugin) return;
@@ -71,27 +63,6 @@ export function releaseKeys(plugin: string): void {
   setCursorStyle("bar");
   clearFlash();
   syncRomanInput();
-}
-
-function captures(event: KeyboardEvent, capture: KeyCapture): string | null {
-  if (isImeKeydown(event)) return null;
-  if (["Shift", "Control", "Alt", "Meta", "CapsLock"].includes(event.key))
-    return null;
-  const name = keyName(event);
-  if (capture.mode === "some") return capture.keys.includes(name) ? name : null;
-  // The app's shortcuts stay its own unless named: ⌘ on a Mac, Ctrl elsewhere.
-  const mod = isMacPlatform() ? event.metaKey : event.ctrlKey || event.metaKey;
-  if (mod && !capture.keys.includes(name)) return null;
-  return name;
-}
-
-/** Whether a plugin holds this key in the focused editor, so the window's
- *  shortcuts leave it alone (Emacs's C-/ is undo, not Toggle Source Mode). */
-export function heldByPlugin(event: KeyboardEvent): boolean {
-  const view = held.view;
-  if (!held.owner || !view || view.isDestroyed || !view.hasFocus())
-    return false;
-  return captures(event, held.owner.capture) !== null;
 }
 
 export const createEditorInputPlugin = () =>
@@ -110,7 +81,7 @@ export const createEditorInputPlugin = () =>
     props: {
       handleKeyDown(view, event) {
         if (!held.owner) return false;
-        const name = captures(event, held.owner.capture);
+        const name = capturedKey(event, held.owner.capture);
         if (!name) return false;
         held.view = view;
         held.owner.lastKeyAt = Date.now();

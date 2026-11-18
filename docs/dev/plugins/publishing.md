@@ -1,17 +1,17 @@
 # Publishing a plugin
 
 How a plugin gets to people: its README and pictures, its version and
-the Textus it needs, and the store.
+the Moxie it needs, and the store.
 
 ## Versions
 
 - `version` is the plugin's own, semver. A published version never
   changes: any change to what is packed - your files, or a shared file
   your package carries - is a new version.
-- `engines.textus` is the Textus it needs, as a semver range
+- `engines.textus` is the Moxie it needs, as a semver range
   (`">=1.3.10"`). Raise it to the version that added the newest API you
-  call ([versions.md](versions.md)); a Textus outside it doesn't load the
-  plugin, and the store tells the user to update Textus.
+  call ([versions.md](versions.md)); a Moxie outside it doesn't load the
+  plugin, and the store tells the user to update Moxie.
 - `platforms` says where it runs (`["desktop"]`, or with `"ios"`).
 
 ## Its README
@@ -25,7 +25,7 @@ and so on for other languages. It is the plugin's page in the store:
 3. `## Changes`: one line per version, newest first.
 
 Every language says the same. **Get more** shows it on the plugin's page before it
-is installed, and its page in Settings shows it after; Textus picks the
+is installed, and its page in Settings shows it after; Moxie picks the
 reader's language, English otherwise. The manifest's `icon` (an SVG or PNG)
 is drawn beside its name on a tile of its own.
 
@@ -38,7 +38,7 @@ them light - a window of about 1200 px, cropped to what the plugin does.
 
 ## Publishing
 
-1. On the plugin's page in Settings (or the chat card of one Textus AI
+1. On the plugin's page in Settings (or the chat card of one Moxie AI
    wrote), choose **Export for Publishing…**: your name as its publisher,
    and a folder. You get the plugin laid out as a repository - its id
    under your name, a README, an MIT LICENSE, a `.gitignore` and a release

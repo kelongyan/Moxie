@@ -17,10 +17,10 @@
   "bundle": {
     "linux": {
       "deb": {
-        "desktopTemplate": "../packaging/linux/textus.desktop"
+        "desktopTemplate": "../packaging/linux/moxie.desktop"
       },
       "rpm": {
-        "desktopTemplate": "../packaging/linux/textus.desktop",
+        "desktopTemplate": "../packaging/linux/moxie.desktop",
         "recommends": [
           "libayatana-appindicator-gtk3",
           "libayatana-appindicator3-1"

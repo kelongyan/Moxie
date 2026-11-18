@@ -21,7 +21,7 @@ stable release ([infrastructure.md](infrastructure.md#playground)).
   pre-releases and offered on the Beta update channel
   ([Pre-releases](#pre-releases)).
 - **A release goes from `main` into `stable` in one pull request**
-  ("Textus X.Y.Z"), and is published from `stable`: the `vX.Y.Z` tag is
+  ("Moxie X.Y.Z"), and is published from `stable`: the `vX.Y.Z` tag is
   pushed on the merged `stable` commit ([Desktop release](#desktop-release)).
 - A fix the released version needs lands on `main` like any other change,
   and ships in the next release. Nothing is committed to `stable` except a
@@ -104,7 +104,7 @@ Before either kind, in the release's pull request:
    ```sh
    git fetch origin
    node scripts/check-versions.mjs --tag vX.Y.Z-rc.N   # on a checkout of origin/main
-   git tag -a vX.Y.Z-rc.N origin/main -m "Textus X.Y.Z-rc.N"
+   git tag -a vX.Y.Z-rc.N origin/main -m "Moxie X.Y.Z-rc.N"
    git push origin vX.Y.Z-rc.N
    ```
 
@@ -124,7 +124,7 @@ Release notes aren't required for a pre-release: the fragments stay in
    `check-versions.mjs --tag` (step 3, and the workflow's preflight) a
    stable tag with fragments left over or the summary unwritten; the notes
    are the GitHub release's text and the updater's.
-2. Open one pull request into `stable`, titled `Textus X.Y.Z`, from a
+2. Open one pull request into `stable`, titled `Moxie X.Y.Z`, from a
    release branch made from `main`, and squash-merge it once CI passes.
    Each earlier release was squashed into `stable`, so `main` and `stable`
    share no recent history and a pull request straight from `main`
@@ -145,7 +145,7 @@ Release notes aren't required for a pre-release: the fragments stay in
    ```sh
    git fetch origin
    node scripts/check-versions.mjs --tag vX.Y.Z   # on a checkout of origin/stable
-   git tag -a vX.Y.Z origin/stable -m "Textus X.Y.Z"
+   git tag -a vX.Y.Z origin/stable -m "Moxie X.Y.Z"
    git push origin vX.Y.Z
    ```
 
@@ -184,7 +184,7 @@ Release notes aren't required for a pre-release: the fragments stay in
    - the GitHub release is public and has every file in
      [Installers](#installers), and a `.sig` beside each one with updater
      keys;
-   - `latest.json` is still Levis 0.9.8's and `textus-latest.json` has the new
+   - `latest.json` is still Levis 0.9.8's and `moxie-latest.json` has the new
      version with the keys listed there (`jq '.platforms | keys'`):
      `darwin-aarch64`, `darwin-x86_64`, `linux-x86_64`, `linux-aarch64`,
      `windows-x86_64` and `windows-aarch64`, each also with its installer
@@ -192,7 +192,7 @@ Release notes aren't required for a pre-release: the fragments stay in
    - <https://textus.md/download/manifest.json> names the new
      files under all ten keys, `windows-arm64`, `linux-arm64`, `deb-arm64`
      and `rpm-arm64` included;
-   - <https://textus.md/download/textus-beta.json> has the new
+   - <https://textus.md/download/moxie-beta.json> has the new
      version;
    - the Arch repository has `textus-bin-X.Y.Z-1`;
    - later that day, `brew info --cask textus` shows the new version. If
@@ -213,25 +213,25 @@ same for `update-beta-manifest.yml` and `update-arch-repo.yml`.
 
 Each release carries these, named by tauri-bundler (`X.Y.Z` is the
 version). The files with updater keys have a `.sig` beside them, and the
-updater manifest (`textus-latest.json`) points those keys at them; the
+updater manifest (`moxie-latest.json`) points those keys at them; the
 download mirror's `manifest.json` gives the website one file per mirror
 key. A pre-release has no `.rpm`, and so no `…-rpm` keys.
 
 | Platform          | File                                    | Built on           | Updater keys                  | Mirror key      |
 | ----------------- | --------------------------------------- | ------------------ | ----------------------------- | --------------- |
-| macOS, Apple      | `Textus_X.Y.Z_aarch64.dmg`              | `macos-26`         | -                             | `mac`           |
-| macOS, Apple      | `Textus_X.Y.Z_aarch64.app.tar.gz`       | `macos-26`         | `darwin-aarch64`, `…-app`     | -               |
-| macOS, Intel      | `Textus_X.Y.Z_x64.dmg`                  | `macos-26` (cross) | -                             | `mac-intel`     |
-| macOS, Intel      | `Textus_X.Y.Z_x64.app.tar.gz`           | `macos-26` (cross) | `darwin-x86_64`, `…-app`      | -               |
-| Windows x64       | `Textus_X.Y.Z_x64-setup.exe`            | `windows-latest`   | `windows-x86_64`, `…-nsis`    | `windows`       |
-| Windows ARM64     | `Textus_X.Y.Z_arm64-setup.exe`          | `windows-11-arm`   | `windows-aarch64`, `…-nsis`   | `windows-arm64` |
-| Linux x64         | `Textus_X.Y.Z_amd64.AppImage`           | `ubuntu-22.04`     | `linux-x86_64`, `…-appimage`  | `linux`         |
-| Linux x64         | `Textus_X.Y.Z_amd64.deb`                | `ubuntu-22.04`     | `linux-x86_64-deb`            | `deb`           |
-| Linux x64         | `Textus-X.Y.Z-1.x86_64.rpm`             | `ubuntu-22.04`     | `linux-x86_64-rpm`            | `rpm`           |
-| Linux ARM64       | `Textus_X.Y.Z_aarch64.AppImage`         | `ubuntu-22.04-arm` | `linux-aarch64`, `…-appimage` | `linux-arm64`   |
-| Linux ARM64       | `Textus_X.Y.Z_arm64.deb`                | `ubuntu-22.04-arm` | `linux-aarch64-deb`           | `deb-arm64`     |
-| Linux ARM64       | `Textus-X.Y.Z-1.aarch64.rpm`            | `ubuntu-22.04-arm` | `linux-aarch64-rpm`           | `rpm-arm64`     |
-| Arch Linux x86_64 | `Textus_X.Y.Z_linux_x86_64.tar.gz`      | `ubuntu-22.04`     | -                             | -               |
+| macOS, Apple      | `Moxie_X.Y.Z_aarch64.dmg`               | `macos-26`         | -                             | `mac`           |
+| macOS, Apple      | `Moxie_X.Y.Z_aarch64.app.tar.gz`        | `macos-26`         | `darwin-aarch64`, `…-app`     | -               |
+| macOS, Intel      | `Moxie_X.Y.Z_x64.dmg`                   | `macos-26` (cross) | -                             | `mac-intel`     |
+| macOS, Intel      | `Moxie_X.Y.Z_x64.app.tar.gz`            | `macos-26` (cross) | `darwin-x86_64`, `…-app`      | -               |
+| Windows x64       | `Moxie_X.Y.Z_x64-setup.exe`             | `windows-latest`   | `windows-x86_64`, `…-nsis`    | `windows`       |
+| Windows ARM64     | `Moxie_X.Y.Z_arm64-setup.exe`           | `windows-11-arm`   | `windows-aarch64`, `…-nsis`   | `windows-arm64` |
+| Linux x64         | `Moxie_X.Y.Z_amd64.AppImage`            | `ubuntu-22.04`     | `linux-x86_64`, `…-appimage`  | `linux`         |
+| Linux x64         | `Moxie_X.Y.Z_amd64.deb`                 | `ubuntu-22.04`     | `linux-x86_64-deb`            | `deb`           |
+| Linux x64         | `Moxie-X.Y.Z-1.x86_64.rpm`              | `ubuntu-22.04`     | `linux-x86_64-rpm`            | `rpm`           |
+| Linux ARM64       | `Moxie_X.Y.Z_aarch64.AppImage`          | `ubuntu-22.04-arm` | `linux-aarch64`, `…-appimage` | `linux-arm64`   |
+| Linux ARM64       | `Moxie_X.Y.Z_arm64.deb`                 | `ubuntu-22.04-arm` | `linux-aarch64-deb`           | `deb-arm64`     |
+| Linux ARM64       | `Moxie-X.Y.Z-1.aarch64.rpm`             | `ubuntu-22.04-arm` | `linux-aarch64-rpm`           | `rpm-arm64`     |
+| Arch Linux x86_64 | `Moxie_X.Y.Z_linux_x86_64.tar.gz`       | `ubuntu-22.04`     | -                             | -               |
 | Arch Linux x86_64 | `textus-bin-X.Y.Z-1-x86_64.pkg.tar.zst` | Arch container     | -                             | -               |
 
 ARM64 Windows and Linux ship from 1.1.0 on, built on GitHub's native arm64
@@ -251,9 +251,9 @@ required for stable tags. Linux (x64 and ARM64) gets the `.deb` and AppImage but
 (RPM versions can't contain `-`).
 
 A pre-release reaches only the users who chose **Settings › General ›
-About Textus › Update channel › Beta**. It skips the download mirror and
+About Moxie › Update channel › Beta**. It skips the download mirror and
 the `[catvinci]` pacman repository, and the stable channel never sees it: that channel reads
-`releases/latest/download/textus-latest.json`, and `releases/latest`
+`releases/latest/download/moxie-latest.json`, and `releases/latest`
 excludes pre-releases. To check a pre-release before tagging the
 stable release, switch a test install to Beta and use **Check for Updates**.
 
@@ -261,17 +261,17 @@ stable release, switch a test install to Beta and use **Check for Updates**.
 
 The app has two (`src-tauri/src/commands/update.rs`):
 
-- **Stable** reads the newest stable GitHub release's `textus-latest.json`,
+- **Stable** reads the newest stable GitHub release's `moxie-latest.json`,
   the endpoint in `tauri.conf.json`.
-- **Beta** reads `textus-beta.json` from the website's download bucket
-  (<https://textus.md/download/textus-beta.json>), and falls back
+- **Beta** reads `moxie-beta.json` from the website's download bucket
+  (<https://textus.md/download/moxie-beta.json>), and falls back
   to the stable endpoint when that fails. GitHub has no fixed URL for the
   newest pre-release, so the beta manifest lives on our own bucket.
 
 After every published tag, pre-releases included, the
 `update-beta-manifest` job (`update-beta-manifest.yml`,
 `scripts/update-beta-manifest.sh`) copies that release's
-`textus-latest.json` to `textus-beta.json` in the `textus-downloads` R2
+`moxie-latest.json` to `moxie-beta.json` in the `textus-downloads` R2
 bucket - unless the bucket already holds a newer version, so rebuilding an
 old tag never moves beta backwards. Beta therefore always offers the newest
 of the latest pre-release and the latest stable release: on
@@ -288,13 +288,13 @@ the stable channel.
 
 ## Updater manifest
 
-Textus's manifest is `textus-latest.json`, never `latest.json`. Levis 0.9.x
+Moxie's manifest is `moxie-latest.json`, never `latest.json`. Levis 0.9.x
 installs read `latest.json` from this repository (the old
 `CatVinci-Studio/Levis` URL redirects here) and trust the same signing key, so
-a `latest.json` on a Textus release would install Textus over Levis.
+a `latest.json` on a Moxie release would install Moxie over Levis.
 tauri-action runs with `uploadUpdaterJson: false` (`includeUpdaterJson`
 before tauri-action 1.0); before publishing, the publish job writes
-`textus-latest.json` from the draft's `.sig` files
+`moxie-latest.json` from the draft's `.sig` files
 (`scripts/updater-manifest.mjs build`) and refuses to publish a draft that
 has a `latest.json` at all (`… guard`).
 
@@ -307,7 +307,7 @@ stops at the guard until that copy is deleted from its release.
 
 `npm run check` runs `… check`, which
 fails if the updater endpoint, the beta channel's endpoint or the workflow
-drifts back. The beta manifest is `textus-beta.json` and lives only on the
+drifts back. The beta manifest is `moxie-beta.json` and lives only on the
 download bucket, never on a GitHub release.
 
 ## Secrets

@@ -15,7 +15,7 @@ env:
   RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
   # The one place the product's name is spelled for this workflow: the
   # release title.
-  PRODUCT_NAME: Textus
+  PRODUCT_NAME: Moxie
 
 permissions:
   contents: write
@@ -55,7 +55,7 @@ jobs:
       - name: Tag matches the app version
         run: node scripts/check-versions.mjs --root tagged --tag "$RELEASE_TAG"
 
-      # The tagged app reads textus-latest.json and its workflow keeps
+      # The tagged app reads moxie-latest.json and its workflow keeps
       # tauri-action from uploading latest.json - the manifest every Levis
       # install reads (scripts/updater-manifest.mjs). This also refuses a
       # rebuild of an old Levis tag from this workflow.
@@ -287,7 +287,7 @@ jobs:
           # from this repository (the old CatVinci-Studio/Levis URL
           # redirects here) and trust the same signing key, so they would
           # install Textus over themselves. The publish job writes
-          # textus-latest.json from the uploaded .sig files instead.
+          # moxie-latest.json from the uploaded .sig files instead.
           # scripts/updater-manifest.mjs check fails if this line goes.
           # (tauri-action before 1.0 called this input includeUpdaterJson.)
           uploadUpdaterJson: false
@@ -299,7 +299,7 @@ jobs:
       # textus-bin (packaging/arch/PKGBUILD) installs this tarball. Its
       # binary is a second build with TEXTUS_DISTRIBUTION=aur: it reports new
       # versions but does not install them, because pacman owns /usr/bin.
-      # --no-bundle recompiles only the textus crate and skips the installers.
+      # --no-bundle recompiles only the moxie crate and skips the installers.
       # x86_64 only: the package is built and tested in the x86_64-only
       # archlinux container, and [catvinci] serves no aarch64 repository.
       - name: Build and upload AUR tarball
@@ -311,7 +311,7 @@ jobs:
         run: |
           npx tauri build --no-bundle
           scripts/package-linux-tarball.sh "${RELEASE_TAG#v}" \
-            src-tauri/target/release/textus dist-aur
+            src-tauri/target/release/Moxie dist-aur
           gh release upload "$RELEASE_TAG" dist-aur/* --clobber
 
   # Builds and tests textus-bin and attaches it to the draft (see
@@ -341,14 +341,14 @@ jobs:
         with:
           node-version: 22
 
-      # The updater reads textus-latest.json from the newest release the
+      # The updater reads moxie-latest.json from the newest release the
       # moment it is published. It is written here, once every platform's
       # signed artifacts are on the draft, from their .sig files: each
       # artifact's URL is the release's download URL plus its asset name.
       # A platform whose build silently failed to upload (a race, an upload
       # error) has no .sig, and the build step fails rather than leave every
       # user of that platform without the update.
-      - name: Write the updater manifest (textus-latest.json)
+      - name: Write the updater manifest (moxie-latest.json)
         run: |
           sigs="$RUNNER_TEMP/sigs"
           mkdir -p "$sigs"
@@ -359,9 +359,9 @@ jobs:
             --base-url "https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}" \
             --sig-dir "$sigs" \
             $([ -f "$notes" ] && printf -- '--notes-file %s' "$notes") \
-            --out "$RUNNER_TEMP/textus-latest.json"
-          jq '{version, platforms: (.platforms | keys)}' "$RUNNER_TEMP/textus-latest.json"
-          gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/textus-latest.json" --clobber
+            --out "$RUNNER_TEMP/moxie-latest.json"
+          jq '{version, platforms: (.platforms | keys)}' "$RUNNER_TEMP/moxie-latest.json"
+          gh release upload "$RELEASE_TAG" "$RUNNER_TEMP/moxie-latest.json" --clobber
 
       # The last gate before anything is public: no latest.json on the
       # release. Levis installs read that name from the newest release (the
@@ -412,7 +412,7 @@ jobs:
           fi
 
   # After publishing every tag, release candidates included: the beta update
-  # channel's manifest (textus-beta.json on the download bucket), which is
+  # channel's manifest (moxie-beta.json on the download bucket), which is
   # that channel's only way to see a pre-release. It moves only forward, so
   # rebuilding an older tag leaves it where it is.
   update-beta-manifest:

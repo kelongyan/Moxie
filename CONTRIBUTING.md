@@ -1,6 +1,7 @@
-# Contributing to Textus
+# Contributing to Moxie
 
-Hi, and thanks for wanting to help. Textus is made by a few people at
+Hi, and thanks for wanting to help. Moxie is a fork of
+[Textus](https://github.com/CatVinci-Studio/Textus), made by a few people at
 CatVinci Studio, and every fix or idea from outside makes a real difference
 to us.
 
@@ -10,7 +11,7 @@ need all of it for a first pull request - "Getting set up" and "Before you
 push" are enough to start. If you use an AI coding assistant, it reads
 [AGENTS.md](AGENTS.md), which points back here.
 
-Textus is a Tauri 2 app: React and TypeScript in `src/`, Rust in
+Moxie is a Tauri 2 app: React and TypeScript in `src/`, Rust in
 `src-tauri/`, and the code that talks to AI providers in
 `src-tauri/crates/aicompat/`. Write to us in English or Chinese, whichever is
 easier for you.
@@ -32,8 +33,8 @@ You need:
 Then:
 
 ```sh
-git clone https://github.com/CatVinci-Studio/Textus.git
-cd Textus
+git clone https://github.com/kelongyan/Moxie.git
+cd Moxie
 npm install
 npm run tauri dev       # the full app, with hot reload of the frontend
 ```
@@ -47,7 +48,7 @@ The official plugins no longer ship with the app. The dev server serves
 them from a checkout of
 [textus-plugins](https://github.com/CatVinci-Studio/textus-plugins) in a
 folder named `textus-plugins` beside (or above) this repository, or at
-`TEXTUS_PLUGINS_DIR` (`vite.dev-plugins.ts`); without one the plugin
+`MOXIE_PLUGINS_DIR` (`vite.dev-plugins.ts`); without one the plugin
 catalog is empty and the plugin e2e flows fail or skip. Run `npm ci` in
 that checkout once.
 
@@ -118,7 +119,7 @@ crate embeds it.
 | vitest (`npm test`)                  | Unit and editor tests, the save round trip, the docs' facts held to the code                                  |
 | Prettier (`npm run format:check`)    | Formatting                                                                                                    |
 | `scripts/check-readmes.mjs`          | The README's translations keep the English one's headings, code blocks and links                              |
-| `scripts/check-code-shape.mjs`       | 600 lines a file, 8 hooks a component, no provider id compared outside its adapter                            |
+| `scripts/check-code-shape.mjs`       | 500 lines a file, 8 hooks a component, no provider id compared outside its adapter                            |
 | `scripts/check-cycles.mjs`           | No import cycles                                                                                              |
 | `scripts/check-duplicates.mjs`       | No run of code copied instead of shared (jscpd); the copies there today are listed and may only go            |
 | `knip`                               | No unused file, export or dependency (`knip.json`)                                                            |

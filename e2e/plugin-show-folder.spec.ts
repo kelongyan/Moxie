@@ -25,7 +25,7 @@ const MANIFEST = {
   version: "1.0.0",
   publisher: "test",
   description: "Shows a folder.",
-  engines: { moxie: "^1.3.0" },
+  engines: { textus: "^1.3.0" },
   main: "host.js",
   activationEvents: ["*"],
   permissions: [],

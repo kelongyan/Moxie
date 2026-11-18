@@ -73,7 +73,7 @@ fn merge_paths(map: &HashMap<String, Vec<String>>) -> Vec<Vec<String>> {
         .collect()
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 #[cfg_attr(test, specta::specta)]
 pub fn update_session_paths(
     app: AppHandle,
@@ -81,12 +81,11 @@ pub fn update_session_paths(
     paths: Vec<String>,
     state: tauri::State<SessionTabsState>,
 ) {
-    let merged = {
-        let mut map = state.0.lock().unwrap();
-        map.insert(window.label().to_string(), paths);
-        merge_paths(&map)
-    };
-    write_session_paths(&app, &merged);
+    // Hold the lock through the atomic write so concurrent window updates
+    // cannot land out of order. This command runs off the window thread.
+    let mut map = state.0.lock().unwrap();
+    map.insert(window.label().to_string(), paths);
+    write_session_paths(&app, &merge_paths(&map));
 }
 
 /// Captures the complete session before File > Quit starts closing windows.
@@ -113,7 +112,8 @@ pub fn app_quitting() -> bool {
 #[cfg_attr(test, specta::specta)]
 pub fn cancel_session_quit(app: AppHandle, state: tauri::State<SessionTabsState>) {
     APP_QUITTING.store(false, Ordering::SeqCst);
-    let paths = merge_paths(&state.0.lock().unwrap());
+    let map = state.0.lock().unwrap();
+    let paths = merge_paths(&map);
     write_session_paths(&app, &paths);
 }
 
@@ -134,10 +134,19 @@ fn remove_window_paths(
 }
 
 pub fn forget_window(app: &AppHandle, label: &str, state: &SessionTabsState) {
-    let merged = {
-        let mut map = state.0.lock().unwrap();
-        remove_window_paths(&mut map, label, APP_QUITTING.load(Ordering::SeqCst))
-    };
+    // A cancelled WebView build may return just after the user closed the
+    // last window. Destroying that late window keeps its saved session entry.
+    if crate::launch_restore::was_cancelled(app, label) {
+        return;
+    }
+    if crate::commands::chat_window::is_editor_window(label)
+        && crate::launch_restore::cancel_if_last(app, label)
+    {
+        write_session_paths(app, &merge_paths(&state.0.lock().unwrap()));
+        return;
+    }
+    let mut map = state.0.lock().unwrap();
+    let merged = remove_window_paths(&mut map, label, APP_QUITTING.load(Ordering::SeqCst));
     if let Some(paths) = merged {
         write_session_paths(app, &paths);
     }

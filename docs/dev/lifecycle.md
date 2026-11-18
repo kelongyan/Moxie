@@ -1,6 +1,6 @@
 # Launching, closing and quitting
 
-How a Textus process starts, what keeps it running, and how it ends:
+How a Moxie process starts, what keeps it running, and how it ends:
 background mode and its tray icon, plugins' scheduled jobs, and updates.
 The code is `src-tauri/src/lib.rs` (setup and the run loop),
 `src-tauri/src/launch.rs` (files to open), `src-tauri/src/editor_windows.rs`
@@ -42,7 +42,7 @@ with its last window.
 
 ## Quitting
 
-**File › Quit**, `⌘Q` / `Ctrl + Q` and the tray's **Quit Textus** all run
+**File › Quit**, `⌘Q` / `Ctrl + Q` and the tray's **Quit Moxie** all run
 `menu::quit`: it records the session, asks every window to close (so each
 unsaved document gets its prompt; **Cancel** stops the quit), and once the
 last window is destroyed calls `app.exit(0)`. An exit with a code is never
@@ -57,11 +57,11 @@ Windows and Linux with no window open, ends the process.
 
 | Platform | Where the icon is   | Left click     | Menu        |
 | -------- | ------------------- | -------------- | ----------- |
-| Windows  | Notification area   | Opens Textus   | Right click |
+| Windows  | Notification area   | Opens Moxie    | Right click |
 | macOS    | Menu bar (template) | Opens the menu | Left click  |
 | Linux    | StatusNotifier tray | Opens the menu | Any click   |
 
-The menu: **Open Textus** (`reopen_without_windows`) and **Quit Textus**.
+The menu: **Open Moxie** (`reopen_without_windows`) and **Quit Moxie**.
 Its labels are Rust's own table, in the UI language, because the tray can
 be up before any window has sent labels; a test holds them to the locale
 files. Tray clicks reach the app's menu handler as `tray:<item>` ids.
@@ -102,9 +102,9 @@ once.
 - **Windows:** `tauri-plugin-updater` starts the NSIS installer (`/P
 /UPDATE`, passive) and ends the process with `std::process::exit` - the
   background process, if that is where the update was started. The
-  installer's `CheckIfAppIsRunning` then finds any `textus.exe` still
+  installer's `CheckIfAppIsRunning` then finds any `Moxie.exe` still
   running for the user and ends it (passive mode does so without asking;
-  an installer run by hand asks first), so a Textus in the tray never
+  an installer run by hand asks first), so a Moxie in the tray never
   blocks an install.
 - **macOS and Linux:** the update is installed in place and the frontend
   calls `relaunch()`, an exit with Tauri's restart code, which
@@ -129,10 +129,10 @@ and the GL drivers), clean and given back under memory pressure. WebKit's
 network process stays once a window has been open; it has no API to end
 it. The tray and its menu add no thread, timer or wakeup.
 
-On macOS, expect the same shape: after the last window closes, the "Textus
+On macOS, expect the same shape: after the last window closes, the "Moxie
 Web Content" process should end (check in Activity Monitor), leaving the
 app process and the networking one. On Windows, check in Task Manager that
-the `msedgewebview2.exe` processes under Textus end within a few seconds of
+the `msedgewebview2.exe` processes under Moxie end within a few seconds of
 the last window closing. Either way, measure the idle process for a minute
 with nothing open (Activity Monitor's Memory and CPU columns, or
 `Get-Process textus, msedgewebview2 | Select WS, CPU` in PowerShell before

@@ -155,7 +155,7 @@ pub fn overview(plugins: &str) -> String {
     let width = COMMANDS.iter().map(|c| c.name.len()).max().unwrap_or(0);
     let mut out = format!(
         "{} - the next-generation Markdown editor, made for writing with AI\n\n\
-         Usage: moxie [<file or folder>...]\n\
+         Usage: textus [<file or folder>...]\n\
          \x20      textus <command> [<arguments>]\n\
          \x20      textus <plugin> <tool> [--<name> <value>...] [--json '<object>']\n\n\
          Commands:\n",

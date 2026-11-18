@@ -130,7 +130,7 @@ Files on disk are in memory: `window.__devFs` (a folder, path to text) and
 
 The official plugins no longer ship with the app. The dev server serves
 them from a checkout of `CatVinci-Studio/textus-plugins`
-(`vite.dev-plugins.ts`): the folder named by `TEXTUS_PLUGINS_DIR`, or a
+(`vite.dev-plugins.ts`): the folder named by `MOXIE_PLUGINS_DIR`, or a
 folder `textus-plugins` beside or above the repository, with `npm ci` run
 in it once. Without one the catalog is empty, and the plugin flows fail or
 skip. CI checks one out at a pinned commit in `ci.yml`'s e2e job; it is
@@ -144,7 +144,7 @@ bumped on purpose, with the app change that needs it.
 | `pluginsAtStart(page, options)`                             | The same set-up without opening, for a flow that opens the window itself.                                                                       |
 | `hasPlugin(id)`                                             | Whether the checkout has plugin `id`; a flow for an unpublished plugin skips without it (`test.skip(!hasPlugin(…))`).                           |
 | `openPath(page, path)`                                      | Opens a file as Open Recent would, once the window listens.                                                                                     |
-| `openSidebarTab(page, name)`, `openSidebarList(page, name)` | Opens the sidebar on a plugin's tab: its frame, or the list Textus draws for it.                                                                |
+| `openSidebarTab(page, name)`, `openSidebarList(page, name)` | Opens the sidebar on a plugin's tab: its frame, or the list Moxie draws for it.                                                                 |
 | `tabFrame(page)`                                            | The frame of the plugin tab in front.                                                                                                           |
 
 ### A command the shim doesn't know
@@ -187,16 +187,16 @@ The save round trip (`src/document-view/save-roundtrip*.test.ts`, see
 of `npm test`. It tests platform-independent code, so CI runs it only in
 the `check` job, and on a pull request only when the change can reach
 saving; the native jobs' `npm test` skips it with
-`TEXTUS_SKIP_ROUNDTRIP=1`. Locally `npm run check` always runs it - on the
+`MOXIE_SKIP_ROUNDTRIP=1`. Locally `npm run check` always runs it - on the
 help guides in English, Chinese and Japanese, all ten languages with
-`TEXTUS_ROUNDTRIP_ALL=1`.
+`MOXIE_ROUNDTRIP_ALL=1`.
 
 `npm run test:visual` compares `e2e/visual.spec.ts` against Linux baselines
 (they depend on the fonts of the machine that took them). The WebKit
 project covers the few flows where WebKit differs (`WEBKIT_SPECS` in
 `playwright.config.ts`); CI runs it after a merge, in the `e2e-webkit`
 job. `playwright.webview.config.ts` runs the flows in an old Chromium you
-point it at, the oldest WebView2 Textus supports
+point it at, the oldest WebView2 Moxie supports
 ([webview-support.md](webview-support.md#testing)); CI doesn't run it.
 
 `npm run bench:motion` is a measurement, not a test: it plays every
@@ -396,7 +396,7 @@ pinned rather than trusted.
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ai::agent`             | The scripted agent loop end to end, history compaction, where the document rides (current turn only), focus-section selection on long docs.                                                                                                                             |
 | `ai::tools`             | `propose_edit`/`add_comment` anchor validation, including near-miss matching.                                                                                                                                                                                           |
-| `ai::project`           | Project folder access: containment, hidden files, size caps, search, `.textus/style.md` and `.textus/library/` parsing and relevance.                                                                                                                                   |
+| `ai::project`           | Project folder access: containment, hidden files, size caps, search, `.moxie/style.md` and `.moxie/library/` parsing and relevance.                                                                                                                                     |
 | `ai::workspace`         | Skill parsing, root resolution and the too-broad-folder guard.                                                                                                                                                                                                          |
 | `ai::client`            | Completion prompt assembly, candidate splitting, grammar-issue relocation (CJK offsets), merging the rules engine's findings.                                                                                                                                           |
 | `ai::rules`             | The writing-rules engine: every rule per language with its guards and never-flag cases, profiles and settings, Markdown blocks, majority, fix idempotency, post-processing, platform counts, timing. `sweep` (ignored) runs it over the help guides and eval documents. |
@@ -452,7 +452,7 @@ launch handing its file to the running instance and exiting. Runs with
 throwaway config/data directories. Window checks need niri; `--screenshot`
 also needs the screen unlocked.
 
-`scripts/smoke-ios-sim.sh <Textus.app>` does the same for iOS in the
+`scripts/smoke-ios-sim.sh <Moxie.app>` does the same for iOS in the
 simulator: past onboarding, so the window loads its plugins and menus as at
 every later launch, and alive 20 seconds on. CI's `ios` job runs it.
 
@@ -474,12 +474,12 @@ defaults side by side with the other current models. Results land in a
 and filter it, and the latest before/after results.
 
 Keys live in one env file, `.env.local` at the repository root (git-ignored;
-`TEXTUS_ENV_FILE` points elsewhere), one `NAME=value` per line -
+`MOXIE_ENV_FILE` points elsewhere), one `NAME=value` per line -
 `ANTHROPIC_API_KEY`, `VOLCENGINE_ARK_API_KEY` and so on - or in the
 environment, which wins. The older `.anthropic-api-key.local` still works.
 Without a key every test passes vacuously. A full run costs
 real money: run it through `node scripts/live-eval.mjs run`, which sets a
-budget and leaves the judge off (`TEXTUS_EVAL_JUDGE=1` turns it on), and
+budget and leaves the judge off (`MOXIE_EVAL_JUDGE=1` turns it on), and
 filter with `--filter` while iterating; `compare` then shows what a change
 did against the provider's baseline (docs/design/ai-eval.md, "Running it").
 The checking code itself is unit-tested and runs with the normal

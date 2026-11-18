@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Application
-Name=Textus
+Name=Moxie
 Comment=AI-native WYSIWYG Markdown editor
 Exec=textus %F
 Icon=textus
-StartupWMClass=textus
+StartupWMClass=moxie
 Terminal=false
 Categories=Utility;TextEditor;
 MimeType=text/markdown;text/x-markdown;

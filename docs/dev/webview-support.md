@@ -1,6 +1,6 @@
 # Supported web engines
 
-Textus draws its interface with the system's web engine, so the oldest
+Moxie draws its interface with the system's web engine, so the oldest
 engine a user may have is the oldest one the frontend has to work in.
 
 | Platform                           | Engine              | Oldest supported                             |

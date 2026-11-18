@@ -1,6 +1,6 @@
 # Infrastructure
 
-Everything outside this repository that keeps Textus running: the other
+Everything outside this repository that keeps Moxie running: the other
 repositories, the automation, the website and downloads, and the secrets the
 workflows use. If you're a maintainer taking something over, start here;
 who can do what is in [roles.md](roles.md). No
@@ -10,6 +10,11 @@ it.
 ## Repositories
 
 All under the [CatVinci-Studio](https://github.com/CatVinci-Studio) organization.
+
+These are upstream Textus's, and Moxie still uses them: the official plugins,
+the theme gallery and the plugin catalog are shared, and the plugin API is
+versioned by `engines.textus`. A Moxie build reads the same catalog and the
+same plugins.
 
 | Repository                                                                      | What it is                                                                                                        |
 | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -32,7 +37,7 @@ In this repository (`.github/workflows/`):
 | `release.yml`              | a `vX.Y.Z` tag, or by hand to rebuild one         | builds, signs and publishes the desktop release ([releasing.md](releasing.md))     |
 | `arch-package.yml`         | from `release.yml`                                | builds and tests the `textus-bin` package                                          |
 | `mirror-downloads.yml`     | after a stable release, or by hand                | copies the installers to the website's download bucket                             |
-| `update-beta-manifest.yml` | after every release, rc included, or by hand      | points the beta update channel's `textus-beta.json` at the newest release          |
+| `update-beta-manifest.yml` | after every release, rc included, or by hand      | points the beta update channel's `moxie-beta.json` at the newest release           |
 | `update-arch-repo.yml`     | after a stable release, or by hand                | asks `arch-repo` to serve the new `textus-bin`                                     |
 | `deploy-playground.yml`    | `release.yml`, after the newest stable release    | deploys textus.md/playground/ at that tag ([below](#playground))                   |
 | `ios-release.yml`          | an `ios-vX.Y.Z` tag                               | builds the iOS app and uploads it to TestFlight ([ios-release.md](ios-release.md)) |
@@ -62,7 +67,7 @@ repository's `main`:
 
 - **textus.md** - project `textus-homepage`. Its Functions also
   serve `/download/` from the R2 bucket `textus-downloads` (filled by
-  `mirror-downloads.yml`, and `textus-beta.json` by `update-beta-manifest.yml`),
+  `mirror-downloads.yml`, and `moxie-beta.json` by `update-beta-manifest.yml`),
   and the short links `/discord`, `/qq`, `/wechat`
   and `/join`. The bucket's `manifest.json` names the newest stable
   release's installers under the keys the download page uses: `mac`,

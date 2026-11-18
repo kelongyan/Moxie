@@ -9,7 +9,7 @@ import { EditorChatPortals } from "./EditorChatPortals";
 import { usePhoneLayout } from "../ui/usePhoneLayout";
 import { useSettings, type AgentMode } from "../prefs/SettingsContext";
 import type { TourAi } from "../utils/events";
-import { Milkdown } from "@milkdown/react";
+import { Milkdown, MilkdownProvider } from "@milkdown/react";
 import "@milkdown/kit/prose/view/style/prosemirror.css";
 import "../theme/content-base.css";
 import "../editor/milkdown-theme.css";
@@ -40,7 +40,16 @@ interface MilkdownEditorProps {
  * One tab's document: the editor, Moxie AI's chats on it, caret handling,
  * what opens over it and reviewing it.
  */
-export function MilkdownEditor({
+export function MilkdownEditor(props: MilkdownEditorProps) {
+  // The provider imports the editor engine too, so it shares this lazy boundary.
+  return (
+    <MilkdownProvider>
+      <EditorContents {...props} />
+    </MilkdownProvider>
+  );
+}
+
+function EditorContents({
   tabId,
   filePath,
   docTitle,

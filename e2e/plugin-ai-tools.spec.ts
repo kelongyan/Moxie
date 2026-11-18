@@ -25,7 +25,7 @@ function plugin(granted: string[]) {
         version: "1.0.0",
         publisher: "test",
         description: "Counts words for Moxie AI.",
-        engines: { moxie: "^1.3.0" },
+        engines: { textus: "^1.3.0" },
         main: "host.js",
         permissions: ["ai.tools"],
         contributes: {

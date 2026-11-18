@@ -133,7 +133,7 @@ as recovered tabs, unless the file on disk already holds the same text.
 with unsaved tabs without asking, keeping them as drafts for the next
 launch.
 
-## Changes made outside Textus
+## Changes made outside Moxie
 
 `src/document/useExternalChangeReload.ts` compares each tab's `diskMtime`
 with the file: when the window gains focus, when something in the window
@@ -163,7 +163,7 @@ and links to a moved note are rewritten (`sidebar/move-links.ts`).
   settings and UI-state writes reach Rust before the window goes
   ([storage.md](storage.md#how-the-files-are-written)). Quitting asks every
   window in turn ([lifecycle.md](lifecycle.md#quitting)).
-- Changes still to decide (Textus AI's proposals, the writer's tracked
+- Changes still to decide (Moxie AI's proposals, the writer's tracked
   changes) are kept with the document when it closes, and come back when
   it opens again (`document/undecided.ts`).
 
@@ -173,7 +173,7 @@ A document's editor out of sight for 10 minutes is let go, and opens
 again at its text with its undo history when shown (`EditorKept` in
 `src/app/MainPane.tsx`, `utils/kept-loaded.ts`; the undo history is kept
 in the app's `undo/` folder by `editor/undo-file.ts`). An editor holding a
-Textus AI conversation, Quick Ask, a proposal or undecided changes stays
+Moxie AI conversation, Quick Ask, a proposal or undecided changes stays
 loaded (`document/editor-held.ts`), and so does one with no file to come
 back from. Plugin views and web pages out of sight
 are let go after 5 minutes.

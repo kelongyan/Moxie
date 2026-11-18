@@ -65,10 +65,12 @@ impl Answer {
 
 /// Where the app listens: in its own data folder on macOS, the session's
 /// runtime folder on Linux, a pipe named for the user on Windows.
+/// The folder is named after the app identifier, so the command and the
+/// app always meet in the same place.
 #[cfg(target_os = "macos")]
 pub fn endpoint() -> Option<PathBuf> {
     let home = PathBuf::from(std::env::var_os("HOME")?);
-    Some(home.join("Library/Application Support/com.catvinci.moxie/cli.sock"))
+    Some(home.join("Library/Application Support/com.moxie.desktop/cli.sock"))
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -76,7 +78,7 @@ pub fn endpoint() -> Option<PathBuf> {
     let dir = std::env::var_os("XDG_RUNTIME_DIR")
         .map(PathBuf::from)
         .or_else(|| Some(PathBuf::from(std::env::var_os("HOME")?).join(".local/share")))?;
-    Some(dir.join("com.catvinci.moxie/cli.sock"))
+    Some(dir.join("com.moxie.desktop/cli.sock"))
 }
 
 #[cfg(windows)]

@@ -21,7 +21,7 @@ editor, the frontend channel - only at its edge (`agent/mod.rs`'s step and
 
 Every request - a chat message and each of Research's commands
 ([ai-paper.md](ai-paper.md)) - opens one `agent::Session`
-(`agent/session.rs`) before it runs: Textus AI on, the provider from the
+(`agent/session.rs`) before it runs: Moxie AI on, the provider from the
 catalog, its model from `route::agent_provider`, its own web search, the
 user's workspace and guidance, and the pictures' run. What it opens it
 from is one `agent::AgentRequest` - provider, model, document, project,

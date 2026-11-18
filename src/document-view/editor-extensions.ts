@@ -47,3 +47,6 @@ export function withEditorExtensions(
     .use(pluginCodeBlocks(docPath))
     .use(pluginDecorations);
 }
+// Registers the editor's plugin hooks before its chain is built, without
+// making a window that has no editor import ProseMirror at startup.
+import "../plugins/contributions/editor-extensions";

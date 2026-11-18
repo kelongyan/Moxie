@@ -70,8 +70,9 @@ export default {
 - **The app's and the AI's names come from `names.ts`**, never written out:
   `` `Willkommen bei ${APP_NAME}` ``, `` `Einstellungen > ${AI_NAME}` `` -
   use a template literal wherever `en.ts` does, so a rename happens in
-  one place. (The terminal command `textus` and the `.textus`
-  folder are file names, not the product's name: keep them as they are.)
+  one place. (The terminal command `textus`, the plugin API's `textus`
+  object and the `textus-plugin.json` manifest are file and API names,
+  not the product's name: keep them as they are.)
 - **Count strings are plural forms**, an object with one entry per plural
   category of your language, each saying `{n}`:
 

@@ -1467,6 +1467,9 @@
     factory.call(module.exports, module, module.exports, textus);
   };
   // For code that reaches for the API without the wrapper's argument.
+  // `textus` is the name the plugin ecosystem uses, and the one plugins
+  // are written against; `moxie` is an alias for the same object.
+  window.textus = textus;
   window.moxie = textus;
   window.parent.postMessage({ moxie: "ready" }, "*");
 })();

@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { MilkdownProvider } from "@milkdown/react";
 import { useSettings, type AgentMode } from "../prefs/SettingsContext";
 import { KatexFirst } from "../editor/math/KatexFirst";
 import { elasticOverscroll } from "../ui/elastic-overscroll";
@@ -22,10 +21,14 @@ import { lazyModule } from "../lazy/lazy-module";
 import { lazyComponent } from "../lazy/lazy-component";
 
 // The editor loads with the first document shown.
-const MilkdownEditor = lazyComponent(
-  lazyModule("editor", () => import("./MilkdownEditor")),
-  (m) => m.MilkdownEditor,
-);
+const editorModule = lazyModule("editor", () => import("./MilkdownEditor"));
+const MilkdownEditor = lazyComponent(editorModule, (m) => m.MilkdownEditor);
+
+/** Fetch the first editor while launch data is being read, without creating
+ * a provisional editor whose undo/history would be thrown away on restore. */
+export function preloadRichEditor(): Promise<unknown> {
+  return editorModule.load();
+}
 
 interface EditorPaneProps {
   /** The owning tab. */
@@ -160,19 +163,17 @@ export const EditorPane = memo(function EditorPane({
       >
         <Suspense fallback={null}>
           <KatexFirst markdown={initialValue}>
-            <MilkdownProvider>
-              <MilkdownEditor
-                tabId={tabId}
-                filePath={filePath}
-                docTitle={docTitle}
-                initialValue={initialValue}
-                onChange={handleChange}
-                isActive={isActive}
-                tour={tour}
-                tourMode={tourMode}
-                readOnly={readOnly}
-              />
-            </MilkdownProvider>
+            <MilkdownEditor
+              tabId={tabId}
+              filePath={filePath}
+              docTitle={docTitle}
+              initialValue={initialValue}
+              onChange={handleChange}
+              isActive={isActive}
+              tour={tour}
+              tourMode={tourMode}
+              readOnly={readOnly}
+            />
           </KatexFirst>
         </Suspense>
       </div>

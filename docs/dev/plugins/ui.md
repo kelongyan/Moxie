@@ -1,6 +1,6 @@
 # A plugin's interface
 
-How a plugin shows things so it looks and behaves like the rest of Textus:
+How a plugin shows things so it looks and behaves like the rest of Moxie:
 which layer to use, the five kinds of surface, every control a page may
 use, and the rules for sizes and colours. The design standard behind it is
 [design-language.md](../../design/design-language.md) §5.6 and §15; how
@@ -8,10 +8,10 @@ pages work (webviews, messages, menus, dragging) is [pages.md](pages.md).
 
 ## Four layers, most preferred first
 
-| Layer                        | The plugin                                                                                                                                                      | Textus                                                   | Use it for                                                                |
+| Layer                        | The plugin                                                                                                                                                      | Moxie                                                    | Use it for                                                                |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
 | 1. Declared                  | writes settings, commands, menus, key bindings and status items in its manifest                                                                                 | draws them all                                           | anything that is a setting, an action or a word in the status bar         |
-| 2. Drawn by Textus           | calls an API with the data: `views.registerList`, `ui.pick`, `ui.input`, `ui.form`, `ui.pickDate`, `ui.pickColor`, `ui.notice`, `ui.withProgress`, `ui.confirm` | draws it as its own                                      | lists in the sidebar, choices, questions, dates, colours, progress, notes |
+| 2. Drawn by Moxie            | calls an API with the data: `views.registerList`, `ui.pick`, `ui.input`, `ui.form`, `ui.pickDate`, `ui.pickColor`, `ui.notice`, `ui.withProgress`, `ui.confirm` | draws it as its own                                      | lists in the sidebar, choices, questions, dates, colours, progress, notes |
 | 3. A page of shared controls | writes a page using only the controls below                                                                                                                     | gives the controls' look, size, colours, keys and motion | a board, a table, a calendar, a viewer's toolbar                          |
 | 4. Free drawing              | draws content itself: a chart, a canvas, a picture, a PDF page                                                                                                  | gives the colour tokens and the scale                    | the content only - never its bars, buttons or lists                       |
 
@@ -23,13 +23,13 @@ made of the shared controls.
 
 Each kind of surface has one shape. A plugin's surface is one of these.
 
-| Surface               | Opened with                                           | Shape                                                                                                                                                                                                                                                                                                                                        |
-| --------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sidebar panel         | `views.registerList` (preferred) or a sidebar webview | a title row (its name, at most two circle icon buttons) → an optional search field → a `tx-list` → a `tx-empty`                                                                                                                                                                                                                              |
-| Editor or tab view    | `views.registerFileEditor`, `layout.openView`         | a `tx-bar` `var(--bar-height)` high (start: navigation and view switching; end: actions, the primary button last) → the content                                                                                                                                                                                                              |
-| Block in the document | `views.registerCodeBlock`                             | a figure (chart, diagram): the content alone, one line for an error. A record (a database, tasks): one `tx-bar`, then the content, at most 70% of the window high, scrolling inside. Its bar leaves `var(--block-source-room)` at its end for the block's source button. It draws no fold arrow and no title of its own: Textus folds blocks |
-| Floating view         | `contributes.floatingViews`                           | the content alone, its manifest's size, scaled with the interface; folded, a dot                                                                                                                                                                                                                                                             |
-| Settings              | declared `settings` (preferred) or a settings page    | `tx-group-title`, `tx-group`, `tx-row`: Settings' own look                                                                                                                                                                                                                                                                                   |
+| Surface               | Opened with                                           | Shape                                                                                                                                                                                                                                                                                                                                       |
+| --------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar panel         | `views.registerList` (preferred) or a sidebar webview | a title row (its name, at most two circle icon buttons) → an optional search field → a `tx-list` → a `tx-empty`                                                                                                                                                                                                                             |
+| Editor or tab view    | `views.registerFileEditor`, `layout.openView`         | a `tx-bar` `var(--bar-height)` high (start: navigation and view switching; end: actions, the primary button last) → the content                                                                                                                                                                                                             |
+| Block in the document | `views.registerCodeBlock`                             | a figure (chart, diagram): the content alone, one line for an error. A record (a database, tasks): one `tx-bar`, then the content, at most 70% of the window high, scrolling inside. Its bar leaves `var(--block-source-room)` at its end for the block's source button. It draws no fold arrow and no title of its own: Moxie folds blocks |
+| Floating view         | `contributes.floatingViews`                           | the content alone, its manifest's size, scaled with the interface; folded, a dot                                                                                                                                                                                                                                                            |
+| Settings              | declared `settings` (preferred) or a settings page    | `tx-group-title`, `tx-group`, `tx-row`: Settings' own look                                                                                                                                                                                                                                                                                  |
 
 ## Controls
 
@@ -50,7 +50,7 @@ and its colours from the theme, so it follows light, dark and every theme.
 | Square corners | add `tx-square` to a button, field or select                                                                                | capsules by default; square where a grid or table wants it |
 | Checkbox       | `<input type="checkbox" class="ui-check">`                                                                                  | ticking things off                                         |
 | Switch         | `<input type="checkbox" role="switch" class="tx-switch">`                                                                   | turning a setting on and off                               |
-| Select         | `<button class="tx-select">Week<span class="tx-icon" data-icon="chevron"></span></button>`                                  | opens Textus's menu: `api.menu(items, button)`             |
+| Select         | `<button class="tx-select">Week<span class="tx-icon" data-icon="chevron"></span></button>`                                  | opens Moxie's menu: `api.menu(items, button)`              |
 | Slider         | `<input type="range" class="tx-slider">`                                                                                    | `var(--slider-width)` wide                                 |
 | Segmented      | `<div class="tx-segmented" role="tablist"><button class="tx-segment" role="tab" aria-selected="true">Table</button>…</div>` | 2–5 views or modes                                         |
 | Chip           | `<button class="tx-chip">Status is Done</button>`                                                                           | a rule in force; opens it                                  |
@@ -90,7 +90,7 @@ and its colours from the theme, so it follows light, dark and every theme.
 ### Dragging
 
 Use `lib/drag.js` (pages.md › Dragging). Two kinds, as in the rest of
-Textus: `drag.reorder` for a row of tabs or columns - the item itself
+Moxie: `drag.reorder` for a row of tabs or columns - the item itself
 follows the pointer along its row and the others slide aside, nothing
 floats - and `drag.sortable` for things moved between lists (cards between
 a board's lists): a lifted copy follows the pointer. Either way it stays
@@ -102,7 +102,7 @@ under the point it was taken by, in a zoomed document too.
   `--control-height*` and `--bar-height`, corners with `--shape-*`, widths
   with `%`, `vw`, `clamp()` or the layout tokens (`--board-lane-width`,
   `--find-field-width`, `--slider-width`, `--progress-ring-size`,
-  `--bubble-width`, `--block-source-room`). Textus scales a page's own
+  `--bubble-width`, `--block-source-room`). Moxie scales a page's own
   stylesheets as they load (design-language.md §5.6), but that is a safety
   net, not a way to write sizes.
 - **In script, read sizes from layout** (`getBoundingClientRect`), never

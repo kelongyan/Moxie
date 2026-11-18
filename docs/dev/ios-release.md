@@ -8,7 +8,7 @@
 
 [**Apple Developer › Identifiers**](https://developer.apple.com/account/resources/identifiers/list):
 
-- The iOS app and the macOS app use the same bundle ID, `com.catvinci.textus` (`identifier` in `tauri.conf.json`). The 1.0.0 rename to Textus changed it from Levis's `com.chengaoshen.levis`. So you must register a new App ID here and create a matching app in App Store Connect (the old Levis record is no longer used). An App ID is not tied to one platform. The macOS app is signed with Developer ID and does not go through the App Store, so the ID may not be registered here yet. If it is not, register it. Because both apps share one ID, the macOS app can later be combined with the iOS app as one product (Universal Purchase) if it ships on the Mac App Store.
+- The iOS app and the macOS app use the same bundle ID, `com.moxie.desktop` (`identifier` in `tauri.conf.json`). The 1.0.0 rename to Textus changed it from Levis's `com.chengaoshen.levis`, and the rename to Moxie changed it again, so you must register a new App ID here and create a matching app in App Store Connect (the old Levis and Textus records are no longer used). An App ID is not tied to one platform. The macOS app is signed with Developer ID and does not go through the App Store, so the ID may not be registered here yet. If it is not, register it. Because both apps share one ID, the macOS app can later be combined with the iOS app as one product (Universal Purchase) if it ships on the Mac App Store.
 - You do not need to turn on any extra capabilities. Add iCloud later if you need an iCloud container.
 
 ### 2. Create the app in App Store Connect
@@ -16,10 +16,10 @@
 [**App Store Connect › Apps**](https://appstoreconnect.apple.com/apps) **› + › New App**:
 
 - Platform: iOS
-- Name: Textus - Markdown Editor (the App Store already has an app named "TextUs"; enter the Chinese localized name separately)
+- Name: Moxie - Markdown Editor (enter the Chinese localized name separately)
 - Primary language: English (add a Simplified Chinese localization)
-- Bundle ID: `com.catvinci.textus` (see above)
-- SKU: for example `textus-ios`
+- Bundle ID: `com.moxie.desktop` (see above)
+- SKU: for example `moxie-ios`
 - After you create the app, go to **App › Pricing and Availability** and turn off availability on Mac computers with Apple silicon. The Mac already has a native macOS app, so the iPad app should not appear a second time in the Mac App Store.
 
 ### 3. Create an App Store Connect API key
@@ -30,7 +30,7 @@
 
 Then go to **Team Keys › +**:
 
-- Name: for example `Textus CI`. Access: **Admin**. CI signs with a cloud-managed distribution certificate from Apple, and only an Admin key can use it. If you choose App Manager, the signing step fails.
+- Name: for example `Moxie CI`. Access: **Admin**. CI signs with a cloud-managed distribution certificate from Apple, and only an Admin key can use it. If you choose App Manager, the signing step fails.
 - Write down the **Issuer ID** and the **Key ID**, and download `AuthKey_<KeyID>.p8`. You can download this file only once, so keep it safe.
 
 ### 4. EU trader status
@@ -76,11 +76,11 @@ when the desktop has moved on.
 ## The China App Store
 
 There is one build for every storefront. In the App Store for mainland
-China, Textus AI is left out at runtime: `Storefront.swift` (in the
+China, Moxie AI is left out at runtime: `Storefront.swift` (in the
 textus-files plugin) reads the App Store account's storefront, falling back
 to the device's region while it isn't known, Rust passes the answer to the
 page in the boot snapshot (`aiUnavailable`, `src-tauri/src/settings/app.rs`),
-and `hasTextusAi` in `src/platform/capabilities.ts` turns the AI off
+and `hasMoxieAi` in `src/platform/capabilities.ts` turns the AI off
 everywhere. Nothing else differs.
 
 ## Information the review needs
@@ -93,7 +93,7 @@ everywhere. Nothing else differs.
 
 - **Description, keywords, subtitle, promotional text:** You can adapt them from the "Features" section of the README.
 - **Support URL:** `https://textus.md`. **Privacy policy URL:** `https://textus.md/privacy/`.
-- **App Privacy** questionnaire: Textus does not collect data, so choose "Data Not Collected". AI requests go to a provider that the user sets up, straight from the device. They do not pass through our servers.
+- **App Privacy** questionnaire: Moxie does not collect data, so choose "Data Not Collected". AI requests go to a provider that the user sets up, straight from the device. They do not pass through our servers.
 - **Age rating:** 4+.
 - **Export compliance:** The app uses only standard encryption such as HTTPS. `src-tauri/Info.ios.plist` declares `ITSAppUsesNonExemptEncryption = false` (standard encryption such as HTTPS only), so App Store Connect does not ask again after upload.
 - **Review notes:** Explain that the AI features need the user's own API key. Provide a test key, or explain how to use an option such as Ollama. Without a key, the editor itself is fully usable.

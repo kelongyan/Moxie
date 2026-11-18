@@ -1,13 +1,13 @@
 # AI concepts
 
-The names Textus uses for the things that shape Textus AI: what each one is,
+The names Moxie uses for the things that shape Moxie AI: what each one is,
 where it lives, how the user makes it and what the AI does with it. Every
 place that names one of them - the Settings page, the AI panel's project
 bar, the help guides (`src/help/agent-guide.*.md`), the READMEs, the prompts
 the model sees and the code comments - uses these names and definitions.
 Change a concept here first, then everywhere else.
 
-The AI itself is `AI_NAME` in `src/i18n/names.ts` ("Textus AI"); the help guides spell the name out.
+The AI itself is `AI_NAME` in `src/i18n/names.ts` ("Moxie AI"); the help guides spell the name out.
 
 "Conversation" below means the AI panel and Quick Ask, which run the same
 agent (`src-tauri/src/ai/agent/`). "Completion" is the grey continuation.
@@ -15,42 +15,42 @@ Grammar check uses only the writing conventions and the library's names.
 
 ## Glossary
 
-| Concept              | 中文               | 日本語                   | In one sentence                                                                           |
-| -------------------- | ------------------ | ------------------------ | ----------------------------------------------------------------------------------------- |
-| Project folder       | 项目文件夹         | プロジェクトフォルダー   | The folder Textus AI works in and may read.                                               |
-| `.textus/` folder    | `.textus/` 文件夹  | `.textus/` フォルダー    | The project's own settings, inside the project folder.                                    |
-| Style profile        | 文风档案           | 文体プロファイル         | How you write, so continuations and edits sound like you.                                 |
-| Learn my style       | 学习我的文风       | 文体を学習               | Drafts the style profile from samples of your writing.                                    |
-| Library              | 资料库             | ライブラリ               | Facts about people, places and terms that must stay consistent.                           |
-| Writing instructions | 写作要求           | 執筆の指示               | Standing rules sent with every conversation, in `agent.md`.                               |
-| AI remembered        | AI 记住的          | AIが覚えたこと           | What Textus AI keeps by itself from conversations: your requirements, preferences, style. |
-| Skills               | 技能               | スキル                   | Named, reusable instructions, called with `/name`.                                        |
-| Global config folder | 全局配置文件夹     | グローバル設定フォルダー | The app's folder for the writing instructions and skills that apply to every document.    |
-| Built-in skills      | 内置技能           | 組み込みスキル           | Each mode's own skills, always on (9 in all); each can be customized or reset.            |
-| Writing conventions  | 写作规范           | 表記ルール               | The punctuation, spacing and number norms followed, per document language.                |
-| Modes                | 写作 / 审阅 / 修订 | 執筆 / レビュー / 推敲   | What a conversation may do to the document: add text, nothing, or change it.              |
+| Concept              | 中文               | 日本語                   | In one sentence                                                                          |
+| -------------------- | ------------------ | ------------------------ | ---------------------------------------------------------------------------------------- |
+| Project folder       | 项目文件夹         | プロジェクトフォルダー   | The folder Moxie AI works in and may read.                                               |
+| `.moxie/` folder     | `.moxie/` 文件夹   | `.moxie/` フォルダー     | The project's own settings, inside the project folder.                                   |
+| Style profile        | 文风档案           | 文体プロファイル         | How you write, so continuations and edits sound like you.                                |
+| Learn my style       | 学习我的文风       | 文体を学習               | Drafts the style profile from samples of your writing.                                   |
+| Library              | 资料库             | ライブラリ               | Facts about people, places and terms that must stay consistent.                          |
+| Writing instructions | 写作要求           | 執筆の指示               | Standing rules sent with every conversation, in `agent.md`.                              |
+| AI remembered        | AI 记住的          | AIが覚えたこと           | What Moxie AI keeps by itself from conversations: your requirements, preferences, style. |
+| Skills               | 技能               | スキル                   | Named, reusable instructions, called with `/name`.                                       |
+| Global config folder | 全局配置文件夹     | グローバル設定フォルダー | The app's folder for the writing instructions and skills that apply to every document.   |
+| Built-in skills      | 内置技能           | 組み込みスキル           | Each mode's own skills, always on (9 in all); each can be customized or reset.           |
+| Writing conventions  | 写作规范           | 表記ルール               | The punctuation, spacing and number norms followed, per document language.               |
+| Modes                | 写作 / 审阅 / 修订 | 執筆 / レビュー / 推敲   | What a conversation may do to the document: add text, nothing, or change it.             |
 
 ### Project folder
 
-**The folder Textus AI works in: it may read and search the text files
-there, and the project's own settings live in its `.textus/` folder.**
+**The folder Moxie AI works in: it may read and search the text files
+there, and the project's own settings live in its `.moxie/` folder.**
 
 - **On disk:** the folder opened in the sidebar or chosen for the AI, else
-  the nearest folder holding the document that has a `.textus/` folder. A
+  the nearest folder holding the document that has a `.moxie/` folder. A
   lone document's own folder is not a project (it may be Downloads): the
   agent then reads the document and the conversation's attached files
   only. The walk up stops before the home folder and a drive root, which
   are never a project.
 - **Create / edit:** **File > Open Folder…** makes the opened folder the
   project folder, and a chapter in `novel/part-1/` belongs to `novel/`
-  once `novel/.textus/` exists. **Choose project folder…** in the project bar's menu,
-  or **Settings > Textus AI > Project Folder**, picks another one; **Use no
+  once `novel/.moxie/` exists. **Choose project folder…** in the project bar's menu,
+  or **Settings > Moxie AI > Project Folder**, picks another one; **Use no
   project folder** goes back to none. **File > Open Folder…** sets
   it too, but only while the AI has no folder of its own (none chosen, or
   the one an earlier Open Folder set); **Close Folder** then puts the
   default back. A folder chosen for the AI is never replaced by the
   sidebar's (`sidebar/tree-root.ts`'s `agentRootOnOpen`).
-- **Textus AI uses it:** conversations find, list, read and search its
+- **Moxie AI uses it:** conversations find, list, read and search its
   text files and the text of its PDF, Word, PowerPoint, spreadsheet, EPUB
   and RTF files (`find_files`, which lists them all without a name,
   `read_file`, `search_files`;
@@ -66,33 +66,33 @@ there, and the project's own settings live in its `.textus/` folder.**
 - In code it is the _workspace root_ (`settings.agentWorkspaceRoot`,
   `workspace::project_root`).
 
-### `.textus/` folder
+### `.moxie/` folder
 
 **The project's settings folder: a hidden folder inside the project folder
 that holds the project's style profile, library, writing instructions,
-skills and what Textus AI remembered about the project.**
+skills and what Moxie AI remembered about the project.**
 
-- **On disk:** `<project folder>/.textus/`. Only this folder counts.
+- **On disk:** `<project folder>/.moxie/`. Only this folder counts.
 - **Create / edit:** created on first use by the project bar's menu items,
   or by hand.
-- **Textus AI uses it:** only through the roles below. The file tools never
-  read hidden folders, so nothing in `.textus/` reaches the model as
+- **Moxie AI uses it:** only through the roles below. The file tools never
+  read hidden folders, so nothing in `.moxie/` reaches the model as
   reference material.
 
 ### Style profile ("Learn my style")
 
 **A description of how the author writes - voice, sentence rhythm, word
-choice, things they never do - that Textus AI writes to.**
+choice, things they never do - that Moxie AI writes to.**
 
-- **On disk:** `.textus/style.md`. Learning again keeps the previous profile
-  as `.textus/style.previous.md`.
+- **On disk:** `.moxie/style.md`. Learning again keeps the previous profile
+  as `.moxie/style.previous.md`.
 - **Create / edit:** **Learn my style from samples…** in the project bar's
   menu - the user picks up to eight of their own text files, the chat model
   drafts a profile (voice and tone, sentences and rhythm, word choice,
   punctuation and formatting, structure, never, quoted examples) in the
   samples' language and it opens in a new tab for review. Or **Create style
   profile**, an empty outline. Once it exists, the **Style** chip opens it.
-- **Textus AI uses it:** with every conversation request and every
+- **Moxie AI uses it:** with every conversation request and every
   completion in the project (the first 6,000 characters), under
   `---the author's style profile---`.
 
@@ -101,16 +101,16 @@ choice, things they never do - that Textus AI writes to.**
 **Facts about the project's people, places and terms that must stay
 consistent, one entry per file.**
 
-- **On disk:** `.textus/library/<name>.md` - frontmatter `name`, `aliases`
+- **On disk:** `.moxie/library/<name>.md` - frontmatter `name`, `aliases`
   and `include` (`detected` by default, `always` or `never`), then the
-  facts. An entry Textus AI wrote (see AI remembered) also has
-  `remembered-by: textus-ai` and the `created`/`updated`/`source-*` record.
+  facts. An entry Moxie AI wrote (see AI remembered) also has
+  `remembered-by: moxie-ai` and the `created`/`updated`/`source-*` record.
 - **Create / edit:** **New library entry…** in the project bar's menu asks
-  for the name and opens the new file; or by hand; or Textus AI, after a
+  for the name and opens the new file; or by hand; or Moxie AI, after a
   conversation, for a fact about the work - added to the entry it is about
   when there is one (by name or alias). The **Library N** chip shows
   how many entries there are; the Memory tab opens or deletes each.
-- **Textus AI uses it:** an entry goes with a request when it is `always`,
+- **Moxie AI uses it:** an entry goes with a request when it is `always`,
   or `detected` and its name or an alias (two characters or longer) appears
   in the request - the message plus the document for a conversation, the
   text around the cursor for completion. At most 8,000 characters of
@@ -126,37 +126,37 @@ consistent, one entry per file.**
 reply language, spellings and terms, things to always or never do.**
 
 - **On disk:** global: `agent.md` in the global config folder; project:
-  `.textus/agent.md`.
-- **Create / edit:** global: **Settings > Textus AI > Writing Instructions
+  `.moxie/agent.md`.
+- **Create / edit:** global: **Settings > Moxie AI > Writing Instructions
   (agent.md) > Edit agent.md**; project: **Edit project writing
   instructions** in the project bar's menu. Both open in a tab, starting as
   a how-to written in `<!-- -->` comments.
-- **Textus AI uses it:** in the system prompt of every conversation, under
+- **Moxie AI uses it:** in the system prompt of every conversation, under
   `---user instructions---`, with comments stripped. Not used by completion
   or grammar check.
 
 ### AI remembered
 
-**What Textus AI keeps by itself from conversations, so that it "remembers
+**What Moxie AI keeps by itself from conversations, so that it "remembers
 your style and what you ask for": the user's requirements ("always…",
 "never…"), preferences about its replies and edits, their style, and facts
 about the work.** The user's own files - agent.md, style.md - stay theirs:
-Textus AI never changes them.
+Moxie AI never changes them.
 
 - **On disk:** one Markdown file per memory, apart from the files the user
   writes. Personal (the user's habits, every project): `memory/<slug>.md`
   in the global config folder. The project's (this work):
   `projects/<key>/memory/<slug>.md` beside it (`ai/project_data.rs`), never
-  in the user's folder; an older `.textus/memory/` moves there once. Front matter `kind` (`requirement`, `preference` or
-  `style`), `remembered-by: textus-ai`, `created`, `updated`,
+  in the user's folder; an older `.moxie/memory/` moves there once. Front matter `kind` (`requirement`, `preference` or
+  `style`), `remembered-by: moxie-ai`, `created`, `updated`,
   `source-conversation`, `source-title`, `source-document`; then the memory
   in one or a few sentences. A fact about the work (a person, place, term)
   is a library entry instead, marked `remembered-by` (see Library). Each is
   named by an id, `<scope>/<folder>/<file stem>`
   (`personal/memory/no-semicolons`, `project/library/lin-wan`).
-- **Create / edit:** Textus AI, after each exchange in any mode (a separate
+- **Create / edit:** Moxie AI, after each exchange in any mode (a separate
   small request, memory::pass - it writes memory, never the document) while
-  **Settings > Textus AI > Remember automatically** is on (the default). It
+  **Settings > Moxie AI > Remember automatically** is on (the default). It
   adds, updates or forgets ("forget the no-semicolons rule"); each change
   shows under the reply as "Remembered: … (project) · Undo · Make personal"
   or "Forgot: … · Undo"; Undo deletes a new memory, or puts back what an
@@ -184,7 +184,7 @@ Textus AI never changes them.
   identical memory (same letters and digits, ignoring case, spacing and
   punctuation) is not saved twice, and to change one the model passes its
   id as `replaces`. It never changes a library entry the user wrote.
-- **Textus AI uses it:** requirements, preferences and style go with every
+- **Moxie AI uses it:** requirements, preferences and style go with every
   conversation request, after the writing instructions: personal under
   `---what you remember about the user…---`, then the project's under
   `---what you remember about this project…---`, which wins a conflict with
@@ -193,14 +193,14 @@ Textus AI never changes them.
   first; what doesn't fit is left out, the model is told how many, and the
   Memory tab marks them **Not sent** and says so (it warns from 80% on).
   With the tool offered, each line carries its id and the prompt lists the
-  library entries Textus AI wrote, so it updates instead of repeating.
+  library entries Moxie AI wrote, so it updates instead of repeating.
   Facts reach requests through the library's matching. Not used by
   completion or grammar check.
 
 ### Skills (`/name`)
 
 **A named, reusable set of instructions in one Markdown file, which the user
-calls with `/name` or Textus AI loads by itself when a request matches its
+calls with `/name` or Moxie AI loads by itself when a request matches its
 description.**
 
 - **On disk:** built-in: 9 skills bundled with the app, each panel
@@ -208,11 +208,11 @@ description.**
   Review: proofread, continuity; Create: theme, plugin, skill
   (`src-tauri/src/ai/skills/*.md`, read-only); global: `skills/*.md` in the
   global config folder, where the market's skills install
-  (textus-plugins/skills); project: `.textus/skills/*.md`. Frontmatter
-  `name` and `description` (block scalars allowed), Textus-only keys under
+  (textus-plugins/skills); project: `.moxie/skills/*.md`. Frontmatter
+  `name` and `description` (block scalars allowed), Moxie-only keys under
   `metadata:` (`textus-invocation`, `textus-category`, `textus-modes`,
   `textus-packs`, `textus-label-<lang>`, `textus-hint-<lang>`,
-  `textus-aliases-<lang>`, `textus-version`, `textus-based-on`,
+  `moxie-aliases-<lang>`, `moxie-version`, `moxie-based-on`,
   `textus-index`), then the instructions. `<!-- -->` comments in the
   instructions are never sent. A built-in's `textus-index` is what the
   model's skill index shows in place of its description: the "Use when"
@@ -225,7 +225,7 @@ description.**
   skills; **Get more** installs one from the market; Create mode's `skill`
   writes one in the reply and **Save this skill** keeps it with the modes
   ticked; **Customize…** on a built-in copies it there with
-  `textus-based-on` (so **Reset to built-in** may delete it); or by hand in
+  `moxie-based-on` (so **Reset to built-in** may delete it); or by hand in
   either folder.
 - **Reference packs:** `contract`, `craft` and `standards-<lang>` for ten
   languages (`src-tauri/src/ai/skills/packs/`), never listed or called with
@@ -234,7 +234,7 @@ description.**
   used, and the model can load any section with
   `use_skill("standards-fr#dialogue")`. Attribution:
   `src-tauri/src/ai/skills/ATTRIBUTION.md`.
-- **Textus AI uses it:** the name and description of every skill it may
+- **Moxie AI uses it:** the name and description of every skill it may
   start (`textus-invocation: both`; not `user-only` ones like `/tighten`, not
   turned-off built-ins) are listed in the system prompt
   (`---available skills---`) for tool-calling providers, the user's own
@@ -250,15 +250,15 @@ description.**
 writing instructions, the global skills and the personal memories (see AI
 remembered).**
 
-- **On disk:** `textus/` in the app config directory, laid out as a
-  project's `.textus/` is (agent.md, skills/, memory/) -
-  `~/.config/com.catvinci.textus/textus/` (Linux),
-  `~/Library/Application Support/com.catvinci.textus/textus/` (macOS),
-  `%APPDATA%\com.catvinci.textus\textus\` (Windows).
-- **Create / edit:** **Settings > Textus AI > Global config folder > Show**
+- **On disk:** `moxie/` in the app config directory, laid out as a
+  project's `.moxie/` is (agent.md, skills/, memory/) -
+  `~/.config/com.moxie.desktop/moxie/` (Linux),
+  `~/Library/Application Support/com.moxie.desktop/moxie/` (macOS),
+  `%APPDATA%\com.moxie.desktop\moxie\` (Windows).
+- **Create / edit:** **Settings > Moxie AI > Global config folder > Show**
   (desktop) creates it with a starter `agent.md` and shows it in
   the file manager; **Edit agent.md** and **Import Skill…** write into it.
-- **Textus AI uses it:** read before the project's `.textus/` on every
+- **Moxie AI uses it:** read before the project's `.moxie/` on every
   conversation request. It has no style profile or library: those describe
   one body of work, so they belong to a project.
 
@@ -274,11 +274,11 @@ document language: a profile such as `zh-Hans-CN/fiction`, `en-GB/govuk` or
   stores and applies to documents in that profile's language; or an object
   from language to profile, with an optional `options` object); project: the `conventions:` key (one profile, or
   several separated by commas, one per language) and option keys such as
-  `cjk-latin-space: on` in the front matter of `.textus/style.md`. The
+  `cjk-latin-space: on` in the front matter of `.moxie/style.md`. The
   profiles and option keys are listed in
   `src-tauri/src/ai/rules/profile.rs` (`LANGUAGE_PROFILES`, `OPTIONS`) and
   mirrored in `platform/ipc.ts` (`WRITING_CONVENTIONS`).
-- **Create / edit:** **Settings > Textus AI > Writing Assistance > Writing
+- **Create / edit:** **Settings > Moxie AI > Writing Assistance > Writing
   conventions** (default Automatic) for the global choice; the style
   profile's front matter for a project, which wins for the languages it
   names.
@@ -288,7 +288,7 @@ document language: a profile such as `zh-Hans-CN/fiction`, `en-GB/govuk` or
   Spanish, French and German. Wherever sources disagree (CJK-Latin spacing,
   French spacing, quote systems, serial comma, -ize/-ise...), Automatic
   follows the document's own majority and flags only the minority.
-- **Textus AI uses it:** through the deterministic rules engine
+- **Moxie AI uses it:** through the deterministic rules engine
   (`src-tauri/src/ai/rules/`): the grammar check adds the engine's findings
   to the model's; conversations get the read-only tools
   `check_conventions` and `measure_text`, and each proposal's text is made
@@ -304,13 +304,13 @@ only reads, answers and comments.**
 - **Where:** the mode picker beside the composer (a segmented control on a
   phone). The panel, the detached chat window and Quick Ask offer Write
   and Review, in that order (`COMPOSER_MODES` in `ai/chat/last-mode.ts`).
-  The panel starts in **Settings > Textus AI > Textus AI Chat > Default
+  The panel starts in **Settings > Moxie AI > Moxie AI Chat > Default
   mode** (Review by default) and remembers the last pick; Quick Ask, for a
   quick change to the passage it was opened on, starts in Write. The
   empty AI panel shows the chosen mode's icon (`ai/chat/mode-icons.tsx`: a
   pen nib, a speech bubble) and a line on what it will do; the picker
   itself is words only.
-- **Textus AI uses it:** the `---interaction mode---` section at the top
+- **Moxie AI uses it:** the `---interaction mode---` section at the top
   of each message, and the tools: Review gets no `propose_edit`, Write
   gets every action. Every proposal is decided by the user either way
   ([ai-proposals.md](ai-proposals.md)).
@@ -322,7 +322,7 @@ only reads, answers and comments.**
 
 ### Not a file: completion tone
 
-The **completion tone** (Settings > Textus AI > Writing Assistance) is a
+The **completion tone** (Settings > Moxie AI > Writing Assistance) is a
 preset directive added to completion prompts only. It is a setting, not
 part of the project.
 
@@ -347,10 +347,10 @@ part of the project.
   instructions, project skills or project memories - the global layer and
   the personal memories still apply. A folder that is too broad (the home
   folder, a drive root) is refused, whether chosen or the document's own,
-  and the walk up to a `.textus/` never reaches one.
-- **Only the project folder's `.textus/` counts.** When the user chose a
-  folder, the `.textus/` next to the document is not read; a nearer
-  `.textus/` wins over one further up.
+  and the walk up to a `.moxie/` never reaches one.
+- **Only the project folder's `.moxie/` counts.** When the user chose a
+  folder, the `.moxie/` next to the document is not read; a nearer
+  `.moxie/` wins over one further up.
 - **Writing instructions add up.** The global `agent.md` comes first and the
   project's after it. With one layer the section is headed
   `---user instructions---`; when both are present the project's section is
@@ -360,7 +360,7 @@ part of the project.
   ---user instructions for this project (where they conflict with the ones above, follow these)---
   ```
 
-- **What Textus AI remembered follows the writing instructions.** The
+- **What Moxie AI remembered follows the writing instructions.** The
   system prompt carries, in this order: the global `agent.md`, the
   project's, the personal memories, the project's memories (which win over
   the personal ones). The user's own instructions win over anything
@@ -380,8 +380,8 @@ part of the project.
 
 ## Where the user meets each concept
 
-- **Settings > Textus AI**, group "Writing Instructions & Skills": Project
-  Folder (the folder in use under it; its "?" says Textus AI reads only
+- **Settings > Moxie AI**, group "Writing Instructions & Skills": Project
+  Folder (the folder in use under it; its "?" says Moxie AI reads only
   that folder), Writing Instructions (agent.md) ("?": for all documents),
   Skills ("?": how to call one), Remember automatically ("?": where to see
   and undo) and Global Config Folder (nothing). Explanations sit behind the
@@ -393,16 +393,16 @@ part of the project.
   library (with delete), the writing instructions and the skills - each
   opening its file; the notes when memories near or pass their limit and
   when mentioned library entries didn't fit.
-- **Under Textus AI's reply**: a chip for each thing it remembered or
+- **Under Moxie AI's reply**: a chip for each thing it remembered or
   forgot, with Undo and (for a memory) the move to the other scope - a
   moment after the reply, which the memory pass doesn't hold up.
-- **Help > AI Features Guide**, section "Make Textus AI yours": an overview
+- **Help > AI Features Guide**, section "Make Moxie AI yours": an overview
   table, one subsection with a small example per concept, "Which applies
   when" and "Which file for what".
 - **The files themselves**: the style profile, a new library entry and both
   `agent.md` starters explain themselves in comments, which never reach the
   model.
-- **Textus AI itself**: the agent's prompt (`agent.rs`'s `workspace_section`)
+- **Moxie AI itself**: the agent's prompt (`agent.rs`'s `workspace_section`)
   says which project folder is in use and why, describes each concept in
   English with the project menu's items, the **Style** chip and the
   Settings rows that make and open it (and what reaches completion), and
@@ -424,7 +424,7 @@ names above.
 | User-facing name       | In code                                                                                                                                                                                                                                                                                             |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Project folder         | workspace root: `settings.agentWorkspaceRoot` (`""` = none), `workspace::project_root`, `AgentWorkspace.root`                                                                                                                                                                                       |
-| `.textus/` folder      | `WORKSPACE_DIR_NAME`                                                                                                                                                                                                                                                                                |
+| `.moxie/` folder       | `WORKSPACE_DIR_NAME`                                                                                                                                                                                                                                                                                |
 | Style profile          | `AgentWorkspace.style`, `project::read_style`, `learn_style`                                                                                                                                                                                                                                        |
 | Library                | `AgentWorkspace.library`, `project::read_library`, `project::relevant_library`                                                                                                                                                                                                                      |
 | Writing instructions   | `AgentWorkspace.instructions` (global) and `AgentWorkspace.project_instructions`; `agentSystemPrompt*` strings                                                                                                                                                                                      |

@@ -1,4 +1,4 @@
-import { heldByPlugin } from "../plugins/contributions/editor-input";
+import { heldByPlugin } from "../plugins/contributions/editor-key-capture";
 import { useEffect } from "react";
 import { cycleRegion, trackRegionFocus } from "./regions";
 import { useSettings, type HeadingAction } from "../prefs/SettingsContext";
